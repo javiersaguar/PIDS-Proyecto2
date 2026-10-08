@@ -9,7 +9,7 @@ Proyectos en Ingeniería de Datos y Sistemas (PIDS) · Universidad Politécnica 
 | Javier Saguar | `javier-saguar` |
 | Alejandro Cuevas | `alejandro-cuevas` |
 | Mónica Fernández | `monica-fernandez` |
-| Pedro José Orrego | `pedro-jose-orrego` |
+| Pedro José Orrego | `pedro-orrego` |
 | Daniel Naval | `daniel-naval` |
 
 ## Descripción del proyecto
