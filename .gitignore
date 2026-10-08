@@ -1,0 +1,15 @@
+# Jupyter / Python
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# Datos pesados: los vídeos se suben comprimidos, uno por .zip (ver AGENTS.md)
+*.mp4
+*.avi
+*.mov
+data_train/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini

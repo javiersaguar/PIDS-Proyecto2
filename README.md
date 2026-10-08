@@ -42,10 +42,20 @@ El proyecto se divide en tres bloques, cada uno con un hito:
 - Fichero único: `PIDS_grupoX_entregaN.pdf`.
 - Se valora sobre todo la **justificación** de las decisiones, la interpretación crítica de resultados y la presentación.
 
+## Estructura del repositorio
+
+| Ruta | Contenido |
+|---|---|
+| `ENTREGA 1/WEEK1/DATASET PIDS/` | Vídeos grabados con el RoboMaster, un `.zip` por vídeo (`ROBOMASTER_VIDEO_01.zip` … `ROBOMASTER_VIDEO_10.zip`) |
+| `ENTREGA 1/WEEK1/` | `video2frames.ipynb`, `eda.ipynb` y `data_aug.ipynb` (Bloque 1) |
+| `ENTREGA 1/WEEK2/` | `train.ipynb` y `test.ipynb` (entrenamiento y evaluación) |
+| `AGENTS.md` | Normas del repositorio (autoría, ramas y datos) |
+
 ## Cómo vamos a trabajar
 
 ### Ramas
 
+- `main` es la rama por defecto y recoge el trabajo común del grupo.
 - Cada miembro del equipo tiene su **propia rama personal** (ver tabla de arriba) y trabaja únicamente en ella.
 - Los commits se hacen en la rama propia, con mensajes claros y en imperativo (p. ej. `Añade análisis de tamaño de bounding boxes`).
 - La integración del trabajo de cada uno se acuerda en equipo antes de unir nada.
@@ -56,6 +66,7 @@ El reparto concreto de tareas por bloque se acuerda en equipo y se documenta aqu
 
 ### Reglas prácticas
 
+- En los commits solo figuran como autores los integrantes del grupo, sin coautores (ver [`AGENTS.md`](AGENTS.md)).
 - Acordar los **criterios de anotación** antes de empezar a etiquetar; las anotaciones deben ser consistentes entre todos.
 - Mantener siempre una **copia del dataset y del código**: JupyterHub no permite subir/eliminar carpetas desde el panel (usar `zip`/`unzip` y `rm -r` con cuidado).
 - No actualizar el firmware del RoboMaster cuando la app lo pida.
