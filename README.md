@@ -49,6 +49,8 @@ El proyecto se divide en tres bloques, cada uno con un hito:
 | `ENTREGA 1/WEEK1/DATASET PIDS/` | Vídeos grabados con el RoboMaster, un `.zip` por vídeo (`ROBOMASTER_VIDEO_01.zip` … `ROBOMASTER_VIDEO_10.zip`) |
 | `ENTREGA 1/WEEK1/` | `video2frames.ipynb`, `eda.ipynb` y `data_aug.ipynb` (Bloque 1) |
 | `ENTREGA 1/WEEK2/` | `train.ipynb` y `test.ipynb` (entrenamiento y evaluación) |
+| `docs/criterios_anotacion.md` | Criterios de anotación (propuesta pendiente de aprobar) |
+| `herramientas/revisar_anotaciones.py` | Validación de las etiquetas y acuerdo entre anotadores |
 | `ESTADO.md` | Estado actual del proyecto y datos de los vídeos |
 | `TAREAS.md` | Tareas por orden de prioridad y quién se encarga de cada una |
 | `AGENTS.md` | Normas del repositorio (autoría, ramas y datos) |

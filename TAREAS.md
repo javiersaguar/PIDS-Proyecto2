@@ -47,13 +47,13 @@ En una tarea puede haber más de una persona (`Javier, Mónica`). Antes de edita
 
 ### T01 · Acordar y documentar los criterios de anotación (P1)
 
-Va antes que nada: si cada uno anota a su manera, el modelo aprende cajas inconsistentes. Hay que decidirlo **entre los cinco** y una persona lo redacta en `docs/criterios_anotacion.md`, con ejemplos.
+Va antes que nada: si cada uno anota a su manera, el modelo aprende cajas inconsistentes. Hay una **propuesta completa** en [`docs/criterios_anotacion.md`](docs/criterios_anotacion.md), con reglas justificadas, ejemplos de nuestros vídeos y una ronda de calibración. Hay que revisarla **entre los cinco**, cerrar las decisiones de su sección 7 y hacer la calibración.
 - ¿Se anotan los robots parcialmente ocluidos? ¿A partir de qué porcentaje visible?
 - ¿Y los robots muy lejanos, desenfocados o cortados por el borde de la imagen?
 - ¿Qué tan ajustada va la caja: al chasis, o incluyendo el cañón y las antenas?
 - Una sola clase: `robot`. Formato PascalVOC.
 
-**Hecha cuando:** el documento está en `main` y los cinco lo han leído. Estos criterios hay que justificarlos en la memoria.
+**Hecha cuando:** las decisiones están cerradas, la calibración llega a un IoU medio de 0,80 o más (`herramientas/revisar_anotaciones.py acuerdo`) y el documento ya no pone «propuesta». Estos criterios hay que justificarlos en la memoria.
 
 ### T02 · Ficha de cada vídeo y revisión de la variabilidad (P1)
 
@@ -75,7 +75,7 @@ Cada lote son dos vídeos, más o menos un quinto del trabajo de anotación: lo 
 - Clase `robot`
 - *Open Dir* sobre `images` y *Change Save Dir* sobre `labels`
 
-**Hecha cuando:** cada imagen del lote tiene su `.xml` (o se ha marcado a propósito como imagen sin robots) y el lote está de vuelta en JupyterHub.
+**Hecha cuando:** `python herramientas/revisar_anotaciones.py validar ../data_train` no da errores en el lote y el lote está de vuelta en JupyterHub.
 
 ### T09 · Copia de seguridad del dataset anotado (P1)
 
