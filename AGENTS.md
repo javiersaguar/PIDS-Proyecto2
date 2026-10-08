@@ -16,6 +16,7 @@ En este repositorio **solo figuran como autores los cinco integrantes del grupo*
 - `main` es la rama por defecto y recoge el trabajo común del grupo.
 - Cada integrante tiene su rama personal: `javier-saguar`, `alejandro-cuevas`, `monica-fernandez`, `pedro-orrego` y `daniel-naval`. Cada uno trabaja solo en la suya.
 - No se hace `push --force` a `main` ni a la rama de otro integrante. Lo que se une a `main` se acuerda antes en el grupo.
+- Excepción: `TAREAS.md` y `ESTADO.md` se editan directamente en `main` para asignarse tareas y actualizar su estado (ver `TAREAS.md`).
 - Mensajes de commit en español y en imperativo (p. ej. `Añade análisis de tamaño de bounding boxes`).
 
 ## Estructura
