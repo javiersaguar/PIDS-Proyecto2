@@ -6,10 +6,14 @@ Lista de tareas **ordenadas por prioridad**: cuanto más arriba, antes hay que h
 
 1. Elige una tarea con **Responsable** vacío (`—`). Empieza por las de arriba cuyas dependencias ya estén hechas.
 2. Escribe tu nombre en la columna **Responsable** y cambia el **Estado** a `En curso`.
-3. Haz commit directamente en `main` con el mensaje `Asigna T0X a <nombre>`. Se puede hacer desde la web de GitHub con el lápiz de editar. Este fichero y `ESTADO.md` son los únicos que se editan directamente en `main`.
+3. Haz el cambio en tu rama personal, con el mensaje `Asigna T0X a <nombre>`, y abre o actualiza su PR hacia `main`. Este fichero y `ESTADO.md` también pasan por PR y revisión; no se editan directamente en `main` (ver `AGENTS.md`).
 4. Cuando la termines, pon el **Estado** a `Hecha` y, si hace falta, actualiza `ESTADO.md`.
 
 En una tarea puede haber más de una persona (`Javier, Mónica`). Antes de editar, haz *pull* o recarga la página para no pisar la asignación de otro.
+
+No hace falta una Issue por cada tarea de esta tabla. Abrirla cuando haya un error,
+bloqueo, decisión que discutir o trabajo que abarque varias PRs o personas; enlazarla
+desde la tarea y las PRs relacionadas para conservar el seguimiento.
 
 **Prioridad:**
 - **P1:** bloquea al resto. Sin ella no se puede avanzar.

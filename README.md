@@ -67,11 +67,13 @@ El proyecto se divide en tres bloques, cada uno con un hito:
 - `main` es la rama por defecto y recoge el trabajo común del grupo.
 - Cada miembro del equipo tiene su **propia rama personal** (ver tabla de arriba) y trabaja únicamente en ella.
 - Los commits se hacen en la rama propia, con mensajes claros y en imperativo (p. ej. `Añade análisis de tamaño de bounding boxes`).
-- La integración del trabajo de cada uno se acuerda en equipo antes de unir nada.
+- La integración del trabajo de cada uno se hace mediante PR hacia `main`, con al menos una aprobación de otro integrante, conversaciones resueltas y nueva revisión si cambia el contenido. Se fusiona con *Create a merge commit*; `main` está protegida.
 
 ### Reparto del trabajo
 
 Las tareas están en [`TAREAS.md`](TAREAS.md), ordenadas por prioridad. Cada integrante se asigna las que vaya a hacer escribiendo su nombre en la columna *Responsable*.
+
+Las actualizaciones de `TAREAS.md` y `ESTADO.md` también se integran mediante PR. Usamos **Issues solo cuando hacen falta**: errores, bloqueos, decisiones por discutir o trabajo que abarque varias PRs o personas. Para cambios pequeños basta con el seguimiento en la PR. Las reglas completas están en [`AGENTS.md`](AGENTS.md).
 
 Los [lotes de anotación](ENTREGA%201/WEEK1/ANOTACION/README.md) están preparados en `javier-saguar`: Javier (01–02, 157 imágenes), Alejandro (03–04, 158), Mónica (05–06, 168), Pedro (07–08, 179) y Daniel (09–10, 146). Antes de anotar los lotes, completar la [calibración común](ENTREGA%201/WEEK1/ANOTACION/calibracion/README.md). La extracción se ha ejecutado localmente; la importación a JupyterHub queda pendiente.
 
