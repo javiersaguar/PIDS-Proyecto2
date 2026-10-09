@@ -18,18 +18,23 @@ En una tarea puede haber más de una persona (`Javier, Mónica`). Antes de edita
 
 **Estado:** `Pendiente` · `En curso` · `Hecha`
 
+Actualización del 09/10/2026 en `javier-saguar`, por petición de Javier. T01 y T03
+tienen preparación completa, pero conservan el estado `En curso` por sus pasos
+externos pendientes (calibración del grupo e importación en JupyterHub). Los lotes
+se asignan para planificar; la anotación todavía no ha empezado.
+
 ## Resumen
 
 | ID | Prioridad | Tarea | Depende de | Responsable | Estado |
 |---|---|---|---|---|---|
-| T01 | P1 | Acordar y documentar los criterios de anotación | — | — | Pendiente |
-| T02 | P1 | Ficha de cada vídeo y revisión de la variabilidad | — | — | Pendiente |
-| T03 | P1 | Extraer fotogramas en JupyterHub (`INTERVAL = 24`) | — | — | Pendiente |
-| T04 | P1 | Anotar el lote A (vídeos 01 y 02, ~158 imágenes) | T01, T03 | — | Pendiente |
-| T05 | P1 | Anotar el lote B (vídeos 03 y 04, ~159 imágenes) | T01, T03 | — | Pendiente |
-| T06 | P1 | Anotar el lote C (vídeos 05 y 06, ~169 imágenes) | T01, T03 | — | Pendiente |
-| T07 | P1 | Anotar el lote D (vídeos 07 y 08, ~180 imágenes) | T01, T03 | — | Pendiente |
-| T08 | P1 | Anotar el lote E (vídeos 09 y 10, ~147 imágenes) | T01, T03 | — | Pendiente |
+| T01 | P1 | Criterios v1 y calibración preparada; pendiente acuerdo y medida IoU | — | Javier Saguar; calibración: los cinco | En curso |
+| T02 | P1 | Ficha de cada vídeo y revisión de la variabilidad | — | Javier Saguar | Hecha |
+| T03 | P1 | 808 fotogramas extraídos (`INTERVAL = 24`); pendiente importar a JupyterHub | — | Javier Saguar | En curso |
+| T04 | P1 | Anotar el lote A (vídeos 01 y 02, 157 imágenes) | T01, T03 | Javier Saguar | Pendiente |
+| T05 | P1 | Anotar el lote B (vídeos 03 y 04, 158 imágenes) | T01, T03 | Alejandro Cuevas | Pendiente |
+| T06 | P1 | Anotar el lote C (vídeos 05 y 06, 168 imágenes) | T01, T03 | Mónica Fernández | Pendiente |
+| T07 | P1 | Anotar el lote D (vídeos 07 y 08, 179 imágenes) | T01, T03 | Pedro José Orrego | Pendiente |
+| T08 | P1 | Anotar el lote E (vídeos 09 y 10, 146 imágenes) | T01, T03 | Daniel Naval | Pendiente |
 | T09 | P1 | Copia de seguridad del dataset anotado | T04–T08 | — | Pendiente |
 | T10 | P2 | Revisión cruzada de las anotaciones | T04–T08 | — | Pendiente |
 | T11 | P2 | EDA base con `eda.ipynb` | T10 | — | Pendiente |
@@ -47,13 +52,15 @@ En una tarea puede haber más de una persona (`Javier, Mónica`). Antes de edita
 
 ### T01 · Acordar y documentar los criterios de anotación (P1)
 
-Va antes que nada: si cada uno anota a su manera, el modelo aprende cajas inconsistentes. Hay una **propuesta completa** en [`docs/criterios_anotacion.md`](docs/criterios_anotacion.md), con reglas justificadas, ejemplos de nuestros vídeos y una ronda de calibración. Hay que revisarla **entre los cinco**, cerrar las decisiones de su sección 7 y hacer la calibración.
+Va antes que nada: si cada uno anota a su manera, el modelo aprende cajas inconsistentes. Los **criterios operativos v1** están en [`docs/criterios_anotacion.md`](docs/criterios_anotacion.md), con reglas justificadas y opciones adoptadas por Javier para preparar los lotes. Hay que revisarlos **entre los cinco** y hacer la calibración.
 - ¿Se anotan los robots parcialmente ocluidos? ¿A partir de qué porcentaje visible?
 - ¿Y los robots muy lejanos, desenfocados o cortados por el borde de la imagen?
 - ¿Qué tan ajustada va la caja: al chasis, o incluyendo el cañón y las antenas?
 - Una sola clase: `robot`. Formato PascalVOC.
 
-**Hecha cuando:** las decisiones están cerradas, la calibración llega a un IoU medio de 0,80 o más (`herramientas/revisar_anotaciones.py acuerdo`) y el documento ya no pone «propuesta». Estos criterios hay que justificarlos en la memoria.
+**Preparado:** veinte originales comunes, dos por vídeo, con nombres únicos y carpetas de etiquetas por integrante en [`ANOTACION/calibracion`](ENTREGA%201/WEEK1/ANOTACION/calibracion/README.md). El script rechaza rondas vacías o incompletas.
+
+**Hecha cuando:** revisión y decisiones colectivas registradas; los cinco anotan las mismas veinte imágenes y cada pareja llega a IoU medio ≥ 0,80, sin robots sin emparejar a IoU ≥ 0,50. Ejecutar `herramientas/revisar_anotaciones.py acuerdo` como indica el README de calibración. No hay todavía una medida real ni un acuerdo colectivo.
 
 ### T02 · Ficha de cada vídeo y revisión de la variabilidad (P1)
 
@@ -61,25 +68,29 @@ Completar en `ESTADO.md`, para cada vídeo, el escenario y sus condiciones: luga
 
 **Hecha cuando:** la tabla está completa y está decidido si hace falta grabar más.
 
+**Resultado:** fichas completas en [`docs/fichas_videos.md`](docs/fichas_videos.md) y 120 muestras registradas en [`docs/revision_videos.csv`](docs/revision_videos.csv). Hay interior/exterior, distancias aparentes, movimiento, distintas orientaciones, luz y oclusiones. No hace falta repetir ahora un escenario para empezar; reservar material complementario si al depurar se necesitan más originales y grabar el circuito real para el Bloque 3.
+
 ### T03 · Extraer fotogramas en JupyterHub (P1)
 
-Subir los vídeos a `data_train/` en JupyterHub. Los zips se descomprimen con `unzip` desde el terminal, porque el panel no admite carpetas. Después, ejecutar `video2frames.ipynb` con `INTERVAL = 24`, que da ~813 imágenes (ver `ESTADO.md`).
+**Extracción realizada localmente:** 808 imágenes con `INTERVAL = 24`, resolución original y calidad JPEG 95. Están organizadas en [`ANOTACION/`](ENTREGA%201/WEEK1/ANOTACION/README.md). `video2frames.ipynb` comparte el extractor reproducible y se ha ejecutado para comprobar la integridad. `manifest.csv` y `videos.json` conservan procedencia, metadatos y SHA-256.
+
+**Pendiente:** importar a JupyterHub. Crear el ZIP con `python herramientas/empaquetar_anotacion.py ../fotogramas_pids.zip`, subirlo a `/workspace` y descomprimir en un destino vacío. El ZIP ya contiene `data_train/ROBOMASTER_VIDEO_XX/{images,labels}`, sin la capa de lotes. No se ha accedido todavía a JupyterHub.
 
 **Hecha cuando:** existen `data_train/ROBOMASTER_VIDEO_XX/images` y `labels` para los 10 vídeos, y el zip con las imágenes está compartido con el grupo para anotar.
 
 ### T04–T08 · Anotar los lotes A–E (P1)
 
-Cada lote son dos vídeos, más o menos un quinto del trabajo de anotación: lo ideal es que cada integrante coja uno. Se anota con `labelImg` siguiendo los criterios de T01:
+Cada integrante tiene asignado un lote de dos vídeos, como indica la tabla. Las carpetas y el README de cada lote están en `ENTREGA 1/WEEK1/ANOTACION/`. Se anota con `labelImg` siguiendo los criterios de T01:
 - *View* → *Single Class Mode*
 - Formato **PascalVOC**
 - Clase `robot`
 - *Open Dir* sobre `images` y *Change Save Dir* sobre `labels`
 
-**Hecha cuando:** `python herramientas/revisar_anotaciones.py validar ../data_train` no da errores en el lote y el lote está de vuelta en JupyterHub.
+**Hecha cuando:** `python herramientas/revisar_anotaciones.py validar "ENTREGA 1/WEEK1/ANOTACION/<tu-lote>"` no da errores y el lote anotado está de vuelta en JupyterHub. Las carpetas `labels/` tienen solo `.gitkeep` hasta empezar: no hay XML negativos creados sin revisar imágenes.
 
 ### T09 · Copia de seguridad del dataset anotado (P1)
 
-Comprimir `data_train/` en JupyterHub (`zip -r`), descargarlo y guardarlo en la nube compartida del grupo. Los `.xml` de las etiquetas pesan poco: versionarlos también en el repo (`ENTREGA 1/WEEK1/labels/`). Las imágenes no se suben al repo (ver `AGENTS.md`).
+Comprimir `data_train/` en JupyterHub (`zip -r`), descargarlo y guardarlo en la nube compartida del grupo. Versionar también los `.xml` en el `labels/` de su secuencia dentro de `ANOTACION/<tu-lote>/`. Los originales ya se versionan por autorización de Javier (ver `AGENTS.md`); no se suben aumentos ni MP4 sueltos.
 
 **Hecha cuando:** hay una copia fuera de JupyterHub y las etiquetas están en `main`.
 

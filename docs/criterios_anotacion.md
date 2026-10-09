@@ -1,8 +1,8 @@
 # Criterios de anotación
 
-> **Estado: propuesta (tarea T01).** Hay que revisarla y aprobarla entre los cinco antes de empezar a anotar (T04–T08). Lo que esté por decidir aparece en la [sección 7](#7-decisiones-que-tiene-que-tomar-el-grupo).
+> **Estado: criterios operativos v1 preparados por Javier (09/10/2026).** Se adoptan las opciones de la sección 7 para preparar los lotes. T01 sigue **en curso**: falta la revisión de los otros cuatro integrantes y anotar la calibración común para medir el acuerdo. No se ha registrado una aprobación colectiva ni un IoU medido.
 
-Este documento parte de **lo que se ve en nuestros 10 vídeos** (se revisaron 60 fotogramas repartidos entre todos) y de **cómo usan las etiquetas los notebooks** de la asignatura. Cada regla lleva su justificación, porque en la memoria se valora sobre todo eso.
+Este documento parte de **lo que se ve en nuestros 10 vídeos** y de **cómo usan las etiquetas los notebooks** de la asignatura. En esta revisión se han inspeccionado 120 muestras (12 por vídeo), registradas en [`revision_videos.csv`](revision_videos.csv). Los 20 originales comunes de calibración están ya seleccionados en [`ANOTACION/calibracion`](../ENTREGA%201/WEEK1/ANOTACION/calibracion/README.md). Cada regla lleva su justificación para la memoria.
 
 Los ejemplos se citan como `Vxx ~mm:ss`, es decir, vídeo y segundo aproximado.
 
@@ -14,7 +14,7 @@ Los ejemplos se citan como `Vxx ~mm:ss`, es decir, vídeo y segundo aproximado.
 |---|---|
 | R1 | Una sola clase: **`robot`**, en minúsculas. Vale cualquier RoboMaster real, con cualquier color de LED, orientación o equipo. |
 | R2 | **No** se anotan nuestro propio cañón (naranja, abajo en el centro), los reflejos en el suelo, los robots que salen en pantallas o carteles, ni nada que no sea un RoboMaster. |
-| R3 | La caja va **ajustada** a lo visible del robot: chasis, ruedas, gimbal y lanzador. **Sin antenas**, sin sombra, sin reflejo y sin el halo de los LED. Tolerancia de ±2 px. |
+| R3 | La caja va **ajustada** a lo visible del robot: chasis, ruedas, gimbal y lanzador. **Sin antenas**, sin sombra, sin reflejo y sin el halo de los LED. Procurar una precisión de ±2 px, usando zoom en objetos pequeños. |
 | R4 | **Oclusión:** solo la parte visible. Se anota si se reconoce el robot y se ve aproximadamente un **30 %** o más. Si se ve menos de la mitad, se marca `difficult`. |
 | R5 | **Cortado por el borde:** se aplica el mismo umbral y la caja llega hasta el borde. Los robots muy cercanos que llenan la imagen también se anotan. |
 | R6 | **Lejanos:** se anotan todos los reconocibles con al menos **10 px** de lado (usar el zoom). Si miden **menos de 30 px de ancho**, se marcan `difficult`. |
@@ -36,7 +36,7 @@ Todos los vídeos son de **1280x720 a 30 fps** y la cámara va a ras de suelo (e
 | Vestíbulo con suelo de granito pulido, con motos expuestas | V01, V07 | Reflejos muy marcados de los robots y de las luces en el suelo, contraluz de las cristaleras, motos y gente de fondo |
 | Vestíbulo con suelo amarillo y verde | V06, V08 | Suelo brillante y luces de colores. En V06 la cámara va muy inclinada y movida |
 | Aula con sillas | V02, V10 | Robots detrás o debajo de las patas de las sillas, piernas en primer plano |
-| Laboratorio de paredes blancas | V03 | Varios robots juntos que se tapan entre sí, desenfoque de movimiento |
+| Aula de paredes blancas, mesas y sillas | V03 | Varios robots juntos que se tapan entre sí, desenfoque de movimiento |
 | Pasillo largo | V05 | Robots muy lejanos al fondo y robots muy cercanos en los que se ven las antenas |
 | Exterior soleado | V04, V09 | Sombras duras, robots muy cercanos que llenan la imagen, robots entre piernas de gente |
 
@@ -61,8 +61,8 @@ Estos detalles del código condicionan las reglas:
 | Un robot que esté en la imagen **sin caja** se aprende como «fondo» | Se penaliza a la red por detectarlo. Por eso hay que anotar todo lo que sea reconocible (R4–R7), y los fotogramas con robots no anotables se revisan en la depuración (T13) |
 | `parse_annotations` solo carga las imágenes **que tienen `.xml`** | Una imagen sin robots y sin `.xml` se pierde, y con ella el ejemplo negativo. De ahí la R9 |
 | Las coordenadas se leen con `int()` y torchvision **falla con cajas de ancho o alto 0** | Un clic sin arrastrar puede romper el entrenamiento entero. El script de validación lo detecta |
-| `data_aug.ipynb` usa `min_visibility=0.3` y `min_area=100` | Tras un recorte, las cajas con menos del 30 % visible o menos de 100 px² se descartan. Nuestro umbral del 30 % (R4/R5) y el mínimo de 10 px (R6) coinciden con esos valores, así que los datos aumentados siguen el mismo criterio que los originales |
-| Faster R-CNN (`faster_rcnn_v1`) reescala las imágenes de 720p con un factor de ~1,04, y su *anchor* más pequeño es de 32 px | Los robots de menos de ~30 px quedan por debajo del *anchor* mínimo y se detectan peor. Por eso conviene marcarlos (R6) para medirlos aparte |
+| `data_aug.ipynb` usa `min_visibility=0.3` y `min_area=100` | Son filtros geométricos sobre cajas transformadas: no miden qué porcentaje del robot real está ocluido. Un área de 100 px² tampoco equivale a exigir 10 px en ambos lados (5×20 también tiene área 100). El umbral de anotación es independiente y deberá comprobarse otra vez tras aumentar los datos |
+| El modelo base es `faster_rcnn_v1` y permite otros detectores | El ancho de 30 px es un umbral operativo de revisión, no una garantía de detectabilidad ni un límite impuesto por un anchor. La dificultad real se medirá con nuestros datos |
 
 ---
 
@@ -102,7 +102,7 @@ Estos detalles del código condicionan las reglas:
 - **Antenas fuera:** son líneas finas que solo se ven de cerca (`V05 ~0:24`) y desaparecen con la distancia (`V05 ~0:01`). Si se incluyeran, el borde superior de la caja dependería de la distancia y no del robot, y añadirían mucho fondo. Además desplazarían el centro de la caja hacia arriba, y en el Bloque 3 ese centro es el punto al que apuntaremos.
 - **Cañón dentro:** es grueso, se ve a cualquier distancia y forma parte de la silueta. Cortarlo obligaría a decidir «a ojo» dónde termina el robot, que es justo lo que genera inconsistencias.
 - **Reflejo y halo fuera:** en suelos pulidos el reflejo prolonga el robot hacia abajo. Incluirlo agrandaría las cajas solo en algunos escenarios y sesgaría la distribución de tamaños del EDA.
-- **±2 px:** la red aprende a dibujar las cajas exactamente como las dibujamos nosotros. En un robot lejano de 30x25 px, un desfase de 3 px en horizontal y otros 3 en vertical deja el IoU en torno a 0,66.
+- **±2 px como objetivo de precisión:** en una caja de 30×25 px, desplazar 3 px en ambos ejes deja el IoU en torno a 0,66. Hay que usar zoom; no se puede garantizar esa tolerancia en bordes borrosos y se registra el caso como difícil.
 
 ### R4. Oclusión: robots tapados
 
@@ -115,17 +115,18 @@ Estos detalles del código condicionan las reglas:
 
 **Por qué.**
 - La red solo puede aprender lo que ve, y en el Bloque 3 solo se puede acertar a la parte visible del robot. Imaginar la parte tapada da resultados distintos según quién anote.
-- El 30 % coincide con el `min_visibility=0.3` de `data_aug.ipynb` (sección 2.2).
+- El 30 % es una estimación visual y un criterio operativo para no anotar fragmentos irreconocibles. No es una medida exacta ni equivale al `min_visibility` del aumento (sección 2.2). Si la estimación es dudosa, se lleva a calibración o a casos dudosos.
 - En el Bloque 3 los robots estarán detrás de obstáculos fijos, así que nos interesa que la red los detecte aunque estén medio tapados (`V02 ~0:24`, `V09 ~0:44`).
 
 ### R5. Robots cortados por el borde de la imagen
 
 **Regla.**
-- Se aplica el mismo umbral que en R4 (reconocible y un 30 % visible o más), y la caja llega **hasta el borde** (`xmin = 0`, `xmax = 1280`, etc.). labelImg marca automáticamente el campo `truncated`.
-- Los robots **muy cercanos** que llenan media imagen se anotan siempre que se reconozcan (`V04 ~0:52`, `V09 ~0:23`), aunque solo se vea el gimbal con el cañón (`V09 ~0:34`).
+- Se aplica el mismo umbral que en R4 (reconocible y aproximadamente un 30 % visible o más), y la caja llega **hasta el límite de la imagen permitido por labelImg**. No dibujar fuera de ella. Comprobar en el XML si aparece `truncated`; no dar por hecho que todas las versiones o formas de guardar lo generan igual.
+- Si está cortado, marcar `difficult` cuando se vea menos de la mitad. No confundir truncamiento con oclusión interna.
+- Los robots **muy cercanos** que llenan media imagen se anotan si se reconocen y cumplen el mismo criterio de visibilidad, sin inventar un chasis fuera de la imagen. Si solo aparece un fragmento cuyo porcentaje no se puede estimar, registrarlo como caso dudoso y resolverlo en grupo.
 
 **Por qué.**
-- Un rival a medio metro es justo el caso más importante en una partida, y si no se anota la red aprende a ignorarlo.
+- Los rivales muy próximos también deben estar representados; la distancia física no se puede medir en metros a partir de estas imágenes sin calibración.
 - Al borde de la imagen entran y salen robots continuamente: es una situación normal, no un error.
 
 ### R6. Robots lejanos y pequeños
@@ -137,8 +138,8 @@ Estos detalles del código condicionan las reglas:
 
 **Por qué.**
 - **Dejar un robot pequeño sin caja enseña a la red que eso es fondo.** Es mejor anotarlo y dejar que aprenda.
-- Los 10 px coinciden con el `min_area=100` de `data_aug.ipynb`. Por debajo no se distingue un robot de una mancha, y anotarlo sería adivinar.
-- Los 30 px corresponden al *anchor* más pequeño de Faster R-CNN (sección 2.2). Marcarlos permite medir en el EDA y en la evaluación cuánto empeora la red con los robots lejanos, que es un análisis que encaja muy bien en la memoria.
+- Los 10 px son un umbral operativo de calidad para esta resolución: no garantizan reconocimiento. Exigir 10 px en ambos lados implica un área mínima de 100 px²; el recíproco es falso. El aumento necesita una revisión posterior para mantener R6.
+- Los 30 px facilitan localizar las cajas pequeñas y revisar su precisión de forma consistente. No se deduce su rendimiento del tamaño de un anchor: se analiza en el EDA y en la evaluación.
 - En el pasillo (`V05`) y en el aula (`V10`) hay muchos robots de 20 a 40 px: es uno de los rasgos de nuestro dataset.
 
 ### R7. Desenfoque de movimiento
@@ -168,7 +169,7 @@ Estos detalles del código condicionan las reglas:
 **Por qué.**
 - `parse_annotations` ignora las imágenes que no tienen `.xml`, así que sin él se pierden los ejemplos negativos.
 - Esas imágenes enseñan a la red a **no** detectar robots en el fondo: sillas, piernas, motos o nuestro cañón.
-- Un 5–10 % de imágenes negativas es razonable. Saldrán solas de los vídeos, no hay que buscarlas.
+- Medir la proporción real de negativos en el EDA. No inventar negativos ni eliminar imágenes para alcanzar un porcentaje predeterminado.
 
 ### R10. Regla de oro para los casos dudosos
 
@@ -188,8 +189,8 @@ No se usa el contexto de los fotogramas anteriores o posteriores para adivinar.
 
 Antes de empezar cada lote:
 
-1. **Open Dir** → `data_train/ROBOMASTER_VIDEO_XX/images`.
-2. **Change Save Dir** → `data_train/ROBOMASTER_VIDEO_XX/labels`. Hay que comprobarlo **en cada vídeo**: es el error más frecuente.
+1. **Open Dir** → `ENTREGA 1/WEEK1/ANOTACION/<tu-lote>/ROBOMASTER_VIDEO_XX/images` (o la secuencia importada en `data_train/`).
+2. **Change Save Dir** → su carpeta hermana `labels`. Hay que comprobarlo **en cada vídeo**. Para la calibración, usar las imágenes comunes y tu carpeta personal de etiquetas, como indica su README.
 3. **View → Single Class Mode**. La primera caja pide el nombre: `robot`.
 4. **View → Auto Save Mode**, para no perder trabajo al pasar de imagen.
 5. Bajo el botón *Save* debe poner **PascalVOC**. Si pone otro formato, hay que pulsarlo hasta que lo ponga.
@@ -209,19 +210,16 @@ Atajos útiles:
 ## 5. Proceso para que las anotaciones sean consistentes
 
 1. **Ronda de calibración** (cierra la tarea T01, unos 30 minutos por persona):
-   - Se eligen 20 fotogramas comunes, dos por vídeo, incluidos los casos difíciles citados en la sección 2.1.
-   - Cada persona los anota **por su cuenta** en su propia carpeta (`calibracion/<nombre>/`).
-   - Se calcula el acuerdo entre todos:
-     ```bash
-     python herramientas/revisar_anotaciones.py acuerdo calibracion/javier calibracion/alejandro calibracion/monica calibracion/pedro calibracion/daniel
-     ```
-   - **Objetivo:** un IoU medio de 0,80 o más entre parejas, y casi ningún robot anotado por una persona pero no por otra.
+   - Ya hay 20 fotogramas comunes, dos por vídeo, con nombres únicos y procedencia. Ver [`calibracion/README.md`](../ENTREGA%201/WEEK1/ANOTACION/calibracion/README.md) y `seleccion.csv`.
+   - Cada persona los anota **por su cuenta**, sin copiar cajas de otra, en `calibracion/<su-rama>/labels/`.
+   - Se ejecuta el comando `acuerdo` para las cinco carpetas que figura en ese README.
+   - **Objetivo:** IoU medio de cada pareja ≥ 0,80, comparando las mismas veinte imágenes, y cero robots sin emparejar con IoU ≥ 0,50. Si no se cumple, discutir discrepancias y repetir. Las imágenes sin robots cuentan en la cobertura de la ronda, pero no aportan una caja al IoU.
    - Las imágenes que el script marca se comentan en grupo, y si alguna regla se interpreta de forma distinta, se aclara en este documento.
    - Este dato (el acuerdo entre anotadores antes y después de la calibración) es una justificación muy sólida para la memoria.
 2. **Anotación por lotes** (T04–T08), siguiendo la chuleta de la sección 1.
 3. **Validación automática** antes de dar un lote por terminado:
    ```bash
-   python herramientas/revisar_anotaciones.py validar ../data_train
+   python herramientas/revisar_anotaciones.py validar "ENTREGA 1/WEEK1/ANOTACION/A_javier-saguar"
    ```
    Comprueba lo siguiente:
    - que no haya imágenes sin `.xml` ni `.xml` sin imagen;
@@ -238,22 +236,22 @@ Atajos útiles:
 
 ## 6. Qué contar en la memoria
 
-- La **tabla de reglas** de la sección 1 y la justificación de las que no son obvias: las antenas fuera, el umbral del 30 % y por qué coincide con `data_aug`, el mínimo de 10 px, `difficult` por debajo de 30 px, y por qué es mejor no poner caja que poner una dudosa.
+- La **tabla de reglas** de la sección 1 y su justificación: antenas fuera, visibilidad aproximada del 30 %, mínimo de 10 px, `difficult` por debajo de 30 px y resolución de dudas. Distinguir los criterios visuales de los filtros geométricos del aumento.
 - El **acuerdo entre anotadores** medido en la calibración.
-- Las cifras del validador: robots por imagen, porcentaje de `difficult`, porcentaje de imágenes negativas y robots cortados por el borde. Enlazan directamente con el EDA (T11–T12).
+- Las cifras del validador: imágenes, robots, `difficult` y negativos por secuencia. Añadir en el EDA el análisis de truncamiento si se conserva ese campo. Los notebooks base ignoran `difficult` en entrenamiento y mAP: habrá que adaptar la evaluación si se quiere medirlo aparte.
 - Los casos dudosos más representativos y qué se decidió con ellos.
 
 ---
 
-## 7. Decisiones que tiene que tomar el grupo
+## 7. Opciones adoptadas para la versión operativa
 
-La opción recomendada va en negrita. Cualquier cambio hay que trasladarlo a la chuleta y al script (las constantes `LADO_MINIMO` y `LADO_DIFICIL`).
+Javier adopta las siguientes opciones para preparar la anotación. El resto del grupo debe revisarlas y comprobarlas en la calibración. Cualquier cambio se traslada a la chuleta y al script (`LADO_MINIMO`, `LADO_DIFICIL`). **T01 no se da por terminada hasta completar esa revisión y medir el acuerdo.**
 
-| Decisión | Recomendación | Alternativa | Qué cambia |
+| Decisión | Opción operativa | Alternativa para discutir | Qué cambia |
 |---|---|---|---|
 | Antenas | **Fuera** | Dentro | Con las antenas dentro, el tamaño de la caja depende de la distancia y el centro sube |
 | Cañón | **Dentro** | Fuera | Dejarlo fuera obliga a recortar el robot por la mitad, de forma poco consistente |
 | Visibilidad mínima | **~30 % y reconocible** | 50 % | Con un 50 % hay más robots sin anotar que la red aprende como fondo |
 | Tamaño mínimo | **10 px** | 15–20 px | Si se sube, se pierden robots lejanos del pasillo y del aula |
-| `difficult` | **Ancho < 30 px, menos del 50 % visible o muy movido** | No usarlo | Sin `difficult` no se puede analizar por separado dónde falla la red |
+| `difficult` | **Ancho < 30 px, menos del 50 % visible o muy movido** | No usarlo | Conservarlo permite un análisis posterior; los notebooks base todavía no separan estos casos |
 | Fotogramas con un robot irreconocible | **Apuntarlos y decidir en T13 (probablemente eliminarlos)** | Anotarlos igualmente | Anotarlos introduce cajas que nadie dibuja igual |

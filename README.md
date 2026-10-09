@@ -49,7 +49,12 @@ El proyecto se divide en tres bloques, cada uno con un hito:
 | `ENTREGA 1/WEEK1/DATASET PIDS/` | Vídeos grabados con el RoboMaster, un `.zip` por vídeo (`ROBOMASTER_VIDEO_01.zip` … `ROBOMASTER_VIDEO_10.zip`) |
 | `ENTREGA 1/WEEK1/` | `video2frames.ipynb`, `eda.ipynb` y `data_aug.ipynb` (Bloque 1) |
 | `ENTREGA 1/WEEK2/` | `train.ipynb` y `test.ipynb` (entrenamiento y evaluación) |
-| `docs/criterios_anotacion.md` | Criterios de anotación (propuesta pendiente de aprobar) |
+| `ENTREGA 1/WEEK1/ANOTACION/` | 808 originales en cinco lotes personales, manifiesto y 20 imágenes comunes de calibración |
+| `docs/criterios_anotacion.md` | Criterios operativos v1; revisión colectiva y calibración pendientes |
+| `docs/fichas_videos.md` | Fichas y revisión de variabilidad de los diez vídeos |
+| `docs/revision_videos.csv` | Las 120 muestras inspeccionadas para las fichas |
+| `herramientas/preparar_fotogramas.py` | Extracción reproducible desde los ZIP y comprobación de integridad |
+| `herramientas/empaquetar_anotacion.py` | ZIP de un lote o del conjunto para importar a JupyterHub |
 | `herramientas/revisar_anotaciones.py` | Validación de las etiquetas y acuerdo entre anotadores |
 | `ESTADO.md` | Estado actual del proyecto y datos de los vídeos |
 | `TAREAS.md` | Tareas por orden de prioridad y quién se encarga de cada una |
@@ -67,6 +72,8 @@ El proyecto se divide en tres bloques, cada uno con un hito:
 ### Reparto del trabajo
 
 Las tareas están en [`TAREAS.md`](TAREAS.md), ordenadas por prioridad. Cada integrante se asigna las que vaya a hacer escribiendo su nombre en la columna *Responsable*.
+
+Los [lotes de anotación](ENTREGA%201/WEEK1/ANOTACION/README.md) están preparados en `javier-saguar`: Javier (01–02, 157 imágenes), Alejandro (03–04, 158), Mónica (05–06, 168), Pedro (07–08, 179) y Daniel (09–10, 146). Antes de anotar los lotes, completar la [calibración común](ENTREGA%201/WEEK1/ANOTACION/calibracion/README.md). La extracción se ha ejecutado localmente; la importación a JupyterHub queda pendiente.
 
 ### Reglas prácticas
 

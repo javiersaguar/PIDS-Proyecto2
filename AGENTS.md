@@ -37,6 +37,7 @@ ENTREGA 1/
 
 - GitHub rechaza ficheros de más de 100 MB y avisa a partir de 50 MB. Los vídeos se suben comprimidos de uno en uno para no superar ese límite.
 - No se suben vídeos sueltos, carpetas `data_train/` ni imágenes aumentadas sin acordarlo antes con el grupo.
+- Excepción autorizada por Javier el 09/10/2026: los fotogramas originales de los diez vídeos se versionan en `ENTREGA 1/WEEK1/ANOTACION/`, organizados en lotes personales. No se incluyen aumentos ni MP4 descomprimidos.
 - Nunca se versionan credenciales (JupyterHub, wifi del RoboMaster, tokens).
 
 ## Notebooks
