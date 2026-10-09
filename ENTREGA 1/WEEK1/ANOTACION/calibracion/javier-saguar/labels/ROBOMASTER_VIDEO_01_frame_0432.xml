@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>ROBOMASTER_VIDEO_01_frame_0432.jpg</filename>
+	<path>C:\Users\Javier\PIDS-Proyecto2\ENTREGA 1\WEEK1\ANOTACION\calibracion\images\ROBOMASTER_VIDEO_01_frame_0432.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>517</xmin>
+			<ymin>265</ymin>
+			<xmax>593</xmax>
+			<ymax>329</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>879</xmin>
+			<ymin>265</ymin>
+			<xmax>948</xmax>
+			<ymax>322</ymax>
+		</bndbox>
+	</object>
+</annotation>
