@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>frame_0576.jpg</filename>
+	<path>C:\Users\Javier\PIDS-Proyecto2\ENTREGA 1\WEEK1\ANOTACION\A_javier-saguar\ROBOMASTER_VIDEO_02\images\frame_0576.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>368</xmin>
+			<ymin>95</ymin>
+			<xmax>478</xmax>
+			<ymax>210</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>1</difficult>
+		<bndbox>
+			<xmin>610</xmin>
+			<ymin>36</ymin>
+			<xmax>1055</xmax>
+			<ymax>490</ymax>
+		</bndbox>
+	</object>
+</annotation>
