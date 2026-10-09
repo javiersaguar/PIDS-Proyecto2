@@ -5,7 +5,7 @@ Asignación: 158 imágenes originales. Estado: pendiente de anotación.
 - [ROBOMASTER_VIDEO_03/images](ROBOMASTER_VIDEO_03/images/): 75 imágenes; guardar los XML en [ROBOMASTER_VIDEO_03/labels](ROBOMASTER_VIDEO_03/labels/).
 - [ROBOMASTER_VIDEO_04/images](ROBOMASTER_VIDEO_04/images/): 83 imágenes; guardar los XML en [ROBOMASTER_VIDEO_04/labels](ROBOMASTER_VIDEO_04/labels/).
 
-Seguir las [instrucciones comunes](../README.md) y completar la [calibración](../calibracion/README.md).
+Seguir la [guía de anotación](../../../../docs/guia_anotacion.md), las [instrucciones comunes](../README.md) y completar la [calibración](../calibracion/README.md).
 
 Validar desde la raíz:
 
