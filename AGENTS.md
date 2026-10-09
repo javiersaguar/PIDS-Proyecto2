@@ -16,8 +16,19 @@ En este repositorio **solo figuran como autores los cinco integrantes del grupo*
 - `main` es la rama por defecto y recoge el trabajo común del grupo.
 - Cada integrante tiene su rama personal: `javier-saguar`, `alejandro-cuevas`, `monica-fernandez`, `pedro-orrego` y `daniel-naval`. Cada uno trabaja solo en la suya.
 - No se hace `push --force` a `main` ni a la rama de otro integrante. Lo que se une a `main` se acuerda antes en el grupo.
-- Excepción: `TAREAS.md` y `ESTADO.md` se editan directamente en `main` para asignarse tareas y actualizar su estado (ver `TAREAS.md`).
+- Los cambios se suben a la rama personal y se integran en `main` mediante una **pull request (PR)**. Esto también se aplica a `TAREAS.md` y `ESTADO.md`; sustituye la indicación anterior de editarlos directamente en `main`.
 - Mensajes de commit en español y en imperativo (p. ej. `Añade análisis de tamaño de bounding boxes`).
+
+## Pull requests y seguimiento del trabajo
+
+Trabajamos con PRs para conservar el hilo de las tareas, las decisiones y las revisiones.
+
+- Abrir una PR desde la rama personal hacia `main` por cada tarea o conjunto coherente de tareas. Si el trabajo aún está en curso, abrirla como borrador.
+- Escribir el título y la descripción en español. La descripción indica las tareas relacionadas (`T01`, `T02`…), el problema u objetivo, los cambios realizados, las comprobaciones y los pasos pendientes. No dar por terminada una tarea si falta trabajo del grupo o del laboratorio.
+- Al continuar el mismo trabajo, añadir commits a su PR y actualizar la descripción para reflejar el estado actual. No abrir otra PR para duplicar una que sigue abierta.
+- Registrar en la PR las decisiones y los resultados de la revisión. Mantener `TAREAS.md` y `ESTADO.md` coherentes con el trabajo e incluir enlaces a las PRs cuando ayuden a seguirlo.
+- Fusionar cuando Javier lo solicite expresamente o el grupo acuerde la integración. Abrir una PR o terminar una tarea no autoriza por sí solo su fusión. No integrar directamente mediante `push` a `main`, salvo una instrucción expresa para ese caso.
+- Al entregar el trabajo, indicar el enlace de la PR, qué se ha comprobado y cualquier pendiente. La regla de **sin coautores ni atribuciones a herramientas** también se aplica a las PRs.
 
 ## Estructura
 
