@@ -30,6 +30,9 @@ se asignan para planificar; la anotación todavía no ha empezado.
 Actualización del 10/10/2026 en `alejandro-cuevas`. T05 hecha: lote B anotado y
 validado sin errores. La calibración de Alejandro (T01) está subida.
 
+Actualización del 10/10/2026 en `monica-fernandez`. T06 hecha: lote C anotado y
+validado sin errores. La calibración de Mónica (T01) está subida ([PR #4](https://github.com/javiersaguar/PIDS-Proyecto2/pull/4)).
+
 ## Resumen
 
 | ID | Prioridad | Tarea | Depende de | Responsable | Estado |
@@ -39,7 +42,7 @@ validado sin errores. La calibración de Alejandro (T01) está subida.
 | T03 | P1 | 808 fotogramas extraídos (`INTERVAL = 24`); pendiente importar a JupyterHub | — | Javier Saguar | En curso |
 | T04 | P1 | Anotar el lote A (vídeos 01 y 02, 157 imágenes) | T01, T03 | Javier Saguar | Pendiente |
 | T05 | P1 | Anotar el lote B (vídeos 03 y 04, 158 imágenes) | T01, T03 | Alejandro Cuevas | Hecha |
-| T06 | P1 | Anotar el lote C (vídeos 05 y 06, 168 imágenes) | T01, T03 | Mónica Fernández | Pendiente |
+| T06 | P1 | Anotar el lote C (vídeos 05 y 06, 168 imágenes) | T01, T03 | Mónica Fernández | Hecha |
 | T07 | P1 | Anotar el lote D (vídeos 07 y 08, 179 imágenes) | T01, T03 | Pedro José Orrego | Pendiente |
 | T08 | P1 | Anotar el lote E (vídeos 09 y 10, 146 imágenes) | T01, T03 | Daniel Naval | Pendiente |
 | T09 | P1 | Copia de seguridad del dataset anotado | T04–T08 | — | Pendiente |
