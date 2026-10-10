@@ -3,7 +3,7 @@
 **808 imágenes originales**, extraídas el 09/10/2026 a 1280×720, una por cada 24
 fotogramas, sin transformaciones. JPEG con calidad 95: conversión desde el vídeo,
 sin reducir resolución. Ocupan aproximadamente 120,7 MiB. Los veinte duplicados de
-calibración no entran en ese total. Aún no hay anotaciones.
+calibración no entran en ese total. El estado de cada lote está en su README.
 
 | Lote / carpeta | Responsable | Vídeos | Imágenes |
 |---|---|---|---:|

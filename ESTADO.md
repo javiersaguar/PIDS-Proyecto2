@@ -10,7 +10,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 
 | Bloque | Estado | Hito |
 |---|---|---|
-| 1. Datos | Vídeos revisados y 808 originales extraídos en cinco lotes; anotación pendiente | Dataset de ~800 imágenes anotadas |
+| 1. Datos | Vídeos revisados y 808 originales extraídos en cinco lotes; anotación en curso | Dataset de ~800 imágenes anotadas |
 | 2. Entrenamiento | Sin empezar (los notebooks base ya están en `ENTREGA 1/WEEK2/`) | Modelo que detecta RoboMasters |
 | 3. Integración en el robot | Sin empezar | *Demo* en circuito |
 
@@ -20,7 +20,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 - Grabados **10 vídeos** con el RoboMaster (`ENTREGA 1/WEEK1/DATASET PIDS/`, un `.zip` por vídeo).
 - T02: metadatos comprobados y 120 muestras revisadas (doce por vídeo); fichas y revisión de variabilidad completas en [`docs/fichas_videos.md`](docs/fichas_videos.md).
 - Extracción local: **808 JPEG a 1280×720**, calidad 95, intervalo 24 y sin transformaciones. Todos los fotogramas anunciados por cada vídeo se han decodificado. El manifiesto registra procedencia y SHA-256 por imagen.
-- Cinco lotes asignados en [`ANOTACION/README.md`](ENTREGA%201/WEEK1/ANOTACION/README.md), con `images/` y `labels/` por vídeo. No hay XML todavía: falta anotar.
+- Cinco lotes asignados en [`ANOTACION/README.md`](ENTREGA%201/WEEK1/ANOTACION/README.md), con `images/` y `labels/` por vídeo. Lote B (T05) anotado: 158 XML, 262 robots.
 - T01: criterios operativos v1 revisados y veinte fotogramas comunes preparados. **Pendientes la revisión del grupo y las cinco anotaciones de calibración**; no se ha medido IoU ni se declara un acuerdo colectivo.
 - `video2frames.ipynb` adaptado y ejecutado para comprobar el dataset extraído. EDA, aumento, entrenamiento y test siguen siendo ejemplos de los profesores.
 

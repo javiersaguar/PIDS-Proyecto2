@@ -1,6 +1,7 @@
 # Lote B · Alejandro Cuevas
 
-Asignación: 158 imágenes originales. Estado: pendiente de anotación.
+Asignación: 158 imágenes originales. Estado: anotado y validado sin errores (10/10/2026):
+262 robots, 8 marcados como difficult y 6 imágenes sin robots.
 
 - [ROBOMASTER_VIDEO_03/images](ROBOMASTER_VIDEO_03/images/): 75 imágenes; guardar los XML en [ROBOMASTER_VIDEO_03/labels](ROBOMASTER_VIDEO_03/labels/).
 - [ROBOMASTER_VIDEO_04/images](ROBOMASTER_VIDEO_04/images/): 83 imágenes; guardar los XML en [ROBOMASTER_VIDEO_04/labels](ROBOMASTER_VIDEO_04/labels/).
