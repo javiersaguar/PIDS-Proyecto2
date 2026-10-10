@@ -31,6 +31,8 @@ robots, guárdala en PascalVOC sin objetos y comprueba que existe su XML.
 
 ## Cómo anotar
 
+**Guía paso a paso (configuración, reglas y errores comunes): [`docs/guia_anotacion.md`](../../../docs/guia_anotacion.md).**
+
 1. Completar primero la [calibración común](calibracion/README.md).
 2. Leer los [criterios de anotación](../../../docs/criterios_anotacion.md).
 3. En labelImg: `Open Dir` en `images/` de un vídeo y `Change Save Dir` en su

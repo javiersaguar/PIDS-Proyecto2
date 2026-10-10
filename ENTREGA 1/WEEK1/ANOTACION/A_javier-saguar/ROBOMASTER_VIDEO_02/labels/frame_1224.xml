@@ -1,0 +1,14 @@
+<annotation>
+	<folder>images</folder>
+	<filename>frame_1224.jpg</filename>
+	<path>C:/Users/Javier/PIDS-Proyecto2/ENTREGA 1/WEEK1/ANOTACION/A_javier-saguar/ROBOMASTER_VIDEO_02\images\frame_1224.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+</annotation>
