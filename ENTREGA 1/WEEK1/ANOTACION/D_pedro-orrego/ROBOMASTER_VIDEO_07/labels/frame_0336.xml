@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>frame_0336.jpg</filename>
+	<path>/home/pedrocrack05/UNIVERSIDAD/SEMESTRE VIII/PIDS/PIDS-Proyecto2/ENTREGA 1/WEEK1/ANOTACION/D_pedro-orrego/ROBOMASTER_VIDEO_07/images/frame_0336.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>584</xmin>
+			<ymin>228</ymin>
+			<xmax>761</xmax>
+			<ymax>425</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1058</xmin>
+			<ymin>249</ymin>
+			<xmax>1146</xmax>
+			<ymax>345</ymax>
+		</bndbox>
+	</object>
+</annotation>
