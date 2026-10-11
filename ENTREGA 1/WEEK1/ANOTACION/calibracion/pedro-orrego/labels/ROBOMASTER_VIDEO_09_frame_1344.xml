@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>ROBOMASTER_VIDEO_09_frame_1344.jpg</filename>
+	<path>/home/pedrocrack05/UNIVERSIDAD/SEMESTRE VIII/PIDS/PIDS-Proyecto2/ENTREGA 1/WEEK1/ANOTACION/calibracion/images/ROBOMASTER_VIDEO_09_frame_1344.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>258</xmin>
+			<ymin>538</ymin>
+			<xmax>492</xmax>
+			<ymax>715</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1122</xmin>
+			<ymin>534</ymin>
+			<xmax>1276</xmax>
+			<ymax>714</ymax>
+		</bndbox>
+	</object>
+</annotation>
