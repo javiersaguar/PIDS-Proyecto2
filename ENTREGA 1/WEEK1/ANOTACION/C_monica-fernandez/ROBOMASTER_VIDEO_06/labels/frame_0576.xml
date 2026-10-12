@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>frame_0576.jpg</filename>
+	<path>C:\Users\Usuario\OneDrive\Documentos\UNI\PIDS-Proyecto2\ENTREGA 1\WEEK1\ANOTACION\C_monica-fernandez\ROBOMASTER_VIDEO_06\images\frame_0576.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>921</xmin>
+			<ymin>186</ymin>
+			<xmax>1147</xmax>
+			<ymax>400</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>554</xmin>
+			<ymin>193</ymin>
+			<xmax>734</xmax>
+			<ymax>344</ymax>
+		</bndbox>
+	</object>
+</annotation>

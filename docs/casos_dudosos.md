@@ -19,3 +19,4 @@ Aquí se apunta todo fotograma que no encaje claramente en las reglas de [`crite
 | V10 | frame_0960.jpg | Daniel | Fotograma muy movido | Sin caja; revisar en T13 (probable eliminación) |
 | V10 | frame_1056.jpg | Daniel | Fotograma muy movido | Sin caja; revisar en T13 (probable eliminación) |
 | V10 | frame_1152.jpg | Daniel | Fotograma muy movido | Sin caja; revisar en T13 (probable eliminación) |
+| V03 | frame_1560.jpg | Javier | Fotograma muy movido: solo estelas moradas a la izquierda, irreconocibles | Sin caja; revisar en T13 (probable eliminación) |
