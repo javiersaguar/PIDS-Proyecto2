@@ -23,4 +23,16 @@
 			<ymax>361</ymax>
 		</bndbox>
 	</object>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>757</xmin>
+			<ymin>296</ymin>
+			<xmax>826</xmax>
+			<ymax>346</ymax>
+		</bndbox>
+	</object>
 </annotation>

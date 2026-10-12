@@ -14,13 +14,13 @@
 	<object>
 		<name>robot</name>
 		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
+		<truncated>1</truncated>
+		<difficult>1</difficult>
 		<bndbox>
-			<xmin>350</xmin>
-			<ymin>53</ymin>
-			<xmax>973</xmax>
-			<ymax>710</ymax>
+			<xmin>345</xmin>
+			<ymin>72</ymin>
+			<xmax>962</xmax>
+			<ymax>720</ymax>
 		</bndbox>
 	</object>
 </annotation>

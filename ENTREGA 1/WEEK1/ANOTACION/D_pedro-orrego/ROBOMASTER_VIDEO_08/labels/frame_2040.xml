@@ -1,7 +1,7 @@
 <annotation>
 	<folder>images</folder>
 	<filename>frame_2040.jpg</filename>
-	<path>/home/pedrocrack05/UNIVERSIDAD/SEMESTRE VIII/PIDS/PIDS-Proyecto2/ENTREGA 1/WEEK1/ANOTACION/D_pedro-orrego/ROBOMASTER_VIDEO_08/images/frame_2040.jpg</path>
+	<path>C:\Users\Javier\PIDS-Proyecto2\ENTREGA 1\WEEK1\ANOTACION\D_pedro-orrego\ROBOMASTER_VIDEO_08\images\frame_2040.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -15,36 +15,36 @@
 		<name>robot</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
-		<difficult>0</difficult>
+		<difficult>1</difficult>
 		<bndbox>
-			<xmin>349</xmin>
-			<ymin>218</ymin>
-			<xmax>539</xmax>
-			<ymax>367</ymax>
+			<xmin>374</xmin>
+			<ymin>223</ymin>
+			<xmax>528</xmax>
+			<ymax>368</ymax>
 		</bndbox>
 	</object>
 	<object>
 		<name>robot</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
-		<difficult>0</difficult>
+		<difficult>1</difficult>
 		<bndbox>
-			<xmin>560</xmin>
-			<ymin>243</ymin>
-			<xmax>647</xmax>
-			<ymax>314</ymax>
+			<xmin>570</xmin>
+			<ymin>246</ymin>
+			<xmax>644</xmax>
+			<ymax>306</ymax>
 		</bndbox>
 	</object>
 	<object>
 		<name>robot</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
-		<difficult>0</difficult>
+		<difficult>1</difficult>
 		<bndbox>
-			<xmin>800</xmin>
-			<ymin>236</ymin>
-			<xmax>887</xmax>
-			<ymax>309</ymax>
+			<xmin>812</xmin>
+			<ymin>242</ymin>
+			<xmax>882</xmax>
+			<ymax>298</ymax>
 		</bndbox>
 	</object>
 </annotation>
