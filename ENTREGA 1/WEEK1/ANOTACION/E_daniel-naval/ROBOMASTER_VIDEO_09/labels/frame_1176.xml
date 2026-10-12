@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>frame_1176.jpg</filename>
+	<path>C:\Users\Ferzuck\Documents\uni\PIDS\PIDS-Proyecto2\ENTREGA 1\WEEK1\ANOTACION\E_daniel-naval\ROBOMASTER_VIDEO_09\images\frame_1176.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>283</xmin>
+			<ymin>218</ymin>
+			<xmax>458</xmax>
+			<ymax>402</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>724</xmin>
+			<ymin>239</ymin>
+			<xmax>872</xmax>
+			<ymax>367</ymax>
+		</bndbox>
+	</object>
+</annotation>
