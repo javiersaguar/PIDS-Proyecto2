@@ -1,7 +1,7 @@
 <annotation>
 	<folder>images</folder>
 	<filename>frame_1704.jpg</filename>
-	<path>C:\Users\Usuario\OneDrive\Documentos\UNI\PIDS-Proyecto2\ENTREGA 1\WEEK1\ANOTACION\C_monica-fernandez\ROBOMASTER_VIDEO_05\images\frame_1704.jpg</path>
+	<path>C:\Users\alexc\OneDrive\Documentos\PIDS-Proyecto2\ENTREGA 1\WEEK1\ANOTACION\C_monica-fernandez\ROBOMASTER_VIDEO_05\images\frame_1704.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -15,7 +15,7 @@
 		<name>robot</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
-		<difficult>0</difficult>
+		<difficult>1</difficult>
 		<bndbox>
 			<xmin>420</xmin>
 			<ymin>261</ymin>
@@ -27,7 +27,7 @@
 		<name>robot</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
-		<difficult>0</difficult>
+		<difficult>1</difficult>
 		<bndbox>
 			<xmin>806</xmin>
 			<ymin>285</ymin>
