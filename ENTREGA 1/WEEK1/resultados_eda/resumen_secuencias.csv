@@ -1,0 +1,12 @@
+secuencia,escenario,imagenes,robots,difficult,negativas,max_robots,robots_por_imagen,pct_difficult,pct_negativas
+V01,"Vestíbulo, granito",82,151,43,2,3,1.84,28.5,2.4
+V02,Aula con sillas,75,129,43,7,3,1.72,33.3,9.3
+V03,Aula blanca,75,149,45,5,3,1.99,30.2,6.7
+V04,Exterior,83,121,17,1,3,1.46,14.0,1.2
+V05,Pasillo,75,170,18,1,3,2.27,10.6,1.3
+V06,"Vestíbulo, suelo de color",93,117,40,22,3,1.26,34.2,23.7
+V07,"Vestíbulo, granito",77,139,39,0,3,1.81,28.1,0.0
+V08,"Vestíbulo, suelo de color",102,196,65,0,3,1.92,33.2,0.0
+V09,Exterior,71,116,18,0,3,1.63,15.5,0.0
+V10,Aula con sillas,75,132,47,3,3,1.76,35.6,4.0
+Total,,808,1420,375,41,3,1.76,26.4,5.1
