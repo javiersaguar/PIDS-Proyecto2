@@ -61,7 +61,7 @@ revisión cruzada (T10) y revisar las conclusiones en grupo.
 | T11 | P2 | EDA base con `eda.ipynb` | T10 | Alejandro Cuevas | En curso |
 | T12 | P2 | Análisis exploratorio adicional | T11 | Alejandro Cuevas | En curso |
 | T13 | P2 | Depuración del dataset | T10, T11 | — | Pendiente |
-| T14 | P2 | Aumento de datos con `data_aug.ipynb` | T13 | — | Pendiente |
+| T14 | P2 | Aumento de datos con `data_aug.ipynb` | T13 | Javier Saguar | En curso |
 | T15 | P2 | Memoria: portada, introducción, recolección y anotación | T01, T02 | — | Pendiente |
 | T16 | P2 | Memoria: EDA, depuración y aumento de datos | T12, T13, T14 | — | Pendiente |
 | T17 | P2 | Memoria: reparto del trabajo, revisión final y PDF | T15, T16 | — | Pendiente |
@@ -151,6 +151,8 @@ Cuidado con no quitar todos los casos difíciles: el modelo fallaría en la real
 **Hecha cuando:** el dataset limpio está en JupyterHub, la copia de T09 está actualizada y el criterio está escrito.
 
 ### T14 · Aumento de datos con `data_aug.ipynb` (P2)
+
+**Estado a 12/10/2026 (rama `javier-saguar`):** `data_aug.ipynb` está reescrito y ejecutado con las 808 imágenes. Propone el reparto por vídeos (T18), justifica doce transformaciones y descarta siete, genera `data_train/` (483 originales y 1449 copias), `data_val/` y `data_test/`, y comprueba el resultado. Figuras y tablas en [`resultados_aug/`](ENTREGA%201/WEEK1/resultados_aug/README.md). **Falta** repetirlo tras la depuración (T13), ejecutarlo una vez en JupyterHub y acordar en grupo el reparto y las transformaciones.
 
 Revisar las transformaciones del notebook y decidir cuáles se quedan y cuáles no. Por ejemplo, el volteo horizontal tiene sentido; el vertical no, porque el robot nunca va boca abajo. Hay que **añadir al menos una nueva** y justificar tanto las que se mantienen como las que se descartan. El aumento se aplica **solo sobre los datos originales**, nunca sobre los ya aumentados.
 
