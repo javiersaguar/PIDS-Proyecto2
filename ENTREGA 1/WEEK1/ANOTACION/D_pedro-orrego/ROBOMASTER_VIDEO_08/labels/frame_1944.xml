@@ -17,10 +17,10 @@
 		<truncated>0</truncated>
 		<difficult>1</difficult>
 		<bndbox>
-			<xmin>210</xmin>
-			<ymin>183</ymin>
-			<xmax>396</xmax>
-			<ymax>340</ymax>
+			<xmin>232</xmin>
+			<ymin>196</ymin>
+			<xmax>374</xmax>
+			<ymax>334</ymax>
 		</bndbox>
 	</object>
 	<object>
@@ -29,22 +29,10 @@
 		<truncated>0</truncated>
 		<difficult>1</difficult>
 		<bndbox>
-			<xmin>908</xmin>
-			<ymin>206</ymin>
-			<xmax>1038</xmax>
-			<ymax>299</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>robot</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>1</difficult>
-		<bndbox>
-			<xmin>1076</xmin>
-			<ymin>224</ymin>
-			<xmax>1208</xmax>
-			<ymax>305</ymax>
+			<xmin>916</xmin>
+			<ymin>212</ymin>
+			<xmax>1034</xmax>
+			<ymax>296</ymax>
 		</bndbox>
 	</object>
 </annotation>

@@ -1,7 +1,7 @@
 <annotation>
 	<folder>images</folder>
 	<filename>frame_2184.jpg</filename>
-	<path>/home/pedrocrack05/UNIVERSIDAD/SEMESTRE VIII/PIDS/PIDS-Proyecto2/ENTREGA 1/WEEK1/ANOTACION/D_pedro-orrego/ROBOMASTER_VIDEO_08/images/frame_2184.jpg</path>
+	<path>C:\Users\Javier\PIDS-Proyecto2\ENTREGA 1\WEEK1\ANOTACION\D_pedro-orrego\ROBOMASTER_VIDEO_08\images\frame_2184.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -17,10 +17,10 @@
 		<truncated>0</truncated>
 		<difficult>1</difficult>
 		<bndbox>
-			<xmin>454</xmin>
-			<ymin>329</ymin>
-			<xmax>830</xmax>
-			<ymax>613</ymax>
+			<xmin>502</xmin>
+			<ymin>364</ymin>
+			<xmax>816</xmax>
+			<ymax>628</ymax>
 		</bndbox>
 	</object>
 	<object>
@@ -29,10 +29,10 @@
 		<truncated>0</truncated>
 		<difficult>1</difficult>
 		<bndbox>
-			<xmin>1108</xmin>
+			<xmin>1133</xmin>
 			<ymin>365</ymin>
-			<xmax>1256</xmax>
-			<ymax>464</ymax>
+			<xmax>1260</xmax>
+			<ymax>448</ymax>
 		</bndbox>
 	</object>
 </annotation>

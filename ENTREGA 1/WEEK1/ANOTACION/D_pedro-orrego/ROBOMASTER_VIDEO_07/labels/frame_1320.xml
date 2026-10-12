@@ -17,10 +17,22 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>624</xmin>
-			<ymin>278</ymin>
-			<xmax>751</xmax>
-			<ymax>411</ymax>
+			<xmin>632</xmin>
+			<ymin>291</ymin>
+			<xmax>734</xmax>
+			<ymax>403</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>1</difficult>
+		<bndbox>
+			<xmin>1</xmin>
+			<ymin>302</ymin>
+			<xmax>48</xmax>
+			<ymax>379</ymax>
 		</bndbox>
 	</object>
 </annotation>

@@ -15,3 +15,9 @@ Aquí se apunta todo fotograma que no encaje claramente en las reglas de [`crite
 | V02 | frame_0336.jpg … frame_0408.jpg | Javier | Sin robots a la vista (aula vacía o muy movido) | XML sin objetos |
 | V02 | frame_1224.jpg, frame_1248.jpg | Javier | Fotograma totalmente movido, sin robots reconocibles | Sin caja; revisar en T13 (probable eliminación) |
 | V03 | frame_1560.jpg | Javier | Fotograma muy movido: solo estelas moradas a la izquierda, irreconocibles | Sin caja; revisar en T13 (probable eliminación) |
+| V08 | frame_0480.jpg | Javier | Caja sobre una única estela blanca (x≈288-356, y≈262-294), sin cuerpo reconocible | Caja eliminada en la revisión del lote D |
+| V08 | frame_1944.jpg | Javier | Caja sobre estelas blancas finas (x≈1086-1176, y≈250-284), sin cuerpo reconocible | Caja eliminada en la revisión del lote D |
+| V08 | frame_2040.jpg | Javier | Caja sobre una mancha de luz blanca (x≈826-864, y≈262-296), sin cuerpo reconocible | Caja eliminada en la revisión del lote D |
+| V08 | frame_2184.jpg | Javier | Caja sobre estelas blancas (x≈1124-1212, y≈392-456), sin cuerpo reconocible | Caja eliminada en la revisión del lote D |
+| V07 | frame_1200.jpg | Javier | Solo se ve una rueda en el borde derecho (x>1190, y≈480-600): menos del 30 % del robot | Sin caja |
+| V07 | frame_0384.jpg | Javier | Mancha oscura con una luz en el borde izquierdo (x<80, y≈460-560), irreconocible | Sin caja |
