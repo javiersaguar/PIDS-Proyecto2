@@ -1,7 +1,7 @@
-<annotation verified="yes">
+<annotation>
 	<folder>images</folder>
 	<filename>frame_1104.jpg</filename>
-	<path>C:\Users\Ferzuck\Documents\uni\PIDS\PIDS-Proyecto2\ENTREGA 1\WEEK1\ANOTACION\E_daniel-naval\ROBOMASTER_VIDEO_09\images\frame_1104.jpg</path>
+	<path>C:\Users\Javier\PIDS-Proyecto2\ENTREGA 1\WEEK1\ANOTACION\E_daniel-naval\ROBOMASTER_VIDEO_09\images\frame_1104.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -11,4 +11,16 @@
 		<depth>3</depth>
 	</size>
 	<segmented>0</segmented>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>1</difficult>
+		<bndbox>
+			<xmin>1</xmin>
+			<ymin>290</ymin>
+			<xmax>168</xmax>
+			<ymax>690</ymax>
+		</bndbox>
+	</object>
 </annotation>
