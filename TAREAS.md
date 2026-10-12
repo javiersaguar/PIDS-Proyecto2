@@ -33,6 +33,17 @@ validado sin errores. La calibración de Alejandro (T01) está subida.
 Actualización del 10/10/2026 en `monica-fernandez`. T06 hecha: lote C anotado y
 validado sin errores. La calibración de Mónica (T01) está subida ([PR #4](https://github.com/javiersaguar/PIDS-Proyecto2/pull/4)).
 
+Actualización del 12/10/2026 en `alejandro-cuevas`. T11 y T12 en curso: `eda.ipynb`
+está adaptado y ejecutado con las 808 imágenes y 1420 robots. Incluye el EDA base y
+diez análisis propios en tres bloques: calidad de las etiquetas (acuerdo entre
+anotadores, perspectiva, solapamiento), composición (robots por imagen, centros,
+forma y anclas, diversidad visual) y candidatas para la depuración (nitidez, casi
+duplicados, línea temporal). Cada análisis tiene su interpretación y su decisión
+para T13, T14, T18, T19 o T20. Figuras, tablas y pies propuestos en
+`ENTREGA 1/WEEK1/resultados_eda/`. Falta volver a ejecutarlo cuando termine la
+revisión cruzada (T10) y revisar las conclusiones en grupo.
+`metricas_imagenes.csv` es la entrada de T13.
+
 ## Resumen
 
 | ID | Prioridad | Tarea | Depende de | Responsable | Estado |
@@ -47,8 +58,8 @@ validado sin errores. La calibración de Mónica (T01) está subida ([PR #4](htt
 | T08 | P1 | Anotar el lote E (vídeos 09 y 10, 146 imágenes) | T01, T03 | Daniel Naval | Pendiente |
 | T09 | P1 | Copia de seguridad del dataset anotado | T04–T08 | — | Pendiente |
 | T10 | P2 | Revisión cruzada de las anotaciones | T04–T08 | — | Pendiente |
-| T11 | P2 | EDA base con `eda.ipynb` | T10 | — | Pendiente |
-| T12 | P2 | Análisis exploratorio adicional | T11 | — | Pendiente |
+| T11 | P2 | EDA base con `eda.ipynb` | T10 | Alejandro Cuevas | En curso |
+| T12 | P2 | Análisis exploratorio adicional | T11 | Alejandro Cuevas | En curso |
 | T13 | P2 | Depuración del dataset | T10, T11 | — | Pendiente |
 | T14 | P2 | Aumento de datos con `data_aug.ipynb` | T13 | — | Pendiente |
 | T15 | P2 | Memoria: portada, introducción, recolección y anotación | T01, T02 | — | Pendiente |
