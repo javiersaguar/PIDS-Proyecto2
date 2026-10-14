@@ -2,7 +2,7 @@
 
 Última actualización: 14/10/2026, desde la rama `javier-saguar`.
 
-**Fase actual:** Bloque 1 (recolección, anotación, análisis y depuración de datos), de cara a la **primera entrega** de la memoria. Los datos están listos para entrenar en JupyterHub.
+**Fase actual:** Bloque 1 (recolección, anotación, análisis y depuración de datos), de cara a la **primera entrega** de la memoria. **Bloque 1 terminado salvo los acuerdos de grupo (T01, T18)**: 808 imágenes anotadas y revisadas, 796 tras la depuración, con EDA y aumento hechos. Los datos están listos para entrenar en JupyterHub.
 
 Las tareas pendientes, por orden de prioridad y con su responsable, están en [`TAREAS.md`](TAREAS.md).
 
@@ -10,8 +10,8 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 
 | Bloque | Estado | Hito |
 |---|---|---|
-| 1. Datos | 808 imágenes anotadas y revisadas, 796 tras la depuración; EDA y aumento hechos | Dataset de ~800 imágenes anotadas |
-| 2. Entrenamiento | Sin empezar (los notebooks base ya están en `ENTREGA 1/WEEK2/`) | Modelo que detecta RoboMasters |
+| 1. Datos | Vídeos revisados y 808 originales extraídos en cinco lotes; anotación en curso | Dataset de ~800 imágenes anotadas |
+| 2. Entrenamiento | En preparación: `train.ipynb` y `test.ipynb` adaptados, sin ejecutar (T19, T20) | Modelo que detecta RoboMasters |
 | 3. Integración en el robot | Sin empezar | *Demo* en circuito |
 
 ## Hecho
