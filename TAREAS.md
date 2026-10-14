@@ -44,6 +44,11 @@ para T13, T14, T18, T19 o T20. Figuras, tablas y pies propuestos en
 revisión cruzada (T10) y revisar las conclusiones en grupo.
 `metricas_imagenes.csv` es la entrada de T13.
 
+Actualización del 14/10/2026 en `alejandro-cuevas`. T19 y T20 en curso, adelantadas
+mientras se hace T13: `train.ipynb` y `test.ipynb` están adaptados a nuestros datos,
+**sin ejecutar**. Falta entrenar en la GPU de JupyterHub cuando estén `data_train`,
+`data_val` y `data_test` y el reparto (T18) esté acordado.
+
 ## Resumen
 
 | ID | Prioridad | Tarea | Depende de | Responsable | Estado |
@@ -66,8 +71,8 @@ revisión cruzada (T10) y revisar las conclusiones en grupo.
 | T16 | P2 | Memoria: EDA, depuración y aumento de datos | T12, T13, T14 | — | Pendiente |
 | T17 | P2 | Memoria: reparto del trabajo, revisión final y PDF | T15, T16 | — | Pendiente |
 | T18 | P3 | Separar los datos en entrenamiento, validación y test | T14 | — | Pendiente |
-| T19 | P3 | Primer entrenamiento con `train.ipynb` | T18 | — | Pendiente |
-| T20 | P3 | Evaluación con `test.ipynb` (mAP y resultados cualitativos) | T19 | — | Pendiente |
+| T19 | P3 | Primer entrenamiento con `train.ipynb` | T18 | Alejandro Cuevas | En curso |
+| T20 | P3 | Evaluación con `test.ipynb` (mAP y resultados cualitativos) | T19 | Alejandro Cuevas | En curso |
 
 ## Detalle
 
@@ -180,3 +185,20 @@ Para después de la primera entrega:
 - **T18:** separar `data_train`, `data_val` y `data_test` por secuencias, para que no se filtren fotogramas casi iguales entre conjuntos.
 - **T19:** primer entrenamiento con `train.ipynb` (`faster_rcnn_v1`) en el entorno GPU de JupyterHub.
 - **T20:** evaluar con `test.ipynb` (mAP y resultados cualitativos).
+
+**Estado de T19 y T20 a 14/10/2026 (rama `alejandro-cuevas`):** los dos notebooks están
+adaptados y **sin ejecutar**.
+
+- `train.ipynb` elige el mejor modelo por el mAP de validación, calcula ese mAP en cada
+  época, entrena con o sin las copias `-aug` (`usar_aumento`) y separa los experimentos
+  en `models/<experimento>/`. Antes de entrenar comprueba que no falten imágenes, que no
+  haya cajas no válidas y que ningún vídeo esté en dos conjuntos. Guarda el historial
+  en `resultados_train/`.
+- `test.ipynb` da el mAP con y sin los `difficult` y por vídeo, cuenta aciertos,
+  detecciones falsas y robots perdidos con el umbral de confianza, dibuja la curva de
+  precisión y exhaustividad según el umbral, mide el tiempo por imagen y guarda las
+  imágenes con más errores en `resultados_test/`. Con `conjunto = 'val'` evalúa en
+  validación, que es donde se ajusta; test se mira una sola vez al final.
+
+**Hecha cuando:** hay un modelo entrenado en JupyterHub con su historial, el mAP en
+test con su interpretación, y la comparación con y sin aumento.
