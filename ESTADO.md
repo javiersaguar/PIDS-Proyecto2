@@ -10,7 +10,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 
 | Bloque | Estado | Hito |
 |---|---|---|
-| 1. Datos | Vídeos revisados y 808 originales extraídos en cinco lotes; anotación en curso | Dataset de ~800 imágenes anotadas |
+| 1. Datos | 808 imágenes anotadas y revisadas, 796 tras la depuración; falta cerrar T01 en grupo | Dataset de ~800 imágenes anotadas |
 | 2. Entrenamiento | En preparación: `train.ipynb` y `test.ipynb` adaptados, sin ejecutar (T19, T20) | Modelo que detecta RoboMasters |
 | 3. Integración en el robot | Sin empezar | *Demo* en circuito |
 
