@@ -24,7 +24,8 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 - T01: criterios v1 en [`docs/criterios_anotacion.md`](docs/criterios_anotacion.md), guía práctica en [`docs/guia_anotacion.md`](docs/guia_anotacion.md) y calibración de los cinco: IoU medio de 0,81 entre anotadores.
 - T11–T12: EDA completo en `eda.ipynb`, con figuras y tablas en `ENTREGA 1/WEEK1/resultados_eda/`.
 - T13: depuración. Se excluyen 12 imágenes (una con un robot sin caja y 11 casi duplicadas) y quedan **796**. Criterios en [`docs/depuracion.md`](docs/depuracion.md).
-- T14: `data_aug.ipynb` reparte por vídeos y genera **1908 imágenes de entrenamiento** (477 originales y 1431 copias), 147 de validación y 172 de test. Figuras en `ENTREGA 1/WEEK1/resultados_aug/`.
+- T14 y T18: `data_aug.ipynb` genera **3184 imágenes de entrenamiento** (nuestras 796 y 2388 copias). Validación (672) y test (718) son los conjuntos de otros grupos que da la asignatura, en `ENTREGA 1/WEEK2/DATOS_ASIGNATURA/`. Figuras en `ENTREGA 1/WEEK1/resultados_aug/`.
+- Bloque 3: material de la semana 3 en `ENTREGA 2/WEEK3/` (SDK del robot y demo por completar).
 - T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
 ## Datos de los vídeos
@@ -68,8 +69,7 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 ## Pendiente antes de entrenar
 
 - **T01:** cerrar los criterios en grupo. El borde superior del robot (gimbal y antenas) es donde más discrepamos.
-- **T18:** aceptar o cambiar el reparto propuesto: V01–V06 entrenamiento, V07 y V10 validación, V08 y V09 test.
-- **T03:** llevar el repositorio y los datos a JupyterHub y lanzar el entrenamiento, siguiendo [`docs/jupyterhub.md`](docs/jupyterhub.md).
+- **T03:** en JupyterHub, instalar `albumentations` y `pycocotools`, generar los datos y lanzar el entrenamiento, siguiendo [`docs/jupyterhub.md`](docs/jupyterhub.md).
 
 Después vienen el entrenamiento y la evaluación (T19, T20) y la memoria (T15–T17).
 
@@ -82,6 +82,7 @@ Después vienen el entrenamiento y la evaluación (T19, T20) y la memoria (T15�
 
 - **Anotaciones inconsistentes entre nosotros.** Por eso los criterios comunes (T01) van antes que nada.
 - **Justos de imágenes:** quedan 796 tras depurar, cuatro por debajo de las ~800 del objetivo. Si hace falta, hay prevista una grabación complementaria (T02).
+- **Criterios distintos en validación y test:** los anotaron otros grupos, sin `difficult` y quizá con otro criterio para antenas y robots cortados. Parte del error medido puede venir de ahí.
 - **Filtración entre conjuntos:** separar por secuencia y mantener sus aumentos en el mismo conjunto. Excluir las copias de calibración del entrenamiento como muestras adicionales.
 - **Perder datos en JupyterHub.** No se pueden borrar carpetas desde el panel y `rm -r` no tiene vuelta atrás. Las etiquetas están a salvo en `main` y `data_aug.ipynb` regenera el resto.
 - **Que el JupyterHub no esté disponible.** El servicio está deshabilitado por las mañanas en horas de docencia.

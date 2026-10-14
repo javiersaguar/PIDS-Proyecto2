@@ -70,6 +70,8 @@ ENTREGA 1/
 - GitHub rechaza ficheros de más de 100 MB y avisa a partir de 50 MB. Los vídeos se suben comprimidos de uno en uno para no superar ese límite.
 - No se suben vídeos sueltos, carpetas `data_train/` ni imágenes aumentadas sin acordarlo antes con el grupo.
 - Excepción autorizada por Javier el 09/10/2026: los fotogramas originales de los diez vídeos se versionan en `ENTREGA 1/WEEK1/ANOTACION/`, organizados en lotes personales. No se incluyen aumentos ni MP4 descomprimidos.
+- Excepción autorizada por Javier el 14/10/2026: los conjuntos de validación y test que da la asignatura se versionan en `ENTREGA 1/WEEK2/DATOS_ASIGNATURA/`, solo las imágenes con `.xml` y sin el campo `<path>`.
+- En `ENTREGA 2/WEEK3/connect.py` nunca se suben el SSID, la contraseña del wifi ni el número de serie del robot; `qrcode.png` y `serial_number.txt` están ignorados.
 - Nunca se versionan credenciales (JupyterHub, wifi del RoboMaster, tokens).
 
 ## Notebooks

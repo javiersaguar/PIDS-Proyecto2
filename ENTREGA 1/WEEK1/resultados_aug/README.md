@@ -3,10 +3,11 @@
 Figuras y tablas que genera [`data_aug.ipynb`](../data_aug.ipynb) (T14). Se
 sobrescriben cada vez que se ejecuta el notebook, así que **no se editan a mano**.
 Las cifras actuales corresponden a las etiquetas del 12/10/2026 **con la depuración
-(T13) aplicada**: 796 imágenes, de las que 477 son de entrenamiento.
+(T13) aplicada**: las 796 imágenes de nuestros diez vídeos son el entrenamiento, y
+validación y test son los conjuntos de la asignatura.
 
 Las imágenes aumentadas no están en el repositorio: el notebook las crea en
-`data_train/`, `data_val/` y `data_test/`, en la raíz, que Git ignora. Son 347 MB.
+`data_train/`, `data_val/` y `data_test/`, en la raíz, que Git ignora. Son unos 810 MB.
 
 ## Figuras
 
@@ -31,6 +32,6 @@ Para la memoria, que tiene un máximo de 10 páginas, bastan
 
 | | Imágenes | Robots | Robots perdidos | Relación de aspecto |
 |---|---:|---:|---:|---:|
-| Entrenamiento original | 477 | 827 | — | 1,11 |
-| Copias aumentadas | 1431 | 2466 | 0,6 % | 1,11 |
-| Aumentador del notebook original (simulado) | 1431 | 2141 | 13,7 % | 1,18 |
+| Entrenamiento original | 796 | 1399 | — | 1,11 |
+| Copias aumentadas | 2388 | 4167 | 0,7 % | 1,10 |
+| Aumentador del notebook original (simulado) | 2388 | 3606 | 14,1 % | 1,18 |

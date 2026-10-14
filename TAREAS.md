@@ -33,7 +33,11 @@ está hecho**, salvo lo que necesita al grupo o al laboratorio:
 - Hechas: anotación y revisión cruzada de los cinco lotes (T04–T08, T10), copia de
   seguridad en `main` (T09), depuración con 12 imágenes excluidas y 796 restantes
   (T13) y aumento regenerado con ella (T14).
-- Falta el grupo: cerrar los criterios (T01) y aceptar el reparto propuesto (T18).
+- Falta el grupo: cerrar los criterios (T01).
+- Reparto (T18): se entrena con nuestros diez vídeos y se valida y mide con los
+  conjuntos de otros grupos que da la asignatura.
+- Bloque 3: el material de la semana 3 está en `ENTREGA 2/WEEK3/`, con lo que hay que
+  hacer en su `README.md`.
 - Falta el laboratorio: llevar los datos a JupyterHub y lanzar el entrenamiento (T03,
   T19), siguiendo [`docs/jupyterhub.md`](docs/jupyterhub.md). Los notebooks de
   entrenamiento y test adaptados están en la PR #11 de Alejandro.
@@ -176,7 +180,7 @@ Cuidado con no quitar todos los casos difíciles: el modelo fallaría en la real
 
 ### T14 · Aumento de datos con `data_aug.ipynb` (P2)
 
-**Hecha (14/10/2026):** regenerado con la depuración: 477 imágenes de entrenamiento y 1431 copias, 147 de validación y 172 de test.
+**Hecha (14/10/2026):** regenerado con la depuración y con el reparto nuevo: 796 imágenes de entrenamiento y 2388 copias (3184 en total); validación (672) y test (718) son los conjuntos de la asignatura.
 
 **Estado a 12/10/2026 (rama `javier-saguar`):** `data_aug.ipynb` está reescrito y ejecutado con las 808 imágenes. Propone el reparto por vídeos (T18), justifica doce transformaciones y descarta siete, genera `data_train/` (483 originales y 1449 copias), `data_val/` y `data_test/`, y comprueba el resultado. Figuras y tablas en [`resultados_aug/`](ENTREGA%201/WEEK1/resultados_aug/README.md). **Falta** repetirlo tras la depuración (T13), ejecutarlo una vez en JupyterHub y acordar en grupo el reparto y las transformaciones.
 
@@ -204,7 +208,7 @@ Recoge T11–T14 y pone el foco en la **justificación** de cada decisión y en 
 
 Para después de la primera entrega:
 - **T18:** separar `data_train`, `data_val` y `data_test` por secuencias, para que no se filtren fotogramas casi iguales entre conjuntos.
-  **Estado a 14/10/2026:** `data_aug.ipynb` aplica la propuesta V01–V06 entrenamiento, V07 y V10 validación, V08 y V09 test (sección 1 del notebook, con su justificación). Falta que el grupo la acepte o la cambie en `REPARTO`.
+  **Estado a 14/10/2026:** la asignatura ha dado conjuntos de validación y test anotados por otros grupos (`ENTREGA 1/WEEK2/DATOS_ASIGNATURA/`, 672 y 718 imágenes con `.xml`). Por decisión de Javier, se entrena con nuestros diez vídeos y se valida y mide con esos conjuntos; `data_aug.ipynb` lo aplica y lo justifica en su sección 1. Ya no hace falta acordar un reparto de nuestros vídeos.
 - **T19:** primer entrenamiento con `train.ipynb` (`faster_rcnn_v1`) en el entorno GPU de JupyterHub.
 - **T20:** evaluar con `test.ipynb` (mAP y resultados cualitativos).
 

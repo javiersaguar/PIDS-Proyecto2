@@ -1,59 +1,62 @@
 # Entrenar en el JupyterHub del laboratorio
 
-Guía para llevar el dataset a JupyterHub y dejar el entrenamiento corriendo (T03, T19
-y T20). El JupyterHub tiene Python 3.8 y albumentations 1.4.18, las mismas versiones
-con las que se ha probado `data_aug.ipynb`.
+Guía para preparar los datos en JupyterHub y dejar el entrenamiento corriendo (T03,
+T19 y T20). Comprobada el 14/10/2026 en la cuenta `pids2`.
+
+| | En el laboratorio |
+|---|---|
+| Python del kernel «Python 3 (ipykernel)» | 3.11.9 (`/opt/conda/bin/python`) |
+| PyTorch / torchvision / torchmetrics | 2.4.1 / 0.19.1 / 1.9.0 |
+| GPU | NVIDIA GeForce RTX 3060, 12 GB |
+| **Falta instalar** | **`albumentations` 1.4.18** (para `data_aug.ipynb`) y **`pycocotools`** (para el mAP de `train.ipynb` y `test.ipynb`) |
 
 > El servicio está deshabilitado por las mañanas en horas de docencia. Conviene lanzar
 > el entrenamiento por la tarde, para que no lo corten.
 
-## 1. Llevar el proyecto y los datos
+## 1. Instalar lo que falta (una sola vez)
 
-Todo funciona igual que en local si el repositorio está en JupyterHub y los datos en
-su raíz: los notebooks encuentran la raíz solos, buscando `herramientas/`.
+Desde un terminal de JupyterHub (*File → New → Terminal*):
 
-**Opción A (recomendada): clonar el repositorio y generar los datos allí.** Así se
-comprueba además que `data_aug.ipynb` funciona en JupyterHub. Desde un terminal de
-JupyterHub (*File → New → Terminal*):
+```bash
+pip install --user "albumentations==1.4.18" pycocotools
+python -c "import albumentations, pycocotools; print(albumentations.__version__)"
+```
+
+`--user` lo instala en la carpeta personal, así que se conserva entre sesiones. OpenCV
+ya está instalado y no se toca.
+
+## 2. Traer el proyecto
 
 ```bash
 cd ~
-git clone https://github.com/javiersaguar/PIDS-Proyecto2.git
+git clone https://github.com/javiersaguar/PIDS-Proyecto2.git    # la primera vez
+cd ~/PIDS-Proyecto2 && git pull                                  # las siguientes
 ```
 
-Si el repositorio es privado o no hay acceso a GitHub desde el laboratorio, descargar
-`Code → Download ZIP` de `main`, subirlo con el botón de subir ficheros y descomprimirlo
-con `unzip PIDS-Proyecto2-main.zip`.
+El repositorio ya trae todo lo necesario:
 
-Después, abrir `ENTREGA 1/WEEK1/data_aug.ipynb` y ejecutarlo entero
-(*Run → Run All Cells*). Tarda un par de minutos y crea `data_train/`, `data_val/` y
-`data_test/` en la raíz del repositorio. Al final debe decir `Sin errores.` en los
-tres conjuntos.
+- nuestras 808 imágenes anotadas (`ENTREGA 1/WEEK1/ANOTACION/`);
+- los conjuntos de validación y test que da la asignatura
+  (`ENTREGA 1/WEEK2/DATOS_ASIGNATURA/`), solo las imágenes con `.xml`.
 
-**Opción B: subir el dataset ya generado.** `data_aug.ipynb` con `EXPORTAR_ZIP = True`
-crea `dataset_pids.zip` (unos 350 MB). Se sube a la raíz del repositorio en
-JupyterHub y se descomprime allí, en una carpeta sin `data_train/`:
+## 3. Generar los conjuntos
 
-```bash
-cd ~/PIDS-Proyecto2
-unzip -q dataset_pids.zip
-ls data_train data_val data_test | head
-```
+Abrir `ENTREGA 1/WEEK1/data_aug.ipynb` y ejecutarlo entero (*Run → Run All Cells*).
+Tarda unos minutos y crea en la raíz del repositorio:
 
-## 2. Comprobar la GPU y el Python del kernel
+| Carpeta | Contenido | Imágenes |
+|---|---|---:|
+| `data_train/` | Nuestros 10 vídeos tras la depuración, con sus copias `-aug` | 3184 |
+| `data_val/` | Validación de la asignatura (11 secuencias de otros grupos) | 672 |
+| `data_test/` | Test de la asignatura (13 secuencias de otros grupos) | 718 |
 
-En una celda de cualquier notebook:
+Al final, el notebook debe decir `Sin errores.` en los tres conjuntos.
 
-```python
-import sys, torch
-print(sys.executable)
-print(torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else '')
-```
+Las carpetas `data_val/` y `data_test/` que hay en la raíz de la cuenta (`~/data_val`,
+`~/data_test`) son las originales de la asignatura. Los notebooks no las usan: usan
+las copias dentro del repositorio.
 
-Hay que apuntar la ruta que imprime `sys.executable`: es el Python del entorno
-`pids:default`, el que tiene PyTorch.
-
-## 3. Dejar el entrenamiento corriendo
+## 4. Dejar el entrenamiento corriendo
 
 Si se ejecuta `train.ipynb` desde el navegador y se cierra la pestaña, el kernel
 sigue, pero se pierde la salida. Es más seguro lanzarlo desde el terminal con
@@ -61,8 +64,7 @@ sigue, pero se pierde la salida. Es más seguro lanzarlo desde el terminal con
 
 ```bash
 cd ~/PIDS-Proyecto2/"ENTREGA 1/WEEK2"
-PY=/ruta/que/dio/sys.executable
-nohup "$PY" -m jupyter nbconvert --to notebook --execute train.ipynb \
+nohup python -m jupyter nbconvert --to notebook --execute train.ipynb \
       --output train_ejecutado.ipynb --ExecutePreprocessor.timeout=-1 > train.log 2>&1 &
 echo $! > train.pid
 ```
@@ -80,17 +82,16 @@ lanzarlo **continúa desde la última época**, no desde cero.
 
 Para pararlo: `kill $(cat train.pid)`.
 
-### Duración aproximada
+### Memoria y duración
 
-Son 1908 imágenes de entrenamiento y 147 de validación, a 1280×720, con
-`faster_rcnn_v1` y 30 épocas. Con una GPU de laboratorio habitual, cada época tarda
-unos minutos, así que **hay que contar con varias horas**. Para medirlo, basta con
-mirar la hora a la que se escribe la primera fila de `historial.csv`.
+- **Memoria de la GPU.** Faster R-CNN con imágenes de 1280×720 y `batch_size = 8` puede
+  no caber en los 12 GB de la RTX 3060. Si `train.log` muestra `CUDA out of memory`,
+  hay que bajar `batch_size` a 4 en `train.ipynb` y relanzar.
+- **Duración.** Son 3184 imágenes de entrenamiento y 672 de validación por época, y
+  30 épocas. Hay que contar con **varias horas**; la hora a la que se escribe la
+  primera fila de `historial.csv` da la duración real de una época.
 
-Si la GPU se queda sin memoria (`CUDA out of memory` en `train.log`), hay que bajar
-`batch_size` en `train.ipynb` de 8 a 4 y relanzar.
-
-## 4. Experimento sin aumento
+## 5. Experimento sin aumento
 
 Para medir si el aumento ayuda (T19), se entrena otra vez con `usar_aumento = False`.
 Cada experimento guarda sus modelos y resultados en carpetas distintas, así que no se
@@ -100,22 +101,22 @@ pisan. **No hay que lanzar los dos a la vez**: comparten la GPU.
 cd ~/PIDS-Proyecto2/"ENTREGA 1/WEEK2"
 sed 's/usar_aumento = True /usar_aumento = False/' train.ipynb > train_sin_aug.ipynb
 grep -c "usar_aumento = False" train_sin_aug.ipynb          # debe dar 1
-nohup "$PY" -m jupyter nbconvert --to notebook --execute train_sin_aug.ipynb \
+nohup python -m jupyter nbconvert --to notebook --execute train_sin_aug.ipynb \
       --output train_sin_aug_ejecutado.ipynb --ExecutePreprocessor.timeout=-1 > train_sin_aug.log 2>&1 &
 ```
 
-## 5. Evaluar
+## 6. Evaluar
 
 Cuando termine, `test.ipynb` se ejecuta desde el navegador (tarda poco):
 
 - con `conjunto = 'val'` mientras se ajusta el modelo;
 - con `conjunto = 'test'` **una sola vez al final**, para el resultado de la memoria.
 
-## 6. Qué subir al repositorio
+## 7. Qué subir al repositorio
 
 Sí: los notebooks ejecutados y las carpetas `resultados_train/` y `resultados_test/`,
 desde la rama personal y con su PR.
 
 No: `models/` (unos 160 MB por modelo), `data_train/`, `data_val/`, `data_test/` ni
-`dataset_pids.zip`. Si hace falta conservar un modelo, se descarga y se guarda fuera
-del repositorio.
+`dataset_pids.zip`. Para la demo (`ENTREGA 2/WEEK3`) hay que descargar
+`models/<experimento>/model_best.pt` y guardarlo fuera del repositorio.

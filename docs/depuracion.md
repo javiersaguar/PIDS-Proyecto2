@@ -58,12 +58,19 @@ Varias imágenes que el 12/10 se apuntaron como «probable eliminación» (V01 0
 
 ## Efecto
 
-| Conjunto | Antes | Después | Excluidas |
-|---|---:|---:|---|
-| Entrenamiento (V01–V06) | 483 | 477 | V03 ×2, V04, V05 ×2, V06 |
-| Validación (V07, V10) | 152 | 147 | V07 ×2, V10 ×3 |
-| Test (V08, V09) | 173 | 172 | V09 |
-| **Total** | **808** | **796** | **12** |
+Las 796 imágenes que quedan son el conjunto de entrenamiento: desde el 14/10/2026,
+validación y test son los conjuntos de otros grupos que da la asignatura (ver T18).
+
+| Vídeo | Excluidas |
+|---|---:|
+| V03 | 2 |
+| V04 | 1 |
+| V05 | 2 |
+| V06 | 1 |
+| V07 | 2 |
+| V09 | 1 |
+| V10 | 3 |
+| **Total** | **12** |
 
 Quedan 796 imágenes, cuatro por debajo de las ~800 del objetivo. Se han anotado 808,
 y depurar es parte del Bloque 1: es preferible un dataset algo menor y sin etiquetas

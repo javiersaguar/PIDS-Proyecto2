@@ -1,4 +1,4 @@
 conjunto,imagenes,robots,perdidos_pct,difficult_pct,truncados_pct,ancho_mediano,menos_de_30px,aspecto_mediano,negativas
-Entrenamiento original,477,827,0.0,24.9,8.6,113,0,1.11,37
-Copias aumentadas,1431,2466,0.6,24.9,6.3,105,9,1.11,111
-Aumentador original (simulado),1431,2141,13.7,24.2,18.0,148,2,1.18,-1
+Entrenamiento original,796,1399,0.0,26.8,9.3,113,0,1.11,40
+Copias aumentadas,2388,4167,0.7,26.8,6.5,104,18,1.1,120
+Aumentador original (simulado),2388,3606,14.1,25.9,18.1,148,4,1.18,-1
