@@ -14,7 +14,7 @@
 		<name>robot</name>
 		<pose>Unspecified</pose>
 		<truncated>1</truncated>
-		<difficult>0</difficult>
+		<difficult>1</difficult>
 		<bndbox>
 			<xmin>263</xmin>
 			<ymin>594</ymin>
@@ -26,7 +26,7 @@
 		<name>robot</name>
 		<pose>Unspecified</pose>
 		<truncated>1</truncated>
-		<difficult>0</difficult>
+		<difficult>1</difficult>
 		<bndbox>
 			<xmin>523</xmin>
 			<ymin>626</ymin>

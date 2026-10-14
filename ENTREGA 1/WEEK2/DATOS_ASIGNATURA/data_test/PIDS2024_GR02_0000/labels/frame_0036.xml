@@ -38,7 +38,7 @@
 		<name>robot</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
-		<difficult>0</difficult>
+		<difficult>1</difficult>
 		<bndbox>
 			<xmin>506</xmin>
 			<ymin>124</ymin>
@@ -50,7 +50,7 @@
 		<name>robot</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
-		<difficult>0</difficult>
+		<difficult>1</difficult>
 		<bndbox>
 			<xmin>417</xmin>
 			<ymin>121</ymin>
