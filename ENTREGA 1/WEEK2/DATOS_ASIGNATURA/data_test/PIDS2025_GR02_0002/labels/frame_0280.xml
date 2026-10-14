@@ -1,0 +1,25 @@
+<annotation>
+	<folder>images</folder>
+	<filename>frame_0280.jpg</filename>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>robot</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>616</xmin>
+			<ymin>250</ymin>
+			<xmax>736</xmax>
+			<ymax>374</ymax>
+		</bndbox>
+	</object>
+</annotation>

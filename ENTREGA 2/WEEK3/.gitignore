@@ -1,0 +1,6 @@
+# Ficheros que genera connect.py: el QR contiene la contraseña del wifi
+qrcode.png
+serial_number.txt
+# Salidas de demo.py y de los ejemplos de cámara
+predictions/
+recording.mp4
