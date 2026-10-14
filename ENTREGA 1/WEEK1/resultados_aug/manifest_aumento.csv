@@ -614,9 +614,6 @@ V03,frame_1128,frame_1128_aug_02.jpg,2772891971,1,1,HorizontalFlip Affine HueSat
 V03,frame_1152,frame_1152_aug_00.jpg,4080236646,1,1,HorizontalFlip RandomGamma ISONoise
 V03,frame_1152,frame_1152_aug_01.jpg,799784420,1,1,HorizontalFlip GaussNoise
 V03,frame_1152,frame_1152_aug_02.jpg,1949067439,1,1,HorizontalFlip Affine RandomBrightnessContrast MotionBlur ImageCompression
-V03,frame_1176,frame_1176_aug_00.jpg,341331198,1,1,HorizontalFlip RandomGamma HueSaturationValue
-V03,frame_1176,frame_1176_aug_01.jpg,3853805518,1,1,Affine
-V03,frame_1176,frame_1176_aug_02.jpg,882547836,1,1,HorizontalFlip
 V03,frame_1200,frame_1200_aug_00.jpg,2019750700,1,1,HorizontalFlip Affine
 V03,frame_1200,frame_1200_aug_01.jpg,2005832390,1,1,HorizontalFlip Affine
 V03,frame_1200,frame_1200_aug_02.jpg,3386719742,1,1,HorizontalFlip RandomGamma MotionBlur Oclusion
@@ -662,9 +659,6 @@ V03,frame_1512,frame_1512_aug_02.jpg,1406878740,0,0,RandomBrightnessContrast Gau
 V03,frame_1536,frame_1536_aug_00.jpg,2678386588,0,0,HorizontalFlip Affine RandomBrightnessContrast RGBShift Downscale Oclusion
 V03,frame_1536,frame_1536_aug_01.jpg,1603488324,0,0,HorizontalFlip Affine RandomGamma
 V03,frame_1536,frame_1536_aug_02.jpg,129098211,0,0,HorizontalFlip RandomGamma
-V03,frame_1560,frame_1560_aug_00.jpg,3148712079,0,0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
-V03,frame_1560,frame_1560_aug_01.jpg,3470773673,0,0,HorizontalFlip Affine GaussNoise
-V03,frame_1560,frame_1560_aug_02.jpg,2972087281,0,0,HorizontalFlip Affine RandomGamma
 V03,frame_1584,frame_1584_aug_00.jpg,3345154169,3,3,Affine RandomGamma ImageCompression Oclusion
 V03,frame_1584,frame_1584_aug_01.jpg,173649812,3,3,Affine RandomGamma HueSaturationValue
 V03,frame_1584,frame_1584_aug_02.jpg,166700394,3,3,Affine Downscale
@@ -707,9 +701,6 @@ V04,frame_0072,frame_0072_aug_02.jpg,613215106,1,1,HorizontalFlip RandomGamma
 V04,frame_0096,frame_0096_aug_00.jpg,2112971244,1,1,Affine
 V04,frame_0096,frame_0096_aug_01.jpg,3150788034,1,1,HorizontalFlip Affine
 V04,frame_0096,frame_0096_aug_02.jpg,2943952853,1,1,HorizontalFlip Affine ImageCompression
-V04,frame_0120,frame_0120_aug_00.jpg,715647720,1,1,Affine GaussNoise
-V04,frame_0120,frame_0120_aug_01.jpg,805880093,1,1,HorizontalFlip
-V04,frame_0120,frame_0120_aug_02.jpg,2254701379,1,1,RGBShift MotionBlur
 V04,frame_0144,frame_0144_aug_00.jpg,3738658887,1,1,MotionBlur
 V04,frame_0144,frame_0144_aug_01.jpg,3305092567,1,1,HorizontalFlip Affine RandomGamma
 V04,frame_0144,frame_0144_aug_02.jpg,1463519910,1,1,HorizontalFlip Affine
@@ -1139,9 +1130,6 @@ V05,frame_1536,frame_1536_aug_02.jpg,2084771410,3,3,HorizontalFlip RandomBrightn
 V05,frame_1560,frame_1560_aug_00.jpg,4283138586,3,3,Affine
 V05,frame_1560,frame_1560_aug_01.jpg,1288895909,3,3,Affine RandomBrightnessContrast Oclusion
 V05,frame_1560,frame_1560_aug_02.jpg,1781809497,3,3,Affine RandomBrightnessContrast
-V05,frame_1584,frame_1584_aug_00.jpg,3856234483,3,3,RandomGamma
-V05,frame_1584,frame_1584_aug_01.jpg,1426121416,3,3,HorizontalFlip RandomGamma Downscale
-V05,frame_1584,frame_1584_aug_02.jpg,2438792783,3,3,HorizontalFlip Affine RandomGamma RGBShift
 V05,frame_1608,frame_1608_aug_00.jpg,1355146853,3,3,HorizontalFlip Affine RandomGamma
 V05,frame_1608,frame_1608_aug_01.jpg,2877984926,3,3,Affine
 V05,frame_1608,frame_1608_aug_02.jpg,3114612320,3,3,Affine
@@ -1166,9 +1154,6 @@ V05,frame_1752,frame_1752_aug_02.jpg,3735088608,2,2,RandomGamma
 V05,frame_1776,frame_1776_aug_00.jpg,2573567512,3,3,HorizontalFlip RandomGamma HueSaturationValue
 V05,frame_1776,frame_1776_aug_01.jpg,1588671828,3,3,HueSaturationValue
 V05,frame_1776,frame_1776_aug_02.jpg,3737030994,3,3,HorizontalFlip Affine RandomGamma
-V05,frame_1800,frame_1800_aug_00.jpg,1626157278,3,3,Affine
-V05,frame_1800,frame_1800_aug_01.jpg,3121055531,3,3,Affine
-V05,frame_1800,frame_1800_aug_02.jpg,3122761498,3,3,HorizontalFlip RandomBrightnessContrast
 V06,frame_0024,frame_0024_aug_00.jpg,3077216731,1,1,HorizontalFlip Affine RandomBrightnessContrast
 V06,frame_0024,frame_0024_aug_01.jpg,221768252,1,1,Affine RandomBrightnessContrast GaussNoise
 V06,frame_0024,frame_0024_aug_02.jpg,3520484097,1,1,HorizontalFlip RandomBrightnessContrast ISONoise
@@ -1187,9 +1172,6 @@ V06,frame_0120,frame_0120_aug_02.jpg,2293667485,2,2,RandomGamma HueSaturationVal
 V06,frame_0144,frame_0144_aug_00.jpg,1549180557,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ISONoise
 V06,frame_0144,frame_0144_aug_01.jpg,1496610881,2,2,HorizontalFlip RandomGamma
 V06,frame_0144,frame_0144_aug_02.jpg,3988551069,2,2,Affine RandomGamma HueSaturationValue ISONoise
-V06,frame_0168,frame_0168_aug_00.jpg,3281576840,2,2,HorizontalFlip RandomBrightnessContrast
-V06,frame_0168,frame_0168_aug_01.jpg,2526059123,2,2,HorizontalFlip Affine RandomBrightnessContrast
-V06,frame_0168,frame_0168_aug_02.jpg,18074901,2,2,HorizontalFlip Affine RandomGamma MotionBlur
 V06,frame_0192,frame_0192_aug_00.jpg,3421315465,2,2,HorizontalFlip Affine
 V06,frame_0192,frame_0192_aug_01.jpg,696955255,2,2,HorizontalFlip MotionBlur
 V06,frame_0192,frame_0192_aug_02.jpg,4276138656,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ImageCompression Oclusion

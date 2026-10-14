@@ -44,28 +44,35 @@ para T13, T14, T18, T19 o T20. Figuras, tablas y pies propuestos en
 revisión cruzada (T10) y revisar las conclusiones en grupo.
 `metricas_imagenes.csv` es la entrada de T13.
 
+Actualización del 14/10/2026 en `javier-saguar`. Todo lo previo al entrenamiento está
+hecho salvo los pasos que necesitan al grupo o el laboratorio: los cinco lotes están
+anotados y revisados (T04–T08, T10), la depuración excluye 12 imágenes (T13), el
+aumento está regenerado con ella (T14) y hay una guía para entrenar en JupyterHub
+([`docs/jupyterhub.md`](docs/jupyterhub.md)). Quedan cerrar T01 en grupo, acordar el
+reparto (T18) y subir los datos al laboratorio (T03).
+
 ## Resumen
 
 | ID | Prioridad | Tarea | Depende de | Responsable | Estado |
 |---|---|---|---|---|---|
-| T01 | P1 | Criterios v1 y calibración preparada; pendiente acuerdo y medida IoU | — | Javier Saguar; calibración: los cinco | En curso |
+| T01 | P1 | Criterios v1; calibración de los cinco medida (IoU 0,81); falta cerrarla en grupo | — | Javier Saguar; calibración: los cinco | En curso |
 | T02 | P1 | Ficha de cada vídeo y revisión de la variabilidad | — | Javier Saguar | Hecha |
-| T03 | P1 | 808 fotogramas extraídos (`INTERVAL = 24`); pendiente importar a JupyterHub | — | Javier Saguar | En curso |
-| T04 | P1 | Anotar el lote A (vídeos 01 y 02, 157 imágenes) | T01, T03 | Javier Saguar | Pendiente |
+| T03 | P1 | Dataset listo para JupyterHub ([guía](docs/jupyterhub.md)); falta subirlo en el laboratorio | — | Javier Saguar | En curso |
+| T04 | P1 | Anotar el lote A (vídeos 01 y 02, 157 imágenes) | T01, T03 | Javier Saguar | Hecha |
 | T05 | P1 | Anotar el lote B (vídeos 03 y 04, 158 imágenes) | T01, T03 | Alejandro Cuevas | Hecha |
 | T06 | P1 | Anotar el lote C (vídeos 05 y 06, 168 imágenes) | T01, T03 | Mónica Fernández | Hecha |
-| T07 | P1 | Anotar el lote D (vídeos 07 y 08, 179 imágenes) | T01, T03 | Pedro José Orrego | Pendiente |
-| T08 | P1 | Anotar el lote E (vídeos 09 y 10, 146 imágenes) | T01, T03 | Daniel Naval | Pendiente |
-| T09 | P1 | Copia de seguridad del dataset anotado | T04–T08 | — | Pendiente |
-| T10 | P2 | Revisión cruzada de las anotaciones | T04–T08 | — | Pendiente |
+| T07 | P1 | Anotar el lote D (vídeos 07 y 08, 179 imágenes) | T01, T03 | Pedro José Orrego | Hecha |
+| T08 | P1 | Anotar el lote E (vídeos 09 y 10, 146 imágenes) | T01, T03 | Daniel Naval | Hecha |
+| T09 | P1 | Copia de seguridad del dataset anotado | T04–T08 | Javier Saguar | Hecha |
+| T10 | P2 | Revisión cruzada de las anotaciones | T04–T08 | Javier Saguar, Alejandro Cuevas | Hecha |
 | T11 | P2 | EDA base con `eda.ipynb` | T10 | Alejandro Cuevas | En curso |
 | T12 | P2 | Análisis exploratorio adicional | T11 | Alejandro Cuevas | En curso |
-| T13 | P2 | Depuración del dataset | T10, T11 | — | Pendiente |
-| T14 | P2 | Aumento de datos con `data_aug.ipynb` | T13 | Javier Saguar | En curso |
+| T13 | P2 | Depuración del dataset | T10, T11 | Javier Saguar | Hecha |
+| T14 | P2 | Aumento de datos con `data_aug.ipynb` | T13 | Javier Saguar | Hecha |
 | T15 | P2 | Memoria: portada, introducción, recolección y anotación | T01, T02 | — | Pendiente |
 | T16 | P2 | Memoria: EDA, depuración y aumento de datos | T12, T13, T14 | — | Pendiente |
 | T17 | P2 | Memoria: reparto del trabajo, revisión final y PDF | T15, T16 | — | Pendiente |
-| T18 | P3 | Separar los datos en entrenamiento, validación y test | T14 | — | Pendiente |
+| T18 | P3 | Separar los datos en entrenamiento, validación y test | T14 | Javier Saguar | En curso |
 | T19 | P3 | Primer entrenamiento con `train.ipynb` | T18 | — | Pendiente |
 | T20 | P3 | Evaluación con `test.ipynb` (mAP y resultados cualitativos) | T19 | — | Pendiente |
 
@@ -99,6 +106,8 @@ Completar en `ESTADO.md`, para cada vídeo, el escenario y sus condiciones: luga
 
 **Hecha cuando:** existen `data_train/ROBOMASTER_VIDEO_XX/images` y `labels` para los 10 vídeos, y el zip con las imágenes está compartido con el grupo para anotar.
 
+**Estado a 14/10/2026:** la anotación se hizo en local, así que lo que hay que llevar a JupyterHub es el dataset ya repartido y aumentado. [`docs/jupyterhub.md`](docs/jupyterhub.md) explica las dos formas (clonar el repositorio y ejecutar `data_aug.ipynb` allí, o subir `dataset_pids.zip`) y cómo dejar el entrenamiento corriendo. Falta hacerlo en el laboratorio.
+
 ### T04–T08 · Anotar los lotes A–E (P1)
 
 Cada integrante tiene asignado un lote de dos vídeos, como indica la tabla. Las carpetas y el README de cada lote están en `ENTREGA 1/WEEK1/ANOTACION/`. Se anota con `labelImg` siguiendo los criterios de T01:
@@ -115,11 +124,15 @@ Comprimir `data_train/` en JupyterHub (`zip -r`), descargarlo y guardarlo en la 
 
 **Hecha cuando:** hay una copia fuera de JupyterHub y las etiquetas están en `main`.
 
+**Hecha (14/10/2026):** los 808 fotogramas originales y sus `.xml` revisados están versionados en `main` (`ENTREGA 1/WEEK1/ANOTACION/`), que es la copia de referencia fuera de JupyterHub. Los conjuntos aumentados no se copian: `data_aug.ipynb` los regenera idénticos a partir de esa copia.
+
 ### T10 · Revisión cruzada de las anotaciones (P2)
 
 Cada integrante revisa un lote que no ha anotado (A→B→C→D→E→A) y busca cajas mal ajustadas, robots sin anotar o criterios aplicados de forma distinta. Los errores los corrige quien anotó el lote.
 
 **Hecha cuando:** los cinco lotes están revisados y corregidos.
+
+**Hecha (12/10/2026):** Javier revisó los lotes B, D y E (PR #3 y #7) y Alejandro el C (PR #8). Los cambios de cada lote están descritos en sus PRs y los casos dudosos en `docs/casos_dudosos.md`.
 
 ### T11 · EDA base con `eda.ipynb` (P2)
 
@@ -150,7 +163,11 @@ Cuidado con no quitar todos los casos difíciles: el modelo fallaría en la real
 
 **Hecha cuando:** el dataset limpio está en JupyterHub, la copia de T09 está actualizada y el criterio está escrito.
 
+**Hecha (14/10/2026):** se revisaron a ojo las 69 candidatas (52 poco nítidas, 11 casi duplicadas y 6 casos dudosos) y se excluyen 12: una con un robot sin caja y 11 casi duplicadas. Quedan 796 imágenes. Criterios y lista en [`docs/depuracion.md`](docs/depuracion.md); `data_aug.ipynb` aplica la exclusión leyendo `docs/depuracion_excluir.csv`. No se borra ningún original. El dataset limpio llega a JupyterHub con T03.
+
 ### T14 · Aumento de datos con `data_aug.ipynb` (P2)
+
+**Hecha (14/10/2026):** regenerado con la depuración: 477 imágenes de entrenamiento y 1431 copias, 147 de validación y 172 de test.
 
 **Estado a 12/10/2026 (rama `javier-saguar`):** `data_aug.ipynb` está reescrito y ejecutado con las 808 imágenes. Propone el reparto por vídeos (T18), justifica doce transformaciones y descarta siete, genera `data_train/` (483 originales y 1449 copias), `data_val/` y `data_test/`, y comprueba el resultado. Figuras y tablas en [`resultados_aug/`](ENTREGA%201/WEEK1/resultados_aug/README.md). **Falta** repetirlo tras la depuración (T13), ejecutarlo una vez en JupyterHub y acordar en grupo el reparto y las transformaciones.
 
@@ -178,5 +195,6 @@ Recoge T11–T14 y pone el foco en la **justificación** de cada decisión y en 
 
 Para después de la primera entrega:
 - **T18:** separar `data_train`, `data_val` y `data_test` por secuencias, para que no se filtren fotogramas casi iguales entre conjuntos.
+  **Estado a 14/10/2026:** `data_aug.ipynb` aplica la propuesta V01–V06 entrenamiento, V07 y V10 validación, V08 y V09 test (sección 1 del notebook, con su justificación). Falta que el grupo la acepte o la cambie en `REPARTO`.
 - **T19:** primer entrenamiento con `train.ipynb` (`faster_rcnn_v1`) en el entorno GPU de JupyterHub.
 - **T20:** evaluar con `test.ipynb` (mAP y resultados cualitativos).
