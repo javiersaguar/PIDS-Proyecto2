@@ -7,9 +7,9 @@ __pycache__/
 *.mp4
 *.avi
 *.mov
-/data_train/
-/data_val/
-/data_test/
+data_train/
+data_val/
+data_test/
 
 # Sistema
 .DS_Store
