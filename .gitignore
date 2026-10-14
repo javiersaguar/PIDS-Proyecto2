@@ -8,6 +8,8 @@ __pycache__/
 *.avi
 *.mov
 data_train/
+data_val/
+data_test/
 
 # Sistema
 .DS_Store
