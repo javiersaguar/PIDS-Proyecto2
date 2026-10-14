@@ -1,0 +1,4 @@
+# La raíz ignora las carpetas data_val y data_test que genera data_aug.ipynb.
+# Estas, en cambio, son los conjuntos de la asignatura y sí se versionan.
+!data_val/
+!data_test/

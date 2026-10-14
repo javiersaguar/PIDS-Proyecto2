@@ -614,9 +614,6 @@ V03,frame_1128,frame_1128_aug_02.jpg,2772891971,1,1,HorizontalFlip Affine HueSat
 V03,frame_1152,frame_1152_aug_00.jpg,4080236646,1,1,HorizontalFlip RandomGamma ISONoise
 V03,frame_1152,frame_1152_aug_01.jpg,799784420,1,1,HorizontalFlip GaussNoise
 V03,frame_1152,frame_1152_aug_02.jpg,1949067439,1,1,HorizontalFlip Affine RandomBrightnessContrast MotionBlur ImageCompression
-V03,frame_1176,frame_1176_aug_00.jpg,341331198,1,1,HorizontalFlip RandomGamma HueSaturationValue
-V03,frame_1176,frame_1176_aug_01.jpg,3853805518,1,1,Affine
-V03,frame_1176,frame_1176_aug_02.jpg,882547836,1,1,HorizontalFlip
 V03,frame_1200,frame_1200_aug_00.jpg,2019750700,1,1,HorizontalFlip Affine
 V03,frame_1200,frame_1200_aug_01.jpg,2005832390,1,1,HorizontalFlip Affine
 V03,frame_1200,frame_1200_aug_02.jpg,3386719742,1,1,HorizontalFlip RandomGamma MotionBlur Oclusion
@@ -662,9 +659,6 @@ V03,frame_1512,frame_1512_aug_02.jpg,1406878740,0,0,RandomBrightnessContrast Gau
 V03,frame_1536,frame_1536_aug_00.jpg,2678386588,0,0,HorizontalFlip Affine RandomBrightnessContrast RGBShift Downscale Oclusion
 V03,frame_1536,frame_1536_aug_01.jpg,1603488324,0,0,HorizontalFlip Affine RandomGamma
 V03,frame_1536,frame_1536_aug_02.jpg,129098211,0,0,HorizontalFlip RandomGamma
-V03,frame_1560,frame_1560_aug_00.jpg,3148712079,0,0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
-V03,frame_1560,frame_1560_aug_01.jpg,3470773673,0,0,HorizontalFlip Affine GaussNoise
-V03,frame_1560,frame_1560_aug_02.jpg,2972087281,0,0,HorizontalFlip Affine RandomGamma
 V03,frame_1584,frame_1584_aug_00.jpg,3345154169,3,3,Affine RandomGamma ImageCompression Oclusion
 V03,frame_1584,frame_1584_aug_01.jpg,173649812,3,3,Affine RandomGamma HueSaturationValue
 V03,frame_1584,frame_1584_aug_02.jpg,166700394,3,3,Affine Downscale
@@ -707,9 +701,6 @@ V04,frame_0072,frame_0072_aug_02.jpg,613215106,1,1,HorizontalFlip RandomGamma
 V04,frame_0096,frame_0096_aug_00.jpg,2112971244,1,1,Affine
 V04,frame_0096,frame_0096_aug_01.jpg,3150788034,1,1,HorizontalFlip Affine
 V04,frame_0096,frame_0096_aug_02.jpg,2943952853,1,1,HorizontalFlip Affine ImageCompression
-V04,frame_0120,frame_0120_aug_00.jpg,715647720,1,1,Affine GaussNoise
-V04,frame_0120,frame_0120_aug_01.jpg,805880093,1,1,HorizontalFlip
-V04,frame_0120,frame_0120_aug_02.jpg,2254701379,1,1,RGBShift MotionBlur
 V04,frame_0144,frame_0144_aug_00.jpg,3738658887,1,1,MotionBlur
 V04,frame_0144,frame_0144_aug_01.jpg,3305092567,1,1,HorizontalFlip Affine RandomGamma
 V04,frame_0144,frame_0144_aug_02.jpg,1463519910,1,1,HorizontalFlip Affine
@@ -1139,9 +1130,6 @@ V05,frame_1536,frame_1536_aug_02.jpg,2084771410,3,3,HorizontalFlip RandomBrightn
 V05,frame_1560,frame_1560_aug_00.jpg,4283138586,3,3,Affine
 V05,frame_1560,frame_1560_aug_01.jpg,1288895909,3,3,Affine RandomBrightnessContrast Oclusion
 V05,frame_1560,frame_1560_aug_02.jpg,1781809497,3,3,Affine RandomBrightnessContrast
-V05,frame_1584,frame_1584_aug_00.jpg,3856234483,3,3,RandomGamma
-V05,frame_1584,frame_1584_aug_01.jpg,1426121416,3,3,HorizontalFlip RandomGamma Downscale
-V05,frame_1584,frame_1584_aug_02.jpg,2438792783,3,3,HorizontalFlip Affine RandomGamma RGBShift
 V05,frame_1608,frame_1608_aug_00.jpg,1355146853,3,3,HorizontalFlip Affine RandomGamma
 V05,frame_1608,frame_1608_aug_01.jpg,2877984926,3,3,Affine
 V05,frame_1608,frame_1608_aug_02.jpg,3114612320,3,3,Affine
@@ -1166,9 +1154,6 @@ V05,frame_1752,frame_1752_aug_02.jpg,3735088608,2,2,RandomGamma
 V05,frame_1776,frame_1776_aug_00.jpg,2573567512,3,3,HorizontalFlip RandomGamma HueSaturationValue
 V05,frame_1776,frame_1776_aug_01.jpg,1588671828,3,3,HueSaturationValue
 V05,frame_1776,frame_1776_aug_02.jpg,3737030994,3,3,HorizontalFlip Affine RandomGamma
-V05,frame_1800,frame_1800_aug_00.jpg,1626157278,3,3,Affine
-V05,frame_1800,frame_1800_aug_01.jpg,3121055531,3,3,Affine
-V05,frame_1800,frame_1800_aug_02.jpg,3122761498,3,3,HorizontalFlip RandomBrightnessContrast
 V06,frame_0024,frame_0024_aug_00.jpg,3077216731,1,1,HorizontalFlip Affine RandomBrightnessContrast
 V06,frame_0024,frame_0024_aug_01.jpg,221768252,1,1,Affine RandomBrightnessContrast GaussNoise
 V06,frame_0024,frame_0024_aug_02.jpg,3520484097,1,1,HorizontalFlip RandomBrightnessContrast ISONoise
@@ -1187,9 +1172,6 @@ V06,frame_0120,frame_0120_aug_02.jpg,2293667485,2,2,RandomGamma HueSaturationVal
 V06,frame_0144,frame_0144_aug_00.jpg,1549180557,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ISONoise
 V06,frame_0144,frame_0144_aug_01.jpg,1496610881,2,2,HorizontalFlip RandomGamma
 V06,frame_0144,frame_0144_aug_02.jpg,3988551069,2,2,Affine RandomGamma HueSaturationValue ISONoise
-V06,frame_0168,frame_0168_aug_00.jpg,3281576840,2,2,HorizontalFlip RandomBrightnessContrast
-V06,frame_0168,frame_0168_aug_01.jpg,2526059123,2,2,HorizontalFlip Affine RandomBrightnessContrast
-V06,frame_0168,frame_0168_aug_02.jpg,18074901,2,2,HorizontalFlip Affine RandomGamma MotionBlur
 V06,frame_0192,frame_0192_aug_00.jpg,3421315465,2,2,HorizontalFlip Affine
 V06,frame_0192,frame_0192_aug_01.jpg,696955255,2,2,HorizontalFlip MotionBlur
 V06,frame_0192,frame_0192_aug_02.jpg,4276138656,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ImageCompression Oclusion
@@ -1448,3 +1430,960 @@ V06,frame_2208,frame_2208_aug_02.jpg,3448854960,1,1,HorizontalFlip Affine RGBShi
 V06,frame_2232,frame_2232_aug_00.jpg,167031333,1,1,HorizontalFlip Affine RandomGamma
 V06,frame_2232,frame_2232_aug_01.jpg,846173327,1,1,HorizontalFlip Affine RandomGamma RGBShift Oclusion
 V06,frame_2232,frame_2232_aug_02.jpg,782496227,1,1,ImageCompression
+V07,frame_0024,frame_0024_aug_00.jpg,1023276569,2,2,RandomGamma RGBShift
+V07,frame_0024,frame_0024_aug_01.jpg,566790534,2,2,HorizontalFlip HueSaturationValue
+V07,frame_0024,frame_0024_aug_02.jpg,1299619900,2,2,Affine RandomBrightnessContrast RGBShift
+V07,frame_0048,frame_0048_aug_00.jpg,50288632,1,1,Affine RandomBrightnessContrast ISONoise Oclusion
+V07,frame_0048,frame_0048_aug_01.jpg,3602541752,1,1,HorizontalFlip Affine RGBShift ImageCompression Oclusion
+V07,frame_0048,frame_0048_aug_02.jpg,4291636031,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_0072,frame_0072_aug_00.jpg,2411948360,2,2,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_0072,frame_0072_aug_01.jpg,2484755041,2,2,Affine
+V07,frame_0072,frame_0072_aug_02.jpg,1424826646,2,2,Affine
+V07,frame_0096,frame_0096_aug_00.jpg,3479798876,2,2,HorizontalFlip Affine
+V07,frame_0096,frame_0096_aug_01.jpg,217928,2,2,HorizontalFlip Affine RandomGamma ISONoise
+V07,frame_0096,frame_0096_aug_02.jpg,3235310445,2,2,Affine RandomGamma
+V07,frame_0120,frame_0120_aug_00.jpg,3768923464,2,2,HorizontalFlip Affine RandomGamma Oclusion
+V07,frame_0120,frame_0120_aug_01.jpg,147666761,2,2,Affine RandomGamma
+V07,frame_0120,frame_0120_aug_02.jpg,2904332373,2,2,Affine RandomBrightnessContrast MotionBlur
+V07,frame_0144,frame_0144_aug_00.jpg,4182230958,2,2,HorizontalFlip Affine Oclusion
+V07,frame_0144,frame_0144_aug_01.jpg,508247554,2,2,Affine RandomGamma HueSaturationValue ImageCompression
+V07,frame_0144,frame_0144_aug_02.jpg,473497354,2,2,RandomBrightnessContrast HueSaturationValue
+V07,frame_0168,frame_0168_aug_00.jpg,4180675527,3,3,Affine
+V07,frame_0168,frame_0168_aug_01.jpg,3573872902,3,3,HorizontalFlip Affine RandomBrightnessContrast Oclusion
+V07,frame_0168,frame_0168_aug_02.jpg,2711184051,3,3,Affine RandomGamma
+V07,frame_0192,frame_0192_aug_00.jpg,1810801543,1,1,RandomGamma RGBShift MotionBlur ImageCompression
+V07,frame_0192,frame_0192_aug_01.jpg,218244433,1,1,Affine RandomGamma Oclusion
+V07,frame_0192,frame_0192_aug_02.jpg,1471357598,1,1,HorizontalFlip Affine ImageCompression
+V07,frame_0216,frame_0216_aug_00.jpg,170878196,2,2,HorizontalFlip Affine Oclusion
+V07,frame_0216,frame_0216_aug_01.jpg,1873811556,2,2,HorizontalFlip RandomBrightnessContrast
+V07,frame_0216,frame_0216_aug_02.jpg,2626572694,2,2,HorizontalFlip Affine RandomGamma
+V07,frame_0240,frame_0240_aug_00.jpg,538870354,3,3,HorizontalFlip Oclusion
+V07,frame_0240,frame_0240_aug_01.jpg,1989242280,3,3,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_0240,frame_0240_aug_02.jpg,3412581968,3,3,HorizontalFlip Affine RandomGamma
+V07,frame_0264,frame_0264_aug_00.jpg,1709318936,2,2,MotionBlur ISONoise
+V07,frame_0264,frame_0264_aug_01.jpg,3185439264,2,2,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V07,frame_0264,frame_0264_aug_02.jpg,3013889627,2,2,Affine RandomGamma HueSaturationValue
+V07,frame_0288,frame_0288_aug_00.jpg,66516313,3,3,HorizontalFlip RandomBrightnessContrast RGBShift MotionBlur
+V07,frame_0288,frame_0288_aug_01.jpg,3374754870,3,3,HorizontalFlip RandomBrightnessContrast Downscale
+V07,frame_0288,frame_0288_aug_02.jpg,2101203247,3,3,HorizontalFlip
+V07,frame_0312,frame_0312_aug_00.jpg,3816529080,2,2,Affine RandomBrightnessContrast HueSaturationValue
+V07,frame_0312,frame_0312_aug_01.jpg,773830984,2,2,HorizontalFlip Affine RandomGamma RGBShift Oclusion
+V07,frame_0312,frame_0312_aug_02.jpg,2686267920,2,2,Affine ISONoise
+V07,frame_0336,frame_0336_aug_00.jpg,1943277397,2,2,Affine RandomBrightnessContrast HueSaturationValue Downscale
+V07,frame_0336,frame_0336_aug_01.jpg,1032416922,2,2,MotionBlur
+V07,frame_0336,frame_0336_aug_02.jpg,75936269,2,2,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_0360,frame_0360_aug_00.jpg,143544461,3,3,RandomGamma ImageCompression
+V07,frame_0360,frame_0360_aug_01.jpg,4224453129,3,3,MotionBlur Oclusion
+V07,frame_0360,frame_0360_aug_02.jpg,2191294771,3,3,HorizontalFlip ISONoise
+V07,frame_0384,frame_0384_aug_00.jpg,4048570229,3,3,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_0384,frame_0384_aug_01.jpg,1322446380,3,2,Affine ISONoise
+V07,frame_0384,frame_0384_aug_02.jpg,3755272154,3,3,HorizontalFlip Affine RandomGamma RGBShift MotionBlur GaussNoise
+V07,frame_0408,frame_0408_aug_00.jpg,1319363699,3,3,HueSaturationValue ISONoise
+V07,frame_0408,frame_0408_aug_01.jpg,3782649311,3,3,HorizontalFlip Affine ImageCompression
+V07,frame_0408,frame_0408_aug_02.jpg,276436291,3,3,HorizontalFlip RandomGamma
+V07,frame_0432,frame_0432_aug_00.jpg,1792066903,2,2,Affine RandomGamma
+V07,frame_0432,frame_0432_aug_01.jpg,2364185221,2,2,HorizontalFlip Affine RandomGamma HueSaturationValue GaussNoise
+V07,frame_0432,frame_0432_aug_02.jpg,1279320735,2,2,HorizontalFlip Affine RandomGamma Oclusion
+V07,frame_0456,frame_0456_aug_00.jpg,174027525,2,2,HorizontalFlip RandomBrightnessContrast GaussNoise
+V07,frame_0456,frame_0456_aug_01.jpg,811120585,2,2,HorizontalFlip RandomGamma MotionBlur ImageCompression
+V07,frame_0456,frame_0456_aug_02.jpg,3962545789,2,2,Affine HueSaturationValue Oclusion
+V07,frame_0480,frame_0480_aug_00.jpg,587502199,2,2,Affine RandomGamma
+V07,frame_0480,frame_0480_aug_01.jpg,3780347292,2,2,Affine MotionBlur
+V07,frame_0480,frame_0480_aug_02.jpg,744987360,2,2,HorizontalFlip
+V07,frame_0504,frame_0504_aug_00.jpg,2838237165,2,2,HorizontalFlip HueSaturationValue GaussNoise
+V07,frame_0504,frame_0504_aug_01.jpg,4190282556,2,2,Affine RandomGamma
+V07,frame_0504,frame_0504_aug_02.jpg,1568522135,2,2,HorizontalFlip Affine RandomGamma GaussNoise
+V07,frame_0528,frame_0528_aug_00.jpg,536555281,2,2,Affine RandomBrightnessContrast ISONoise Oclusion
+V07,frame_0528,frame_0528_aug_01.jpg,960246420,2,2,HorizontalFlip Affine
+V07,frame_0528,frame_0528_aug_02.jpg,415915761,2,2,HorizontalFlip Affine RandomGamma
+V07,frame_0552,frame_0552_aug_00.jpg,903702138,3,3,HorizontalFlip RandomGamma HueSaturationValue
+V07,frame_0552,frame_0552_aug_01.jpg,3774836819,3,3,Affine MotionBlur Oclusion
+V07,frame_0552,frame_0552_aug_02.jpg,670182292,3,3,HorizontalFlip
+V07,frame_0576,frame_0576_aug_00.jpg,3848660996,3,3,Affine RandomGamma Oclusion
+V07,frame_0576,frame_0576_aug_01.jpg,2878061657,3,3,HorizontalFlip Affine
+V07,frame_0576,frame_0576_aug_02.jpg,3263515690,3,3,RandomBrightnessContrast
+V07,frame_0600,frame_0600_aug_00.jpg,1627389824,2,2,HorizontalFlip Affine RandomGamma RGBShift
+V07,frame_0600,frame_0600_aug_01.jpg,1773029279,2,2,RandomGamma Oclusion
+V07,frame_0600,frame_0600_aug_02.jpg,1833337650,2,2,Affine RandomBrightnessContrast
+V07,frame_0624,frame_0624_aug_00.jpg,3641980905,2,2,HorizontalFlip Affine MotionBlur ImageCompression
+V07,frame_0624,frame_0624_aug_01.jpg,3157767016,2,2,RandomGamma HueSaturationValue
+V07,frame_0624,frame_0624_aug_02.jpg,1631113273,2,2,HorizontalFlip Affine ImageCompression
+V07,frame_0648,frame_0648_aug_00.jpg,3260696310,2,2,Affine
+V07,frame_0648,frame_0648_aug_01.jpg,914692969,2,2,HorizontalFlip Affine RandomBrightnessContrast RGBShift GaussNoise Oclusion
+V07,frame_0648,frame_0648_aug_02.jpg,3316720057,2,2,Affine RandomGamma RGBShift
+V07,frame_0672,frame_0672_aug_00.jpg,876006569,2,2,Affine RandomGamma RGBShift Oclusion
+V07,frame_0672,frame_0672_aug_01.jpg,4008826266,2,2,Affine
+V07,frame_0672,frame_0672_aug_02.jpg,3935948576,2,2,HorizontalFlip RandomGamma HueSaturationValue
+V07,frame_0696,frame_0696_aug_00.jpg,2885187162,2,2,Affine RandomGamma
+V07,frame_0696,frame_0696_aug_01.jpg,289752542,2,2,Affine RandomBrightnessContrast Oclusion
+V07,frame_0696,frame_0696_aug_02.jpg,2177222680,2,2,HorizontalFlip Affine RGBShift MotionBlur Oclusion
+V07,frame_0720,frame_0720_aug_00.jpg,3362746436,1,1,HorizontalFlip Affine RandomGamma
+V07,frame_0720,frame_0720_aug_01.jpg,3700062826,1,1,HorizontalFlip Affine RandomGamma HueSaturationValue
+V07,frame_0720,frame_0720_aug_02.jpg,2142433919,1,1,HorizontalFlip RandomGamma RGBShift MotionBlur ImageCompression Oclusion
+V07,frame_0744,frame_0744_aug_00.jpg,3737646543,1,1,HorizontalFlip Affine RGBShift
+V07,frame_0744,frame_0744_aug_01.jpg,2922040362,1,1,HorizontalFlip Affine RandomGamma Oclusion
+V07,frame_0744,frame_0744_aug_02.jpg,261011532,1,1,HorizontalFlip Downscale
+V07,frame_0768,frame_0768_aug_00.jpg,1715789211,1,1,Affine Downscale
+V07,frame_0768,frame_0768_aug_01.jpg,2057605570,1,1,Affine MotionBlur
+V07,frame_0768,frame_0768_aug_02.jpg,3254254613,1,1,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue Downscale
+V07,frame_0792,frame_0792_aug_00.jpg,1443361916,1,1,MotionBlur ImageCompression Oclusion
+V07,frame_0792,frame_0792_aug_01.jpg,3373421724,1,1,HorizontalFlip Affine
+V07,frame_0792,frame_0792_aug_02.jpg,1242659715,1,1,HorizontalFlip Affine HueSaturationValue MotionBlur
+V07,frame_0816,frame_0816_aug_00.jpg,2375093537,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V07,frame_0816,frame_0816_aug_01.jpg,1301425634,2,2,RGBShift ImageCompression
+V07,frame_0816,frame_0816_aug_02.jpg,2157266682,2,2,Affine RandomBrightnessContrast
+V07,frame_0840,frame_0840_aug_00.jpg,3126501548,2,2,HorizontalFlip Affine RandomGamma ISONoise
+V07,frame_0840,frame_0840_aug_01.jpg,3717770597,2,2,HorizontalFlip Affine RGBShift Oclusion
+V07,frame_0840,frame_0840_aug_02.jpg,3631328252,2,2,HorizontalFlip RandomGamma MotionBlur
+V07,frame_0864,frame_0864_aug_00.jpg,4138329236,2,2,HorizontalFlip
+V07,frame_0864,frame_0864_aug_01.jpg,774847319,2,2,HorizontalFlip Affine
+V07,frame_0864,frame_0864_aug_02.jpg,1173280245,2,2,Affine HueSaturationValue
+V07,frame_0888,frame_0888_aug_00.jpg,3737467094,2,2,HorizontalFlip
+V07,frame_0888,frame_0888_aug_01.jpg,3181772817,2,2,Affine
+V07,frame_0888,frame_0888_aug_02.jpg,1601559224,2,2,Affine RandomGamma
+V07,frame_0912,frame_0912_aug_00.jpg,751901986,1,1,HorizontalFlip RandomGamma MotionBlur
+V07,frame_0912,frame_0912_aug_01.jpg,341733668,1,1,HorizontalFlip Affine
+V07,frame_0912,frame_0912_aug_02.jpg,1558432379,1,1,HorizontalFlip Affine HueSaturationValue GaussNoise
+V07,frame_0936,frame_0936_aug_00.jpg,4105606679,2,2,Affine Downscale
+V07,frame_0936,frame_0936_aug_01.jpg,3581936423,2,2,HorizontalFlip Affine RandomGamma RGBShift
+V07,frame_0936,frame_0936_aug_02.jpg,3516951061,2,2,HorizontalFlip RGBShift
+V07,frame_0960,frame_0960_aug_00.jpg,2586968293,2,2,HorizontalFlip Affine RandomGamma
+V07,frame_0960,frame_0960_aug_01.jpg,1152151668,2,2,Affine RandomGamma
+V07,frame_0960,frame_0960_aug_02.jpg,1723442696,2,2,HorizontalFlip Affine RandomGamma GaussNoise Oclusion
+V07,frame_0984,frame_0984_aug_00.jpg,2560607634,1,1,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V07,frame_0984,frame_0984_aug_01.jpg,2462559461,1,1,HorizontalFlip Affine RandomGamma HueSaturationValue GaussNoise
+V07,frame_0984,frame_0984_aug_02.jpg,2473493584,1,1,Affine
+V07,frame_1008,frame_1008_aug_00.jpg,3556685196,2,2,HorizontalFlip
+V07,frame_1008,frame_1008_aug_01.jpg,3552134950,2,2,Affine RandomBrightnessContrast
+V07,frame_1008,frame_1008_aug_02.jpg,54614080,2,2,HorizontalFlip Affine RandomBrightnessContrast RGBShift Oclusion
+V07,frame_1032,frame_1032_aug_00.jpg,1053271060,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V07,frame_1032,frame_1032_aug_01.jpg,3775542394,2,2,HorizontalFlip Affine
+V07,frame_1032,frame_1032_aug_02.jpg,537664625,2,2,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V07,frame_1056,frame_1056_aug_00.jpg,697713527,3,2,HorizontalFlip Affine RandomGamma
+V07,frame_1056,frame_1056_aug_01.jpg,887455280,3,2,HorizontalFlip Affine Oclusion
+V07,frame_1056,frame_1056_aug_02.jpg,2989873571,3,3,HorizontalFlip RandomBrightnessContrast Oclusion
+V07,frame_1080,frame_1080_aug_00.jpg,2155442203,1,1,Affine RandomBrightnessContrast GaussNoise
+V07,frame_1080,frame_1080_aug_01.jpg,415324687,1,1,HorizontalFlip Affine ImageCompression Oclusion
+V07,frame_1080,frame_1080_aug_02.jpg,331296245,1,1,HorizontalFlip Affine RandomGamma RGBShift
+V07,frame_1104,frame_1104_aug_00.jpg,3018564946,1,1,RandomBrightnessContrast
+V07,frame_1104,frame_1104_aug_01.jpg,4069570176,1,1,HorizontalFlip RandomGamma RGBShift GaussNoise Oclusion
+V07,frame_1104,frame_1104_aug_02.jpg,2375408090,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_1128,frame_1128_aug_00.jpg,2900681935,2,2,Affine RandomGamma RGBShift Oclusion
+V07,frame_1128,frame_1128_aug_01.jpg,2058374604,2,2,HorizontalFlip Affine HueSaturationValue ImageCompression
+V07,frame_1128,frame_1128_aug_02.jpg,3680267211,2,2,HorizontalFlip Affine HueSaturationValue
+V07,frame_1152,frame_1152_aug_00.jpg,3671420222,2,2,Affine
+V07,frame_1152,frame_1152_aug_01.jpg,3726279365,2,2,RandomBrightnessContrast RGBShift MotionBlur
+V07,frame_1152,frame_1152_aug_02.jpg,3682853236,2,2,Affine RandomBrightnessContrast
+V07,frame_1176,frame_1176_aug_00.jpg,2564096265,2,2,HorizontalFlip Affine
+V07,frame_1176,frame_1176_aug_01.jpg,1428745228,2,1,HorizontalFlip Affine RandomGamma
+V07,frame_1176,frame_1176_aug_02.jpg,3902831362,2,2,HorizontalFlip RandomBrightnessContrast
+V07,frame_1200,frame_1200_aug_00.jpg,524161965,1,1,HorizontalFlip Affine
+V07,frame_1200,frame_1200_aug_01.jpg,802140622,1,1,Affine Downscale
+V07,frame_1200,frame_1200_aug_02.jpg,1019903452,1,1,HorizontalFlip Affine ImageCompression
+V07,frame_1224,frame_1224_aug_00.jpg,2008697244,2,2,Affine
+V07,frame_1224,frame_1224_aug_01.jpg,2032143070,2,2,HorizontalFlip Affine RandomGamma RGBShift
+V07,frame_1224,frame_1224_aug_02.jpg,539249051,2,2,RandomBrightnessContrast MotionBlur Downscale
+V07,frame_1248,frame_1248_aug_00.jpg,1652826677,2,2,HorizontalFlip Affine RGBShift MotionBlur Oclusion
+V07,frame_1248,frame_1248_aug_01.jpg,1086935338,2,2,HorizontalFlip RandomGamma GaussNoise
+V07,frame_1248,frame_1248_aug_02.jpg,1011337132,2,2,HorizontalFlip RandomGamma ImageCompression Oclusion
+V07,frame_1272,frame_1272_aug_00.jpg,2731273945,1,1,HorizontalFlip Affine RGBShift
+V07,frame_1272,frame_1272_aug_01.jpg,1770741956,1,1,HorizontalFlip Affine RGBShift MotionBlur
+V07,frame_1272,frame_1272_aug_02.jpg,3997473044,1,1,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V07,frame_1296,frame_1296_aug_00.jpg,3674708609,2,2,RandomGamma
+V07,frame_1296,frame_1296_aug_01.jpg,3454797823,2,2,Affine RandomBrightnessContrast
+V07,frame_1296,frame_1296_aug_02.jpg,406332420,2,2,HorizontalFlip Affine RandomGamma
+V07,frame_1320,frame_1320_aug_00.jpg,708512265,2,2,HorizontalFlip Affine RGBShift
+V07,frame_1320,frame_1320_aug_01.jpg,1787658443,2,2,Affine MotionBlur
+V07,frame_1320,frame_1320_aug_02.jpg,1138499645,2,2,RandomGamma RGBShift GaussNoise
+V07,frame_1344,frame_1344_aug_00.jpg,632288406,1,1,HorizontalFlip Affine MotionBlur ISONoise Oclusion
+V07,frame_1344,frame_1344_aug_01.jpg,2977665943,1,1,HorizontalFlip RandomBrightnessContrast
+V07,frame_1344,frame_1344_aug_02.jpg,2720405009,1,1,Affine ImageCompression
+V07,frame_1368,frame_1368_aug_00.jpg,3130888516,2,2,HorizontalFlip Affine RandomGamma
+V07,frame_1368,frame_1368_aug_01.jpg,2134290995,2,2,HorizontalFlip Affine Downscale
+V07,frame_1368,frame_1368_aug_02.jpg,3889072960,2,1,Affine RandomBrightnessContrast ISONoise
+V07,frame_1392,frame_1392_aug_00.jpg,372027900,1,1,HorizontalFlip Affine MotionBlur ISONoise
+V07,frame_1392,frame_1392_aug_01.jpg,2958754562,1,1,RandomGamma
+V07,frame_1392,frame_1392_aug_02.jpg,2147937547,1,1,Affine RandomBrightnessContrast
+V07,frame_1416,frame_1416_aug_00.jpg,1415265737,2,2,HorizontalFlip Affine RandomBrightnessContrast Oclusion
+V07,frame_1416,frame_1416_aug_01.jpg,1765101009,2,2,HorizontalFlip Affine RGBShift Downscale
+V07,frame_1416,frame_1416_aug_02.jpg,1439160618,2,2,MotionBlur
+V07,frame_1440,frame_1440_aug_00.jpg,997583772,2,2,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V07,frame_1440,frame_1440_aug_01.jpg,3628678585,2,2,HorizontalFlip RandomBrightnessContrast MotionBlur
+V07,frame_1440,frame_1440_aug_02.jpg,3222063101,2,2,HorizontalFlip Affine
+V07,frame_1464,frame_1464_aug_00.jpg,1556539947,2,2,Affine RandomBrightnessContrast MotionBlur
+V07,frame_1464,frame_1464_aug_01.jpg,2119057564,2,2,Affine
+V07,frame_1464,frame_1464_aug_02.jpg,225916236,2,2,HorizontalFlip ImageCompression
+V07,frame_1488,frame_1488_aug_00.jpg,1672555802,1,1,HorizontalFlip Affine
+V07,frame_1488,frame_1488_aug_01.jpg,1034439704,1,1,Affine RandomGamma Oclusion
+V07,frame_1488,frame_1488_aug_02.jpg,4091978297,1,1,HorizontalFlip Affine RandomGamma
+V07,frame_1512,frame_1512_aug_00.jpg,1813513501,1,1,Affine ISONoise
+V07,frame_1512,frame_1512_aug_01.jpg,1681921881,1,1,Affine RandomGamma
+V07,frame_1512,frame_1512_aug_02.jpg,2868360725,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_1536,frame_1536_aug_00.jpg,3735991882,1,1,RGBShift
+V07,frame_1536,frame_1536_aug_01.jpg,682922796,1,1,Affine HueSaturationValue
+V07,frame_1536,frame_1536_aug_02.jpg,2346550002,1,1,Affine RandomBrightnessContrast RGBShift
+V07,frame_1560,frame_1560_aug_00.jpg,3042969419,1,1,Affine RandomGamma HueSaturationValue MotionBlur
+V07,frame_1560,frame_1560_aug_01.jpg,2033365042,1,1,Affine HueSaturationValue
+V07,frame_1560,frame_1560_aug_02.jpg,3946595882,1,1,Affine HueSaturationValue GaussNoise
+V07,frame_1584,frame_1584_aug_00.jpg,4247785641,2,2,Affine
+V07,frame_1584,frame_1584_aug_01.jpg,2382094684,2,1,Affine
+V07,frame_1584,frame_1584_aug_02.jpg,1745075613,2,2,Affine
+V07,frame_1608,frame_1608_aug_00.jpg,1543417524,3,3,Affine
+V07,frame_1608,frame_1608_aug_01.jpg,367887655,3,3,Affine RandomGamma MotionBlur
+V07,frame_1608,frame_1608_aug_02.jpg,674421812,3,3,HorizontalFlip MotionBlur
+V07,frame_1632,frame_1632_aug_00.jpg,1375629158,2,2,RandomBrightnessContrast
+V07,frame_1632,frame_1632_aug_01.jpg,2110663472,2,2,HorizontalFlip Affine MotionBlur
+V07,frame_1632,frame_1632_aug_02.jpg,3669631754,2,2,HorizontalFlip
+V07,frame_1656,frame_1656_aug_00.jpg,3209110303,1,1,Affine RandomGamma
+V07,frame_1656,frame_1656_aug_01.jpg,444312270,1,1,Affine ISONoise
+V07,frame_1656,frame_1656_aug_02.jpg,2091981470,1,1,HorizontalFlip Affine Downscale Oclusion
+V07,frame_1680,frame_1680_aug_00.jpg,2085096365,2,2,HorizontalFlip Affine MotionBlur ISONoise
+V07,frame_1680,frame_1680_aug_01.jpg,2221722990,2,2,RandomBrightnessContrast ISONoise
+V07,frame_1680,frame_1680_aug_02.jpg,3359442638,2,2,Affine RandomBrightnessContrast
+V07,frame_1704,frame_1704_aug_00.jpg,1079814606,2,2,Affine RandomBrightnessContrast Oclusion
+V07,frame_1704,frame_1704_aug_01.jpg,4202732426,2,2,HorizontalFlip Affine HueSaturationValue
+V07,frame_1704,frame_1704_aug_02.jpg,832971972,2,2,HorizontalFlip Affine RandomGamma MotionBlur
+V07,frame_1728,frame_1728_aug_00.jpg,1784324805,1,1,RandomGamma Downscale
+V07,frame_1728,frame_1728_aug_01.jpg,2841800798,1,1,HorizontalFlip RandomGamma MotionBlur
+V07,frame_1728,frame_1728_aug_02.jpg,3660545801,1,1,Affine HueSaturationValue
+V07,frame_1752,frame_1752_aug_00.jpg,2132918052,1,1,Affine RandomBrightnessContrast RGBShift Oclusion
+V07,frame_1752,frame_1752_aug_01.jpg,198525219,1,1,RandomBrightnessContrast MotionBlur
+V07,frame_1752,frame_1752_aug_02.jpg,968388179,1,1,Affine RandomBrightnessContrast RGBShift Oclusion
+V07,frame_1776,frame_1776_aug_00.jpg,1200689948,1,1,Affine RandomGamma
+V07,frame_1776,frame_1776_aug_01.jpg,3713466661,1,1,HorizontalFlip RandomBrightnessContrast
+V07,frame_1776,frame_1776_aug_02.jpg,1811084982,1,1,RandomGamma
+V07,frame_1800,frame_1800_aug_00.jpg,1738241381,1,1,Affine RandomBrightnessContrast Downscale
+V07,frame_1800,frame_1800_aug_01.jpg,243549423,1,1,Affine RandomGamma ISONoise
+V07,frame_1800,frame_1800_aug_02.jpg,1749394147,1,1,Affine RandomGamma HueSaturationValue ISONoise
+V08,frame_0024,frame_0024_aug_00.jpg,4176052455,2,2,HorizontalFlip RandomGamma HueSaturationValue ImageCompression
+V08,frame_0024,frame_0024_aug_01.jpg,250240874,2,2,HueSaturationValue
+V08,frame_0024,frame_0024_aug_02.jpg,3302213029,2,2,Affine RandomBrightnessContrast HueSaturationValue
+V08,frame_0048,frame_0048_aug_00.jpg,3973526019,1,1,Affine HueSaturationValue
+V08,frame_0048,frame_0048_aug_01.jpg,917818943,1,1,Affine
+V08,frame_0048,frame_0048_aug_02.jpg,1735384623,1,1,HorizontalFlip Affine HueSaturationValue
+V08,frame_0072,frame_0072_aug_00.jpg,4181503835,2,2,HueSaturationValue
+V08,frame_0072,frame_0072_aug_01.jpg,1604839496,2,2,Affine RandomGamma Oclusion
+V08,frame_0072,frame_0072_aug_02.jpg,2890802126,2,2,Affine RandomGamma RGBShift
+V08,frame_0096,frame_0096_aug_00.jpg,211069833,1,1,Affine HueSaturationValue MotionBlur Oclusion
+V08,frame_0096,frame_0096_aug_01.jpg,2685449294,1,1,HorizontalFlip Affine MotionBlur
+V08,frame_0096,frame_0096_aug_02.jpg,355850728,1,1,HorizontalFlip Affine MotionBlur
+V08,frame_0120,frame_0120_aug_00.jpg,2024279895,2,2,HorizontalFlip Affine MotionBlur
+V08,frame_0120,frame_0120_aug_01.jpg,2134467874,2,2,Affine
+V08,frame_0120,frame_0120_aug_02.jpg,1648142730,2,2,HorizontalFlip Affine
+V08,frame_0144,frame_0144_aug_00.jpg,755982535,1,1,HorizontalFlip Affine
+V08,frame_0144,frame_0144_aug_01.jpg,2601059213,1,1,Affine RandomBrightnessContrast ImageCompression
+V08,frame_0144,frame_0144_aug_02.jpg,3614524851,1,1,HorizontalFlip HueSaturationValue Oclusion
+V08,frame_0168,frame_0168_aug_00.jpg,402431264,1,1,Affine RandomBrightnessContrast GaussNoise
+V08,frame_0168,frame_0168_aug_01.jpg,2402276952,1,1,Affine ImageCompression Oclusion
+V08,frame_0168,frame_0168_aug_02.jpg,1494214251,1,1,Affine Downscale
+V08,frame_0192,frame_0192_aug_00.jpg,1199831531,1,1,Affine Oclusion
+V08,frame_0192,frame_0192_aug_01.jpg,4138683417,1,1,Oclusion
+V08,frame_0192,frame_0192_aug_02.jpg,3457763784,1,1,Affine ISONoise
+V08,frame_0216,frame_0216_aug_00.jpg,1310089805,1,1,Affine HueSaturationValue
+V08,frame_0216,frame_0216_aug_01.jpg,2363690339,1,1,HorizontalFlip Affine RandomGamma Oclusion
+V08,frame_0216,frame_0216_aug_02.jpg,900287383,1,1,Affine RandomBrightnessContrast
+V08,frame_0240,frame_0240_aug_00.jpg,539896587,1,1,Affine HueSaturationValue
+V08,frame_0240,frame_0240_aug_01.jpg,4095659477,1,1,Affine
+V08,frame_0240,frame_0240_aug_02.jpg,3804506710,1,1,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V08,frame_0264,frame_0264_aug_00.jpg,1003315130,1,1,HorizontalFlip RandomBrightnessContrast ImageCompression
+V08,frame_0264,frame_0264_aug_01.jpg,1796497677,1,1,RGBShift MotionBlur
+V08,frame_0264,frame_0264_aug_02.jpg,3588472189,1,1,Affine RandomGamma
+V08,frame_0288,frame_0288_aug_00.jpg,2970057579,2,2,RandomBrightnessContrast RGBShift ISONoise
+V08,frame_0288,frame_0288_aug_01.jpg,3122290397,2,2,Affine RandomGamma RGBShift ISONoise
+V08,frame_0288,frame_0288_aug_02.jpg,170644359,2,2,Affine RandomBrightnessContrast GaussNoise
+V08,frame_0312,frame_0312_aug_00.jpg,381239153,1,1,Affine RandomGamma Downscale
+V08,frame_0312,frame_0312_aug_01.jpg,1926939027,1,1,HorizontalFlip Affine
+V08,frame_0312,frame_0312_aug_02.jpg,96335524,1,1,HorizontalFlip Affine Oclusion
+V08,frame_0336,frame_0336_aug_00.jpg,2165003005,2,2,Affine HueSaturationValue
+V08,frame_0336,frame_0336_aug_01.jpg,4174007701,2,2,HorizontalFlip Affine GaussNoise
+V08,frame_0336,frame_0336_aug_02.jpg,4177253319,2,2,Affine MotionBlur
+V08,frame_0360,frame_0360_aug_00.jpg,3022269010,2,2,Affine RandomBrightnessContrast MotionBlur
+V08,frame_0360,frame_0360_aug_01.jpg,1569939644,2,2,RandomGamma HueSaturationValue MotionBlur
+V08,frame_0360,frame_0360_aug_02.jpg,1717426002,2,2,HorizontalFlip Affine ISONoise Oclusion
+V08,frame_0384,frame_0384_aug_00.jpg,441701163,2,2,HorizontalFlip RandomBrightnessContrast
+V08,frame_0384,frame_0384_aug_01.jpg,56440313,2,2,HorizontalFlip RandomBrightnessContrast
+V08,frame_0384,frame_0384_aug_02.jpg,1123093295,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V08,frame_0408,frame_0408_aug_00.jpg,781779134,1,1,HorizontalFlip
+V08,frame_0408,frame_0408_aug_01.jpg,3616629054,1,1,HorizontalFlip RGBShift
+V08,frame_0408,frame_0408_aug_02.jpg,1207825434,1,1,HorizontalFlip Affine ImageCompression Oclusion
+V08,frame_0432,frame_0432_aug_00.jpg,2022445030,1,1,HorizontalFlip Affine ImageCompression
+V08,frame_0432,frame_0432_aug_01.jpg,865984274,1,1,HorizontalFlip RandomGamma MotionBlur ISONoise
+V08,frame_0432,frame_0432_aug_02.jpg,2898262332,1,1,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V08,frame_0456,frame_0456_aug_00.jpg,1322074731,1,1,HorizontalFlip Affine RandomBrightnessContrast ISONoise
+V08,frame_0456,frame_0456_aug_01.jpg,3511862811,1,1,Affine RandomBrightnessContrast ImageCompression
+V08,frame_0456,frame_0456_aug_02.jpg,128748920,1,1,Affine RandomBrightnessContrast
+V08,frame_0480,frame_0480_aug_00.jpg,711390558,3,3,HorizontalFlip Affine
+V08,frame_0480,frame_0480_aug_01.jpg,2573409107,3,3,HorizontalFlip Affine
+V08,frame_0480,frame_0480_aug_02.jpg,2325266948,3,3,HorizontalFlip Affine Oclusion
+V08,frame_0504,frame_0504_aug_00.jpg,1403130973,2,2,Affine RandomGamma Downscale
+V08,frame_0504,frame_0504_aug_01.jpg,2741492161,2,2,Affine
+V08,frame_0504,frame_0504_aug_02.jpg,1556505474,2,2,HorizontalFlip ISONoise
+V08,frame_0528,frame_0528_aug_00.jpg,2267448573,2,2,Affine RandomGamma RGBShift
+V08,frame_0528,frame_0528_aug_01.jpg,3150464980,2,2,HorizontalFlip HueSaturationValue
+V08,frame_0528,frame_0528_aug_02.jpg,2058133476,2,2,RandomBrightnessContrast
+V08,frame_0552,frame_0552_aug_00.jpg,2671166677,2,2,HorizontalFlip Affine RandomGamma ISONoise
+V08,frame_0552,frame_0552_aug_01.jpg,197718812,2,2,Affine RandomGamma Oclusion
+V08,frame_0552,frame_0552_aug_02.jpg,810048653,2,2,MotionBlur
+V08,frame_0576,frame_0576_aug_00.jpg,368527845,2,2,Affine HueSaturationValue MotionBlur ImageCompression Oclusion
+V08,frame_0576,frame_0576_aug_01.jpg,3254892449,2,2,HorizontalFlip Affine MotionBlur ISONoise Oclusion
+V08,frame_0576,frame_0576_aug_02.jpg,2369096960,2,2,HorizontalFlip Affine MotionBlur Downscale
+V08,frame_0600,frame_0600_aug_00.jpg,525742651,3,3,HorizontalFlip RandomGamma ISONoise
+V08,frame_0600,frame_0600_aug_01.jpg,1251963196,3,3,HorizontalFlip Affine
+V08,frame_0600,frame_0600_aug_02.jpg,2296790036,3,3,Affine RandomGamma MotionBlur
+V08,frame_0624,frame_0624_aug_00.jpg,3855547518,2,2,HorizontalFlip MotionBlur
+V08,frame_0624,frame_0624_aug_01.jpg,1090634124,2,2,MotionBlur
+V08,frame_0624,frame_0624_aug_02.jpg,3722797740,2,2,Affine RandomBrightnessContrast HueSaturationValue ImageCompression
+V08,frame_0648,frame_0648_aug_00.jpg,2144151955,2,2,Affine RandomGamma ISONoise
+V08,frame_0648,frame_0648_aug_01.jpg,3213070940,2,2,Affine RandomGamma Oclusion
+V08,frame_0648,frame_0648_aug_02.jpg,2380243541,2,2,RandomGamma
+V08,frame_0672,frame_0672_aug_00.jpg,3667167099,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V08,frame_0672,frame_0672_aug_01.jpg,3091678268,2,2,Affine RandomGamma Oclusion
+V08,frame_0672,frame_0672_aug_02.jpg,1576516926,2,2,HorizontalFlip
+V08,frame_0696,frame_0696_aug_00.jpg,1886132778,1,1,Affine RandomGamma MotionBlur ImageCompression Oclusion
+V08,frame_0696,frame_0696_aug_01.jpg,1613851716,1,1,Affine RandomBrightnessContrast ISONoise
+V08,frame_0696,frame_0696_aug_02.jpg,2133017690,1,1,HorizontalFlip Affine
+V08,frame_0720,frame_0720_aug_00.jpg,1307501621,2,2,HorizontalFlip RGBShift
+V08,frame_0720,frame_0720_aug_01.jpg,442755162,2,2,Affine RandomGamma
+V08,frame_0720,frame_0720_aug_02.jpg,2165399303,2,2,HorizontalFlip Downscale
+V08,frame_0744,frame_0744_aug_00.jpg,3255262177,1,1,HorizontalFlip Affine MotionBlur
+V08,frame_0744,frame_0744_aug_01.jpg,3059080949,1,1,HorizontalFlip RandomGamma
+V08,frame_0744,frame_0744_aug_02.jpg,1618041982,1,1,HorizontalFlip Affine RandomGamma RGBShift Oclusion
+V08,frame_0768,frame_0768_aug_00.jpg,2815909865,1,1,Affine
+V08,frame_0768,frame_0768_aug_01.jpg,1199038863,1,1,Affine HueSaturationValue
+V08,frame_0768,frame_0768_aug_02.jpg,1703593127,1,1,HorizontalFlip Affine RandomGamma
+V08,frame_0792,frame_0792_aug_00.jpg,95339746,2,2,HorizontalFlip Oclusion
+V08,frame_0792,frame_0792_aug_01.jpg,2513541543,2,2,Affine HueSaturationValue
+V08,frame_0792,frame_0792_aug_02.jpg,4148919099,2,2,HorizontalFlip Affine MotionBlur GaussNoise
+V08,frame_0816,frame_0816_aug_00.jpg,2319144008,1,1,Affine RandomBrightnessContrast ISONoise Oclusion
+V08,frame_0816,frame_0816_aug_01.jpg,4248679807,1,1,Affine RandomBrightnessContrast HueSaturationValue Downscale
+V08,frame_0816,frame_0816_aug_02.jpg,1297358970,1,1,Affine ISONoise
+V08,frame_0840,frame_0840_aug_00.jpg,1432744037,1,1,RandomBrightnessContrast
+V08,frame_0840,frame_0840_aug_01.jpg,408640177,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V08,frame_0840,frame_0840_aug_02.jpg,715062068,1,1,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V08,frame_0864,frame_0864_aug_00.jpg,145499104,1,1,HorizontalFlip Affine RandomGamma Oclusion
+V08,frame_0864,frame_0864_aug_01.jpg,1780474383,1,1,HorizontalFlip RGBShift
+V08,frame_0864,frame_0864_aug_02.jpg,1230669091,1,1,Affine RGBShift MotionBlur
+V08,frame_0888,frame_0888_aug_00.jpg,1762765927,1,1,Affine RandomBrightnessContrast ImageCompression
+V08,frame_0888,frame_0888_aug_01.jpg,4180574827,1,1,RandomGamma RGBShift ImageCompression Oclusion
+V08,frame_0888,frame_0888_aug_02.jpg,1188434649,1,1,HorizontalFlip GaussNoise
+V08,frame_0912,frame_0912_aug_00.jpg,1462522090,1,1,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V08,frame_0912,frame_0912_aug_01.jpg,3765663111,1,1,RandomGamma
+V08,frame_0912,frame_0912_aug_02.jpg,350326308,1,1,Affine RGBShift
+V08,frame_0936,frame_0936_aug_00.jpg,973083721,1,1,RandomBrightnessContrast
+V08,frame_0936,frame_0936_aug_01.jpg,2480107324,1,1,Affine RandomBrightnessContrast
+V08,frame_0936,frame_0936_aug_02.jpg,1401096142,1,1,ISONoise
+V08,frame_0960,frame_0960_aug_00.jpg,1869095999,1,1,HorizontalFlip Affine HueSaturationValue
+V08,frame_0960,frame_0960_aug_01.jpg,3872379010,1,1,Affine RandomBrightnessContrast
+V08,frame_0960,frame_0960_aug_02.jpg,3220021120,1,1,HorizontalFlip Affine RandomGamma RGBShift Oclusion
+V08,frame_0984,frame_0984_aug_00.jpg,2140872395,3,2,Affine RGBShift
+V08,frame_0984,frame_0984_aug_01.jpg,3056337832,3,3,Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V08,frame_0984,frame_0984_aug_02.jpg,2663491818,3,3,Affine Oclusion
+V08,frame_1008,frame_1008_aug_00.jpg,2745015119,1,1,HorizontalFlip Affine RandomGamma MotionBlur
+V08,frame_1008,frame_1008_aug_01.jpg,1762832669,1,1,Affine ImageCompression
+V08,frame_1008,frame_1008_aug_02.jpg,338974228,1,1,MotionBlur
+V08,frame_1032,frame_1032_aug_00.jpg,609949457,1,1,Affine RandomGamma HueSaturationValue Oclusion
+V08,frame_1032,frame_1032_aug_01.jpg,2702630626,1,1,HorizontalFlip Affine RandomGamma GaussNoise
+V08,frame_1032,frame_1032_aug_02.jpg,1773792115,1,1,Affine RandomBrightnessContrast Downscale Oclusion
+V08,frame_1056,frame_1056_aug_00.jpg,3394941620,2,2,HorizontalFlip RGBShift MotionBlur ISONoise
+V08,frame_1056,frame_1056_aug_01.jpg,3975121922,2,2,HorizontalFlip Affine HueSaturationValue
+V08,frame_1056,frame_1056_aug_02.jpg,3480074453,2,2,HorizontalFlip ISONoise
+V08,frame_1080,frame_1080_aug_00.jpg,3643051103,2,2,HorizontalFlip Affine RandomGamma ImageCompression
+V08,frame_1080,frame_1080_aug_01.jpg,3110481007,2,2,HorizontalFlip Affine RandomBrightnessContrast Oclusion
+V08,frame_1080,frame_1080_aug_02.jpg,3182252844,2,2,Affine MotionBlur
+V08,frame_1104,frame_1104_aug_00.jpg,3929444641,2,2,Affine HueSaturationValue
+V08,frame_1104,frame_1104_aug_01.jpg,3693624646,2,2,Affine
+V08,frame_1104,frame_1104_aug_02.jpg,2699622334,2,2,HorizontalFlip
+V08,frame_1128,frame_1128_aug_00.jpg,675015079,2,2,HorizontalFlip Affine RGBShift MotionBlur
+V08,frame_1128,frame_1128_aug_01.jpg,2028117806,2,2,RandomBrightnessContrast
+V08,frame_1128,frame_1128_aug_02.jpg,3628545216,2,2,HorizontalFlip Affine RandomGamma MotionBlur
+V08,frame_1152,frame_1152_aug_00.jpg,3210127385,2,2,MotionBlur Downscale
+V08,frame_1152,frame_1152_aug_01.jpg,3898277786,2,2,Affine
+V08,frame_1152,frame_1152_aug_02.jpg,2626469930,2,2,HorizontalFlip
+V08,frame_1176,frame_1176_aug_00.jpg,857012147,2,2,Affine RandomGamma HueSaturationValue
+V08,frame_1176,frame_1176_aug_01.jpg,1712887826,2,2,HorizontalFlip Affine
+V08,frame_1176,frame_1176_aug_02.jpg,3360621399,2,2,RandomGamma ImageCompression
+V08,frame_1200,frame_1200_aug_00.jpg,2408749731,2,2,HorizontalFlip RandomGamma
+V08,frame_1200,frame_1200_aug_01.jpg,2900277039,2,2,HorizontalFlip Affine MotionBlur
+V08,frame_1200,frame_1200_aug_02.jpg,3911275967,2,2,HorizontalFlip HueSaturationValue MotionBlur ISONoise
+V08,frame_1224,frame_1224_aug_00.jpg,3399376196,2,2,Affine RGBShift
+V08,frame_1224,frame_1224_aug_01.jpg,597170227,2,2,HorizontalFlip HueSaturationValue
+V08,frame_1224,frame_1224_aug_02.jpg,925549402,2,2,Affine RandomGamma
+V08,frame_1248,frame_1248_aug_00.jpg,3078859223,1,1,Affine RandomBrightnessContrast GaussNoise
+V08,frame_1248,frame_1248_aug_01.jpg,3218224025,1,1,HorizontalFlip Affine RandomGamma
+V08,frame_1248,frame_1248_aug_02.jpg,3044145241,1,1,Affine RandomBrightnessContrast
+V08,frame_1272,frame_1272_aug_00.jpg,3553172578,1,1,HorizontalFlip RandomGamma HueSaturationValue GaussNoise
+V08,frame_1272,frame_1272_aug_01.jpg,32283100,1,1,HorizontalFlip Affine RGBShift
+V08,frame_1272,frame_1272_aug_02.jpg,402171722,1,1,RandomGamma
+V08,frame_1296,frame_1296_aug_00.jpg,794029261,2,2,HorizontalFlip Affine RandomGamma RGBShift Downscale
+V08,frame_1296,frame_1296_aug_01.jpg,3242385422,2,2,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V08,frame_1296,frame_1296_aug_02.jpg,1155376523,2,2,HorizontalFlip Oclusion
+V08,frame_1320,frame_1320_aug_00.jpg,1857047631,2,2,Affine
+V08,frame_1320,frame_1320_aug_01.jpg,731508498,2,2,HorizontalFlip
+V08,frame_1320,frame_1320_aug_02.jpg,3236770572,2,2,HorizontalFlip Affine ImageCompression
+V08,frame_1344,frame_1344_aug_00.jpg,1351398134,3,3,RandomGamma MotionBlur ImageCompression
+V08,frame_1344,frame_1344_aug_01.jpg,1025835277,3,3,HorizontalFlip Affine ImageCompression
+V08,frame_1344,frame_1344_aug_02.jpg,1680086952,3,3,HorizontalFlip ImageCompression Oclusion
+V08,frame_1368,frame_1368_aug_00.jpg,4254910511,3,3,HorizontalFlip Affine ISONoise
+V08,frame_1368,frame_1368_aug_01.jpg,3801009075,3,3,HorizontalFlip Affine RGBShift Oclusion
+V08,frame_1368,frame_1368_aug_02.jpg,597400484,3,3,Affine GaussNoise
+V08,frame_1392,frame_1392_aug_00.jpg,2192853536,2,2,HorizontalFlip Affine RandomGamma RGBShift MotionBlur
+V08,frame_1392,frame_1392_aug_01.jpg,2843809368,2,2,Affine HueSaturationValue ISONoise
+V08,frame_1392,frame_1392_aug_02.jpg,2626410723,2,2,RandomGamma MotionBlur
+V08,frame_1416,frame_1416_aug_00.jpg,3582262989,3,3,Affine GaussNoise Oclusion
+V08,frame_1416,frame_1416_aug_01.jpg,1692071821,3,3,Affine RandomGamma Downscale
+V08,frame_1416,frame_1416_aug_02.jpg,4059302701,3,3,RandomGamma RGBShift
+V08,frame_1440,frame_1440_aug_00.jpg,2312300573,2,2,RandomGamma
+V08,frame_1440,frame_1440_aug_01.jpg,1916330910,2,2,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V08,frame_1440,frame_1440_aug_02.jpg,811110059,2,2,HorizontalFlip Affine
+V08,frame_1464,frame_1464_aug_00.jpg,152303932,3,3,RGBShift MotionBlur GaussNoise
+V08,frame_1464,frame_1464_aug_01.jpg,3023001802,3,3,Downscale
+V08,frame_1464,frame_1464_aug_02.jpg,305999945,3,3,Affine RGBShift
+V08,frame_1488,frame_1488_aug_00.jpg,4285873823,2,2,HorizontalFlip Affine RGBShift
+V08,frame_1488,frame_1488_aug_01.jpg,338260841,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue Oclusion
+V08,frame_1488,frame_1488_aug_02.jpg,750745933,2,2,HorizontalFlip Affine MotionBlur Oclusion
+V08,frame_1512,frame_1512_aug_00.jpg,379859048,1,1,HorizontalFlip Affine
+V08,frame_1512,frame_1512_aug_01.jpg,1326038110,1,1,HorizontalFlip Affine RGBShift
+V08,frame_1512,frame_1512_aug_02.jpg,2183510238,1,1,Affine RGBShift MotionBlur Oclusion
+V08,frame_1536,frame_1536_aug_00.jpg,1739595549,2,2,HorizontalFlip Affine RandomGamma
+V08,frame_1536,frame_1536_aug_01.jpg,587267697,2,2,RandomGamma
+V08,frame_1536,frame_1536_aug_02.jpg,678507581,2,2,Affine RandomBrightnessContrast HueSaturationValue Oclusion
+V08,frame_1560,frame_1560_aug_00.jpg,3568359586,2,2,HorizontalFlip Affine
+V08,frame_1560,frame_1560_aug_01.jpg,3718086894,2,2,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V08,frame_1560,frame_1560_aug_02.jpg,477039356,2,2,Affine ISONoise
+V08,frame_1584,frame_1584_aug_00.jpg,32962579,3,3,HorizontalFlip RandomBrightnessContrast GaussNoise
+V08,frame_1584,frame_1584_aug_01.jpg,1431786178,3,3,Affine RandomGamma ISONoise
+V08,frame_1584,frame_1584_aug_02.jpg,29578029,3,3,HorizontalFlip RandomBrightnessContrast HueSaturationValue GaussNoise
+V08,frame_1608,frame_1608_aug_00.jpg,2582059728,3,3,RandomBrightnessContrast ImageCompression
+V08,frame_1608,frame_1608_aug_01.jpg,2257760159,3,3,HorizontalFlip
+V08,frame_1608,frame_1608_aug_02.jpg,3621781631,3,3,Affine HueSaturationValue
+V08,frame_1632,frame_1632_aug_00.jpg,2371572461,3,3,HorizontalFlip Affine Oclusion
+V08,frame_1632,frame_1632_aug_01.jpg,434095537,3,3,HorizontalFlip Affine
+V08,frame_1632,frame_1632_aug_02.jpg,1491565746,3,3,ImageCompression
+V08,frame_1656,frame_1656_aug_00.jpg,1108470990,3,3,Affine RandomBrightnessContrast Downscale Oclusion
+V08,frame_1656,frame_1656_aug_01.jpg,3691980150,3,3,Affine
+V08,frame_1656,frame_1656_aug_02.jpg,1691758912,3,3,HorizontalFlip RandomGamma Oclusion
+V08,frame_1680,frame_1680_aug_00.jpg,618904785,3,3,HorizontalFlip Affine RGBShift
+V08,frame_1680,frame_1680_aug_01.jpg,1448718455,3,3,HorizontalFlip Affine RandomGamma MotionBlur Downscale
+V08,frame_1680,frame_1680_aug_02.jpg,3693373923,3,3,HorizontalFlip Affine RandomGamma ISONoise
+V08,frame_1704,frame_1704_aug_00.jpg,3787232168,3,3,HorizontalFlip RandomBrightnessContrast
+V08,frame_1704,frame_1704_aug_01.jpg,12177640,3,3,Affine
+V08,frame_1704,frame_1704_aug_02.jpg,3349603981,3,3,Affine RandomBrightnessContrast
+V08,frame_1728,frame_1728_aug_00.jpg,2511528650,2,2,HorizontalFlip RandomGamma ImageCompression
+V08,frame_1728,frame_1728_aug_01.jpg,803445867,2,2,RandomBrightnessContrast MotionBlur ISONoise
+V08,frame_1728,frame_1728_aug_02.jpg,1958644641,2,2,HorizontalFlip
+V08,frame_1752,frame_1752_aug_00.jpg,2109601358,2,2,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V08,frame_1752,frame_1752_aug_01.jpg,1980751697,2,2,Affine RandomGamma
+V08,frame_1752,frame_1752_aug_02.jpg,1975343487,2,2,HorizontalFlip Affine MotionBlur
+V08,frame_1776,frame_1776_aug_00.jpg,330342478,3,2,Affine RandomBrightnessContrast Downscale
+V08,frame_1776,frame_1776_aug_01.jpg,3184427061,3,3,HorizontalFlip
+V08,frame_1776,frame_1776_aug_02.jpg,4072501189,3,3,HorizontalFlip Affine
+V08,frame_1800,frame_1800_aug_00.jpg,1524972793,1,1,Affine MotionBlur
+V08,frame_1800,frame_1800_aug_01.jpg,3410045752,1,1,RandomBrightnessContrast RGBShift
+V08,frame_1800,frame_1800_aug_02.jpg,3497455900,1,1,Affine RandomBrightnessContrast MotionBlur
+V08,frame_1824,frame_1824_aug_00.jpg,655732210,3,3,Affine
+V08,frame_1824,frame_1824_aug_01.jpg,2652672946,3,3,Oclusion
+V08,frame_1824,frame_1824_aug_02.jpg,3011711668,3,3,Affine RandomGamma HueSaturationValue MotionBlur Oclusion
+V08,frame_1848,frame_1848_aug_00.jpg,2754692771,2,2,HorizontalFlip Affine RandomGamma
+V08,frame_1848,frame_1848_aug_01.jpg,2931273833,2,2,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V08,frame_1848,frame_1848_aug_02.jpg,1597113081,2,2,HorizontalFlip Oclusion
+V08,frame_1872,frame_1872_aug_00.jpg,1665737308,2,2,HorizontalFlip Affine ImageCompression
+V08,frame_1872,frame_1872_aug_01.jpg,1737361396,2,2,MotionBlur
+V08,frame_1872,frame_1872_aug_02.jpg,3384902158,2,2,HorizontalFlip Affine ImageCompression
+V08,frame_1896,frame_1896_aug_00.jpg,3545158859,2,2,Affine RandomGamma Downscale Oclusion
+V08,frame_1896,frame_1896_aug_01.jpg,3474831231,2,2,HorizontalFlip RGBShift
+V08,frame_1896,frame_1896_aug_02.jpg,1043402465,2,1,HorizontalFlip Affine RandomGamma
+V08,frame_1920,frame_1920_aug_00.jpg,3317099078,1,1,HorizontalFlip Affine MotionBlur
+V08,frame_1920,frame_1920_aug_01.jpg,46359511,1,1,HorizontalFlip Affine
+V08,frame_1920,frame_1920_aug_02.jpg,622107084,1,1,Affine RGBShift ImageCompression
+V08,frame_1944,frame_1944_aug_00.jpg,1850051051,2,2,Affine RGBShift MotionBlur Oclusion
+V08,frame_1944,frame_1944_aug_01.jpg,85284498,2,2,HorizontalFlip Affine RandomGamma
+V08,frame_1944,frame_1944_aug_02.jpg,2946389263,2,2,Affine RandomGamma
+V08,frame_1968,frame_1968_aug_00.jpg,2868782401,2,2,HorizontalFlip RandomGamma
+V08,frame_1968,frame_1968_aug_01.jpg,2812359457,2,2,Affine RandomBrightnessContrast RGBShift ImageCompression
+V08,frame_1968,frame_1968_aug_02.jpg,861506790,2,2,HorizontalFlip Affine RandomGamma RGBShift Oclusion
+V08,frame_1992,frame_1992_aug_00.jpg,1296982730,2,2,HorizontalFlip Affine Downscale
+V08,frame_1992,frame_1992_aug_01.jpg,3970357360,2,2,Affine Downscale
+V08,frame_1992,frame_1992_aug_02.jpg,3867878413,2,2,RandomBrightnessContrast RGBShift MotionBlur Downscale
+V08,frame_2016,frame_2016_aug_00.jpg,1172759763,3,3,HorizontalFlip
+V08,frame_2016,frame_2016_aug_01.jpg,1723619549,3,3,RandomBrightnessContrast
+V08,frame_2016,frame_2016_aug_02.jpg,2539003092,3,3,HorizontalFlip RandomBrightnessContrast
+V08,frame_2040,frame_2040_aug_00.jpg,3257976394,3,3,Affine Downscale Oclusion
+V08,frame_2040,frame_2040_aug_01.jpg,4006823207,3,3,Affine RandomGamma ISONoise
+V08,frame_2040,frame_2040_aug_02.jpg,3468658828,3,3,HorizontalFlip Affine RandomGamma
+V08,frame_2064,frame_2064_aug_00.jpg,2834757381,3,3,Affine MotionBlur
+V08,frame_2064,frame_2064_aug_01.jpg,2495927105,3,3,Affine RandomBrightnessContrast MotionBlur Downscale
+V08,frame_2064,frame_2064_aug_02.jpg,3581768413,3,3,HorizontalFlip Affine GaussNoise Oclusion
+V08,frame_2088,frame_2088_aug_00.jpg,3894438457,3,3,Affine RandomGamma
+V08,frame_2088,frame_2088_aug_01.jpg,2555176461,3,3,Affine RandomBrightnessContrast Oclusion
+V08,frame_2088,frame_2088_aug_02.jpg,91664494,3,3,HorizontalFlip Affine RandomBrightnessContrast
+V08,frame_2112,frame_2112_aug_00.jpg,1132392528,2,2,HorizontalFlip Affine MotionBlur
+V08,frame_2112,frame_2112_aug_01.jpg,860744775,2,2,Affine RandomBrightnessContrast GaussNoise
+V08,frame_2112,frame_2112_aug_02.jpg,448888038,2,2,RandomBrightnessContrast RGBShift ISONoise
+V08,frame_2136,frame_2136_aug_00.jpg,2489067177,2,2,HorizontalFlip Affine
+V08,frame_2136,frame_2136_aug_01.jpg,2601031580,2,2,HorizontalFlip Affine RandomGamma
+V08,frame_2136,frame_2136_aug_02.jpg,4120560444,2,2,HorizontalFlip Affine
+V08,frame_2160,frame_2160_aug_00.jpg,3419548675,2,2,HorizontalFlip Affine RGBShift Downscale
+V08,frame_2160,frame_2160_aug_01.jpg,3348154251,2,2,HorizontalFlip Affine Oclusion
+V08,frame_2160,frame_2160_aug_02.jpg,3965280622,2,2,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V08,frame_2184,frame_2184_aug_00.jpg,1922136241,2,1,Affine RandomGamma RGBShift Downscale
+V08,frame_2184,frame_2184_aug_01.jpg,3290017931,2,1,Affine
+V08,frame_2184,frame_2184_aug_02.jpg,940441060,2,2,HorizontalFlip Affine RandomGamma
+V08,frame_2208,frame_2208_aug_00.jpg,3629449284,3,3,HorizontalFlip Affine
+V08,frame_2208,frame_2208_aug_01.jpg,3734267579,3,3,HorizontalFlip Affine ImageCompression Oclusion
+V08,frame_2208,frame_2208_aug_02.jpg,1341210706,3,3,HorizontalFlip Affine RandomBrightnessContrast
+V08,frame_2232,frame_2232_aug_00.jpg,501031400,3,3,HorizontalFlip Affine HueSaturationValue ISONoise
+V08,frame_2232,frame_2232_aug_01.jpg,736851352,3,3,HorizontalFlip Affine HueSaturationValue
+V08,frame_2232,frame_2232_aug_02.jpg,1975166529,3,3,Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V08,frame_2256,frame_2256_aug_00.jpg,2268968643,2,2,HorizontalFlip RandomBrightnessContrast ISONoise
+V08,frame_2256,frame_2256_aug_01.jpg,2557429068,2,2,Affine RandomBrightnessContrast ImageCompression
+V08,frame_2256,frame_2256_aug_02.jpg,2892895010,2,2,HorizontalFlip
+V08,frame_2280,frame_2280_aug_00.jpg,2876293168,2,2,HorizontalFlip Affine
+V08,frame_2280,frame_2280_aug_01.jpg,701431169,2,2,Affine HueSaturationValue ImageCompression
+V08,frame_2280,frame_2280_aug_02.jpg,3712921956,2,2,RandomBrightnessContrast HueSaturationValue Downscale Oclusion
+V08,frame_2304,frame_2304_aug_00.jpg,3357114104,2,2,Affine RandomGamma ImageCompression
+V08,frame_2304,frame_2304_aug_01.jpg,1575194586,2,2,Affine RandomGamma RGBShift
+V08,frame_2304,frame_2304_aug_02.jpg,35496873,2,2,HorizontalFlip Affine Oclusion
+V08,frame_2328,frame_2328_aug_00.jpg,1259181252,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V08,frame_2328,frame_2328_aug_01.jpg,1502359860,2,2,HueSaturationValue
+V08,frame_2328,frame_2328_aug_02.jpg,2329503080,2,2,GaussNoise
+V08,frame_2352,frame_2352_aug_00.jpg,1595443674,3,3,Affine RandomGamma
+V08,frame_2352,frame_2352_aug_01.jpg,831881041,3,3,Affine GaussNoise
+V08,frame_2352,frame_2352_aug_02.jpg,1068971552,3,3,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V08,frame_2376,frame_2376_aug_00.jpg,1516187276,2,2,HorizontalFlip Affine
+V08,frame_2376,frame_2376_aug_01.jpg,2560444412,2,2,HueSaturationValue
+V08,frame_2376,frame_2376_aug_02.jpg,322655895,2,2,HorizontalFlip Affine GaussNoise
+V08,frame_2400,frame_2400_aug_00.jpg,935171867,2,2,RandomBrightnessContrast RGBShift
+V08,frame_2400,frame_2400_aug_01.jpg,211282733,2,2,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V08,frame_2400,frame_2400_aug_02.jpg,2883086941,2,2,Affine Downscale
+V08,frame_2424,frame_2424_aug_00.jpg,1826358020,2,2,HorizontalFlip RandomBrightnessContrast RGBShift ImageCompression
+V08,frame_2424,frame_2424_aug_01.jpg,569378405,2,2,HorizontalFlip GaussNoise
+V08,frame_2424,frame_2424_aug_02.jpg,552416312,2,2,Affine RandomGamma
+V08,frame_2448,frame_2448_aug_00.jpg,2028790220,1,1,HorizontalFlip RGBShift Oclusion
+V08,frame_2448,frame_2448_aug_01.jpg,3611201993,1,1,HorizontalFlip Affine RandomBrightnessContrast ISONoise
+V08,frame_2448,frame_2448_aug_02.jpg,4110098206,1,1,HorizontalFlip RGBShift
+V09,frame_0024,frame_0024_aug_00.jpg,3948868324,2,2,HorizontalFlip RandomBrightnessContrast ImageCompression
+V09,frame_0024,frame_0024_aug_01.jpg,4009137714,2,2,HorizontalFlip Affine RGBShift
+V09,frame_0024,frame_0024_aug_02.jpg,2037951016,2,2,Affine RandomGamma
+V09,frame_0048,frame_0048_aug_00.jpg,3620167687,1,1,Affine HueSaturationValue Downscale
+V09,frame_0048,frame_0048_aug_01.jpg,1908473118,1,1,HorizontalFlip Affine HueSaturationValue MotionBlur
+V09,frame_0048,frame_0048_aug_02.jpg,3777809628,1,1,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V09,frame_0072,frame_0072_aug_00.jpg,1515254675,2,2,Affine RandomBrightnessContrast MotionBlur
+V09,frame_0072,frame_0072_aug_01.jpg,1598224431,2,2,Affine
+V09,frame_0072,frame_0072_aug_02.jpg,569088889,2,2,HorizontalFlip Affine RandomGamma RGBShift GaussNoise
+V09,frame_0096,frame_0096_aug_00.jpg,1373794718,2,2,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V09,frame_0096,frame_0096_aug_01.jpg,1170212885,2,2,Affine RandomGamma RGBShift GaussNoise
+V09,frame_0096,frame_0096_aug_02.jpg,4021265373,2,2,HorizontalFlip Affine RandomGamma
+V09,frame_0120,frame_0120_aug_00.jpg,1210023792,2,2,HorizontalFlip Affine HueSaturationValue GaussNoise
+V09,frame_0120,frame_0120_aug_01.jpg,906889503,2,2,Affine Downscale Oclusion
+V09,frame_0120,frame_0120_aug_02.jpg,3032132589,2,2,Affine
+V09,frame_0144,frame_0144_aug_00.jpg,3785443556,2,2,Affine RandomGamma Downscale Oclusion
+V09,frame_0144,frame_0144_aug_01.jpg,270455801,2,2,ISONoise
+V09,frame_0144,frame_0144_aug_02.jpg,1782287458,2,2,Affine
+V09,frame_0168,frame_0168_aug_00.jpg,3181164568,2,2,Affine RandomBrightnessContrast
+V09,frame_0168,frame_0168_aug_01.jpg,2360128030,2,2,HorizontalFlip ISONoise Oclusion
+V09,frame_0168,frame_0168_aug_02.jpg,361931577,2,2,Affine MotionBlur
+V09,frame_0192,frame_0192_aug_00.jpg,1225426888,2,2,HorizontalFlip HueSaturationValue
+V09,frame_0192,frame_0192_aug_01.jpg,2117212419,2,2,Affine RandomBrightnessContrast
+V09,frame_0192,frame_0192_aug_02.jpg,3437287843,2,2,HorizontalFlip Affine
+V09,frame_0216,frame_0216_aug_00.jpg,701469167,2,2,HorizontalFlip Affine RandomGamma HueSaturationValue Downscale
+V09,frame_0216,frame_0216_aug_01.jpg,3249925260,2,2,HorizontalFlip
+V09,frame_0216,frame_0216_aug_02.jpg,2891684678,2,2,HorizontalFlip Affine Downscale
+V09,frame_0240,frame_0240_aug_00.jpg,3631948776,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_0240,frame_0240_aug_01.jpg,3567121630,1,1,RandomGamma ImageCompression
+V09,frame_0240,frame_0240_aug_02.jpg,2876459024,1,1,HorizontalFlip Affine RandomGamma
+V09,frame_0264,frame_0264_aug_00.jpg,2393082294,2,2,Affine RandomGamma
+V09,frame_0264,frame_0264_aug_01.jpg,902505373,2,2,Affine HueSaturationValue
+V09,frame_0264,frame_0264_aug_02.jpg,3434658639,2,2,Affine RandomGamma RGBShift MotionBlur
+V09,frame_0288,frame_0288_aug_00.jpg,3843549394,2,2,HorizontalFlip RandomGamma Downscale
+V09,frame_0288,frame_0288_aug_01.jpg,2465646685,2,2,HorizontalFlip Affine HueSaturationValue
+V09,frame_0288,frame_0288_aug_02.jpg,1830281421,2,2,Affine RandomGamma HueSaturationValue Downscale
+V09,frame_0312,frame_0312_aug_00.jpg,809629182,2,2,RandomGamma Downscale
+V09,frame_0312,frame_0312_aug_01.jpg,2654522047,2,2,RandomGamma MotionBlur
+V09,frame_0312,frame_0312_aug_02.jpg,2598631288,2,2,HorizontalFlip Affine MotionBlur Oclusion
+V09,frame_0336,frame_0336_aug_00.jpg,2621388616,2,2,Affine RandomGamma Oclusion
+V09,frame_0336,frame_0336_aug_01.jpg,2639496966,2,2,HorizontalFlip Affine
+V09,frame_0336,frame_0336_aug_02.jpg,1095125118,2,2,Affine Downscale
+V09,frame_0360,frame_0360_aug_00.jpg,3852288700,2,2,Affine
+V09,frame_0360,frame_0360_aug_01.jpg,297833050,2,2,Affine
+V09,frame_0360,frame_0360_aug_02.jpg,14577621,2,2,HorizontalFlip Affine RGBShift
+V09,frame_0384,frame_0384_aug_00.jpg,160030938,1,1,HorizontalFlip Affine RandomGamma
+V09,frame_0384,frame_0384_aug_01.jpg,3051838837,1,1,Affine RandomGamma
+V09,frame_0384,frame_0384_aug_02.jpg,2529341903,1,1,HorizontalFlip Affine RGBShift
+V09,frame_0408,frame_0408_aug_00.jpg,3645041243,1,1,HorizontalFlip Affine
+V09,frame_0408,frame_0408_aug_01.jpg,3508048632,1,1,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V09,frame_0408,frame_0408_aug_02.jpg,2806517023,1,1,Affine RGBShift
+V09,frame_0432,frame_0432_aug_00.jpg,1787256073,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_0432,frame_0432_aug_01.jpg,1004171805,1,1,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V09,frame_0432,frame_0432_aug_02.jpg,6556951,1,1,Affine HueSaturationValue MotionBlur
+V09,frame_0456,frame_0456_aug_00.jpg,2400568355,1,1,HorizontalFlip Affine RandomBrightnessContrast RGBShift ImageCompression Oclusion
+V09,frame_0456,frame_0456_aug_01.jpg,3239761799,1,1,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V09,frame_0456,frame_0456_aug_02.jpg,695265676,1,1,HorizontalFlip Affine MotionBlur
+V09,frame_0480,frame_0480_aug_00.jpg,1588277407,2,2,HorizontalFlip Affine GaussNoise
+V09,frame_0480,frame_0480_aug_01.jpg,3184703311,2,2,HorizontalFlip RandomGamma
+V09,frame_0480,frame_0480_aug_02.jpg,3960404690,2,2,HorizontalFlip ISONoise
+V09,frame_0504,frame_0504_aug_00.jpg,924911595,2,2,Affine RGBShift
+V09,frame_0504,frame_0504_aug_01.jpg,53358596,2,2,RandomGamma RGBShift ImageCompression
+V09,frame_0504,frame_0504_aug_02.jpg,2295970373,2,2,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_0528,frame_0528_aug_00.jpg,2807487591,3,3,RandomGamma RGBShift MotionBlur
+V09,frame_0528,frame_0528_aug_01.jpg,4061335974,3,2,HorizontalFlip Affine RandomGamma
+V09,frame_0528,frame_0528_aug_02.jpg,1722346561,3,2,Affine ImageCompression Oclusion
+V09,frame_0552,frame_0552_aug_00.jpg,278397721,2,2,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V09,frame_0552,frame_0552_aug_01.jpg,2536708311,2,2,Affine RandomGamma
+V09,frame_0552,frame_0552_aug_02.jpg,1105582003,2,2,MotionBlur Downscale
+V09,frame_0576,frame_0576_aug_00.jpg,2879994836,1,1,Affine RandomGamma
+V09,frame_0576,frame_0576_aug_01.jpg,403143544,1,1,Affine Oclusion
+V09,frame_0576,frame_0576_aug_02.jpg,3396185513,1,1,HorizontalFlip Affine
+V09,frame_0600,frame_0600_aug_00.jpg,104447606,2,2,HorizontalFlip RandomGamma RGBShift Oclusion
+V09,frame_0600,frame_0600_aug_01.jpg,2295644024,2,2,RandomBrightnessContrast
+V09,frame_0600,frame_0600_aug_02.jpg,652082879,2,2,HorizontalFlip Affine RandomGamma
+V09,frame_0624,frame_0624_aug_00.jpg,1186950451,2,2,HorizontalFlip Affine GaussNoise
+V09,frame_0624,frame_0624_aug_01.jpg,4267482968,2,2,Affine RandomGamma ISONoise
+V09,frame_0624,frame_0624_aug_02.jpg,125761143,2,2,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_0648,frame_0648_aug_00.jpg,2637696196,1,1,HorizontalFlip Affine RandomGamma
+V09,frame_0648,frame_0648_aug_01.jpg,4105939524,1,1,HorizontalFlip RandomGamma
+V09,frame_0648,frame_0648_aug_02.jpg,1248468092,1,1,Affine
+V09,frame_0672,frame_0672_aug_00.jpg,2766673398,2,2,Affine RandomGamma
+V09,frame_0672,frame_0672_aug_01.jpg,4059318694,2,2,HorizontalFlip Affine RandomGamma
+V09,frame_0672,frame_0672_aug_02.jpg,1083615503,2,2,Affine ISONoise
+V09,frame_0696,frame_0696_aug_00.jpg,655770589,2,2,Affine RandomBrightnessContrast ImageCompression Oclusion
+V09,frame_0696,frame_0696_aug_01.jpg,707399146,2,2,Affine Oclusion
+V09,frame_0696,frame_0696_aug_02.jpg,3108335412,2,2,Affine RandomBrightnessContrast Oclusion
+V09,frame_0720,frame_0720_aug_00.jpg,2989392326,2,2,RandomBrightnessContrast
+V09,frame_0720,frame_0720_aug_01.jpg,1342299710,2,2,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_0720,frame_0720_aug_02.jpg,3959278159,2,2,RandomGamma RGBShift
+V09,frame_0744,frame_0744_aug_00.jpg,330737984,1,1,Affine HueSaturationValue
+V09,frame_0744,frame_0744_aug_01.jpg,864050810,1,1,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V09,frame_0744,frame_0744_aug_02.jpg,3617674347,1,1,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V09,frame_0768,frame_0768_aug_00.jpg,4129023037,1,1,RandomBrightnessContrast RGBShift
+V09,frame_0768,frame_0768_aug_01.jpg,3899639184,1,1,Affine RGBShift MotionBlur GaussNoise
+V09,frame_0768,frame_0768_aug_02.jpg,2574424415,1,1,RandomBrightnessContrast HueSaturationValue
+V09,frame_0792,frame_0792_aug_00.jpg,1953811300,2,2,RandomBrightnessContrast ISONoise
+V09,frame_0792,frame_0792_aug_01.jpg,4010969352,2,2,HorizontalFlip Affine RGBShift Oclusion
+V09,frame_0792,frame_0792_aug_02.jpg,18330118,2,2,HorizontalFlip RandomGamma RGBShift
+V09,frame_0816,frame_0816_aug_00.jpg,731173065,3,3,Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V09,frame_0816,frame_0816_aug_01.jpg,1871338840,3,3,Affine RandomBrightnessContrast HueSaturationValue GaussNoise
+V09,frame_0816,frame_0816_aug_02.jpg,2168259859,3,2,Affine
+V09,frame_0840,frame_0840_aug_00.jpg,2019823214,1,1,Affine RandomGamma Oclusion
+V09,frame_0840,frame_0840_aug_01.jpg,686727328,1,1,HorizontalFlip Affine RandomGamma HueSaturationValue
+V09,frame_0840,frame_0840_aug_02.jpg,1707833225,1,1,HorizontalFlip Affine
+V09,frame_0864,frame_0864_aug_00.jpg,3493840966,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_0864,frame_0864_aug_01.jpg,3733407689,1,1,HorizontalFlip Affine HueSaturationValue
+V09,frame_0864,frame_0864_aug_02.jpg,3451907188,1,1,HorizontalFlip Affine RandomGamma
+V09,frame_0888,frame_0888_aug_00.jpg,3554390859,1,1,Affine ImageCompression
+V09,frame_0888,frame_0888_aug_01.jpg,4079436358,1,1,HorizontalFlip RandomBrightnessContrast
+V09,frame_0888,frame_0888_aug_02.jpg,4004810126,1,1,HorizontalFlip Affine RandomGamma RGBShift Oclusion
+V09,frame_0912,frame_0912_aug_00.jpg,166106465,1,1,HorizontalFlip Affine
+V09,frame_0912,frame_0912_aug_01.jpg,3824646360,1,1,HorizontalFlip
+V09,frame_0912,frame_0912_aug_02.jpg,3588720348,1,1,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V09,frame_0936,frame_0936_aug_00.jpg,3866303923,1,1,HorizontalFlip Affine RandomGamma RGBShift
+V09,frame_0936,frame_0936_aug_01.jpg,3884777360,1,1,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V09,frame_0936,frame_0936_aug_02.jpg,2381141688,1,1,Affine RGBShift
+V09,frame_0960,frame_0960_aug_00.jpg,1885690146,1,1,RandomBrightnessContrast ISONoise
+V09,frame_0960,frame_0960_aug_01.jpg,2384016348,1,1,Affine
+V09,frame_0960,frame_0960_aug_02.jpg,2363194046,1,1,HorizontalFlip Affine GaussNoise
+V09,frame_0984,frame_0984_aug_00.jpg,482988549,2,2,Affine ImageCompression
+V09,frame_0984,frame_0984_aug_01.jpg,94196943,2,2,HorizontalFlip Affine RandomGamma MotionBlur GaussNoise
+V09,frame_0984,frame_0984_aug_02.jpg,4080183315,2,2,HorizontalFlip Affine
+V09,frame_1008,frame_1008_aug_00.jpg,2116626726,1,1,Affine
+V09,frame_1008,frame_1008_aug_01.jpg,434051190,1,1,Affine HueSaturationValue ISONoise
+V09,frame_1008,frame_1008_aug_02.jpg,591298070,1,1,HorizontalFlip Affine RandomGamma
+V09,frame_1032,frame_1032_aug_00.jpg,1554520521,1,1,HorizontalFlip Affine
+V09,frame_1032,frame_1032_aug_01.jpg,2184120036,1,1,RandomBrightnessContrast Downscale
+V09,frame_1032,frame_1032_aug_02.jpg,807582189,1,1,Affine
+V09,frame_1056,frame_1056_aug_00.jpg,1320967422,1,1,RandomGamma RGBShift MotionBlur
+V09,frame_1056,frame_1056_aug_01.jpg,896013726,1,1,HorizontalFlip ISONoise
+V09,frame_1056,frame_1056_aug_02.jpg,3933188148,1,1,Affine
+V09,frame_1080,frame_1080_aug_00.jpg,501242519,1,1,Affine RandomGamma MotionBlur Downscale
+V09,frame_1080,frame_1080_aug_01.jpg,4113616454,1,1,Affine RandomGamma HueSaturationValue
+V09,frame_1080,frame_1080_aug_02.jpg,548796434,1,1,Affine RGBShift
+V09,frame_1104,frame_1104_aug_00.jpg,3762782118,1,1,HorizontalFlip Affine RGBShift ImageCompression
+V09,frame_1104,frame_1104_aug_01.jpg,2949956933,1,1,Affine RandomBrightnessContrast
+V09,frame_1104,frame_1104_aug_02.jpg,712513032,1,1,RandomBrightnessContrast
+V09,frame_1128,frame_1128_aug_00.jpg,3421432953,1,1,HorizontalFlip RandomBrightnessContrast Oclusion
+V09,frame_1128,frame_1128_aug_01.jpg,1369523187,1,1,HorizontalFlip
+V09,frame_1128,frame_1128_aug_02.jpg,1703434920,1,1,RandomBrightnessContrast
+V09,frame_1152,frame_1152_aug_00.jpg,451603537,2,2,Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V09,frame_1152,frame_1152_aug_01.jpg,3428811958,2,2,HueSaturationValue
+V09,frame_1152,frame_1152_aug_02.jpg,1852466874,2,1,HorizontalFlip Affine RandomBrightnessContrast ImageCompression Oclusion
+V09,frame_1176,frame_1176_aug_00.jpg,2275744208,2,2,HorizontalFlip Affine RandomGamma Oclusion
+V09,frame_1176,frame_1176_aug_01.jpg,1661565053,2,2,RandomBrightnessContrast ISONoise
+V09,frame_1176,frame_1176_aug_02.jpg,3764507982,2,2,HorizontalFlip Affine
+V09,frame_1200,frame_1200_aug_00.jpg,2865682119,2,2,HorizontalFlip Affine RandomGamma RGBShift MotionBlur
+V09,frame_1200,frame_1200_aug_01.jpg,1165726701,2,2,Affine RandomGamma
+V09,frame_1200,frame_1200_aug_02.jpg,296629689,2,2,HorizontalFlip Affine ImageCompression
+V09,frame_1224,frame_1224_aug_00.jpg,1138248632,2,2,HorizontalFlip RandomGamma
+V09,frame_1224,frame_1224_aug_01.jpg,1507170744,2,2,Affine RandomGamma
+V09,frame_1224,frame_1224_aug_02.jpg,3569536142,2,2,Affine RandomGamma
+V09,frame_1248,frame_1248_aug_00.jpg,1397477009,2,2,Affine RandomBrightnessContrast GaussNoise
+V09,frame_1248,frame_1248_aug_01.jpg,718014404,2,2,Affine RandomBrightnessContrast RGBShift
+V09,frame_1248,frame_1248_aug_02.jpg,1228215100,2,2,HorizontalFlip Affine MotionBlur
+V09,frame_1272,frame_1272_aug_00.jpg,2069158782,2,2,HorizontalFlip
+V09,frame_1272,frame_1272_aug_01.jpg,2517722700,2,2,Affine RandomBrightnessContrast
+V09,frame_1272,frame_1272_aug_02.jpg,2173525877,2,2,HorizontalFlip Affine
+V09,frame_1296,frame_1296_aug_00.jpg,3687966017,1,1,HorizontalFlip Affine RGBShift MotionBlur
+V09,frame_1296,frame_1296_aug_01.jpg,3365118144,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_1296,frame_1296_aug_02.jpg,1595054101,1,1,GaussNoise
+V09,frame_1320,frame_1320_aug_00.jpg,1805396562,2,2,HorizontalFlip
+V09,frame_1320,frame_1320_aug_01.jpg,3399603628,2,2,HorizontalFlip
+V09,frame_1320,frame_1320_aug_02.jpg,2656780645,2,2,HorizontalFlip Affine ISONoise
+V09,frame_1344,frame_1344_aug_00.jpg,313779899,2,2,HorizontalFlip Oclusion
+V09,frame_1344,frame_1344_aug_01.jpg,969945239,2,2,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_1344,frame_1344_aug_02.jpg,1783726062,2,2,HorizontalFlip Affine RandomGamma
+V09,frame_1368,frame_1368_aug_00.jpg,1986203235,2,2,RandomBrightnessContrast HueSaturationValue GaussNoise
+V09,frame_1368,frame_1368_aug_01.jpg,330742074,2,2,HorizontalFlip Affine
+V09,frame_1368,frame_1368_aug_02.jpg,1493906212,2,2,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V09,frame_1392,frame_1392_aug_00.jpg,1224402996,2,2,Affine HueSaturationValue
+V09,frame_1392,frame_1392_aug_01.jpg,1756298890,2,2,HorizontalFlip Affine
+V09,frame_1392,frame_1392_aug_02.jpg,3878970929,2,2,HorizontalFlip Affine RandomBrightnessContrast ISONoise
+V09,frame_1440,frame_1440_aug_00.jpg,1913532042,3,3,HorizontalFlip Affine RandomGamma
+V09,frame_1440,frame_1440_aug_01.jpg,255150661,3,3,HorizontalFlip Affine HueSaturationValue ISONoise
+V09,frame_1440,frame_1440_aug_02.jpg,1227645859,3,3,HorizontalFlip Affine RandomGamma
+V09,frame_1464,frame_1464_aug_00.jpg,4047607219,3,3,HueSaturationValue Downscale Oclusion
+V09,frame_1464,frame_1464_aug_01.jpg,2436308180,3,3,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_1464,frame_1464_aug_02.jpg,1189038899,3,3,HorizontalFlip Affine
+V09,frame_1488,frame_1488_aug_00.jpg,1374009923,2,2,HorizontalFlip Affine RGBShift
+V09,frame_1488,frame_1488_aug_01.jpg,3652401385,2,2,Affine RandomBrightnessContrast HueSaturationValue Downscale
+V09,frame_1488,frame_1488_aug_02.jpg,1983641491,2,2,HorizontalFlip Affine
+V09,frame_1512,frame_1512_aug_00.jpg,3794430658,2,2,Affine
+V09,frame_1512,frame_1512_aug_01.jpg,1694089726,2,2,Affine RandomGamma RGBShift
+V09,frame_1512,frame_1512_aug_02.jpg,3778736727,2,2,HorizontalFlip
+V09,frame_1536,frame_1536_aug_00.jpg,1313808560,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_1536,frame_1536_aug_01.jpg,2010043131,1,1,HorizontalFlip Affine Oclusion
+V09,frame_1536,frame_1536_aug_02.jpg,821332513,1,1,Affine Oclusion
+V09,frame_1560,frame_1560_aug_00.jpg,2597918074,1,1,HorizontalFlip RandomGamma HueSaturationValue
+V09,frame_1560,frame_1560_aug_01.jpg,229678278,1,1,Affine RandomGamma
+V09,frame_1560,frame_1560_aug_02.jpg,3612029327,1,1,HorizontalFlip Affine Oclusion
+V09,frame_1584,frame_1584_aug_00.jpg,3657495845,1,1,RandomGamma Oclusion
+V09,frame_1584,frame_1584_aug_01.jpg,1708570349,1,1,HorizontalFlip RandomGamma
+V09,frame_1584,frame_1584_aug_02.jpg,725283088,1,1,RandomBrightnessContrast HueSaturationValue Oclusion
+V09,frame_1608,frame_1608_aug_00.jpg,2005829446,1,1,HorizontalFlip Affine
+V09,frame_1608,frame_1608_aug_01.jpg,843226837,1,1,Affine MotionBlur
+V09,frame_1608,frame_1608_aug_02.jpg,3241981383,1,1,Affine RandomBrightnessContrast
+V09,frame_1632,frame_1632_aug_00.jpg,1113655958,1,1,Affine RandomBrightnessContrast
+V09,frame_1632,frame_1632_aug_01.jpg,4094099310,1,1,Affine MotionBlur ImageCompression Oclusion
+V09,frame_1632,frame_1632_aug_02.jpg,3346836037,1,1,HorizontalFlip Affine RGBShift
+V09,frame_1656,frame_1656_aug_00.jpg,762946639,1,1,HorizontalFlip Affine RandomGamma MotionBlur
+V09,frame_1656,frame_1656_aug_01.jpg,4039228113,1,1,RandomGamma RGBShift GaussNoise
+V09,frame_1656,frame_1656_aug_02.jpg,395074319,1,1,HorizontalFlip RandomGamma MotionBlur
+V09,frame_1680,frame_1680_aug_00.jpg,3310064624,1,1,HorizontalFlip RandomBrightnessContrast MotionBlur GaussNoise
+V09,frame_1680,frame_1680_aug_01.jpg,637776231,1,1,RandomBrightnessContrast
+V09,frame_1680,frame_1680_aug_02.jpg,1809504409,1,1,Affine HueSaturationValue
+V09,frame_1704,frame_1704_aug_00.jpg,3295389021,1,1,Affine
+V09,frame_1704,frame_1704_aug_01.jpg,2866477057,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_1704,frame_1704_aug_02.jpg,1494138319,1,1,RandomBrightnessContrast RGBShift
+V10,frame_0024,frame_0024_aug_00.jpg,1675449021,1,1,Affine RGBShift
+V10,frame_0024,frame_0024_aug_01.jpg,3522881147,1,1,Affine RandomBrightnessContrast MotionBlur
+V10,frame_0024,frame_0024_aug_02.jpg,3076698450,1,1,Affine MotionBlur
+V10,frame_0048,frame_0048_aug_00.jpg,4278923521,1,1,HorizontalFlip Affine
+V10,frame_0048,frame_0048_aug_01.jpg,500719980,1,1,HorizontalFlip
+V10,frame_0048,frame_0048_aug_02.jpg,4175571663,1,1,Affine RandomBrightnessContrast
+V10,frame_0072,frame_0072_aug_00.jpg,2080809200,2,2,HorizontalFlip RandomGamma
+V10,frame_0072,frame_0072_aug_01.jpg,2125238569,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V10,frame_0072,frame_0072_aug_02.jpg,3277402656,2,2,HorizontalFlip Affine RandomGamma ISONoise
+V10,frame_0096,frame_0096_aug_00.jpg,573245665,1,1,RandomBrightnessContrast HueSaturationValue
+V10,frame_0096,frame_0096_aug_01.jpg,3694868880,1,1,HorizontalFlip Affine RandomGamma ImageCompression
+V10,frame_0096,frame_0096_aug_02.jpg,4270985699,1,1,RGBShift GaussNoise
+V10,frame_0120,frame_0120_aug_00.jpg,3667134986,0,0,HorizontalFlip Affine RandomBrightnessContrast
+V10,frame_0120,frame_0120_aug_01.jpg,3645814443,0,0,HorizontalFlip Affine RandomGamma
+V10,frame_0120,frame_0120_aug_02.jpg,3953963521,0,0,HorizontalFlip Affine
+V10,frame_0144,frame_0144_aug_00.jpg,608092175,0,0,Affine
+V10,frame_0144,frame_0144_aug_01.jpg,2647404709,0,0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V10,frame_0144,frame_0144_aug_02.jpg,3890636104,0,0,Affine RandomGamma HueSaturationValue Oclusion
+V10,frame_0168,frame_0168_aug_00.jpg,4003922373,0,0,HorizontalFlip Affine RandomBrightnessContrast
+V10,frame_0168,frame_0168_aug_01.jpg,640632249,0,0,HorizontalFlip RandomBrightnessContrast
+V10,frame_0168,frame_0168_aug_02.jpg,595780022,0,0,HorizontalFlip RGBShift
+V10,frame_0192,frame_0192_aug_00.jpg,4225209002,1,1,HorizontalFlip RandomGamma MotionBlur
+V10,frame_0192,frame_0192_aug_01.jpg,2118826951,1,1,RandomGamma Oclusion
+V10,frame_0192,frame_0192_aug_02.jpg,2864049743,1,1,HorizontalFlip RandomGamma Downscale
+V10,frame_0216,frame_0216_aug_00.jpg,128312298,1,1,Affine RandomGamma ISONoise
+V10,frame_0216,frame_0216_aug_01.jpg,4205184561,1,1,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V10,frame_0216,frame_0216_aug_02.jpg,3611088659,1,1,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue Downscale
+V10,frame_0240,frame_0240_aug_00.jpg,1572106984,1,1,HorizontalFlip Affine
+V10,frame_0240,frame_0240_aug_01.jpg,2305375102,1,1,HorizontalFlip MotionBlur ImageCompression
+V10,frame_0240,frame_0240_aug_02.jpg,934685770,1,1,HorizontalFlip Affine HueSaturationValue GaussNoise
+V10,frame_0264,frame_0264_aug_00.jpg,1686989741,1,1,Affine RandomGamma
+V10,frame_0264,frame_0264_aug_01.jpg,1640303094,1,1,HueSaturationValue MotionBlur
+V10,frame_0264,frame_0264_aug_02.jpg,2944192776,1,1,HorizontalFlip Affine RGBShift ISONoise Oclusion
+V10,frame_0288,frame_0288_aug_00.jpg,3050197569,2,2,RandomGamma
+V10,frame_0288,frame_0288_aug_01.jpg,3470303518,2,2,HorizontalFlip Affine HueSaturationValue MotionBlur Downscale
+V10,frame_0288,frame_0288_aug_02.jpg,3996877954,2,2,HorizontalFlip Affine
+V10,frame_0312,frame_0312_aug_00.jpg,923069972,2,2,Affine
+V10,frame_0312,frame_0312_aug_01.jpg,2669343509,2,2,Affine RandomGamma RGBShift MotionBlur
+V10,frame_0312,frame_0312_aug_02.jpg,1756843601,2,2,HorizontalFlip Affine RandomBrightnessContrast Oclusion
+V10,frame_0336,frame_0336_aug_00.jpg,3542338768,2,2,Affine RandomBrightnessContrast
+V10,frame_0336,frame_0336_aug_01.jpg,596921752,2,2,Affine RGBShift Downscale Oclusion
+V10,frame_0336,frame_0336_aug_02.jpg,1347473246,2,2,HorizontalFlip Affine RandomBrightnessContrast
+V10,frame_0360,frame_0360_aug_00.jpg,950826530,2,2,HueSaturationValue Downscale
+V10,frame_0360,frame_0360_aug_01.jpg,87726644,2,2,HorizontalFlip RandomGamma ImageCompression Oclusion
+V10,frame_0360,frame_0360_aug_02.jpg,1302183915,2,2,HorizontalFlip Affine MotionBlur Oclusion
+V10,frame_0384,frame_0384_aug_00.jpg,3977003514,2,2,RandomGamma RGBShift Oclusion
+V10,frame_0384,frame_0384_aug_01.jpg,2199853818,2,2,HorizontalFlip Downscale
+V10,frame_0384,frame_0384_aug_02.jpg,1968034832,2,2,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V10,frame_0408,frame_0408_aug_00.jpg,2060618608,2,2,Affine RandomBrightnessContrast MotionBlur
+V10,frame_0408,frame_0408_aug_01.jpg,2279736348,2,2,HorizontalFlip Affine Downscale Oclusion
+V10,frame_0408,frame_0408_aug_02.jpg,564288230,2,2,HorizontalFlip HueSaturationValue
+V10,frame_0432,frame_0432_aug_00.jpg,3375046538,2,2,HorizontalFlip Affine
+V10,frame_0432,frame_0432_aug_01.jpg,1234090939,2,2,HorizontalFlip RandomBrightnessContrast
+V10,frame_0432,frame_0432_aug_02.jpg,2299426823,2,2,Affine RandomGamma
+V10,frame_0456,frame_0456_aug_00.jpg,3499335477,2,2,RandomBrightnessContrast ImageCompression
+V10,frame_0456,frame_0456_aug_01.jpg,2517283155,2,2,HorizontalFlip Affine RandomBrightnessContrast RGBShift MotionBlur
+V10,frame_0456,frame_0456_aug_02.jpg,1253906533,2,2,HorizontalFlip Affine RandomGamma HueSaturationValue Oclusion
+V10,frame_0480,frame_0480_aug_00.jpg,2897221184,2,2,HorizontalFlip RandomBrightnessContrast Oclusion
+V10,frame_0480,frame_0480_aug_01.jpg,2845778617,2,2,Affine MotionBlur
+V10,frame_0480,frame_0480_aug_02.jpg,3493061251,2,2,Affine HueSaturationValue
+V10,frame_0504,frame_0504_aug_00.jpg,111909026,2,2,Affine RandomBrightnessContrast MotionBlur
+V10,frame_0504,frame_0504_aug_01.jpg,1472445469,2,2,Affine HueSaturationValue
+V10,frame_0504,frame_0504_aug_02.jpg,351423179,2,2,HorizontalFlip RandomBrightnessContrast
+V10,frame_0528,frame_0528_aug_00.jpg,751407922,2,2,Affine Downscale
+V10,frame_0528,frame_0528_aug_01.jpg,1174129793,2,2,HueSaturationValue GaussNoise Oclusion
+V10,frame_0528,frame_0528_aug_02.jpg,1434126266,2,2,HorizontalFlip Affine Oclusion
+V10,frame_0552,frame_0552_aug_00.jpg,2451637263,3,3,Affine HueSaturationValue MotionBlur
+V10,frame_0552,frame_0552_aug_01.jpg,3410984951,3,3,RandomBrightnessContrast RGBShift Oclusion
+V10,frame_0552,frame_0552_aug_02.jpg,2583059241,3,3,HorizontalFlip Affine
+V10,frame_0576,frame_0576_aug_00.jpg,3166102468,3,3,HorizontalFlip Affine RandomBrightnessContrast RGBShift Oclusion
+V10,frame_0576,frame_0576_aug_01.jpg,2116872003,3,3,HorizontalFlip Affine RandomBrightnessContrast RGBShift Oclusion
+V10,frame_0576,frame_0576_aug_02.jpg,1665706044,3,3,Affine HueSaturationValue MotionBlur
+V10,frame_0600,frame_0600_aug_00.jpg,3491807694,3,3,Affine RandomGamma ISONoise
+V10,frame_0600,frame_0600_aug_01.jpg,2036044620,3,3,Affine Downscale
+V10,frame_0600,frame_0600_aug_02.jpg,102762654,3,3,HorizontalFlip RGBShift
+V10,frame_0624,frame_0624_aug_00.jpg,3557232879,3,3,HorizontalFlip GaussNoise
+V10,frame_0624,frame_0624_aug_01.jpg,4234953436,3,3,RandomBrightnessContrast GaussNoise
+V10,frame_0624,frame_0624_aug_02.jpg,3122359172,3,3,Affine
+V10,frame_0648,frame_0648_aug_00.jpg,3562881187,3,3,HorizontalFlip ISONoise
+V10,frame_0648,frame_0648_aug_01.jpg,2625224874,3,3,HorizontalFlip RandomGamma Oclusion
+V10,frame_0648,frame_0648_aug_02.jpg,3967685777,3,3,Affine RGBShift GaussNoise
+V10,frame_0672,frame_0672_aug_00.jpg,4041228177,2,2,Affine RandomGamma
+V10,frame_0672,frame_0672_aug_01.jpg,2255723652,2,2,Affine RandomBrightnessContrast HueSaturationValue MotionBlur
+V10,frame_0672,frame_0672_aug_02.jpg,979077252,2,2,Affine
+V10,frame_0696,frame_0696_aug_00.jpg,418498758,2,2,HorizontalFlip ImageCompression
+V10,frame_0696,frame_0696_aug_01.jpg,1905721494,2,2,Affine Oclusion
+V10,frame_0696,frame_0696_aug_02.jpg,973144138,2,2,HorizontalFlip Affine RandomGamma Downscale
+V10,frame_0720,frame_0720_aug_00.jpg,2066658858,3,3,HorizontalFlip Affine ImageCompression
+V10,frame_0720,frame_0720_aug_01.jpg,3299439241,3,3,HorizontalFlip Oclusion
+V10,frame_0720,frame_0720_aug_02.jpg,4036866828,3,3,Affine ISONoise
+V10,frame_0744,frame_0744_aug_00.jpg,1858420972,3,3,HorizontalFlip Affine RandomGamma
+V10,frame_0744,frame_0744_aug_01.jpg,310300454,3,3,HorizontalFlip Affine
+V10,frame_0744,frame_0744_aug_02.jpg,1879681509,3,3,RGBShift
+V10,frame_0768,frame_0768_aug_00.jpg,3596336479,1,1,HorizontalFlip Affine HueSaturationValue
+V10,frame_0768,frame_0768_aug_01.jpg,2853788338,1,1,RandomGamma MotionBlur
+V10,frame_0768,frame_0768_aug_02.jpg,1576593640,1,1,Affine Oclusion
+V10,frame_0792,frame_0792_aug_00.jpg,2001177181,1,1,Affine RandomGamma RGBShift
+V10,frame_0792,frame_0792_aug_01.jpg,3885005557,1,1,RandomBrightnessContrast GaussNoise
+V10,frame_0792,frame_0792_aug_02.jpg,1475505181,1,1,Affine RandomBrightnessContrast Oclusion
+V10,frame_0816,frame_0816_aug_00.jpg,648010226,1,1,RGBShift Oclusion
+V10,frame_0816,frame_0816_aug_01.jpg,1745990479,1,1,HorizontalFlip Affine
+V10,frame_0816,frame_0816_aug_02.jpg,2512829900,1,1,HorizontalFlip Affine RandomBrightnessContrast Downscale Oclusion
+V10,frame_0840,frame_0840_aug_00.jpg,2765463436,1,1,HorizontalFlip Affine RandomGamma RGBShift Downscale
+V10,frame_0840,frame_0840_aug_01.jpg,4059056132,1,1,Affine RandomGamma
+V10,frame_0840,frame_0840_aug_02.jpg,2049589103,1,1,HorizontalFlip RandomGamma
+V10,frame_0864,frame_0864_aug_00.jpg,3139451802,3,3,HorizontalFlip Affine
+V10,frame_0864,frame_0864_aug_01.jpg,3458822800,3,3,HorizontalFlip
+V10,frame_0864,frame_0864_aug_02.jpg,1073389793,3,3,HorizontalFlip Affine RandomBrightnessContrast
+V10,frame_0888,frame_0888_aug_00.jpg,3044342490,2,2,RandomGamma RGBShift
+V10,frame_0888,frame_0888_aug_01.jpg,378656127,2,2,RandomGamma RGBShift
+V10,frame_0888,frame_0888_aug_02.jpg,2766556923,2,2,Affine RandomBrightnessContrast MotionBlur ImageCompression Oclusion
+V10,frame_0912,frame_0912_aug_00.jpg,3136234089,2,2,Affine RandomGamma
+V10,frame_0912,frame_0912_aug_01.jpg,3913561119,2,2,Affine RandomGamma
+V10,frame_0912,frame_0912_aug_02.jpg,3339955459,2,2,Affine Oclusion
+V10,frame_0936,frame_0936_aug_00.jpg,2939565103,2,2,HorizontalFlip
+V10,frame_0936,frame_0936_aug_01.jpg,3235799978,2,2,HorizontalFlip Affine RandomBrightnessContrast RGBShift GaussNoise
+V10,frame_0936,frame_0936_aug_02.jpg,1372852661,2,2,HorizontalFlip Affine RandomBrightnessContrast ISONoise
+V10,frame_0960,frame_0960_aug_00.jpg,1678418871,1,1,Affine RandomGamma
+V10,frame_0960,frame_0960_aug_01.jpg,40156273,1,1,HorizontalFlip MotionBlur ImageCompression
+V10,frame_0960,frame_0960_aug_02.jpg,496848627,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V10,frame_0984,frame_0984_aug_00.jpg,1044199433,1,1,HorizontalFlip RandomBrightnessContrast
+V10,frame_0984,frame_0984_aug_01.jpg,11734277,1,1,Affine ImageCompression
+V10,frame_0984,frame_0984_aug_02.jpg,2629261549,1,1,HorizontalFlip Affine
+V10,frame_1008,frame_1008_aug_00.jpg,3770646559,2,2,HorizontalFlip Affine RandomGamma MotionBlur
+V10,frame_1008,frame_1008_aug_01.jpg,3488806618,2,2,Affine RandomBrightnessContrast MotionBlur GaussNoise
+V10,frame_1008,frame_1008_aug_02.jpg,3460065753,2,2,HorizontalFlip
+V10,frame_1032,frame_1032_aug_00.jpg,1064790,3,3,Affine RandomBrightnessContrast GaussNoise
+V10,frame_1032,frame_1032_aug_01.jpg,1289555906,3,3,HorizontalFlip Affine
+V10,frame_1032,frame_1032_aug_02.jpg,1205729517,3,3,HorizontalFlip Affine HueSaturationValue
+V10,frame_1056,frame_1056_aug_00.jpg,2676724173,2,2,Affine
+V10,frame_1056,frame_1056_aug_01.jpg,1093360295,2,2,Affine RandomGamma MotionBlur
+V10,frame_1056,frame_1056_aug_02.jpg,1506990371,2,2,HorizontalFlip Affine HueSaturationValue
+V10,frame_1080,frame_1080_aug_00.jpg,597950329,2,2,HorizontalFlip Affine RGBShift
+V10,frame_1080,frame_1080_aug_01.jpg,1005028517,2,2,HorizontalFlip Affine
+V10,frame_1080,frame_1080_aug_02.jpg,584866915,2,2,RandomGamma ImageCompression Oclusion
+V10,frame_1104,frame_1104_aug_00.jpg,1905803873,2,2,Affine
+V10,frame_1104,frame_1104_aug_01.jpg,4136051896,2,2,HorizontalFlip RandomGamma Downscale
+V10,frame_1104,frame_1104_aug_02.jpg,128193950,2,2,RandomBrightnessContrast
+V10,frame_1128,frame_1128_aug_00.jpg,3955754794,2,2,HorizontalFlip Affine RGBShift ImageCompression
+V10,frame_1128,frame_1128_aug_01.jpg,2648494669,2,2,Affine RandomGamma RGBShift
+V10,frame_1128,frame_1128_aug_02.jpg,2583101638,2,2,Affine RandomGamma
+V10,frame_1152,frame_1152_aug_00.jpg,1844350139,2,2,HorizontalFlip Affine Oclusion
+V10,frame_1152,frame_1152_aug_01.jpg,780442370,2,2,Affine Downscale
+V10,frame_1152,frame_1152_aug_02.jpg,2869854467,2,2,HorizontalFlip Affine RGBShift
+V10,frame_1176,frame_1176_aug_00.jpg,3408310810,1,1,Affine RandomBrightnessContrast
+V10,frame_1176,frame_1176_aug_01.jpg,2799445944,1,1,HorizontalFlip Affine
+V10,frame_1176,frame_1176_aug_02.jpg,2848119473,1,1,HorizontalFlip Affine HueSaturationValue
+V10,frame_1200,frame_1200_aug_00.jpg,3797328606,1,1,HorizontalFlip Affine RandomBrightnessContrast GaussNoise
+V10,frame_1200,frame_1200_aug_01.jpg,2662892713,1,1,HorizontalFlip Affine MotionBlur
+V10,frame_1200,frame_1200_aug_02.jpg,2645011957,1,1,Affine RandomGamma
+V10,frame_1224,frame_1224_aug_00.jpg,2189811379,1,1,HorizontalFlip Affine GaussNoise
+V10,frame_1224,frame_1224_aug_01.jpg,449057432,1,1,Affine RandomBrightnessContrast HueSaturationValue GaussNoise
+V10,frame_1224,frame_1224_aug_02.jpg,1521822090,1,1,HorizontalFlip Affine Oclusion
+V10,frame_1248,frame_1248_aug_00.jpg,1856864145,1,1,HorizontalFlip Affine RandomBrightnessContrast
+V10,frame_1248,frame_1248_aug_01.jpg,3499688292,1,1,HorizontalFlip Affine ImageCompression Oclusion
+V10,frame_1248,frame_1248_aug_02.jpg,2047949218,1,1,HorizontalFlip RGBShift
+V10,frame_1272,frame_1272_aug_00.jpg,4130252052,1,1,Affine
+V10,frame_1272,frame_1272_aug_01.jpg,3912194577,1,1,RandomBrightnessContrast HueSaturationValue
+V10,frame_1272,frame_1272_aug_02.jpg,3640813856,1,1,HorizontalFlip Affine
+V10,frame_1296,frame_1296_aug_00.jpg,3196939746,1,1,Affine RandomBrightnessContrast
+V10,frame_1296,frame_1296_aug_01.jpg,2689502291,1,1,Affine RandomBrightnessContrast MotionBlur ISONoise
+V10,frame_1296,frame_1296_aug_02.jpg,4284967208,1,1,Affine RandomBrightnessContrast MotionBlur
+V10,frame_1320,frame_1320_aug_00.jpg,1982103915,2,2,HorizontalFlip Affine RGBShift ISONoise
+V10,frame_1320,frame_1320_aug_01.jpg,2537253681,2,2,HorizontalFlip RandomGamma RGBShift
+V10,frame_1320,frame_1320_aug_02.jpg,1961309939,2,2,HorizontalFlip RandomGamma ImageCompression
+V10,frame_1344,frame_1344_aug_00.jpg,587474789,2,2,HorizontalFlip Affine Oclusion
+V10,frame_1344,frame_1344_aug_01.jpg,2149982949,2,2,HorizontalFlip RandomGamma RGBShift
+V10,frame_1344,frame_1344_aug_02.jpg,986243661,2,2,HorizontalFlip RGBShift
+V10,frame_1368,frame_1368_aug_00.jpg,1805872655,1,1,Affine RandomBrightnessContrast ISONoise
+V10,frame_1368,frame_1368_aug_01.jpg,1881518847,1,1,RGBShift
+V10,frame_1368,frame_1368_aug_02.jpg,652721264,1,1,Affine RandomGamma MotionBlur Oclusion
+V10,frame_1392,frame_1392_aug_00.jpg,2597787620,2,2,HorizontalFlip Affine RandomGamma MotionBlur GaussNoise
+V10,frame_1392,frame_1392_aug_01.jpg,1917230756,2,2,Affine
+V10,frame_1392,frame_1392_aug_02.jpg,2546242925,2,2,RandomGamma RGBShift ImageCompression
+V10,frame_1416,frame_1416_aug_00.jpg,2831292867,2,2,Affine RandomBrightnessContrast
+V10,frame_1416,frame_1416_aug_01.jpg,3658514023,2,2,HorizontalFlip Affine MotionBlur
+V10,frame_1416,frame_1416_aug_02.jpg,1572271564,2,2,Affine RGBShift
+V10,frame_1440,frame_1440_aug_00.jpg,2000222394,1,1,HorizontalFlip Affine HueSaturationValue
+V10,frame_1440,frame_1440_aug_01.jpg,4217300193,1,1,Affine HueSaturationValue
+V10,frame_1440,frame_1440_aug_02.jpg,3740795188,1,1,HorizontalFlip Affine
+V10,frame_1464,frame_1464_aug_00.jpg,3358486461,2,2,HorizontalFlip Affine RandomGamma MotionBlur
+V10,frame_1464,frame_1464_aug_01.jpg,2524955926,2,2,RandomGamma
+V10,frame_1464,frame_1464_aug_02.jpg,2460924105,2,2,RandomBrightnessContrast HueSaturationValue MotionBlur ISONoise
+V10,frame_1488,frame_1488_aug_00.jpg,2648278494,2,2,HorizontalFlip ImageCompression
+V10,frame_1488,frame_1488_aug_01.jpg,2422568588,2,2,Affine
+V10,frame_1488,frame_1488_aug_02.jpg,693326065,2,2,Affine
+V10,frame_1512,frame_1512_aug_00.jpg,94740570,2,2,HueSaturationValue
+V10,frame_1512,frame_1512_aug_01.jpg,3252482036,2,2,Affine RandomGamma HueSaturationValue
+V10,frame_1512,frame_1512_aug_02.jpg,965171983,2,2,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V10,frame_1536,frame_1536_aug_00.jpg,2733645493,2,2,HorizontalFlip Affine RandomGamma RGBShift MotionBlur
+V10,frame_1536,frame_1536_aug_01.jpg,4236549766,2,2,HorizontalFlip RandomGamma RGBShift
+V10,frame_1536,frame_1536_aug_02.jpg,1394468039,2,2,HorizontalFlip GaussNoise
+V10,frame_1560,frame_1560_aug_00.jpg,2174803918,2,2,HorizontalFlip RandomGamma
+V10,frame_1560,frame_1560_aug_01.jpg,264431068,2,2,HorizontalFlip RandomGamma
+V10,frame_1560,frame_1560_aug_02.jpg,84038533,2,2,HorizontalFlip Affine RGBShift
+V10,frame_1584,frame_1584_aug_00.jpg,3625093455,2,2,HorizontalFlip Affine HueSaturationValue MotionBlur
+V10,frame_1584,frame_1584_aug_01.jpg,582295672,2,2,HorizontalFlip Affine RandomGamma ImageCompression
+V10,frame_1584,frame_1584_aug_02.jpg,996564354,2,2,RandomGamma Oclusion
+V10,frame_1608,frame_1608_aug_00.jpg,1004074911,2,2,Affine
+V10,frame_1608,frame_1608_aug_01.jpg,1943348394,2,2,HorizontalFlip Affine RandomGamma RGBShift
+V10,frame_1608,frame_1608_aug_02.jpg,3093180890,2,2,ISONoise Oclusion
+V10,frame_1632,frame_1632_aug_00.jpg,2321146210,2,2,HorizontalFlip Affine Downscale
+V10,frame_1632,frame_1632_aug_01.jpg,2291367023,2,2,Affine Oclusion
+V10,frame_1632,frame_1632_aug_02.jpg,69838022,2,2,Affine MotionBlur
+V10,frame_1656,frame_1656_aug_00.jpg,2556251611,2,2,Affine RandomBrightnessContrast RGBShift Oclusion
+V10,frame_1656,frame_1656_aug_01.jpg,2790724942,2,2,Affine RandomGamma
+V10,frame_1656,frame_1656_aug_02.jpg,1143255987,2,2,HorizontalFlip HueSaturationValue
+V10,frame_1680,frame_1680_aug_00.jpg,3344493547,2,2,HorizontalFlip Affine HueSaturationValue
+V10,frame_1680,frame_1680_aug_01.jpg,2709147100,2,2,HorizontalFlip RandomGamma RGBShift
+V10,frame_1680,frame_1680_aug_02.jpg,2149759534,2,2,HorizontalFlip Affine RandomGamma HueSaturationValue ISONoise
+V10,frame_1704,frame_1704_aug_00.jpg,62105669,2,2,Affine Downscale Oclusion
+V10,frame_1704,frame_1704_aug_01.jpg,1214962848,2,2,HorizontalFlip Affine RandomGamma
+V10,frame_1704,frame_1704_aug_02.jpg,3046133440,2,2,RGBShift
+V10,frame_1728,frame_1728_aug_00.jpg,4006669834,2,2,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V10,frame_1728,frame_1728_aug_01.jpg,177975120,2,2,Affine RandomGamma ImageCompression
+V10,frame_1728,frame_1728_aug_02.jpg,562990024,2,2,HorizontalFlip Affine GaussNoise

@@ -19,7 +19,7 @@ Aquí se apunta todo fotograma que no encaje claramente en las reglas de [`crite
 | V10 | frame_0960.jpg | Daniel | Fotograma muy movido | Sin caja; revisar en T13 (probable eliminación) |
 | V10 | frame_1056.jpg | Daniel | Fotograma muy movido | Sin caja; revisar en T13 (probable eliminación) |
 | V10 | frame_1152.jpg | Daniel | Fotograma muy movido | Sin caja; revisar en T13 (probable eliminación) |
-| V03 | frame_1560.jpg | Javier | Fotograma muy movido: solo estelas moradas a la izquierda, irreconocibles | Sin caja; revisar en T13 (probable eliminación) |
+| V03 | frame_1560.jpg | Javier | Fotograma muy movido: solo estelas moradas a la izquierda, irreconocibles | Sin caja; excluida en la depuración (T13, criterio D1) |
 | V08 | frame_0480.jpg | Javier | Caja sobre una única estela blanca (x≈288-356, y≈262-294), sin cuerpo reconocible | Caja eliminada en la revisión del lote D |
 | V08 | frame_1944.jpg | Javier | Caja sobre estelas blancas finas (x≈1086-1176, y≈250-284), sin cuerpo reconocible | Caja eliminada en la revisión del lote D |
 | V08 | frame_2040.jpg | Javier | Caja sobre una mancha de luz blanca (x≈826-864, y≈262-296), sin cuerpo reconocible | Caja eliminada en la revisión del lote D |

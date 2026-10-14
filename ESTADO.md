@@ -1,8 +1,8 @@
 # Estado del proyecto
 
-Última actualización: 09/10/2026. Trabajo preparado en la rama `javier-saguar`.
+Última actualización: 14/10/2026, desde la rama `javier-saguar`.
 
-**Fase actual:** Bloque 1 (recolección, anotación, análisis y depuración de datos), de cara a la **primera entrega** de la memoria.
+**Fase actual:** Bloque 1 (recolección, anotación, análisis y depuración de datos), de cara a la **primera entrega** de la memoria. **Bloque 1 terminado salvo los acuerdos de grupo (T01, T18)**: 808 imágenes anotadas y revisadas, 796 tras la depuración, con EDA y aumento hechos. Los datos están listos para entrenar en JupyterHub.
 
 Las tareas pendientes, por orden de prioridad y con su responsable, están en [`TAREAS.md`](TAREAS.md).
 
@@ -11,18 +11,22 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 | Bloque | Estado | Hito |
 |---|---|---|
 | 1. Datos | Vídeos revisados y 808 originales extraídos en cinco lotes; anotación en curso | Dataset de ~800 imágenes anotadas |
-| 2. Entrenamiento | Sin empezar (los notebooks base ya están en `ENTREGA 1/WEEK2/`) | Modelo que detecta RoboMasters |
+| 2. Entrenamiento | En preparación: `train.ipynb` y `test.ipynb` adaptados, sin ejecutar (T19, T20) | Modelo que detecta RoboMasters |
 | 3. Integración en el robot | Sin empezar | *Demo* en circuito |
 
 ## Hecho
 
-- Repositorio montado: `main` como rama por defecto y una rama personal por integrante.
+- Repositorio montado: `main` como rama por defecto y una rama personal por integrante. Se trabaja con PRs revisadas por otro integrante.
 - Grabados **10 vídeos** con el RoboMaster (`ENTREGA 1/WEEK1/DATASET PIDS/`, un `.zip` por vídeo).
-- T02: metadatos comprobados y 120 muestras revisadas (doce por vídeo); fichas y revisión de variabilidad completas en [`docs/fichas_videos.md`](docs/fichas_videos.md).
-- Extracción local: **808 JPEG a 1280×720**, calidad 95, intervalo 24 y sin transformaciones. Todos los fotogramas anunciados por cada vídeo se han decodificado. El manifiesto registra procedencia y SHA-256 por imagen.
-- Cinco lotes asignados en [`ANOTACION/README.md`](ENTREGA%201/WEEK1/ANOTACION/README.md), con `images/` y `labels/` por vídeo. Lote B (T05) anotado: 158 XML, 262 robots.
-- T01: criterios operativos v1 revisados y veinte fotogramas comunes preparados. **Pendientes la revisión del grupo y las cinco anotaciones de calibración**; no se ha medido IoU ni se declara un acuerdo colectivo.
-- `video2frames.ipynb` adaptado y ejecutado para comprobar el dataset extraído. EDA, aumento, entrenamiento y test siguen siendo ejemplos de los profesores.
+- T02: fichas de los vídeos y revisión de variabilidad en [`docs/fichas_videos.md`](docs/fichas_videos.md).
+- T03: **808 JPEG a 1280×720** extraídos con `INTERVAL = 24` y repartidos en cinco lotes.
+- T04–T08: **los cinco lotes anotados**, con 1420 robots. T10: revisión cruzada de todos los lotes.
+- T01: criterios v1 en [`docs/criterios_anotacion.md`](docs/criterios_anotacion.md), guía práctica en [`docs/guia_anotacion.md`](docs/guia_anotacion.md) y calibración de los cinco: IoU medio de 0,81 entre anotadores.
+- T11–T12: EDA completo en `eda.ipynb`, con figuras y tablas en `ENTREGA 1/WEEK1/resultados_eda/`.
+- T13: depuración. Se excluyen 12 imágenes (una con un robot sin caja y 11 casi duplicadas) y quedan **796**. Criterios en [`docs/depuracion.md`](docs/depuracion.md).
+- T14 y T18: `data_aug.ipynb` genera **3184 imágenes de entrenamiento** (nuestras 796 y 2388 copias). Validación (672) y test (718) son los conjuntos de otros grupos que da la asignatura, en `ENTREGA 1/WEEK2/DATOS_ASIGNATURA/`. Figuras en `ENTREGA 1/WEEK1/resultados_aug/`.
+- Bloque 3: material de la semana 3 en `ENTREGA 2/WEEK3/` (SDK del robot y demo por completar).
+- T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
 ## Datos de los vídeos
 
@@ -62,23 +66,24 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 
 **Decisión de T02:** la variabilidad permite empezar la anotación sin repetir ahora un escenario. Reservar una grabación complementaria para reponer originales si la depuración deja menos de 800; para el Bloque 3 añadir secuencias del circuito real y de sus obstáculos. Las limitaciones y justificación están en las fichas.
 
-## Pendiente para cerrar T01 y T03
+## Pendiente antes de entrenar
 
-- T01: revisión colectiva, anotación independiente de los veinte originales comunes por cada integrante y medición de IoU. Ver [`calibracion/README.md`](ENTREGA%201/WEEK1/ANOTACION/calibracion/README.md).
-- T03: importar las secuencias en JupyterHub. La extracción local está completa y preparada para GitHub; no se ha accedido al laboratorio. `herramientas/empaquetar_anotacion.py` crea un ZIP listo para `/workspace/data_train/`. Importarlo en una carpeta vacía para conservar las etiquetas existentes.
-- T04–T08: anotaciones de los lotes asignados. Una asignación no implica que la persona haya empezado.
+- **T01:** cerrar los criterios en grupo. El borde superior del robot (gimbal y antenas) es donde más discrepamos.
+- **T03:** en JupyterHub, instalar `albumentations` y `pycocotools`, generar los datos y lanzar el entrenamiento, siguiendo [`docs/jupyterhub.md`](docs/jupyterhub.md).
+
+Después vienen el entrenamiento y la evaluación (T19, T20) y la memoria (T15–T17).
 
 ## Por confirmar
 
 - Número de grupo (usuario `pidsX` de JupyterHub y nombre del PDF `PIDS_grupoX_entrega1.pdf`).
 - Fecha de la primera entrega.
-- Dónde guardamos la copia de seguridad del dataset anotado (Drive, OneDrive…).
 
 ## Riesgos
 
 - **Anotaciones inconsistentes entre nosotros.** Por eso los criterios comunes (T01) van antes que nada.
-- **Poco margen para depurar:** 808 originales; complementar si se necesita. Las veinte copias de calibración no son imágenes nuevas.
+- **Justos de imágenes:** quedan 796 tras depurar, cuatro por debajo de las ~800 del objetivo. Si hace falta, hay prevista una grabación complementaria (T02).
+- **Criterios distintos en validación y test:** los anotaron otros grupos, sin `difficult` y quizá con otro criterio para antenas y robots cortados. Parte del error medido puede venir de ahí.
 - **Filtración entre conjuntos:** separar por secuencia y mantener sus aumentos en el mismo conjunto. Excluir las copias de calibración del entrenamiento como muestras adicionales.
-- **Perder datos en JupyterHub.** No se pueden borrar carpetas desde el panel y `rm -r` no tiene vuelta atrás: hay que hacer una copia (T09) en cuanto esté anotado.
+- **Perder datos en JupyterHub.** No se pueden borrar carpetas desde el panel y `rm -r` no tiene vuelta atrás. Las etiquetas están a salvo en `main` y `data_aug.ipynb` regenera el resto.
 - **Que el JupyterHub no esté disponible.** El servicio está deshabilitado por las mañanas en horas de docencia.
 - **No llegar al hito del Bloque 1.** Si no lo conseguimos, los profesores nos dan el dataset, pero con penalización en la nota.
