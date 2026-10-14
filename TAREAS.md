@@ -218,9 +218,13 @@ adaptados y **sin ejecutar**.
 - `train.ipynb` elige el mejor modelo por el mAP de validación, calcula ese mAP en cada
   época, entrena con o sin las copias `-aug` (`usar_aumento`) y separa los experimentos
   en `models/<experimento>/`. Antes de entrenar comprueba que no falten imágenes, que no
-  haya cajas no válidas y que ningún vídeo esté en dos conjuntos. Guarda el historial
-  en `resultados_train/`.
-- `test.ipynb` da el mAP con y sin los `difficult` y por vídeo, cuenta aciertos,
+  haya cajas no válidas y que ninguna secuencia esté en dos conjuntos. Guarda el
+  historial en `resultados_train/`.
+- Adaptados al reparto nuevo (T18): se entrena con nuestros diez vídeos y se valida y
+  mide con las secuencias de la asignatura. Las secuencias de otros grupos se
+  identifican por su nombre completo (`PIDS2025_GR01_0002`); antes se tomaban como
+  nuestros vídeos (`V02`) y la comprobación de fuga habría parado el entrenamiento.
+- `test.ipynb` da el mAP con y sin los `difficult` y por secuencia, cuenta aciertos,
   detecciones falsas y robots perdidos con el umbral de confianza, dibuja la curva de
   precisión y exhaustividad según el umbral, mide el tiempo por imagen y guarda las
   imágenes con más errores en `resultados_test/`. Con `conjunto = 'val'` evalúa en
