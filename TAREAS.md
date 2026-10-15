@@ -187,6 +187,14 @@ Cuidado con no quitar todos los casos difíciles: el modelo fallaría en la real
 
 ### T14 · Aumento de datos con `data_aug.ipynb` (P2)
 
+Ampliación del 15/10 en PR #17: perfiles `sombras_v1`, `oclusion_v1`,
+`difficult_v1`, `lluvia_v1` y el combinado `robusto_v1`. Incluyen sombras y lluvia
+solo en exteriores, obstáculos con textura y control del área tapada, y oscuridad
+o movimiento en una de las copias de imágenes con `difficult`. Son optativos y no
+reemplazan el dataset del entrenamiento en curso. Ejemplos y comprobaciones en
+`resultados_aug/experimentos/`; falta comparar los perfiles elegidos en validación
+(T19/T20), manteniendo semilla, lr, épocas y tamaño del conjunto.
+
 **Hecha (14/10/2026):** regenerado con la depuración y con el reparto nuevo: 796 imágenes de entrenamiento y 2388 copias (3184 en total); validación (672) y test (718) son los conjuntos de la asignatura.
 
 **Estado a 12/10/2026 (rama `javier-saguar`):** `data_aug.ipynb` está reescrito y ejecutado con las 808 imágenes. Propone el reparto por vídeos (T18), justifica doce transformaciones y descarta siete, genera `data_train/` (483 originales y 1449 copias), `data_val/` y `data_test/`, y comprueba el resultado. Figuras y tablas en [`resultados_aug/`](ENTREGA%201/WEEK1/resultados_aug/README.md). **Falta** repetirlo tras la depuración (T13), ejecutarlo una vez en JupyterHub y acordar en grupo el reparto y las transformaciones.

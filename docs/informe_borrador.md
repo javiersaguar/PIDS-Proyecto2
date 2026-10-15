@@ -226,6 +226,30 @@ el mAP@0,5 en validación de 0,923 a 0,942, y en los robots `difficult` de 0,552
 
 Figuras: `cajas_antes_despues.png` y `ejemplos_aumento.jpg`.
 
+### 6.4 Ampliaciones preparadas, pendientes de entrenamiento
+
+Se han implementado perfiles separados para explorar sombras locales y lluvia
+suave en los dos vídeos exteriores (V04 y V09), obstáculos con textura en lugar de
+barras lisas, y oscuridad o movimiento adicionales en una de las copias de imágenes
+con `difficult`. Se conservan los originales y tres copias por imagen. En las nuevas
+oclusiones se limita la unión de máscaras al 25 % del área de cada caja; esta medida
+no equivale al porcentaje visible del cuerpo del robot.
+
+El perfil combinado `robusto_v1` se ha comprobado en memoria sobre las 2388 copias:
+conserva 4167 de las 4197 cajas de entrada (pérdida del 0,715 %, igual al aumento
+base), con cajas válidas y 24 copias reproducidas exactamente. Se produjeron 109
+sombras, 62 lluvias, 347 oclusiones texturadas y 128 refuerzos de copias con
+`difficult`. Los destinos están separados del dataset actual.
+
+**Todavía no se ha medido su efecto en mAP.** Estos datos verifican la generación,
+no una mejora del detector. Los perfiles individuales permiten estudiar cada
+cambio con el resto de parámetros fijo. La lluvia sintética requeriría además
+imágenes reales de lluvia para evaluar robustez en esa condición. No se ha evaluado
+test ni alterado el experimento lr001 en curso.
+
+Código y lámina de ejemplos PNG/PDF:
+`ENTREGA 1/WEEK1/resultados_aug/experimentos/README.md`.
+
 ---
 
 ## 7. Entrenamiento (Bloque 2, avance)

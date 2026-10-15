@@ -29,6 +29,11 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
   originales y 375 `difficult`; ver `resultados_eda/README.md`.
 - T13: depuración. Se excluyen 12 imágenes (una con un robot sin caja y 11 casi duplicadas) y quedan **796**. Criterios en [`docs/depuracion.md`](docs/depuracion.md).
 - T14 y T18: `data_aug.ipynb` genera **3184 imágenes de entrenamiento** (nuestras 796 y 2388 copias). Validación (672) y test (718) son los conjuntos de otros grupos que da la asignatura, en `ENTREGA 1/WEEK2/DATOS_ASIGNATURA/`. Figuras en `ENTREGA 1/WEEK1/resultados_aug/`.
+- T14 (15/10): perfiles optativos de sombras locales y llovizna en V04/V09,
+  oclusiones texturadas con área limitada y refuerzo de copias con `difficult`.
+  Código y ejemplos en la sección 9 de `data_aug.ipynb`; el perfil `base` conserva
+  los datos actuales y los nuevos escriben en destinos separados. Pendiente medir
+  su efecto en validación; no se ha lanzado otro entrenamiento. PR #17.
 - Bloque 3: material de la semana 3 en `ENTREGA 2/WEEK3/` (SDK del robot y demo por completar).
 - T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
