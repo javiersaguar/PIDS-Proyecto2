@@ -77,6 +77,13 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 
 ## Entrenamiento (15/10/2026)
 
+- En curso desde las **23:44 Europe/Madrid**: `faster_rcnn_v1_aug_lr001_res1024`,
+  propuesta de resolución de Alejandro. min_size 1024, max_size 1820, lr 0,001,
+  30 épocas, semilla 0 y el mismo aumento base. Microbatch 4 con acumulación 2
+  (lote efectivo 8) para los 12 GB de la RTX 3060. Prueba de memoria superada y
+  PID 10327 activo, GPU al 100 %. Validación encadenada, sin usar test. Ver
+  [`docs/experimento_res1024.md`](docs/experimento_res1024.md); resultados pendientes.
+
 - Finalizado el **15/10 a las 22:13 Europe/Madrid**: `faster_rcnn_v1_aug_lr001`
   (lr=0,001, 30 épocas, lote 8, semilla 0 y aumento base), incluida validación,
   salida 0. Mejor época 5. Evaluación: AP@0,5 **0,9433**, AP 0,50:0,95 **0,6302**,

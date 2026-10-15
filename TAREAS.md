@@ -274,3 +274,8 @@ solo fase 1 y solo fase 2, con figuras, en `docs/informes/`. La fase 2 sigue sie
 un avance: falta comparar arquitecturas y evaluar el modelo definitivo en test.
 Siguiente experimento autorizado: resolución 1024/1820, manteniendo lr=0,001 y
 el aumento base, antes de combinar más cambios.
+
+**En marcha desde las 23:44:** `faster_rcnn_v1_aug_lr001_res1024`, PID 10327.
+Microbatch 4, acumulación 2 y lote efectivo 8; prueba de memoria y arranque en GPU
+verificados. Se ejecutará validación al terminar. Los informes recogen el trabajo
+medido hasta lr001; el resultado de resolución sigue pendiente.
