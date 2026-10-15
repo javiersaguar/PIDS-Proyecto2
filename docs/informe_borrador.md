@@ -141,6 +141,9 @@ El mapa agregado se amplía con mapas por vídeo y con **132 intervalos disjunto
 100 imágenes**, contando los negativos; ambos grupos comparten escala de color.
 Los intervalos finales pueden contener menos imágenes y muestran su recuento.
 Así se distingue la frecuencia espacial del número de imágenes de cada grabación.
+La paleta cálida usa una intensidad no lineal (gamma 0,4) para hacer visibles las
+frecuencias bajas; cero permanece blanco y se conservan las unidades, los máximos
+y la escala común entre vídeos y grupos.
 
 Las curvas de recuento muestran los diez vídeos a la vez y avanzan por cada
 fotograma anotado. La media global es **1,76 robots por imagen**: V05 presenta la

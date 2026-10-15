@@ -71,6 +71,11 @@ depuración. No se modifica el entrenamiento ni se usan validación o test.
 - La escala de color es fija entre vídeos y entre los dos grupos. Los mapas de
   vídeos completos y los temporales usan máximos propios: para comparar una
   figura con otra se consulta su barra de color.
+- Paleta cálida de blanco a amarillo, naranja y rojo. La intensidad es **no lineal
+  (gamma 0,4)** para que también se aprecien zonas con pocas cajas. Las celdas con
+  cero siguen blancas, se conserva el máximo y los números de la barra y del
+  cursor siguen expresados en centros por 100 imágenes. El ajuste es común a
+  todos los vídeos y a ambos grupos, también en PNG, SVG y PDF.
 - Ventanas disjuntas `[0,5)`, `[5,10)`, etc., calculadas con `frame / 30,303`. La
   última puede tener menos imágenes. Se muestran los contadores para no confundir
   una frecuencia alta basada en pocas muestras con un patrón persistente.

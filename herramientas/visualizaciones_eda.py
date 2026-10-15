@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -11,7 +12,13 @@ from plotly.subplots import make_subplots
 
 
 AZUL, NARANJA, TINTA = '#2463A6', '#C65D23', '#172B40'
-ESCALA = [[0, '#F4F7FA'], [.12, '#D9E6F2'], [.4, '#86B1D5'], [.7, '#397CB6'], [1, '#123D67']]
+# Resalta frecuencias bajas sin recortar máximos ni dar color a celdas vacías.
+# Los números siguen siendo centros/100 imágenes; solo cambia la intensidad visual.
+GAMMA_CALOR = 0.4
+PALETA_CALIDA = [[0, '#FFFFFF'], [.2, '#FFE49A'], [.45, '#FDB44B'],
+                [.7, '#F06724'], [1, '#9F2717']]
+ESCALA = [[posicion ** (1 / GAMMA_CALOR), color] for posicion, color in PALETA_CALIDA]
+MAPA_CALIDO = LinearSegmentedColormap.from_list('calor_robots', ESCALA, N=1024)
 REJILLA = (16, 9)
 VENTANA_S = 5
 
@@ -117,7 +124,7 @@ def mapas_interactivos(datos, temporal=False):
                          scaleanchor='x' if col == 1 else 'x2', scaleratio=9/16,
                          constrain='domain', row=1, col=col)
     fig.update_layout(coloraxis=dict(colorscale=ESCALA, cmin=0, cmax=maximo,
-                                    colorbar=dict(title='Centros por<br>100 imágenes', thickness=14)))
+                                    colorbar=dict(title='Centros por<br>100 imágenes<br>Color no lineal', thickness=14)))
     controles(fig, pasos, duracion=550 if temporal else 900, prefijo='Intervalo: ' if temporal else 'Vídeo: ')
     if temporal:
         # Saltar al inicio de un vídeo conserva el mismo control temporal y la escala global.
@@ -182,14 +189,15 @@ def figuras_documento(datos):
         fig, ejes = plt.subplots(2, 5, figsize=(16, 6.3), layout='constrained')
         for ax, r in zip(ejes.flat, datos['globales']):
             im = ax.pcolormesh(datos['x'], datos['y'], r['mapas'][grupo],
-                               cmap='Blues', vmin=0, vmax=maximo, shading='flat')
+                               cmap=MAPA_CALIDO, vmin=0, vmax=maximo, shading='flat')
             ax.set(xlim=(0, 1), ylim=(1, 0), aspect=9/16)
             ax.set_title(f"{r['secuencia']}  ·  {r['cuentas'][grupo]} cajas / {r['imagenes']} imágenes", fontsize=10, pad=9)
             ax.set(xlabel='x / ancho', ylabel='y / alto', xticks=[0, .5, 1], yticks=[0, .5, 1])
             estilo_eje(ax)
         titulo = 'Todos los robots' if nombre == 'todos' else 'Solo robots difficult'
         fig.suptitle(f'Distribución de centros por vídeo · {titulo}', fontsize=17, color=TINTA, fontweight='bold')
-        barra = fig.colorbar(im, ax=ejes, shrink=.75, label='Centros por 100 imágenes · escala común en ambos grupos')
+        barra = fig.colorbar(im, ax=ejes, shrink=.75,
+                             label='Centros por 100 imágenes · color no lineal, escala común')
         barra.solids.set_rasterized(False)
         figuras[f'mapa_calor_por_video_{nombre}'] = fig
 
@@ -219,7 +227,7 @@ def figuras_documento(datos):
             for grupo in (0, 1):
                 ax = ejes[k // 3, (k % 3)*2+grupo]
                 im = ax.pcolormesh(datos['x'], datos['y'], r['mapas'][grupo],
-                                   cmap='Blues', vmin=0, vmax=max_temporal, shading='flat')
+                                   cmap=MAPA_CALIDO, vmin=0, vmax=max_temporal, shading='flat')
                 ax.set(xlim=(0, 1), ylim=(1, 0), aspect=9/16)
                 etiqueta = 'Todos' if grupo == 0 else 'Difficult'
                 ax.set_title(f"{r['ventana']*5}–{(r['ventana']+1)*5} s · {etiqueta}\n{r['cuentas'][grupo]} cajas / {r['imagenes']} imágenes", fontsize=8)
@@ -228,7 +236,8 @@ def figuras_documento(datos):
         for k in range(len(registros)*2, nfilas*6):
             ejes.flat[k].axis('off')
         fig.suptitle(f'{sec} · evolución espacial en ventanas de 5 segundos', fontsize=16, color=TINTA, fontweight='bold')
-        barra = fig.colorbar(im, ax=ejes, shrink=.8, label='Centros por 100 imágenes · escala temporal común')
+        barra = fig.colorbar(im, ax=ejes, shrink=.8,
+                             label='Centros por 100 imágenes · color no lineal, escala temporal común')
         barra.solids.set_rasterized(False)
         figuras[f'mapas_temporales_{sec}'] = fig
     return figuras
@@ -302,7 +311,8 @@ def crear_indice(destino):
     <main><header><div class="etiqueta">PIDS · Entrega 1 · Análisis exploratorio</div><h1>Dónde aparecen los robots<br>y cómo cambia cada vídeo</h1>
     <p>Comparación espacial y temporal de las anotaciones originales. Reproduce, pausa o desplaza el control para explorar las muestras.</p></header>
     <section class="grid">''' + cuerpo + '''</section><aside><strong>Cómo leer las figuras.</strong>
-    Los mapas muestran centros por 100 imágenes, con la misma escala en todos y difficult. Los recuentos incluyen las imágenes sin robots.
+    Los mapas muestran centros por 100 imágenes, con colores cálidos y una intensidad no lineal que resalta frecuencias bajas.
+    La escala es la misma en todos y difficult; el blanco indica cero. Los recuentos incluyen las imágenes sin robots.
     Se observan los fotogramas anotados cada 24 frames; no se infieren muestras intermedias.
     <br>Para Word/PDF: usa los archivos de <code>para_informe/</code>. Para abrir sin conexión: conserva esta carpeta con <code>plotly.min.js</code>.
     <br><a href="recuentos_fotogramas.csv">Datos por fotograma</a> · <a href="recuentos_ventanas.csv">Datos por ventana</a> ·
