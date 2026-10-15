@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 14/10/2026, desde la rama `javier-saguar`.
+Última actualización: 15/10/2026, desde la rama `javier-saguar`.
 
 **Fase actual:** Bloque 1 (recolección, anotación, análisis y depuración de datos), de cara a la **primera entrega** de la memoria. **Bloque 1 terminado salvo los acuerdos de grupo (T01, T18)**: 808 imágenes anotadas y revisadas, 796 tras la depuración, con EDA y aumento hechos. Los datos están listos para entrenar en JupyterHub.
 
@@ -11,7 +11,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 | Bloque | Estado | Hito |
 |---|---|---|
 | 1. Datos | 808 imágenes anotadas y revisadas, 796 tras la depuración; falta cerrar T01 en grupo | Dataset de ~800 imágenes anotadas |
-| 2. Entrenamiento | En preparación: `train.ipynb` y `test.ipynb` adaptados, sin ejecutar (T19, T20) | Modelo que detecta RoboMasters |
+| 2. Entrenamiento | Entrenado con y sin aumento; mAP@0,5 en validación de 0,942 (0,634 en `difficult`). Falta una mejora para los `difficult` y el test (T20) | Modelo que detecta RoboMasters |
 | 3. Integración en el robot | Sin empezar | *Demo* en circuito |
 
 ## Hecho
@@ -66,12 +66,22 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 
 **Decisión de T02:** la variabilidad permite empezar la anotación sin repetir ahora un escenario. Reservar una grabación complementaria para reponer originales si la depuración deja menos de 800; para el Bloque 3 añadir secuencias del circuito real y de sus obstáculos. Las limitaciones y justificación están en las fichas.
 
-## Pendiente antes de entrenar
+## Entrenamiento (15/10/2026)
+
+- En curso desde las **16:53 (Europe/Madrid)**: `faster_rcnn_v1_aug_lr001`, con tasa
+  inicial 0,001, 30 épocas, lote de 8 y semilla 0. Parte de COCO y mantiene los datos
+  y el resto de parámetros del experimento con aumento. Verificado el arranque en
+  la RTX 3060. Después se ejecutará la evaluación en validación. Resultados y
+  análisis del cambio de tasa pendientes; seguimiento en la [PR #14](https://github.com/javiersaguar/PIDS-Proyecto2/pull/14).
+
+- T19: entrenados en JupyterHub `faster_rcnn_v1` con y sin aumento. El aumento sube el mAP@0,5 en validación de 0,923 a **0,942**, y en los `difficult` de 0,552 a **0,634**. Se toma como base el modelo con aumento.
+- T20: evaluación en validación por grupos y por secuencia hecha. Resultados en `ENTREGA 1/WEEK2/resultados_train/` y `resultados_test/`, y su análisis en [`docs/informe_borrador.md`](docs/informe_borrador.md).
+
+## Pendiente
 
 - **T01:** cerrar los criterios en grupo. El borde superior del robot (gimbal y antenas) es donde más discrepamos.
-- **T03:** en JupyterHub, instalar `albumentations` y `pycocotools`, generar los datos y lanzar el entrenamiento, siguiendo [`docs/jupyterhub.md`](docs/jupyterhub.md).
-
-Después vienen el entrenamiento y la evaluación (T19, T20) y la memoria (T15–T17).
+- **Bloque 2:** una mejora dirigida a los `difficult` y, con el modelo definitivo, la evaluación en test una sola vez (T20).
+- **Memoria (T15–T17):** pasar el borrador a la plantilla oficial cuando la tengamos.
 
 ## Por confirmar
 

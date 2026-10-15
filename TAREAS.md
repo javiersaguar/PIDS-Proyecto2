@@ -86,8 +86,8 @@ mientras se hace T13: `train.ipynb` y `test.ipynb` están adaptados a nuestros d
 | T16 | P2 | Memoria: EDA, depuración y aumento de datos | T12, T13, T14 | — | Pendiente |
 | T17 | P2 | Memoria: reparto del trabajo, revisión final y PDF | T15, T16 | — | Pendiente |
 | T18 | P3 | Separar los datos en entrenamiento, validación y test | T14 | — | Pendiente |
-| T19 | P3 | Primer entrenamiento con `train.ipynb` | T18 | Alejandro Cuevas | En curso |
-| T20 | P3 | Evaluación con `test.ipynb` (mAP y resultados cualitativos) | T19 | Alejandro Cuevas | En curso |
+| T19 | P3 | Primer entrenamiento con `train.ipynb` | T18 | Alejandro Cuevas | Hecha: con y sin aumento (15/10) |
+| T20 | P3 | Evaluación con `test.ipynb` (mAP y resultados cualitativos) | T19 | Alejandro Cuevas | En curso: validación hecha, falta test |
 
 ## Detalle
 
@@ -232,3 +232,16 @@ adaptados y **sin ejecutar**.
 
 **Hecha cuando:** hay un modelo entrenado en JupyterHub con su historial, el mAP en
 test con su interpretación, y la comparación con y sin aumento.
+
+**Estado a 15/10/2026 (rama `javier-saguar`):**
+- **Entrenados los dos modelos en JupyterHub.** Con aumento, la mejor época es la 29,
+  con mAP@0,5 de 0,942. Sin aumento, la 20, con 0,923.
+- **Evaluados en validación.** Por grupos, el mAP@0,5 es 0,942 para todos, 0,966 para
+  los normales y 0,634 para los `difficult`; sin aumento, este último se queda en 0,552.
+- **Resultados en el repositorio:** los CSV en `ENTREGA 1/WEEK2/resultados_train/` y
+  `resultados_test/`, y el análisis en las secciones 7 y 8 de
+  [`docs/informe_borrador.md`](docs/informe_borrador.md).
+- **Falta:**
+  - una mejora para los `difficult`;
+  - bajar las figuras del laboratorio;
+  - la evaluación final en test, una sola vez.

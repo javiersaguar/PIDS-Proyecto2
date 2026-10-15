@@ -77,8 +77,10 @@ cat resultados_train/faster_rcnn_v1_aug/historial.csv        # una fila por épo
 nvidia-smi                                                   # uso de la GPU
 ```
 
-`train.ipynb` guarda un checkpoint al final de cada época. Si se corta, al volver a
-lanzarlo **continúa desde la última época**, no desde cero.
+`train.ipynb` guarda un checkpoint al final de cada época. Si se corta, poner
+`reanudar = True` para continuar desde la última época. Por defecto está en `False`:
+se detiene si ya existe un modelo, para no reanudar o sobrescribir otro experimento.
+La reanudación comprueba que la configuración guardada coincide con la actual.
 
 Para pararlo: `kill $(cat train.pid)`.
 
@@ -111,6 +113,29 @@ Cuando termine, `test.ipynb` se ejecuta desde el navegador (tarda poco):
 
 - con `conjunto = 'val'` mientras se ajusta el modelo;
 - con `conjunto = 'test'` **una sola vez al final**, para el resultado de la memoria.
+
+### Experimento de tasa de aprendizaje (15/10/2026)
+
+`train.ipynb` y `test.ipynb` seleccionan `sufijo_experimento = 'lr001'`, que separa
+los modelos y resultados de `faster_rcnn_v1_aug` y `faster_rcnn_v1_sin_aug`.
+El nuevo experimento es `faster_rcnn_v1_aug_lr001`: SGD con `lr = 0.001`, 30 épocas,
+lote de 8, semilla 0 y los mismos datos aumentados. Parte de COCO; no del modelo
+anterior. El resto del entrenamiento y el criterio de selección no cambian.
+
+Se guarda `configuracion.json` junto a los modelos y en `resultados_train/`.
+`test.ipynb` queda en `conjunto = 'val'`. Para evaluar un experimento anterior,
+usar `sufijo_experimento = ''` y elegir `usar_aumento` según corresponda.
+
+En el laboratorio se usan copias `train_lr001.ipynb` y `test_val_lr001.ipynb`;
+las salidas ejecutadas llevan el sufijo `_ejecutado`. El proceso se deja con
+`nohup`, primero entrenamiento y después evaluación en validación, y conserva su
+PID, registro y código de salida en `train_lr001.pid`, `train_lr001.log` y
+`train_lr001.exit`. El fichero `.exit` aparece solo al terminar: `0` indica éxito.
+
+El análisis se añadirá a `docs/informe_borrador.md` cuando existan resultados.
+Se compararán AP@0,5, AP 0,50:0,95 y resultados de los robots difíciles. Las
+anotaciones incompletas detectadas en validación se documentarán como limitación;
+este experimento mantiene las etiquetas para conservar la comparación.
 
 ## 7. Qué subir al repositorio
 
