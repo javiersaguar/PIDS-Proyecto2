@@ -1,7 +1,8 @@
 # Borrador de la memoria
 
 > **Borrador de trabajo.** Recoge el contenido de la memoria con las cifras reales del
-> repositorio, para pasarlo a la plantilla oficial cuando la tengamos. Lo marcado como
+> repositorio. La plantilla oficial ya está disponible y se incluyen versiones
+> completas y por fase en `docs/informes/`. Lo marcado como
 > **[PENDIENTE]** falta por hacer o por confirmar.
 >
 > La primera entrega pide la portada y el **Bloque 1 completo**, con un máximo de 10
@@ -245,7 +246,7 @@ sombras, 62 lluvias, 347 oclusiones texturadas y 128 refuerzos de copias con
 no una mejora del detector. Los perfiles individuales permiten estudiar cada
 cambio con el resto de parámetros fijo. La lluvia sintética requeriría además
 imágenes reales de lluvia para evaluar robustez en esa condición. No se ha evaluado
-test ni alterado el experimento lr001 en curso.
+test ni alterado los datos del experimento lr001, ya finalizado.
 
 Código y lámina de ejemplos PNG/PDF:
 `ENTREGA 1/WEEK1/resultados_aug/experimentos/README.md`.
@@ -269,15 +270,14 @@ que solo cambian los datos de entrenamiento:
 - **Sin aumento se estanca** desde la época 16, en torno a 0,92. El programador de la
   tasa de aprendizaje la bajó a 0,00001 en la época 24 y no mejoró.
 - **Con aumento siguió mejorando poco a poco** hasta la época 29, y la tasa de
-  aprendizaje no llegó a bajar. Por la curva, más épocas darían como mucho unas
-  décimas.
-- **No hay sobreajuste** en ninguno de los dos. La pérdida de validación se mantiene
+  aprendizaje no llegó a bajar. La mejora tardía es pequeña; la curva por sí sola
+  no permite predecir cuánto aportarían más épocas.
+- **No se aprecia un deterioro sostenido de validación** en estos dos experimentos con lr=0,0001. La pérdida de validación se mantiene
   estable (0,243 sin aumento, 0,235 con aumento) mientras la de entrenamiento sigue
   bajando.
 
 Figuras: `resultados_train/faster_rcnn_v1_aug/historial.png` y
-`resultados_train/faster_rcnn_v1_sin_aug/historial.png` **[PENDIENTE: bajarlas del
-laboratorio; en el repositorio solo están los `historial.csv`]**.
+`resultados_train/faster_rcnn_v1_sin_aug/historial.png` recuperadas del laboratorio y versionadas junto con los CSV.
 
 ## 8. Evaluación (Bloque 2, avance)
 
@@ -365,17 +365,18 @@ El test se reserva para el modelo definitivo y se usa **una sola vez**.
   corta, de 10 imágenes.
 - **Las detecciones falsas se concentran en cuatro secuencias:** `GR02_0001`,
   `GR01_0002`, `GR04_0011` y `GR01_0010` suman 152 de las 210.
-  **[PENDIENTE]** Mirar en `ejemplos_peores.jpg` si son errores del modelo, cajas
-  dobles o robots que el otro grupo no anotó.
+  Se ha confirmado al menos un caso de anotación incompleta; véase la sección 8.6.
+  No se puede atribuir el conjunto de los FP a etiquetas ausentes sin revisarlos uno a uno.
 - **`PIDS2025_GR01_0010` tiene el peor mAP 0,50:0,95 (0,40)** a pesar de un mAP@0,5 de
   0,905: encuentra los robots pero no ajusta las cajas como las de ese grupo. Hay que
   comprobar si es por cómo anotaron (antenas, robots cortados).
 
 ### 8.4 Umbral y velocidad
 
-- **Umbral:** el F1 máximo del modelo con aumento se alcanza con una confianza de
-  **0,95** (0,75 sin aumento). Para la *demo*, donde un falso positivo hace disparar,
-  conviene un umbral alto, en torno a 0,9–0,95.
+- **Umbral del modelo original:** el mayor F1 de la rejilla ensayada aparece en
+  **0,95**, extremo superior de esa rejilla (0,75 sin aumento). No es una localización
+  exacta del óptimo. Con lr=0,001 la mejor muestra está en 0,85; hay que volver a
+  decidir el umbral para el modelo definitivo y el coste de los errores en la demo.
 - **Velocidad:** unos **73 ms por imagen** en la RTX 3060, unas 14 imágenes por
   segundo.
 
@@ -385,12 +386,86 @@ Figuras en `resultados_test/faster_rcnn_v1_aug_val/`:
 - `ejemplos_peores.jpg`;
 - `ejemplos_al_azar.jpg`.
 
-**[PENDIENTE]** Bajarlas del laboratorio; en el repositorio solo están los CSV.
+Figuras recuperadas del laboratorio y versionadas junto con los CSV.
 
-### 8.5 Siguientes pasos
+### 8.5 Experimento de tasa de aprendizaje 0,001
 
-1. **Una mejora dirigida a los `difficult`**, con un único experimento comparado en
-   validación igual que aquí. Opciones:
+`faster_rcnn_v1_aug_lr001` finalizó el 15/10/2026 a las 22:13 Europe/Madrid,
+incluida su evaluación automática en validación (salida 0). Se mantuvieron COCO,
+SGD, 30 épocas, lote 8, semilla 0 y el mismo aumento base. Las ampliaciones de
+sombras, lluvia y oclusión texturada no participan en este resultado.
+
+**Curvas y mejor época.** El mejor AP@0,5 del historial aparece en la época **5**:
+0,943169, frente a 0,942506 en la época 29 con lr=0,0001 (+0,066 puntos
+porcentuales). El AP 0,50:0,95 de esas épocas es 0,629899 frente a 0,607000.
+La pérdida de validación alcanza su mínimo en la época 4 (0,221198) y luego sube,
+mientras la de entrenamiento sigue bajando hasta 0,065661. En la época 30 el
+AP@0,5 ha caído a 0,933178 y la pérdida de validación es 0,241296. Hay indicios
+de sobreajuste después del óptimo temprano; añadir épocas no resuelve esa caída.
+`ReduceLROnPlateau` sí actuó: las tasas usadas fueron 0,001 en épocas 1–10,
+0,0001 en 11–16, 0,00001 en 17–22, 0,000001 en 23–28 y 0,0000001 en 29–30.
+Las bajadas no recuperaron el mejor resultado. Debe usarse `model_best.pt`, no
+el checkpoint final. La época 5 habría necesitado aproximadamente 54 minutos
+al ritmo observado, pero se completaron las 30 épocas en unas 5 h 19 min.
+
+**Evaluación de los mejores checkpoints con el mismo notebook de validación:**
+
+| Métrica | lr=0,0001 | lr=0,001 | Cambio |
+|---|---:|---:|---:|
+| AP@0,5, todos | 0,9416 | 0,9433 | +0,17 pp |
+| AP 0,50:0,95, todos | 0,6081 | 0,6302 | +2,21 pp |
+| AP@0,75, todos | 0,7146 | 0,7460 | +3,14 pp |
+| AP@0,5, normales | 0,9664 | 0,9740 | +0,76 pp |
+| AP@0,5, difficult | 0,6341 | 0,6462 | +1,21 pp |
+| AP de objetos pequeños | 0,1074 | 0,1182 | +1,08 pp |
+| TP / FN con confianza ≥0,5 e IoU ≥0,5 | 1478 / 83 | 1478 / 83 | Sin cambio |
+| FN normales / difficult | 20 / 63 | 18 / 65 | 2 normales menos; 2 difficult más |
+| FP frente a las etiquetas | 210 | 190 | −20 |
+| Precisión / F1 al umbral 0,5 | 0,8756 / 0,9098 | 0,8861 / 0,9155 | +1,05 / +0,57 pp |
+
+Las cifras del historial y de la evaluación final son salidas de procedimientos
+distintos y se presentan por separado. La mejora principal está en el ajuste de
+las cajas y en reducir detecciones contadas como FP, no en detectar más robots
+al umbral 0,5. Aunque sube el AP de difficult al recorrer las confianzas, su
+exhaustividad con confianza 0,5 baja de 0,7529 a 0,7451. No es una mejora uniforme.
+
+**Por secuencia.** El AP@0,5 sube en 7 de las 11 secuencias y baja en 4. Destaca
+`PIDS2025_GR01_0010`: 0,9049 → 0,9404 (+3,55 pp) y FN 4 → 1. En cambio,
+`PIDS2025_GR04_0011` pasa de 29 a 33 FN, y sus difficult perdidos de 25 a 28;
+`PIDS2025_GR01_0002` baja en AP@0,5 de difficult de 0,8640 a 0,7540.
+`PIDS2024_GR04_0003` sigue perdiendo sus 6 difficult. La tabla completa está en
+`comparaciones/lr001/secuencias_comparadas.csv`.
+
+**Umbral y coste.** El mayor F1 de las muestras 0,05, 0,10, …, 0,95 está ahora en
+0,85; es una propuesta para volver a revisar con el modelo definitivo. La latencia
+medida es 72,7 ms por imagen en lote y 75,1 ms una a una en la RTX 3060. No incluye
+captura, red ni actuación del robot y no equivale al rendimiento completo de la demo.
+
+**Decisión provisional.** Se toma lr=0,001 como referencia del siguiente experimento
+por el AP agregado, el mejor ajuste de cajas y los FP menores, conservando el
+checkpoint de la época 5. Una única semilla y +0,17 pp en AP@0,5 no prueban una
+mejora estable. La resolución propuesta por Alejandro es el siguiente cambio
+prioritario para estudiar objetos pequeños. Se mantiene el aumento base y no se
+mezclan a la vez arquitectura, resolución y nuevas degradaciones.
+
+Figuras: `comparaciones/lr001/curvas_comparadas.png`, `lr_comparado.png` y
+`secuencias_comparadas.png`; métricas y ejemplos originales en
+`resultados_test/faster_rcnn_v1_aug_lr001_val/`.
+
+### 8.6 Limitación confirmada de las etiquetas de validación
+
+`PIDS2024_GR02_0001/frame_0444.jpg` muestra **cuatro robots visibles**, pero su XML
+contiene **una sola caja**. Por tanto, detectar correctamente alguno de los otros
+robots puede contarse como falso positivo. Esto limita la interpretación de
+precisión, FP, F1 y AP frente a esas etiquetas: los 190 FP no equivalen necesariamente
+a 190 errores visuales del detector. No se ha cuantificado cuántos casos presentan
+este problema ni se han corregido las etiquetas, para conservar la comparación.
+No se ha usado test para tomar estas decisiones.
+
+### 8.7 Siguientes pasos
+
+1. **Resolución de entrada 1024/1820 con lr=0,001**, como siguiente experimento de Alejandro, comparado en
+   validación igual que aquí. Después, si hace falta:
    - un desenfoque de movimiento y una oclusión más agresivos en el aumento;
    - dar más peso a las imágenes con robots difíciles.
 2. **Revisar las detecciones falsas** de las cuatro secuencias señaladas.

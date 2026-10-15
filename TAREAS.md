@@ -260,3 +260,17 @@ test con su interpretación, y la comparación con y sin aumento.
   - una mejora para los `difficult`;
   - bajar las figuras del laboratorio;
   - la evaluación final en test, una sola vez.
+
+
+### Actualización del 15/10 tras lr001
+
+T19/T20: finalizados entrenamiento y validación de `faster_rcnn_v1_aug_lr001`
+(salida 0 a las 22:13). Mejor época 5; AP@0,5 0,9433 y AP 0,50:0,95 0,6302.
+Se recuperan métricas, curvas y ejemplos, y se documenta la anotación incompleta
+de `PIDS2024_GR02_0001/frame_0444.jpg`. No se ha evaluado test.
+
+T15–T17: plantilla oficial rellenada con el trabajo disponible; versiones completa,
+solo fase 1 y solo fase 2, con figuras, en `docs/informes/`. La fase 2 sigue siendo
+un avance: falta comparar arquitecturas y evaluar el modelo definitivo en test.
+Siguiente experimento autorizado: resolución 1024/1820, manteniendo lr=0,001 y
+el aumento base, antes de combinar más cambios.
