@@ -8,9 +8,9 @@
 > páginas de cuerpo. Las secciones 7 y 8 (Bloque 2) se dejan preparadas para la
 > segunda entrega y se pueden recortar o resumir en esta.
 
-**Portada:** PIDS 2026 · Grupo **[PENDIENTE: número]** · Javier Saguar, Alejandro
+**Portada:** PIDS 2026 · Grupo **2** (por el usuario `pids2` de JupyterHub; **[PENDIENTE: confirmar]**) · Javier Saguar, Alejandro
 Cuevas, Mónica Fernández, Pedro José Orrego y Daniel Naval · Primera entrega · Fichero
-`PIDS_grupoX_entrega1.pdf`.
+`PIDS_grupo2_entrega1.pdf`.
 
 ---
 
@@ -194,6 +194,10 @@ El aumento propuesto conserva la forma, la posición y la proporción de `diffic
 añade robots más pequeños. El del notebook original habría perdido el 14 % de los
 robots y los habría deformado.
 
+**Efecto medido:** entrenando el mismo modelo con y sin estas copias, el aumento sube
+el mAP@0,5 en validación de 0,923 a 0,942, y en los robots `difficult` de 0,552 a
+0,634 (sección 8.2).
+
 Figuras: `cajas_antes_despues.png` y `ejemplos_aumento.jpg`.
 
 ---
@@ -201,53 +205,160 @@ Figuras: `cajas_antes_despues.png` y `ejemplos_aumento.jpg`.
 ## 7. Entrenamiento (Bloque 2, avance)
 
 Faster R-CNN ResNet-50 FPN (`faster_rcnn_v1`), preentrenado en COCO, 30 épocas, lote
-de 8, SGD con tasa de aprendizaje 0,0001. Se entrenó en la RTX 3060 del laboratorio, a
-unos 11 minutos por época. El mejor modelo se elige por mAP@0,5 en validación.
+de 8, tasa de aprendizaje inicial 0,0001 y semilla 0. El mejor modelo se elige por
+mAP@0,5 en validación. Se entrenó en la RTX 3060 del laboratorio con dos experimentos
+que solo cambian los datos de entrenamiento:
 
-- **Época 1:** mAP@0,5 de 0,866.
-- **Época 12:** 0,938.
-- **Mejor, época 29:** **0,942**.
+| Experimento | Imágenes de entrenamiento | Tiempo por época | mAP@0,5 en la época 1 | Mejor época | Mejor mAP@0,5 | mAP 0,50:0,95 en esa época |
+|---|---:|---:|---:|---:|---:|---:|
+| Sin aumento | 796 | ~4 min | 0,544 | 20 | 0,923 | 0,581 |
+| **Con aumento** | 3184 | ~11 min | 0,866 | 29 | **0,942** | **0,607** |
 
-A partir de la época 12 apenas mejora y **no hay sobreajuste**: la pérdida de
-validación se mantiene en torno a 0,233 mientras la de entrenamiento sigue bajando.
-La tasa de aprendizaje no llegó a bajar en ningún momento.
+- **Con aumento aprende antes y llega más alto.** En la época 2 ya está en 0,918, casi
+  lo mismo que el mejor resultado sin aumento.
+- **Sin aumento se estanca** desde la época 16, en torno a 0,92. El programador de la
+  tasa de aprendizaje la bajó a 0,00001 en la época 24 y no mejoró.
+- **Con aumento siguió mejorando poco a poco** hasta la época 29, y la tasa de
+  aprendizaje no llegó a bajar. Por la curva, más épocas darían como mucho unas
+  décimas.
+- **No hay sobreajuste** en ninguno de los dos. La pérdida de validación se mantiene
+  estable (0,243 sin aumento, 0,235 con aumento) mientras la de entrenamiento sigue
+  bajando.
 
-Figura: `resultados_train/faster_rcnn_v1_aug/historial.png`.
-
-**[PENDIENTE]** Entrenamiento sin aumento, para comparar (lanzado el 14/10).
+Figuras: `resultados_train/faster_rcnn_v1_aug/historial.png` y
+`resultados_train/faster_rcnn_v1_sin_aug/historial.png` **[PENDIENTE: bajarlas del
+laboratorio; en el repositorio solo están los `historial.csv`]**.
 
 ## 8. Evaluación (Bloque 2, avance)
 
-Evaluación en **validación** con el mejor modelo, en tres grupos:
+Se evalúa en **validación** el mejor modelo de cada experimento con `test.ipynb`. Hay
+tres grupos de robots:
+- **todos**;
+- **solo los normales**: los `difficult` se ignoran, ni cuentan como perdidos ni
+  penalizan si se detectan;
+- **solo los `difficult`**: se ignoran los normales.
 
-| Robots | Cuántos | mAP@0,5 | mAP 0,50:0,95 | Exhaustividad (AR@100) |
-|---|---:|---:|---:|---:|
-| Todos | 1561 | 0,942 | 0,608 | 0,68 |
-| Normales | 1306 | **0,966** | 0,641 | 0,72 |
-| `difficult` | 255 | **0,634** | 0,344 | 0,49 |
+El test se reserva para el modelo definitivo y se usa **una sola vez**.
 
-**Interpretación:**
-- El detector funciona muy bien con los robots claros.
+### 8.1 Por grupos (modelo con aumento)
+
+| Robots | Cuántos | mAP@0,5 | mAP@0,75 | mAP 0,50:0,95 | Exhaustividad (AR@100) |
+|---|---:|---:|---:|---:|---:|
+| Todos | 1561 | 0,942 | 0,715 | 0,608 | 0,68 |
+| Normales | 1306 | **0,966** | 0,763 | 0,641 | 0,72 |
+| `difficult` | 255 | **0,634** | 0,359 | 0,344 | 0,49 |
+
+- **Con los robots claros el detector funciona muy bien.**
 - **El punto débil son los `difficult`** (movidos, lejanos, tapados o cortados): 33
-  puntos menos de mAP@0,5. La mejora pasa por más ejemplos difíciles o un aumento más
-  agresivo de movimiento y oclusión, no por más épocas.
-- El mAP 0,50:0,95 es más bajo que el mAP@0,5 porque el modelo localiza bien los
-  robots pero ajusta peor las cajas. En parte es esperable: las cajas de validación
-  las anotaron otros grupos con otro criterio, por ejemplo para las antenas.
+  puntos menos de mAP@0,5.
+- El mAP 0,50:0,95 es bastante más bajo que el mAP@0,5: el modelo encuentra los robots,
+  pero las cajas no se ajustan tanto. En parte es esperable, porque las cajas de
+  validación las anotaron otros grupos con otro criterio, por ejemplo para las antenas.
 
-**[PENDIENTE]**
-- Desglose por secuencia y umbral de confianza para la demo.
-- Comparación con y sin aumento.
-- Evaluación final en test, **una sola vez**.
+### 8.2 Con aumento frente a sin aumento
+
+**mAP@0,5 por grupo:**
+
+| Robots | Sin aumento | Con aumento | Diferencia |
+|---|---:|---:|---:|
+| Todos | 0,923 | 0,942 | +1,9 |
+| Normales | 0,960 | 0,966 | +0,6 |
+| `difficult` | 0,552 | **0,634** | **+8,2** |
+| Todos, mAP@0,75 | 0,658 | 0,715 | +5,7 |
+| Todos, mAP 0,50:0,95 | 0,581 | 0,608 | +2,7 |
+
+**Recuento con confianza ≥ 0,5 e IoU ≥ 0,5:**
+
+| | Sin aumento | Con aumento |
+|---|---:|---:|
+| Robots detectados (TP) | 1446 | 1478 |
+| Robots perdidos (FN) | 115 | **83** |
+| — normales perdidos | 33 | 20 |
+| — `difficult` perdidos | 82 | 63 |
+| Detecciones falsas (FP) | 221 | 210 |
+| Precisión | 0,867 | 0,876 |
+| Exhaustividad | 0,926 | 0,947 |
+| Exhaustividad en `difficult` | 0,678 | **0,753** |
+| F1 | 0,896 | 0,910 |
+
+**Conclusión:** el aumento ayuda sobre todo donde pensábamos al diseñarlo.
+- Apenas cambia los robots claros.
+- Sube 8 puntos en los `difficult`, que son los robots movidos, pequeños y tapados que
+  imitan el desenfoque de movimiento, la escala y la oclusión sintética.
+- Pierde un 28 % menos de robots (83 frente a 115).
+- Ajusta mejor las cajas (+5,7 en mAP@0,75).
+- No añade detecciones falsas.
+
+**Se toma como modelo base el entrenado con aumento.**
+
+### 8.3 Por secuencia
+
+| Secuencia | Imágenes | Robots (`difficult`) | mAP@0,5 sin aum. | mAP@0,5 con aum. | Perdidos con aum. (`difficult`) | FP con aum. |
+|---|---:|---:|---:|---:|---:|---:|
+| PIDS2023_GR04_0008 | 125 | 240 (7) | 0,984 | 0,988 | 2 (2) | 14 |
+| PIDS2024_GR02_0001 | 72 | 135 (7) | 0,929 | 0,939 | 1 (0) | **50** |
+| PIDS2024_GR02_0007 | 35 | 106 (9) | 0,988 | 0,988 | 1 (0) | 8 |
+| PIDS2024_GR02_0008 | 28 | 48 (3) | 0,987 | 0,986 | 0 | 14 |
+| PIDS2024_GR04_0002 | 14 | 25 (3) | 0,974 | 0,982 | 0 | 2 |
+| PIDS2024_GR04_0003 | 10 | 25 (6) | 0,762 | **0,813** | 6 (6) | 5 |
+| PIDS2025_GR01_0002 | 76 | 170 (14) | 0,957 | 0,972 | 2 (0) | 39 |
+| PIDS2025_GR01_0010 | 45 | 81 (13) | 0,862 | 0,905 | 4 (3) | 28 |
+| PIDS2025_GR03_0007 | 87 | 217 (49) | 0,941 | 0,966 | 8 (7) | 8 |
+| PIDS2025_GR03_0011 | 52 | 170 (44) | 0,822 | **0,847** | **30 (20)** | 7 |
+| PIDS2025_GR04_0011 | 128 | 344 (100) | 0,908 | 0,928 | **29 (25)** | 35 |
+| **Total** | 672 | 1561 (255) | 0,923 | 0,942 | 83 (63) | 210 |
+
+- **El aumento mejora 9 de las 11 secuencias** y empata en las otras dos (±0,001).
+- **Los robots perdidos se concentran en dos secuencias.** `GR03_0011` y `GR04_0011`
+  suman 59 de los 83. Son también las que tienen más `difficult`: 144 de los 255.
+- **En `PIDS2024_GR04_0003` no detecta ninguno de sus 6 `difficult`.** Es una secuencia
+  corta, de 10 imágenes.
+- **Las detecciones falsas se concentran en cuatro secuencias:** `GR02_0001`,
+  `GR01_0002`, `GR04_0011` y `GR01_0010` suman 152 de las 210.
+  **[PENDIENTE]** Mirar en `ejemplos_peores.jpg` si son errores del modelo, cajas
+  dobles o robots que el otro grupo no anotó.
+- **`PIDS2025_GR01_0010` tiene el peor mAP 0,50:0,95 (0,40)** a pesar de un mAP@0,5 de
+  0,905: encuentra los robots pero no ajusta las cajas como las de ese grupo. Hay que
+  comprobar si es por cómo anotaron (antenas, robots cortados).
+
+### 8.4 Umbral y velocidad
+
+- **Umbral:** el F1 máximo del modelo con aumento se alcanza con una confianza de
+  **0,95** (0,75 sin aumento). Para la *demo*, donde un falso positivo hace disparar,
+  conviene un umbral alto, en torno a 0,9–0,95.
+- **Velocidad:** unos **73 ms por imagen** en la RTX 3060, unas 14 imágenes por
+  segundo.
+
+Figuras en `resultados_test/faster_rcnn_v1_aug_val/`:
+- `map_por_grupo.png`;
+- `umbral_confianza.png`;
+- `ejemplos_peores.jpg`;
+- `ejemplos_al_azar.jpg`.
+
+**[PENDIENTE]** Bajarlas del laboratorio; en el repositorio solo están los CSV.
+
+### 8.5 Siguientes pasos
+
+1. **Una mejora dirigida a los `difficult`**, con un único experimento comparado en
+   validación igual que aquí. Opciones:
+   - un desenfoque de movimiento y una oclusión más agresivos en el aumento;
+   - dar más peso a las imágenes con robots difíciles.
+2. **Revisar las detecciones falsas** de las cuatro secuencias señaladas.
+3. **Evaluar en test una sola vez**, con el modelo definitivo, y fijar el umbral de la
+   *demo*.
 
 ## 9. Conclusiones
 
 **[PENDIENTE]** Redactarlas al final. Puntos previstos:
-- Dataset de 796 imágenes y 1399 robots, anotado con criterios comunes y medidos
-  (IoU de 0,81).
-- Las decisiones del aumento salen del EDA y se comprueban con datos.
-- El modelo generaliza a escenas de otros grupos (mAP@0,5 de 0,94) y falla sobre todo
-  en los robots difíciles.
+- **Dataset:** 796 imágenes y 1399 robots, anotados con criterios comunes y medidos
+  (IoU de 0,81 entre anotadores).
+- **Aumento de datos:** las decisiones salen del EDA y se han comprobado con datos. Sin
+  perder robots ni deformarlos, sube el mAP@0,5 de 0,923 a 0,942, y en los robots
+  difíciles de 0,552 a 0,634.
+- **Generalización:** el modelo funciona en escenas de otros grupos y años. Tiene un
+  mAP@0,5 de 0,942 y de 0,966 en los robots claros.
+- **Punto débil:** los robots difíciles, con un mAP@0,5 de 0,634 y una cuarta parte
+  sin detectar. La mejora va por ahí, no por entrenar más épocas.
 
 ## 10. Reparto del trabajo
 
@@ -255,7 +366,7 @@ Evaluación en **validación** con el mejor modelo, en tres grupos:
 
 | Integrante | Trabajo |
 |---|---|
-| Javier Saguar | Repositorio y organización; criterios y guía de anotación; extracción de fotogramas; lote A; revisión de los lotes B, D y E; depuración; aumento de datos y reparto; `difficult` de los conjuntos de la asignatura; evaluación por grupos |
+| Javier Saguar | Repositorio y organización; criterios y guía de anotación; extracción de fotogramas; lote A; revisión de los lotes B, D y E; depuración; aumento de datos y reparto; `difficult` de los conjuntos de la asignatura; evaluación por grupos; entrenamientos y evaluaciones en el laboratorio |
 | Alejandro Cuevas | Lote B; revisión del lote C; EDA completo; adaptación de `train.ipynb` y `test.ipynb` |
 | Mónica Fernández | Lote C; calibración |
 | Pedro José Orrego | Lote D; calibración; propuesta de selección de figuras del EDA |
