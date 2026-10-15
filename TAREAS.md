@@ -164,6 +164,13 @@ El enunciado exige **al menos un análisis propio**, explicando qué pregunta re
 
 **Hecha cuando:** hay al menos uno, con su figura e interpretación.
 
+**Ampliación (15/10/2026, rama `javier-saguar`):** mapas de centros por vídeo y
+ventanas temporales de 5 s, con comparación todos/`difficult` y escala común;
+recuentos de robots de los diez vídeos sincronizados por fotograma anotado.
+Se han generado los HTML, sus CSV y 13 figuras en PNG (300 ppp), SVG y PDF desde
+las 808 imágenes originales. Código en `eda.ipynb` y
+`herramientas/visualizaciones_eda.py`; metodología y pies en `resultados_eda/README.md`.
+
 ### T13 · Depuración del dataset (P2)
 
 Buscar y corregir o eliminar:

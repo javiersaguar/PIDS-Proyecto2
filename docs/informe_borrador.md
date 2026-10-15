@@ -133,6 +133,29 @@ Figuras: `ejemplos_secuencias.jpg` e `imagenes_y_cajas_por_secuencia.png`.
 
 Figuras: `mapa_calor_centros.png`, `forma_cajas.png` y `linea_temporal.png`.
 
+### 4.3 Posición y recuentos por vídeo y a lo largo del tiempo
+
+El mapa agregado se amplía con mapas por vídeo y con **132 intervalos disjuntos de
+5 segundos**, comparando todos los robots con los `difficult`. Una cuadrícula de
+16 × 9 recoge los centros normalizados. La frecuencia se expresa en **centros por
+100 imágenes**, contando los negativos; ambos grupos comparten escala de color.
+Los intervalos finales pueden contener menos imágenes y muestran su recuento.
+Así se distingue la frecuencia espacial del número de imágenes de cada grabación.
+
+Las curvas de recuento muestran los diez vídeos a la vez y avanzan por cada
+fotograma anotado. La media global es **1,76 robots por imagen**: V05 presenta la
+mayor (**2,27**) y V06 la menor (**1,26**), con 22 negativas entre 93 imágenes.
+Las medias incluyen los negativos y las curvas terminan con cada vídeo. Se usan
+los 808 originales y 375 `difficult`, antes de depurar. Como el muestreo es cada
+24 frames (~0,79 s), no se infiere la presencia de robots entre muestras ni se
+identifican robots individuales a lo largo del vídeo.
+
+Los HTML sirven como material complementario. Para el documento se exportan los
+mapas globales, las curvas completas y una hoja de intervalos por vídeo a PNG
+(300 ppp), SVG y PDF en `resultados_eda/para_informe/`. La normalización común
+permite describir diferencias entre grabaciones; no demuestra que la distribución
+se mantenga en escenarios nuevos.
+
 ## 5. Depuración del dataset
 
 Criterios en `docs/depuracion.md`. Se revisaron **a ojo, con sus cajas, 69 imágenes**:

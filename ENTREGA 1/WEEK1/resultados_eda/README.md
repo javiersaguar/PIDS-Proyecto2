@@ -43,6 +43,78 @@ historia completa del EDA; las demás pueden ir a un anexo o citarse con sus cif
 
 Las figuras con fotogramas se guardan en JPEG y las gráficas en PNG, a 200 ppp.
 
+## Ampliación espacial y temporal (15/10/2026)
+
+La sección 9 de `eda.ipynb` añade tres figuras interactivas. El cálculo y el diseño
+están en [`herramientas/visualizaciones_eda.py`](../../../herramientas/visualizaciones_eda.py).
+Se usan las **808 imágenes originales, 1420 cajas y 375 `difficult`**, antes de la
+depuración. No se modifica el entrenamiento ni se usan validación o test.
+
+![Centros de todos los robots por vídeo](para_informe/mapa_calor_por_video_todos.png)
+![Centros de los robots difficult por vídeo](para_informe/mapa_calor_por_video_difficult.png)
+
+| Interactivo | Qué permite explorar | Vista para el informe |
+|---|---|---|
+| [Mapas por vídeo](interactivos/mapas_calor_por_video.html) | Seleccionar V01–V10 y comparar todos con `difficult` | `para_informe/mapa_calor_por_video_todos.*` y `mapa_calor_por_video_difficult.*` |
+| [Mapas temporales](interactivos/mapas_calor_temporales.html) | Recorrer 132 ventanas de 5 segundos, con reproducción, pausa y salto al inicio de un vídeo | `para_informe/mapas_temporales_V01.*` a `mapas_temporales_V10.*` |
+| [Recuentos por fotograma](interactivos/robots_por_fotograma.html) | Los diez vídeos avanzan a la vez por las 102 posiciones de muestreo; cada panel muestra el número de robots de su imagen | `para_informe/robots_por_fotograma_videos.*` |
+
+### Método y límites
+
+- Los mapas son histogramas de **centros** en una cuadrícula de 16 × 9, con ejes
+  normalizados y el origen en la esquina superior izquierda. No representan el
+  área cubierta por las cajas.
+- La unidad es **centros por 100 imágenes anotadas** del vídeo o intervalo. Se
+  incluyen las negativas en el denominador. `Difficult` es un subconjunto de
+  «todos»; una celda nunca tiene más `difficult` que robots totales. No es un
+  porcentaje de cajas ni una probabilidad: la suma puede superar 100.
+- La escala de color es fija entre vídeos y entre los dos grupos. Los mapas de
+  vídeos completos y los temporales usan máximos propios: para comparar una
+  figura con otra se consulta su barra de color.
+- Ventanas disjuntas `[0,5)`, `[5,10)`, etc., calculadas con `frame / 30,303`. La
+  última puede tener menos imágenes. Se muestran los contadores para no confundir
+  una frecuencia alta basada en pocas muestras con un patrón persistente.
+- Los fotogramas se anotaron cada **24 frames (~0,79 s)**. La animación avanza por
+  esas muestras; no inventa los fotogramas intermedios ni sigue identidades.
+- Los recuentos incluyen los fotogramas sin robots como cero. La línea punteada
+  indica la media de cada vídeo completo; al terminar una grabación la curva se
+  detiene, sin añadir ceros. Media global: **1,76**; V05: **2,27**; V06: **1,26**.
+- Una ventana sin `difficult` se muestra vacía. Las concentraciones describen las
+  grabaciones y no prueban dónde aparecerán robots en otros escenarios.
+
+### Exportación para Word y PDF
+
+La sección **«Exportación de las nuevas figuras para Word y PDF»** del notebook
+genera **13 figuras × 3 formatos** en `para_informe/`:
+
+- **PNG, 300 ppp:** para insertar directamente en Word sin comprimir la imagen.
+- **SVG:** vectorial para Word compatible y edición.
+- **PDF:** vectorial para el informe o como anexo.
+
+No se necesita Kaleido: las versiones estáticas se dibujan con Matplotlib sobre
+los mismos datos. Cada hoja temporal conserva los dos grupos, intervalo a
+intervalo, y la misma escala temporal que la animación.
+
+Para abrir los interactivos, descarga `interactivos/` junto con `para_informe/` y
+abre [`interactivos/indice.html`](interactivos/indice.html). La biblioteca
+`plotly.min.js` se incluye una sola vez y permite usarlos sin conexión. GitHub
+muestra el código HTML, por lo que las vistas anteriores son PNG.
+Datos auditables: [`recuentos_fotogramas.csv`](interactivos/recuentos_fotogramas.csv)
+y [`recuentos_ventanas.csv`](interactivos/recuentos_ventanas.csv).
+
+**Pies propuestos:**
+
+- **Mapas por vídeo:** «Distribución de los centros de las cajas por vídeo,
+  expresada en centros por 100 imágenes. Todos los robots y `difficult` comparten
+  escala de color; se incluyen las imágenes sin robots en la normalización».
+- **Mapas temporales:** «Evolución espacial en intervalos de 5 segundos de VXX.
+  Cada pareja compara todos los robots y los `difficult`; se indican las cajas y
+  las imágenes observadas en cada intervalo».
+- **Recuentos:** «Número de robots por fotograma anotado en los diez vídeos. La
+  línea punteada indica la media de cada secuencia, incluyendo los negativos».
+
+![Recuentos por fotograma en los diez vídeos](para_informe/robots_por_fotograma_videos.png)
+
 ## Tablas
 
 | Tabla | Contenido | Uso |

@@ -23,6 +23,10 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 - T04–T08: **los cinco lotes anotados**, con 1420 robots. T10: revisión cruzada de todos los lotes.
 - T01: criterios v1 en [`docs/criterios_anotacion.md`](docs/criterios_anotacion.md), guía práctica en [`docs/guia_anotacion.md`](docs/guia_anotacion.md) y calibración de los cinco: IoU medio de 0,81 entre anotadores.
 - T11–T12: EDA completo en `eda.ipynb`, con figuras y tablas en `ENTREGA 1/WEEK1/resultados_eda/`.
+- T12 (15/10): mapas por vídeo y ventanas de 5 s comparando todos con `difficult`,
+  y animación de recuentos por fotograma de los diez vídeos. HTML sin conexión,
+  datos CSV y 13 figuras exportadas a PNG (300 ppp), SVG y PDF. Se usan los 808
+  originales y 375 `difficult`; ver `resultados_eda/README.md`.
 - T13: depuración. Se excluyen 12 imágenes (una con un robot sin caja y 11 casi duplicadas) y quedan **796**. Criterios en [`docs/depuracion.md`](docs/depuracion.md).
 - T14 y T18: `data_aug.ipynb` genera **3184 imágenes de entrenamiento** (nuestras 796 y 2388 copias). Validación (672) y test (718) son los conjuntos de otros grupos que da la asignatura, en `ENTREGA 1/WEEK2/DATOS_ASIGNATURA/`. Figuras en `ENTREGA 1/WEEK1/resultados_aug/`.
 - Bloque 3: material de la semana 3 en `ENTREGA 2/WEEK3/` (SDK del robot y demo por completar).
