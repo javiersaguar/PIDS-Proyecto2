@@ -68,6 +68,12 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 
 ## Entrenamiento (15/10/2026)
 
+- En curso desde las **16:53 (Europe/Madrid)**: `faster_rcnn_v1_aug_lr001`, con tasa
+  inicial 0,001, 30 épocas, lote de 8 y semilla 0. Parte de COCO y mantiene los datos
+  y el resto de parámetros del experimento con aumento. Verificado el arranque en
+  la RTX 3060. Después se ejecutará la evaluación en validación. Resultados y
+  análisis del cambio de tasa pendientes; seguimiento en la [PR #14](https://github.com/javiersaguar/PIDS-Proyecto2/pull/14).
+
 - T19: entrenados en JupyterHub `faster_rcnn_v1` con y sin aumento. El aumento sube el mAP@0,5 en validación de 0,923 a **0,942**, y en los `difficult` de 0,552 a **0,634**. Se toma como base el modelo con aumento.
 - T20: evaluación en validación por grupos y por secuencia hecha. Resultados en `ENTREGA 1/WEEK2/resultados_train/` y `resultados_test/`, y su análisis en [`docs/informe_borrador.md`](docs/informe_borrador.md).
 
