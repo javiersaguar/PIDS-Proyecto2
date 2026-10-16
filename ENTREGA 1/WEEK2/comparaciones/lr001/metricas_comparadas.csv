@@ -1,0 +1,9 @@
+grupo,metrica,lr0001,lr001,diferencia_puntos
+todos,map_50,0.9416,0.9433,0.17
+todos,map,0.6081,0.6302,2.21
+todos,map_75,0.7146,0.746,3.14
+todos,map_small,0.1074,0.1182,1.08
+normales,map_50,0.9664,0.974,0.76
+normales,map,0.6409,0.6629,2.2
+difficult,map_50,0.6341,0.6462,1.21
+difficult,map,0.3439,0.3656,2.17

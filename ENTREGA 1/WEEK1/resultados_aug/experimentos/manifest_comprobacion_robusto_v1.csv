@@ -1,0 +1,2389 @@
+secuencia,origen,indice,semilla,robots_entrada,robots_salida,max_fraccion_oculta,transformaciones
+V01,frame_0024,0,4230344469,1,1,0.0,ISONoise
+V01,frame_0024,1,32873120,1,1,0.0,HueSaturationValue ISONoise
+V01,frame_0024,2,3141341233,1,1,0.0,Affine MotionBlur
+V01,frame_0048,0,2860700670,2,2,0.0,RandomBrightnessContrast HueSaturationValue ImageCompression
+V01,frame_0048,1,687778125,2,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V01,frame_0048,2,833886737,2,2,0.0,Affine MotionBlur OclusionTexturada
+V01,frame_0072,0,3646333468,2,2,0.0,Affine RandomGamma
+V01,frame_0072,1,2321002472,2,2,0.0,Affine HueSaturationValue MotionBlur OclusionTexturada
+V01,frame_0072,2,1850401442,2,2,0.0,Affine ImageCompression
+V01,frame_0096,0,1788916676,1,1,0.0,HorizontalFlip RandomGamma GaussNoise
+V01,frame_0096,1,741249796,1,1,0.0,Affine RandomGamma
+V01,frame_0096,2,2783279339,1,1,0.0,Affine RandomGamma HueSaturationValue
+V01,frame_0120,0,3574112075,3,3,0.0,HorizontalFlip Affine MotionBlur DifficultOscuro
+V01,frame_0120,1,3932012876,3,3,0.0,Affine RGBShift ISONoise OclusionTexturada
+V01,frame_0120,2,4104549081,3,3,0.0,Affine RandomBrightnessContrast RGBShift MotionBlur GaussNoise
+V01,frame_0144,0,4074757263,2,2,0.0,Affine RandomGamma GaussNoise
+V01,frame_0144,1,1731605488,2,2,0.0,Affine
+V01,frame_0144,2,1610959198,2,2,0.0,Affine
+V01,frame_0168,0,876905821,2,2,0.0,HorizontalFlip Affine DifficultOscuro OclusionTexturada
+V01,frame_0168,1,3919128901,2,2,0.0,Affine RandomBrightnessContrast RGBShift
+V01,frame_0168,2,765708193,2,2,0.0,HorizontalFlip Affine
+V01,frame_0192,0,3155766122,3,3,0.0,HorizontalFlip ISONoise DifficultOscuro
+V01,frame_0192,1,603000116,3,3,0.0,HorizontalFlip HueSaturationValue MotionBlur ISONoise
+V01,frame_0192,2,1631746587,3,3,0.0,HorizontalFlip Affine ISONoise OclusionTexturada
+V01,frame_0216,0,3402143405,3,3,0.0,RandomGamma DifficultMovimiento
+V01,frame_0216,1,1071500882,3,3,0.0,Affine
+V01,frame_0216,2,3147552147,3,3,0.0,HorizontalFlip ISONoise OclusionTexturada
+V01,frame_0240,0,4200935014,2,2,0.0,HorizontalFlip Affine RandomGamma
+V01,frame_0240,1,2581619760,2,2,0.0,HorizontalFlip Affine ISONoise
+V01,frame_0240,2,4091753478,2,2,0.0,Affine OclusionTexturada
+V01,frame_0264,0,258333405,2,2,0.0,Affine
+V01,frame_0264,1,1330936466,2,2,0.0,HorizontalFlip Affine HueSaturationValue ISONoise
+V01,frame_0264,2,504455059,2,2,0.0,HorizontalFlip RandomGamma RGBShift OclusionTexturada
+V01,frame_0288,0,4144220122,2,2,0.0,HorizontalFlip RandomGamma
+V01,frame_0288,1,3737715461,2,2,0.0,Affine
+V01,frame_0288,2,3998688645,2,2,0.0,HorizontalFlip Affine
+V01,frame_0312,0,782675497,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V01,frame_0312,1,1653968598,2,2,0.0,HorizontalFlip
+V01,frame_0312,2,317894704,2,2,0.0,HueSaturationValue MotionBlur
+V01,frame_0336,0,1465777946,2,2,0.0,HorizontalFlip Affine RandomGamma
+V01,frame_0336,1,812754502,2,2,0.0,HorizontalFlip Affine
+V01,frame_0336,2,2513906584,2,2,0.0,HorizontalFlip Affine RandomGamma ISONoise
+V01,frame_0360,0,526398323,2,2,0.0,HorizontalFlip ImageCompression
+V01,frame_0360,1,20418206,2,2,0.0,HorizontalFlip Affine RandomGamma
+V01,frame_0360,2,2537926552,2,2,0.0,Affine ImageCompression
+V01,frame_0384,0,21417745,3,3,0.0,Affine RandomBrightnessContrast GaussNoise
+V01,frame_0384,1,2094459630,3,3,0.0,HorizontalFlip Affine RGBShift
+V01,frame_0384,2,3135804223,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V01,frame_0408,0,3490996213,3,3,0.0,HorizontalFlip Affine DifficultOscuro
+V01,frame_0408,1,874399773,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V01,frame_0408,2,143025119,3,3,0.0,RandomBrightnessContrast OclusionTexturada
+V01,frame_0432,0,2761632480,2,2,0.0,HorizontalFlip Affine MotionBlur
+V01,frame_0432,1,3450805631,2,2,0.0,HorizontalFlip Affine RandomGamma Downscale
+V01,frame_0432,2,180844560,2,2,0.0,HorizontalFlip Affine RandomGamma
+V01,frame_0456,0,2242556484,2,2,0.0,Affine RGBShift
+V01,frame_0456,1,2951561002,2,2,0.0,HorizontalFlip RandomGamma ImageCompression
+V01,frame_0456,2,473614044,2,2,0.0,Affine GaussNoise
+V01,frame_0480,0,3386291210,2,2,0.0,HorizontalFlip RandomGamma
+V01,frame_0480,1,1467407739,2,2,0.0,Affine Downscale
+V01,frame_0480,2,3872870352,2,2,0.0,HorizontalFlip
+V01,frame_0504,0,2237838515,2,2,0.0,Affine OclusionTexturada
+V01,frame_0504,1,3273678954,2,2,0.0,HueSaturationValue OclusionTexturada
+V01,frame_0504,2,590085030,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V01,frame_0528,0,4079778334,1,1,0.0,Affine RandomBrightnessContrast
+V01,frame_0528,1,3621275205,1,1,0.0,HorizontalFlip Affine MotionBlur
+V01,frame_0528,2,4034416515,1,1,0.0,Affine RandomGamma RGBShift
+V01,frame_0552,0,2424733522,2,2,0.0,Affine
+V01,frame_0552,1,3929368937,2,2,0.0,HorizontalFlip HueSaturationValue
+V01,frame_0552,2,906840759,2,2,0.0,Downscale
+V01,frame_0576,0,316168329,3,3,0.0,Affine MotionBlur
+V01,frame_0576,1,1160123692,3,3,0.0,HorizontalFlip Affine
+V01,frame_0576,2,3174501830,3,3,0.0,HorizontalFlip Affine MotionBlur
+V01,frame_0600,0,1319255,2,2,0.0,Affine RandomBrightnessContrast MotionBlur DifficultOscuro
+V01,frame_0600,1,1538256264,2,2,0.0,HorizontalFlip Affine RandomGamma
+V01,frame_0600,2,4261715018,2,2,0.0,HorizontalFlip Affine MotionBlur OclusionTexturada
+V01,frame_0624,0,1656346219,2,2,0.0,Affine OclusionTexturada
+V01,frame_0624,1,1009934428,2,2,0.0,HorizontalFlip Affine OclusionTexturada
+V01,frame_0624,2,1550165434,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V01,frame_0648,0,2575269248,2,2,0.0,Affine GaussNoise
+V01,frame_0648,1,977563677,2,2,0.0,Affine ImageCompression
+V01,frame_0648,2,2548363724,2,2,0.0,HorizontalFlip RGBShift OclusionTexturada
+V01,frame_0672,0,2526430625,2,2,0.0,HorizontalFlip RandomGamma
+V01,frame_0672,1,2739716381,2,2,0.0,Affine MotionBlur
+V01,frame_0672,2,3868204076,2,2,0.0,Affine RandomBrightnessContrast
+V01,frame_0696,0,3167931874,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast DifficultMovimiento
+V01,frame_0696,1,2715670408,3,3,0.0,MotionBlur Downscale
+V01,frame_0696,2,416828652,3,3,0.0,RandomBrightnessContrast
+V01,frame_0720,0,343404776,3,3,0.0,HorizontalFlip Affine
+V01,frame_0720,1,1542478544,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V01,frame_0720,2,2223348861,3,3,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V01,frame_0744,0,1805617142,2,2,0.0,HorizontalFlip Affine
+V01,frame_0744,1,3687811525,2,2,0.0,Affine RGBShift MotionBlur
+V01,frame_0744,2,2811389582,2,2,0.0,HorizontalFlip Affine RandomGamma Downscale OclusionTexturada
+V01,frame_0768,0,687397248,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V01,frame_0768,1,2071588892,2,2,0.0,Affine HueSaturationValue
+V01,frame_0768,2,1700948315,2,2,0.0,Affine RGBShift ISONoise
+V01,frame_0792,0,3224348527,2,2,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V01,frame_0792,1,2542529651,2,2,0.0,HorizontalFlip Affine
+V01,frame_0792,2,2837512381,2,2,0.0,HorizontalFlip HueSaturationValue
+V01,frame_0816,0,4153036148,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue OclusionTexturada
+V01,frame_0816,1,483656757,2,2,0.0,HorizontalFlip
+V01,frame_0816,2,369613162,2,2,0.0,HorizontalFlip Affine MotionBlur Downscale
+V01,frame_0840,0,535739764,3,3,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V01,frame_0840,1,2523778183,3,3,0.0,Affine MotionBlur
+V01,frame_0840,2,4290041637,3,3,0.0,HorizontalFlip Affine ISONoise
+V01,frame_0864,0,1047437335,3,3,0.0,Affine RandomBrightnessContrast GaussNoise DifficultMovimiento
+V01,frame_0864,1,1495816933,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V01,frame_0864,2,290498850,3,3,0.0,Affine
+V01,frame_0888,0,826672405,3,2,0.0,Affine RandomGamma
+V01,frame_0888,1,3857456649,3,3,0.0,Affine
+V01,frame_0888,2,3302147746,3,3,0.0,Affine
+V01,frame_0912,0,4167751371,2,2,0.0,GaussNoise
+V01,frame_0912,1,3824549041,2,2,0.0,HorizontalFlip Affine
+V01,frame_0912,2,359681686,2,2,0.0,HorizontalFlip
+V01,frame_0936,0,4224843563,1,1,0.0,HorizontalFlip
+V01,frame_0936,1,3101117319,1,1,0.0,HorizontalFlip RGBShift
+V01,frame_0936,2,2626700634,1,1,0.0,Affine RGBShift
+V01,frame_0960,0,539984953,1,1,0.0,Affine RandomGamma
+V01,frame_0960,1,2290813723,1,1,0.0,HorizontalFlip
+V01,frame_0960,2,1978144522,1,1,0.0,HorizontalFlip Affine RandomGamma Downscale
+V01,frame_0984,0,1693236709,1,1,0.0,HorizontalFlip RandomGamma
+V01,frame_0984,1,2359752105,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V01,frame_0984,2,470122517,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V01,frame_1008,0,1073317538,1,1,0.0,HorizontalFlip Affine
+V01,frame_1008,1,3234594091,1,1,0.0,HorizontalFlip Affine RandomGamma MotionBlur
+V01,frame_1008,2,1137429545,1,1,0.0,Affine RandomBrightnessContrast OclusionTexturada
+V01,frame_1032,0,3162964879,2,2,0.0,HorizontalFlip RandomBrightnessContrast DifficultOscuro
+V01,frame_1032,1,3864168889,2,2,0.0,HorizontalFlip Affine
+V01,frame_1032,2,2384728801,2,2,0.0,HorizontalFlip RandomGamma
+V01,frame_1056,0,709076431,2,2,0.0,Affine RandomGamma RGBShift MotionBlur
+V01,frame_1056,1,591009189,2,2,0.0,HorizontalFlip Affine RGBShift
+V01,frame_1056,2,1905205936,2,2,0.0,Affine RandomGamma RGBShift
+V01,frame_1080,0,1743509988,2,2,0.0,HorizontalFlip Affine
+V01,frame_1080,1,1485214961,2,2,0.0,HorizontalFlip RandomBrightnessContrast
+V01,frame_1080,2,1612568220,2,2,0.0,Affine
+V01,frame_1104,0,1404021957,3,3,0.0,Affine RandomGamma GaussNoise OclusionTexturada
+V01,frame_1104,1,1404963721,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur GaussNoise
+V01,frame_1104,2,2441236504,3,3,0.0,RandomGamma
+V01,frame_1128,0,3879526295,3,3,0.0,Affine RandomGamma
+V01,frame_1128,1,1440306531,3,3,0.0,Affine RandomGamma MotionBlur
+V01,frame_1128,2,574364679,3,3,0.0,Affine RGBShift
+V01,frame_1152,0,2373273717,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V01,frame_1152,1,2779084372,2,2,0.0,HorizontalFlip RandomGamma
+V01,frame_1152,2,4008103113,2,2,0.0,Affine
+V01,frame_1176,0,261165073,2,2,0.0,HorizontalFlip RandomGamma ISONoise
+V01,frame_1176,1,3192308571,2,2,0.0,Affine MotionBlur
+V01,frame_1176,2,4207180655,2,2,0.0,Affine
+V01,frame_1200,0,3721115188,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift MotionBlur ImageCompression
+V01,frame_1200,1,3745791275,1,1,0.0,Affine OclusionTexturada
+V01,frame_1200,2,4283768206,1,1,0.0,HorizontalFlip Affine RGBShift
+V01,frame_1224,0,389507401,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V01,frame_1224,1,920217661,1,1,0.0,HorizontalFlip Affine ImageCompression
+V01,frame_1224,2,3192578452,1,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V01,frame_1248,0,3573180237,1,1,0.0,HorizontalFlip RandomGamma HueSaturationValue
+V01,frame_1248,1,3618682359,1,1,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V01,frame_1248,2,3193440214,1,1,0.0,Affine RandomGamma RGBShift
+V01,frame_1272,0,3993078973,1,1,0.0,RandomGamma ImageCompression
+V01,frame_1272,1,632354301,1,1,0.0,Affine RandomBrightnessContrast OclusionTexturada
+V01,frame_1272,2,2279996668,1,1,0.0,Affine GaussNoise
+V01,frame_1296,0,874275048,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V01,frame_1296,1,3586231654,0,0,0.0,GaussNoise
+V01,frame_1296,2,1034875822,0,0,0.0,HorizontalFlip Affine
+V01,frame_1320,0,3237678532,2,2,0.2082101397404376,Affine ISONoise OclusionTexturada
+V01,frame_1320,1,1271351813,2,2,0.0,HorizontalFlip Affine HueSaturationValue
+V01,frame_1320,2,3094737279,2,2,0.0,Affine HueSaturationValue MotionBlur Downscale
+V01,frame_1344,0,3860661893,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V01,frame_1344,1,3523670016,2,2,0.0,Affine RandomGamma GaussNoise
+V01,frame_1344,2,1119012017,2,2,0.0,Affine RGBShift
+V01,frame_1368,0,1102396484,2,2,0.24463415939624258,HorizontalFlip Affine DifficultOscuro OclusionTexturada
+V01,frame_1368,1,2270635466,2,2,0.14751648351648353,RGBShift OclusionTexturada
+V01,frame_1368,2,276409364,2,2,0.0,RandomGamma ISONoise
+V01,frame_1392,0,3277004581,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V01,frame_1392,1,841751105,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V01,frame_1392,2,303810296,2,1,0.0,Affine RandomGamma
+V01,frame_1416,0,3948558093,2,2,0.0,Affine RandomGamma ImageCompression
+V01,frame_1416,1,4238015092,2,2,0.0,Affine RandomBrightnessContrast
+V01,frame_1416,2,1098013491,2,2,0.0,Affine RandomGamma OclusionTexturada
+V01,frame_1440,0,497251007,2,2,0.0,Affine RandomGamma GaussNoise
+V01,frame_1440,1,691445385,2,2,0.0,Affine RandomGamma
+V01,frame_1440,2,3286219877,2,2,0.0,HorizontalFlip Affine Downscale
+V01,frame_1464,0,4026482344,3,3,0.0,HorizontalFlip DifficultOscuro
+V01,frame_1464,1,3004101155,3,3,0.0,HorizontalFlip Affine OclusionTexturada
+V01,frame_1464,2,128804123,3,3,0.0,RandomGamma
+V01,frame_1488,0,4275767086,2,2,0.0,MotionBlur OclusionTexturada
+V01,frame_1488,1,2795212716,2,2,0.0,HorizontalFlip HueSaturationValue ISONoise
+V01,frame_1488,2,2564318379,2,2,0.0,HorizontalFlip MotionBlur
+V01,frame_1512,0,1534451246,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V01,frame_1512,1,1808416896,2,2,0.0,HorizontalFlip Affine
+V01,frame_1512,2,1104919865,2,2,0.0,RandomBrightnessContrast HueSaturationValue OclusionTexturada
+V01,frame_1536,0,2578969679,2,2,0.0,Affine RandomGamma
+V01,frame_1536,1,2649417041,2,2,0.0,Affine
+V01,frame_1536,2,3365194288,2,2,0.0,Affine GaussNoise OclusionTexturada
+V01,frame_1560,0,4182767580,1,1,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V01,frame_1560,1,4051513944,1,1,0.0,RandomGamma HueSaturationValue
+V01,frame_1560,2,3734798438,1,1,0.0,RandomBrightnessContrast MotionBlur
+V01,frame_1584,0,3000343412,1,1,0.0,HorizontalFlip Affine MotionBlur ISONoise
+V01,frame_1584,1,1021178459,1,1,0.0,HorizontalFlip
+V01,frame_1584,2,2979276621,1,1,0.0,HorizontalFlip RGBShift Downscale OclusionTexturada
+V01,frame_1608,0,2725364900,1,1,0.0,HorizontalFlip RandomGamma RGBShift
+V01,frame_1608,1,2026383999,1,1,0.0,Affine RGBShift
+V01,frame_1608,2,3634742985,1,1,0.0,HorizontalFlip RGBShift MotionBlur GaussNoise
+V01,frame_1632,0,610426478,1,1,0.0,HorizontalFlip Affine RandomGamma DifficultOscuro
+V01,frame_1632,1,387441126,1,1,0.0,Affine Downscale
+V01,frame_1632,2,3983435155,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V01,frame_1656,0,1683882117,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue MotionBlur
+V01,frame_1656,1,1938045364,2,1,0.0,Affine
+V01,frame_1656,2,1552617473,2,2,0.0,Affine
+V01,frame_1680,0,1600324020,2,2,0.0,RandomBrightnessContrast ISONoise OclusionTexturada
+V01,frame_1680,1,173133022,2,2,0.0,HorizontalFlip RandomBrightnessContrast
+V01,frame_1680,2,1229420721,2,2,0.0,Affine RandomBrightnessContrast RGBShift
+V01,frame_1704,0,1882243448,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V01,frame_1704,1,1029706294,1,1,0.09438581220759439,HorizontalFlip Affine RandomGamma HueSaturationValue GaussNoise OclusionTexturada
+V01,frame_1704,2,1776358758,1,1,0.0,HueSaturationValue
+V01,frame_1728,0,155754151,0,0,0.0,HorizontalFlip Affine
+V01,frame_1728,1,2474594262,0,0,0.0,RGBShift ISONoise
+V01,frame_1728,2,4256564830,0,0,0.0,MotionBlur
+V01,frame_1752,0,3353152569,1,1,0.0,HorizontalFlip Affine
+V01,frame_1752,1,2580307146,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V01,frame_1752,2,384722276,1,1,0.0,Affine RandomBrightnessContrast MotionBlur OclusionTexturada
+V01,frame_1776,0,279437793,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V01,frame_1776,1,518911930,1,1,0.0,Affine RandomGamma HueSaturationValue OclusionTexturada
+V01,frame_1776,2,2641865120,1,1,0.0,RandomGamma HueSaturationValue
+V01,frame_1800,0,3020685326,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V01,frame_1800,1,3922295222,1,1,0.0,Affine GaussNoise
+V01,frame_1800,2,877315505,1,1,0.0,Affine
+V01,frame_1824,0,4283447416,1,1,0.0,HorizontalFlip HueSaturationValue MotionBlur
+V01,frame_1824,1,2869237058,1,1,0.0,HorizontalFlip HueSaturationValue MotionBlur
+V01,frame_1824,2,659086565,1,1,0.0,Affine Downscale
+V01,frame_1848,0,3201662660,1,1,0.0,RandomBrightnessContrast GaussNoise
+V01,frame_1848,1,3108979483,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V01,frame_1848,2,3583622842,1,1,0.0,HorizontalFlip Affine
+V01,frame_1872,0,3764728923,1,1,0.0,OclusionTexturada
+V01,frame_1872,1,4154502796,1,1,0.0,HorizontalFlip RGBShift ISONoise
+V01,frame_1872,2,2094759633,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast GaussNoise
+V01,frame_1896,0,3221941674,1,1,0.0,HorizontalFlip Affine HueSaturationValue Downscale
+V01,frame_1896,1,93235017,1,1,0.0,RandomGamma RGBShift
+V01,frame_1896,2,633172113,1,1,0.0,RandomBrightnessContrast HueSaturationValue
+V01,frame_1920,0,3026015928,2,2,0.0,HorizontalFlip Affine MotionBlur DifficultOscuro
+V01,frame_1920,1,1195887650,2,2,0.0,HorizontalFlip Affine RandomGamma ImageCompression OclusionTexturada
+V01,frame_1920,2,649020413,2,2,0.0,Affine RandomBrightnessContrast Downscale
+V01,frame_1944,0,3440071322,2,2,0.0,Affine GaussNoise
+V01,frame_1944,1,334709742,2,2,0.0,Affine Downscale
+V01,frame_1944,2,2540861599,2,2,0.0,HorizontalFlip Affine
+V01,frame_1968,0,364621023,2,2,0.0,Affine RandomBrightnessContrast Downscale
+V01,frame_1968,1,1270190036,2,2,0.0,Affine RandomGamma OclusionTexturada
+V01,frame_1968,2,2980345422,2,2,0.0,HorizontalFlip Affine RandomGamma Downscale
+V02,frame_0024,0,2971132389,2,2,0.0,HorizontalFlip RandomGamma
+V02,frame_0024,1,3121181054,2,2,0.0,RGBShift Downscale
+V02,frame_0024,2,1294833358,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V02,frame_0048,0,3113200234,2,2,0.0,HorizontalFlip RandomGamma RGBShift DifficultOscuro
+V02,frame_0048,1,345863082,2,2,0.0,Affine RandomBrightnessContrast RGBShift
+V02,frame_0048,2,1915215821,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V02,frame_0072,0,1178196468,2,2,0.0,GaussNoise DifficultOscuro
+V02,frame_0072,1,3816229767,2,2,0.0,Affine HueSaturationValue
+V02,frame_0072,2,1215642646,2,2,0.0,HorizontalFlip Affine
+V02,frame_0096,0,2879986953,2,2,0.0,Affine RGBShift OclusionTexturada
+V02,frame_0096,1,1829874261,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V02,frame_0096,2,1018281006,2,2,0.0,HorizontalFlip Affine
+V02,frame_0120,0,113214622,2,2,0.0,HorizontalFlip RandomGamma
+V02,frame_0120,1,2545239378,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V02,frame_0120,2,1503509866,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V02,frame_0144,0,3732163349,2,2,0.0,Affine OclusionTexturada
+V02,frame_0144,1,1687541214,2,2,0.0,Affine RandomGamma RGBShift
+V02,frame_0144,2,3502062512,2,2,0.0,Affine OclusionTexturada
+V02,frame_0168,0,1956158273,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast DifficultMovimiento
+V02,frame_0168,1,3710772929,2,2,0.0,Affine
+V02,frame_0168,2,2144121782,2,2,0.0,Affine RandomGamma
+V02,frame_0192,0,214341958,2,2,0.0,Affine DifficultOscuro
+V02,frame_0192,1,4035533400,2,2,0.0,HorizontalFlip Affine MotionBlur OclusionTexturada
+V02,frame_0192,2,2814509031,2,2,0.0,Affine RandomGamma Downscale
+V02,frame_0216,0,575558258,2,2,0.0,Affine RGBShift MotionBlur OclusionTexturada
+V02,frame_0216,1,3184037208,2,2,0.0,Affine RandomGamma GaussNoise
+V02,frame_0216,2,3133621389,2,2,0.0,HorizontalFlip RandomBrightnessContrast GaussNoise OclusionTexturada
+V02,frame_0240,0,335591227,2,2,0.0,Affine RandomGamma RGBShift Downscale DifficultOscuro
+V02,frame_0240,1,3580901792,2,2,0.0,RandomGamma RGBShift
+V02,frame_0240,2,2527833743,2,2,0.0,HorizontalFlip RandomGamma ImageCompression
+V02,frame_0264,0,1607641753,2,2,0.0,Affine
+V02,frame_0264,1,1957811424,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V02,frame_0264,2,4048647552,2,2,0.0,HorizontalFlip Affine RGBShift
+V02,frame_0288,0,504435828,2,2,0.0,Affine RandomGamma DifficultMovimiento
+V02,frame_0288,1,731447690,2,2,0.0,HorizontalFlip RandomGamma GaussNoise
+V02,frame_0288,2,1672967890,2,2,0.0,HorizontalFlip Affine GaussNoise
+V02,frame_0312,0,1812661749,1,1,0.0,RandomBrightnessContrast MotionBlur
+V02,frame_0312,1,492033606,1,1,0.0,Downscale
+V02,frame_0312,2,3501544427,1,1,0.0,Affine RandomBrightnessContrast
+V02,frame_0336,0,1683795923,0,0,0.0,HorizontalFlip RandomBrightnessContrast
+V02,frame_0336,1,128519120,0,0,0.0,Affine RandomGamma
+V02,frame_0336,2,3027367867,0,0,0.0,HueSaturationValue MotionBlur ISONoise OclusionTexturada
+V02,frame_0360,0,1633643752,0,0,0.0,Affine RandomGamma ISONoise
+V02,frame_0360,1,2393313773,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V02,frame_0360,2,2825118429,0,0,0.0,HorizontalFlip Affine RandomGamma
+V02,frame_0384,0,697747580,0,0,0.0,HorizontalFlip Affine MotionBlur OclusionTexturada
+V02,frame_0384,1,3647025344,0,0,0.0,HorizontalFlip Affine RGBShift
+V02,frame_0384,2,4245109260,0,0,0.0,Affine HueSaturationValue
+V02,frame_0408,0,3348429156,0,0,0.0,Affine MotionBlur ISONoise
+V02,frame_0408,1,2328935104,0,0,0.0,Affine MotionBlur ISONoise
+V02,frame_0408,2,2948634942,0,0,0.0,HorizontalFlip Affine
+V02,frame_0432,0,969768060,3,3,0.0,Affine MotionBlur ImageCompression
+V02,frame_0432,1,1253797951,3,3,0.0,Affine MotionBlur OclusionTexturada
+V02,frame_0432,2,1225196370,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue GaussNoise
+V02,frame_0456,0,870954666,2,2,0.0,Affine
+V02,frame_0456,1,1077117873,2,2,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V02,frame_0456,2,690018926,2,2,0.0,HorizontalFlip RandomGamma HueSaturationValue ImageCompression OclusionTexturada
+V02,frame_0480,0,3120179715,2,2,0.0,HorizontalFlip Affine RandomGamma
+V02,frame_0480,1,644282520,2,2,0.0,Affine OclusionTexturada
+V02,frame_0480,2,181748944,2,2,0.0,HueSaturationValue
+V02,frame_0504,0,3712450313,1,1,0.0,OclusionTexturada
+V02,frame_0504,1,1666913647,1,1,0.0,HorizontalFlip RandomGamma
+V02,frame_0504,2,805632085,1,1,0.0,Affine
+V02,frame_0528,0,2071105130,2,2,0.0,Affine RandomGamma HueSaturationValue
+V02,frame_0528,1,1256761275,2,2,0.0,HorizontalFlip Affine
+V02,frame_0528,2,1266366524,2,2,0.0,Affine RandomBrightnessContrast
+V02,frame_0552,0,4057468588,3,3,0.0,HorizontalFlip Affine RGBShift MotionBlur DifficultOscuro
+V02,frame_0552,1,634221151,3,2,0.0,HorizontalFlip Affine ISONoise
+V02,frame_0552,2,2240205587,3,3,0.0,Affine RandomBrightnessContrast
+V02,frame_0576,0,1370355176,2,2,0.0,HorizontalFlip Affine RandomGamma MotionBlur DifficultOscuro
+V02,frame_0576,1,1716319752,2,2,0.0,HorizontalFlip Affine MotionBlur
+V02,frame_0576,2,2621542258,2,2,0.0,Affine
+V02,frame_0600,0,1554606342,3,3,0.11040419161676647,Affine RGBShift DifficultOscuro OclusionTexturada
+V02,frame_0600,1,2583032869,3,2,0.0,HorizontalFlip Affine
+V02,frame_0600,2,2744689619,3,3,0.07852216748768473,HorizontalFlip Affine RandomGamma RGBShift OclusionTexturada
+V02,frame_0624,0,3979051412,3,3,0.0,Affine RandomBrightnessContrast
+V02,frame_0624,1,1194168552,3,3,0.0,Affine
+V02,frame_0624,2,2604948331,3,3,0.0,Affine
+V02,frame_0648,0,399252522,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V02,frame_0648,1,2029841447,3,3,0.09570877531340405,HorizontalFlip Affine RandomBrightnessContrast RGBShift OclusionTexturada
+V02,frame_0648,2,815664481,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V02,frame_0672,0,2427026904,2,2,0.0,HorizontalFlip Affine RandomGamma ImageCompression
+V02,frame_0672,1,2971117624,2,2,0.0,RGBShift
+V02,frame_0672,2,1919742912,2,2,0.0,HorizontalFlip Affine OclusionTexturada
+V02,frame_0696,0,1322401415,1,1,0.0,HorizontalFlip Affine DifficultMovimiento
+V02,frame_0696,1,3315843110,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue Downscale
+V02,frame_0696,2,3321960917,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V02,frame_0720,0,1163776734,1,1,0.0,RandomGamma HueSaturationValue
+V02,frame_0720,1,2760360581,1,1,0.0,Affine RandomBrightnessContrast MotionBlur ISONoise
+V02,frame_0720,2,4278690430,1,1,0.0,HorizontalFlip Affine RGBShift MotionBlur
+V02,frame_0744,0,892854128,1,1,0.0,HorizontalFlip GaussNoise DifficultOscuro
+V02,frame_0744,1,494317088,1,1,0.0,HorizontalFlip Affine
+V02,frame_0744,2,1752205201,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V02,frame_0768,0,2255344733,1,1,0.0,GaussNoise
+V02,frame_0768,1,864140378,1,1,0.0,Affine RandomGamma ISONoise OclusionTexturada
+V02,frame_0768,2,3376259981,1,1,0.0,Affine RandomBrightnessContrast
+V02,frame_0792,0,1599649943,1,1,0.0,HorizontalFlip RandomGamma RGBShift
+V02,frame_0792,1,185850300,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V02,frame_0792,2,1597416705,1,1,0.0,Affine RGBShift
+V02,frame_0816,0,1954304821,1,1,0.0,Affine RandomBrightnessContrast RGBShift
+V02,frame_0816,1,1895048819,1,1,0.0,RandomBrightnessContrast MotionBlur ISONoise
+V02,frame_0816,2,633552379,1,1,0.0,RandomGamma
+V02,frame_0840,0,1890939142,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast GaussNoise
+V02,frame_0840,1,3410385415,1,1,0.0,HueSaturationValue OclusionTexturada
+V02,frame_0840,2,12685407,1,1,0.0,HorizontalFlip Affine OclusionTexturada
+V02,frame_0864,0,590925665,1,1,0.0,HorizontalFlip RandomBrightnessContrast OclusionTexturada
+V02,frame_0864,1,1240513817,1,1,0.0,HorizontalFlip Affine RandomGamma
+V02,frame_0864,2,4180978723,1,1,0.0,MotionBlur
+V02,frame_0888,0,472502929,1,1,0.0,HorizontalFlip Affine Downscale
+V02,frame_0888,1,2609718349,1,1,0.0,Affine RandomGamma MotionBlur
+V02,frame_0888,2,1968526684,1,1,0.0,HorizontalFlip Affine RandomGamma
+V02,frame_0912,0,1625396979,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue GaussNoise
+V02,frame_0912,1,3153069372,1,1,0.0,HorizontalFlip Affine
+V02,frame_0912,2,2356699951,1,1,0.0,Affine RandomBrightnessContrast RGBShift
+V02,frame_0936,0,3634733017,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V02,frame_0936,1,4133081983,1,1,0.0,Affine HueSaturationValue OclusionTexturada
+V02,frame_0936,2,2532073717,1,1,0.0,HorizontalFlip Affine RGBShift
+V02,frame_0960,0,2691305102,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast DifficultOscuro OclusionTexturada
+V02,frame_0960,1,1612157926,1,1,0.0,Affine RandomBrightnessContrast MotionBlur
+V02,frame_0960,2,3814809471,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V02,frame_0984,0,342283796,1,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue Downscale
+V02,frame_0984,1,979895225,1,1,0.0,HorizontalFlip
+V02,frame_0984,2,2341507284,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V02,frame_1008,0,1003144646,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue OclusionTexturada
+V02,frame_1008,1,2603519793,1,1,0.0,RandomGamma MotionBlur OclusionTexturada
+V02,frame_1008,2,2098969236,1,1,0.0,HorizontalFlip Affine
+V02,frame_1032,0,1018385417,1,1,0.0,HorizontalFlip Affine OclusionTexturada
+V02,frame_1032,1,1952320946,1,1,0.0,Affine RandomBrightnessContrast
+V02,frame_1032,2,1007392444,1,1,0.0,Affine RGBShift
+V02,frame_1056,0,3487929447,1,1,0.0,HorizontalFlip Affine GaussNoise
+V02,frame_1056,1,1495597524,1,1,0.0,Affine RandomBrightnessContrast MotionBlur Downscale
+V02,frame_1056,2,2878672001,1,1,0.0,HorizontalFlip Affine ISONoise
+V02,frame_1080,0,1258075116,1,1,0.0,HorizontalFlip Affine RandomGamma
+V02,frame_1080,1,152514055,1,1,0.0,HorizontalFlip RandomGamma ISONoise
+V02,frame_1080,2,2283292867,1,1,0.0,MotionBlur OclusionTexturada
+V02,frame_1104,0,1926669634,1,1,0.0,Downscale
+V02,frame_1104,1,1671469957,1,1,0.0,Affine ImageCompression
+V02,frame_1104,2,1896039416,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift GaussNoise OclusionTexturada
+V02,frame_1128,0,2418835477,1,1,0.0,HorizontalFlip Affine
+V02,frame_1128,1,4188814597,1,1,0.0,HorizontalFlip Affine
+V02,frame_1128,2,2677765310,1,1,0.0,Affine RandomGamma
+V02,frame_1152,0,1094016675,1,1,0.0,HorizontalFlip Affine RandomGamma ImageCompression
+V02,frame_1152,1,4249033440,1,1,0.0,Affine RandomBrightnessContrast GaussNoise
+V02,frame_1152,2,2334588933,1,1,0.0,RandomGamma
+V02,frame_1176,0,1111296369,1,1,0.0,Affine RandomGamma HueSaturationValue MotionBlur Downscale
+V02,frame_1176,1,2760235739,1,1,0.0,HorizontalFlip RandomGamma RGBShift
+V02,frame_1176,2,2284476868,1,1,0.0,Affine MotionBlur
+V02,frame_1200,0,454338079,0,0,0.0,HorizontalFlip RandomGamma ISONoise
+V02,frame_1200,1,501955820,0,0,0.0,Affine RandomBrightnessContrast
+V02,frame_1200,2,3696005813,0,0,0.0,Affine RandomGamma Downscale
+V02,frame_1224,0,2503187779,0,0,0.0,Affine RGBShift Downscale
+V02,frame_1224,1,2412001981,0,0,0.0,HorizontalFlip RandomGamma MotionBlur
+V02,frame_1224,2,3519944263,0,0,0.0,Affine RandomGamma HueSaturationValue OclusionTexturada
+V02,frame_1248,0,1116891720,0,0,0.0,Affine RandomBrightnessContrast
+V02,frame_1248,1,2894958563,0,0,0.0,HorizontalFlip RandomGamma ISONoise
+V02,frame_1248,2,696833362,0,0,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V02,frame_1272,0,1997586027,3,3,0.0,HorizontalFlip
+V02,frame_1272,1,1932187706,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V02,frame_1272,2,3590384262,3,3,0.0,HorizontalFlip RandomBrightnessContrast
+V02,frame_1296,0,737436480,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V02,frame_1296,1,2748116092,3,3,0.0,HorizontalFlip RandomBrightnessContrast
+V02,frame_1296,2,1386068347,3,3,0.0,RandomGamma MotionBlur
+V02,frame_1320,0,3339536204,2,2,0.0,HorizontalFlip RandomBrightnessContrast
+V02,frame_1320,1,986563537,2,2,0.0,HorizontalFlip Affine RandomGamma
+V02,frame_1320,2,3705838547,2,2,0.0,HorizontalFlip Affine
+V02,frame_1344,0,2900671273,3,3,0.0,Affine MotionBlur GaussNoise
+V02,frame_1344,1,1129277955,3,3,0.0,RandomGamma
+V02,frame_1344,2,863713449,3,3,0.0,HorizontalFlip Affine
+V02,frame_1368,0,3658108442,2,2,0.0,Affine OclusionTexturada
+V02,frame_1368,1,2334804723,2,2,0.0,HorizontalFlip HueSaturationValue MotionBlur
+V02,frame_1368,2,2890786905,2,2,0.0,Affine RandomBrightnessContrast ISONoise OclusionTexturada
+V02,frame_1392,0,1505256175,2,2,0.0,HorizontalFlip DifficultMovimiento
+V02,frame_1392,1,2364323732,2,2,0.0,RandomBrightnessContrast ImageCompression
+V02,frame_1392,2,1121681804,2,2,0.0,HorizontalFlip RandomGamma
+V02,frame_1416,0,2696191126,3,3,0.0,HorizontalFlip Affine
+V02,frame_1416,1,1532960917,3,3,0.0,Affine ImageCompression
+V02,frame_1416,2,2104257230,3,3,0.0,HorizontalFlip Affine
+V02,frame_1440,0,3340556892,3,3,0.0,Affine MotionBlur DifficultOscuro
+V02,frame_1440,1,3761461197,3,3,0.0,RandomBrightnessContrast HueSaturationValue
+V02,frame_1440,2,3325180197,3,3,0.0,HorizontalFlip Affine RandomGamma
+V02,frame_1464,0,1186746426,3,3,0.06666666666666667,Affine ISONoise OclusionTexturada
+V02,frame_1464,1,2374610159,3,3,0.0,HorizontalFlip RandomGamma RGBShift
+V02,frame_1464,2,512801758,3,3,0.0,Affine
+V02,frame_1488,0,2605984241,3,3,0.0,Affine HueSaturationValue DifficultMovimiento
+V02,frame_1488,1,344616285,3,3,0.0,RandomBrightnessContrast HueSaturationValue ImageCompression OclusionTexturada
+V02,frame_1488,2,1695477493,3,3,0.04793972215681658,MotionBlur OclusionTexturada
+V02,frame_1512,0,809039700,3,3,0.0,Affine RGBShift ISONoise
+V02,frame_1512,1,2009211600,3,3,0.0,RandomBrightnessContrast ImageCompression
+V02,frame_1512,2,1486039040,3,3,0.0,HorizontalFlip
+V02,frame_1536,0,3835838107,3,3,0.0,HorizontalFlip RGBShift
+V02,frame_1536,1,1636246926,3,3,0.0,RGBShift ImageCompression
+V02,frame_1536,2,2340409457,3,3,0.0,Affine
+V02,frame_1560,0,3347379490,2,2,0.0,HorizontalFlip MotionBlur ISONoise
+V02,frame_1560,1,518904043,2,2,0.0,Affine ISONoise
+V02,frame_1560,2,881983675,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift ImageCompression
+V02,frame_1584,0,1841059422,2,2,0.0,HorizontalFlip Affine RandomGamma DifficultOscuro
+V02,frame_1584,1,1737598676,2,2,0.0,Affine
+V02,frame_1584,2,3789837362,2,2,0.0,Affine RandomGamma
+V02,frame_1608,0,3145400297,3,3,0.0,HorizontalFlip Affine RandomGamma RGBShift DifficultMovimiento OclusionTexturada
+V02,frame_1608,1,1265331472,3,3,0.0,Affine RandomBrightnessContrast
+V02,frame_1608,2,260084014,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur GaussNoise
+V02,frame_1632,0,244829259,3,3,0.0,HorizontalFlip Affine RandomGamma DifficultMovimiento
+V02,frame_1632,1,744586652,3,3,0.0,HorizontalFlip RandomGamma
+V02,frame_1632,2,2935779317,3,3,0.0,HueSaturationValue
+V02,frame_1656,0,1664474700,2,2,0.0,RandomGamma RGBShift
+V02,frame_1656,1,355279542,2,2,0.0,RandomBrightnessContrast RGBShift
+V02,frame_1656,2,3683575827,2,2,0.0,HorizontalFlip Affine Downscale
+V02,frame_1680,0,4068437166,2,2,0.0,HorizontalFlip Affine DifficultOscuro
+V02,frame_1680,1,350329042,2,2,0.0,HorizontalFlip RandomGamma
+V02,frame_1680,2,3895814992,2,1,0.0,Affine
+V02,frame_1704,0,4168312154,2,2,0.0,Affine
+V02,frame_1704,1,2532755552,2,2,0.0,Affine RandomGamma RGBShift
+V02,frame_1704,2,3319053330,2,2,0.0,HorizontalFlip RandomGamma ISONoise
+V02,frame_1728,0,1681760490,2,2,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V02,frame_1728,1,609904964,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue
+V02,frame_1728,2,890772694,2,2,0.0,Affine
+V02,frame_1752,0,1757565827,2,2,0.0,Affine RandomGamma MotionBlur
+V02,frame_1752,1,735919600,2,2,0.0,Affine RandomBrightnessContrast ImageCompression
+V02,frame_1752,2,820477048,2,2,0.0,Affine OclusionTexturada
+V02,frame_1776,0,3228893863,2,2,0.0,Affine RGBShift ImageCompression
+V02,frame_1776,1,1960669974,2,2,0.0,Affine RandomBrightnessContrast
+V02,frame_1776,2,87441625,2,2,0.0,Affine
+V02,frame_1800,0,1366845874,2,2,0.0,Affine RandomBrightnessContrast
+V02,frame_1800,1,1199602667,2,2,0.0,Affine RGBShift MotionBlur ISONoise
+V02,frame_1800,2,319930513,2,2,0.0,Downscale
+V03,frame_0024,0,3464905664,3,3,0.0,RandomGamma
+V03,frame_0024,1,2312598836,3,3,0.0,Affine MotionBlur
+V03,frame_0024,2,3115291661,3,3,0.0,Affine RandomGamma
+V03,frame_0048,0,4255900116,2,2,0.0,MotionBlur
+V03,frame_0048,1,391803931,2,2,0.0,HorizontalFlip RandomGamma ISONoise
+V03,frame_0048,2,1195087699,2,2,0.0,HorizontalFlip RandomGamma MotionBlur ISONoise
+V03,frame_0072,0,4074264355,3,3,0.030612244897959183,ImageCompression DifficultOscuro OclusionTexturada
+V03,frame_0072,1,467521170,3,3,0.0,HorizontalFlip RandomBrightnessContrast RGBShift ImageCompression
+V03,frame_0072,2,530529143,3,3,0.0,Affine RandomGamma OclusionTexturada
+V03,frame_0096,0,2056001433,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur ISONoise DifficultOscuro
+V03,frame_0096,1,802585192,3,3,0.0,HorizontalFlip Affine
+V03,frame_0096,2,3740011164,3,3,0.0,Affine RGBShift OclusionTexturada
+V03,frame_0120,0,233293476,3,3,0.0,Affine DifficultMovimiento
+V03,frame_0120,1,1596374077,3,3,0.0,RGBShift MotionBlur
+V03,frame_0120,2,1636376932,3,3,0.0,HorizontalFlip Affine MotionBlur
+V03,frame_0144,0,380248019,3,3,0.0,Affine RandomBrightnessContrast OclusionTexturada
+V03,frame_0144,1,2833929371,3,3,0.0,HorizontalFlip Affine Downscale
+V03,frame_0144,2,929194552,3,3,0.0,RandomGamma
+V03,frame_0168,0,4151654628,3,3,0.0,HorizontalFlip Affine RGBShift
+V03,frame_0168,1,2108978613,3,3,0.09952941176470588,OclusionTexturada
+V03,frame_0168,2,268273565,3,3,0.0,Affine RandomBrightnessContrast HueSaturationValue
+V03,frame_0192,0,2539459394,3,3,0.0,HorizontalFlip Affine MotionBlur OclusionTexturada
+V03,frame_0192,1,809585083,3,3,0.0,HorizontalFlip RandomBrightnessContrast
+V03,frame_0192,2,1398902321,3,3,0.0,Affine RandomGamma GaussNoise
+V03,frame_0216,0,4255887487,2,2,0.0,Affine RandomBrightnessContrast DifficultOscuro
+V03,frame_0216,1,1383440172,2,2,0.0,HorizontalFlip HueSaturationValue MotionBlur
+V03,frame_0216,2,768059257,2,2,0.0,HorizontalFlip Affine MotionBlur
+V03,frame_0240,0,2332014978,3,3,0.0,HorizontalFlip Affine RGBShift DifficultMovimiento
+V03,frame_0240,1,3272901799,3,3,0.0,Affine RandomGamma OclusionTexturada
+V03,frame_0240,2,547939536,3,3,0.0,HorizontalFlip ISONoise
+V03,frame_0264,0,3737208128,3,3,0.0,Affine RandomBrightnessContrast
+V03,frame_0264,1,423625326,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift Downscale
+V03,frame_0264,2,877480020,3,3,0.0,Affine MotionBlur ISONoise
+V03,frame_0288,0,2730792814,3,3,0.04911579726230115,OclusionTexturada
+V03,frame_0288,1,1675905716,3,3,0.05486626746506986,HorizontalFlip Affine RandomGamma OclusionTexturada
+V03,frame_0288,2,1237075919,3,3,0.058605976738822445,Affine RandomGamma OclusionTexturada
+V03,frame_0312,0,3226522635,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue MotionBlur DifficultOscuro
+V03,frame_0312,1,2853432541,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V03,frame_0312,2,1562749391,2,2,0.0,HorizontalFlip Affine RGBShift
+V03,frame_0336,0,129870709,3,3,0.0,HorizontalFlip Affine RGBShift
+V03,frame_0336,1,324422165,3,3,0.0,Affine RGBShift GaussNoise
+V03,frame_0336,2,4191240716,3,3,0.05089800787697537,RandomGamma MotionBlur Downscale OclusionTexturada
+V03,frame_0360,0,1294593897,3,3,0.06563010669999039,Affine RGBShift MotionBlur GaussNoise OclusionTexturada
+V03,frame_0360,1,3161505672,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V03,frame_0360,2,807029203,3,3,0.0,HorizontalFlip Affine
+V03,frame_0384,0,1095829708,2,2,0.0,HorizontalFlip ImageCompression DifficultOscuro
+V03,frame_0384,1,2356861276,2,2,0.0,Affine RandomBrightnessContrast RGBShift
+V03,frame_0384,2,2987792314,2,2,0.0,Affine GaussNoise
+V03,frame_0408,0,2760739391,3,3,0.0,Affine HueSaturationValue OclusionTexturada
+V03,frame_0408,1,2385322296,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift MotionBlur GaussNoise
+V03,frame_0408,2,2665092181,3,3,0.12656930030130567,Affine RandomGamma MotionBlur ISONoise OclusionTexturada
+V03,frame_0432,0,3505167230,2,2,0.0,Affine GaussNoise
+V03,frame_0432,1,3436458289,2,2,0.0,HorizontalFlip RandomGamma RGBShift
+V03,frame_0432,2,40057141,2,2,0.0,RandomGamma
+V03,frame_0456,0,681286874,2,2,0.0,RandomGamma HueSaturationValue MotionBlur
+V03,frame_0456,1,2366001083,2,2,0.0,RandomBrightnessContrast
+V03,frame_0456,2,3513970949,2,2,0.0,HorizontalFlip GaussNoise
+V03,frame_0480,0,1275346195,2,2,0.0,HorizontalFlip RandomGamma ImageCompression
+V03,frame_0480,1,469405319,2,2,0.0,RandomGamma OclusionTexturada
+V03,frame_0480,2,1649055171,2,2,0.0,RandomGamma ImageCompression
+V03,frame_0504,0,1829953443,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur Downscale
+V03,frame_0504,1,1204463542,1,1,0.0,Affine ISONoise
+V03,frame_0504,2,2486615362,1,1,0.0,HorizontalFlip Affine
+V03,frame_0528,0,1171261518,2,2,0.0,Affine DifficultMovimiento
+V03,frame_0528,1,2315124650,2,2,0.0,Affine Downscale
+V03,frame_0528,2,2183176648,2,2,0.0,Affine
+V03,frame_0552,0,968162718,2,2,0.0,RandomGamma RGBShift
+V03,frame_0552,1,2602037460,2,2,0.0,HorizontalFlip MotionBlur ImageCompression
+V03,frame_0552,2,2493885222,2,2,0.0,MotionBlur
+V03,frame_0576,0,1901082213,1,1,0.0,HorizontalFlip Affine RGBShift Downscale
+V03,frame_0576,1,1826808369,1,1,0.0,Affine RandomBrightnessContrast HueSaturationValue
+V03,frame_0576,2,764210353,1,1,0.0,HorizontalFlip Affine
+V03,frame_0600,0,1483800692,2,2,0.0,HueSaturationValue
+V03,frame_0600,1,892190592,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V03,frame_0600,2,589139589,2,2,0.0,Affine RandomGamma
+V03,frame_0624,0,3958693004,2,2,0.0,Affine DifficultMovimiento
+V03,frame_0624,1,572983132,2,2,0.0,HorizontalFlip RandomGamma RGBShift
+V03,frame_0624,2,3251666915,2,2,0.15194558561351834,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue MotionBlur OclusionTexturada
+V03,frame_0648,0,3737853362,2,2,0.0,Affine RandomBrightnessContrast
+V03,frame_0648,1,525861499,2,2,0.0,HorizontalFlip ImageCompression
+V03,frame_0648,2,3175895371,2,2,0.0,RandomGamma
+V03,frame_0672,0,203355264,2,2,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V03,frame_0672,1,3082671047,2,2,0.0,ISONoise
+V03,frame_0672,2,3456116045,2,2,0.0103359173126615,Affine RandomGamma OclusionTexturada
+V03,frame_0696,0,2835412000,2,2,0.0,HorizontalFlip RandomBrightnessContrast MotionBlur ISONoise
+V03,frame_0696,1,3136956447,2,2,0.0,Affine
+V03,frame_0696,2,1193753939,2,2,0.0,Affine
+V03,frame_0720,0,2589242933,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast ISONoise
+V03,frame_0720,1,409195490,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V03,frame_0720,2,3146781165,3,3,0.0,Affine RandomGamma MotionBlur Downscale
+V03,frame_0744,0,1712036319,3,3,0.0,HorizontalFlip Affine GaussNoise
+V03,frame_0744,1,1634894043,3,3,0.0,HorizontalFlip Affine HueSaturationValue
+V03,frame_0744,2,565779415,3,3,0.0,HorizontalFlip Affine RandomGamma
+V03,frame_0768,0,2294924636,2,2,0.0,HorizontalFlip MotionBlur
+V03,frame_0768,1,765619550,2,2,0.0,Affine RandomGamma RGBShift
+V03,frame_0768,2,3441839939,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift ImageCompression
+V03,frame_0792,0,1570615807,3,3,0.0,RandomGamma RGBShift MotionBlur ImageCompression
+V03,frame_0792,1,3256289554,3,3,0.0,HorizontalFlip RandomBrightnessContrast
+V03,frame_0792,2,264422835,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue GaussNoise
+V03,frame_0816,0,2511882495,3,3,0.0,HorizontalFlip
+V03,frame_0816,1,1671590238,3,3,0.0,HorizontalFlip Affine RGBShift
+V03,frame_0816,2,1007622556,3,3,0.0,HorizontalFlip
+V03,frame_0840,0,3670405515,3,3,0.0,HorizontalFlip RandomBrightnessContrast ImageCompression DifficultMovimiento
+V03,frame_0840,1,2145779579,3,3,0.0,Affine
+V03,frame_0840,2,4206322955,3,3,0.0,Affine RandomGamma
+V03,frame_0864,0,2548281015,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast ImageCompression DifficultMovimiento
+V03,frame_0864,1,1739156413,2,2,0.0,Affine HueSaturationValue
+V03,frame_0864,2,165405143,2,2,0.0,MotionBlur
+V03,frame_0888,0,3318328204,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift Downscale
+V03,frame_0888,1,3666294469,2,2,0.0,Affine RandomGamma Downscale
+V03,frame_0888,2,313882391,2,2,0.05265067069714718,ImageCompression OclusionTexturada
+V03,frame_0912,0,2988179713,2,2,0.0,Affine ISONoise
+V03,frame_0912,1,2279797876,2,2,0.0,HorizontalFlip Affine RandomGamma GaussNoise
+V03,frame_0912,2,2422394959,2,2,0.0,Affine RandomGamma HueSaturationValue MotionBlur ISONoise OclusionTexturada
+V03,frame_0936,0,1217706587,3,3,0.0,HorizontalFlip Affine MotionBlur ISONoise DifficultOscuro
+V03,frame_0936,1,3697658038,3,3,0.0,Affine RandomGamma
+V03,frame_0936,2,3437724784,3,3,0.0,HorizontalFlip Affine RandomGamma RGBShift OclusionTexturada
+V03,frame_0960,0,1161944547,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V03,frame_0960,1,2226577761,2,2,0.0,Affine HueSaturationValue
+V03,frame_0960,2,2693512420,2,2,0.0,Affine RandomGamma RGBShift OclusionTexturada
+V03,frame_0984,0,341779273,1,1,0.0,Affine RandomBrightnessContrast ImageCompression
+V03,frame_0984,1,4089124717,1,1,0.0,Affine RandomBrightnessContrast
+V03,frame_0984,2,1645110835,1,1,0.0,Affine MotionBlur Downscale
+V03,frame_1008,0,1560446479,2,2,0.0,HorizontalFlip Affine HueSaturationValue GaussNoise DifficultOscuro
+V03,frame_1008,1,1885309298,2,1,0.0,Affine RandomGamma
+V03,frame_1008,2,4059434330,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V03,frame_1032,0,791478395,2,2,0.04277286135693215,Affine RandomGamma OclusionTexturada
+V03,frame_1032,1,4221843067,2,2,0.0,HorizontalFlip Affine RandomGamma GaussNoise
+V03,frame_1032,2,1611666829,2,2,0.0,HorizontalFlip Downscale
+V03,frame_1056,0,3401209683,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift MotionBlur DifficultOscuro
+V03,frame_1056,1,2555929482,1,1,0.0,HorizontalFlip
+V03,frame_1056,2,2605296613,1,1,0.0,Affine HueSaturationValue
+V03,frame_1080,0,882283714,0,0,0.0,RandomBrightnessContrast ISONoise
+V03,frame_1080,1,1112885591,0,0,0.0,HorizontalFlip RandomBrightnessContrast Downscale
+V03,frame_1080,2,637195746,0,0,0.0,HorizontalFlip RandomGamma RGBShift
+V03,frame_1104,0,1427100033,1,1,0.0,Affine
+V03,frame_1104,1,1781701549,1,1,0.0,Affine RandomBrightnessContrast RGBShift
+V03,frame_1104,2,1757589685,1,1,0.0,Affine RandomBrightnessContrast GaussNoise
+V03,frame_1128,0,2104557147,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V03,frame_1128,1,2515860663,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V03,frame_1128,2,2772891971,1,1,0.0,HorizontalFlip Affine HueSaturationValue MotionBlur
+V03,frame_1152,0,4080236646,1,1,0.0,HorizontalFlip RandomGamma ISONoise
+V03,frame_1152,1,799784420,1,1,0.0,HorizontalFlip GaussNoise
+V03,frame_1152,2,1949067439,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur ImageCompression
+V03,frame_1200,0,2019750700,1,1,0.0,HorizontalFlip Affine
+V03,frame_1200,1,2005832390,1,1,0.0,HorizontalFlip Affine
+V03,frame_1200,2,3386719742,1,1,0.06842192599148184,HorizontalFlip RandomGamma MotionBlur OclusionTexturada
+V03,frame_1224,0,4160208766,1,1,0.0,RandomGamma HueSaturationValue MotionBlur DifficultOscuro
+V03,frame_1224,1,1690850860,1,1,0.0,Affine HueSaturationValue
+V03,frame_1224,2,4120011163,1,1,0.0,HorizontalFlip HueSaturationValue
+V03,frame_1248,0,955223263,1,1,0.0,Affine
+V03,frame_1248,1,255472300,1,1,0.0,Affine RandomBrightnessContrast
+V03,frame_1248,2,770322763,1,1,0.0,HorizontalFlip Affine
+V03,frame_1272,0,3220002272,1,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V03,frame_1272,1,3071555680,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift MotionBlur ImageCompression
+V03,frame_1272,2,3726363605,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V03,frame_1296,0,1584302275,1,1,0.0,Affine RandomBrightnessContrast ISONoise
+V03,frame_1296,1,2178116738,1,1,0.0,Affine RGBShift ISONoise
+V03,frame_1296,2,418236900,1,1,0.0,MotionBlur
+V03,frame_1320,0,2713219956,1,1,0.0,HorizontalFlip Affine RGBShift
+V03,frame_1320,1,1996877218,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V03,frame_1320,2,26562539,1,1,0.0,Affine RandomBrightnessContrast ISONoise
+V03,frame_1344,0,269924988,2,2,0.1933678068219555,HorizontalFlip Affine RandomBrightnessContrast RGBShift DifficultOscuro OclusionTexturada
+V03,frame_1344,1,2614653206,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V03,frame_1344,2,1066707573,2,2,0.0,HorizontalFlip Affine ISONoise
+V03,frame_1368,0,2302767641,2,2,0.0,HorizontalFlip Affine
+V03,frame_1368,1,3688466060,2,2,0.0,Affine RandomBrightnessContrast OclusionTexturada
+V03,frame_1368,2,447676408,2,2,0.0,HorizontalFlip RandomGamma RGBShift
+V03,frame_1392,0,3368358348,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue MotionBlur
+V03,frame_1392,1,1153186987,2,2,0.0,Affine RandomBrightnessContrast RGBShift ImageCompression
+V03,frame_1392,2,3318443927,2,2,0.0,Affine ImageCompression
+V03,frame_1416,0,658232788,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V03,frame_1416,1,1443412319,2,2,0.0,Affine RandomGamma
+V03,frame_1416,2,807175342,2,2,0.0,Affine MotionBlur
+V03,frame_1440,0,2734225768,1,1,0.0,HorizontalFlip RandomGamma HueSaturationValue
+V03,frame_1440,1,215994901,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V03,frame_1440,2,3425491981,1,1,0.0,Affine GaussNoise OclusionTexturada
+V03,frame_1464,0,1276921688,1,1,0.0,RGBShift GaussNoise
+V03,frame_1464,1,3954246107,1,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue Downscale
+V03,frame_1464,2,2937352205,1,1,0.0,HorizontalFlip Affine GaussNoise
+V03,frame_1488,0,3889677989,0,0,0.0,HorizontalFlip RandomBrightnessContrast
+V03,frame_1488,1,2257514149,0,0,0.0,Affine RandomGamma HueSaturationValue
+V03,frame_1488,2,1420837372,0,0,0.0,Affine
+V03,frame_1512,0,3111354868,0,0,0.0,Affine ImageCompression
+V03,frame_1512,1,546298342,0,0,0.0,HorizontalFlip RGBShift MotionBlur
+V03,frame_1512,2,1406878740,0,0,0.0,RandomBrightnessContrast GaussNoise OclusionTexturada
+V03,frame_1536,0,2678386588,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift Downscale
+V03,frame_1536,1,1603488324,0,0,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V03,frame_1536,2,129098211,0,0,0.0,HorizontalFlip RandomGamma
+V03,frame_1584,0,3345154169,3,3,0.0,Affine RandomGamma ImageCompression
+V03,frame_1584,1,173649812,3,3,0.0,Affine RandomGamma HueSaturationValue
+V03,frame_1584,2,166700394,3,3,0.0,Affine Downscale
+V03,frame_1608,0,3965627208,3,3,0.0,Affine
+V03,frame_1608,1,2672380682,3,3,0.0,HorizontalFlip MotionBlur ISONoise
+V03,frame_1608,2,2633183606,3,3,0.0,Affine
+V03,frame_1632,0,3284038183,3,3,0.0,Affine RandomBrightnessContrast MotionBlur OclusionTexturada
+V03,frame_1632,1,2388470276,3,3,0.0,RandomGamma
+V03,frame_1632,2,1250397673,3,3,0.0,HorizontalFlip RandomGamma GaussNoise
+V03,frame_1656,0,686555673,3,3,0.0,Affine RandomBrightnessContrast
+V03,frame_1656,1,3963344594,3,3,0.0,HorizontalFlip RandomGamma OclusionTexturada
+V03,frame_1656,2,4093672306,3,3,0.0,HorizontalFlip Affine RandomGamma
+V03,frame_1680,0,642024960,1,1,0.0,Affine RandomGamma MotionBlur Downscale
+V03,frame_1680,1,1644304314,1,1,0.0,Affine
+V03,frame_1680,2,31914494,1,1,0.0,RGBShift
+V03,frame_1704,0,93424929,2,2,0.0,HorizontalFlip Affine HueSaturationValue MotionBlur
+V03,frame_1704,1,2357989404,2,2,0.0,HorizontalFlip Affine
+V03,frame_1704,2,2089727220,2,2,0.0,RandomGamma GaussNoise
+V03,frame_1728,0,313618484,3,3,0.0,GaussNoise
+V03,frame_1728,1,3475455305,3,3,0.0,HorizontalFlip
+V03,frame_1728,2,28384031,3,3,0.0,Affine HueSaturationValue MotionBlur
+V03,frame_1752,0,2321858324,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V03,frame_1752,1,2521307310,2,2,0.0,RandomGamma
+V03,frame_1752,2,3421689703,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V03,frame_1776,0,1885135584,3,3,0.0,Affine RandomGamma HueSaturationValue
+V03,frame_1776,1,930092061,3,3,0.0,HorizontalFlip Affine RGBShift MotionBlur GaussNoise
+V03,frame_1776,2,1038511112,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur OclusionTexturada
+V03,frame_1800,0,1060882307,3,3,0.0,Affine RandomBrightnessContrast
+V03,frame_1800,1,1816467234,3,3,0.0,Affine
+V03,frame_1800,2,4162900914,3,3,0.0,Affine
+V04,frame_0024,0,3431325170,1,1,0.0,RandomGamma
+V04,frame_0024,1,1881580058,1,1,0.0,HorizontalFlip RGBShift LluviaSuave
+V04,frame_0024,2,2166450572,1,1,0.0,RGBShift MotionBlur
+V04,frame_0048,0,1466397871,1,1,0.0,Affine HueSaturationValue GaussNoise
+V04,frame_0048,1,556626709,1,1,0.0,Affine RandomBrightnessContrast MotionBlur GaussNoise LluviaSuave
+V04,frame_0048,2,2857320407,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V04,frame_0072,0,3340470835,1,1,0.0,RandomGamma ImageCompression LluviaSuave
+V04,frame_0072,1,2987557673,1,1,0.0,SombraLocal
+V04,frame_0072,2,613215106,1,1,0.0,HorizontalFlip RandomGamma
+V04,frame_0096,0,2112971244,1,1,0.0,Affine
+V04,frame_0096,1,3150788034,1,1,0.0,HorizontalFlip Affine LluviaSuave
+V04,frame_0096,2,2943952853,1,1,0.0,HorizontalFlip Affine ImageCompression SombraLocal
+V04,frame_0144,0,3738658887,1,1,0.0,MotionBlur OclusionTexturada
+V04,frame_0144,1,3305092567,1,1,0.0,HorizontalFlip Affine RandomGamma
+V04,frame_0144,2,1463519910,1,1,0.0,HorizontalFlip Affine LluviaSuave
+V04,frame_0168,0,4155087334,1,1,0.0,HorizontalFlip Affine ISONoise LluviaSuave
+V04,frame_0168,1,2610550636,1,1,0.0,Affine RGBShift SombraLocal
+V04,frame_0168,2,2417769054,1,1,0.0,RandomBrightnessContrast
+V04,frame_0192,0,3690263395,1,1,0.0,HorizontalFlip Affine RandomGamma ImageCompression OclusionTexturada
+V04,frame_0192,1,1891454190,1,1,0.0,HorizontalFlip Affine
+V04,frame_0192,2,3106465497,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift SombraLocal
+V04,frame_0216,0,166379693,1,1,0.0,HorizontalFlip Affine RGBShift
+V04,frame_0216,1,1339071474,1,1,0.0,Affine HueSaturationValue LluviaSuave
+V04,frame_0216,2,2839676633,1,1,0.0,Affine MotionBlur
+V04,frame_0240,0,228004019,1,1,0.0,HorizontalFlip RandomGamma SombraLocal
+V04,frame_0240,1,518568269,1,1,0.0,HorizontalFlip
+V04,frame_0240,2,1576958702,1,1,0.0,Affine LluviaSuave
+V04,frame_0264,0,1912325321,1,1,0.0,Affine MotionBlur
+V04,frame_0264,1,3594900211,1,1,0.0,HorizontalFlip
+V04,frame_0264,2,2274642047,1,1,0.0,Affine HueSaturationValue
+V04,frame_0288,0,2206072047,1,1,0.0,Affine HueSaturationValue
+V04,frame_0288,1,117514483,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue GaussNoise SombraLocal
+V04,frame_0288,2,89095136,1,1,0.0,HorizontalFlip Affine
+V04,frame_0312,0,1835789572,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V04,frame_0312,1,2200085907,1,1,0.0,HorizontalFlip
+V04,frame_0312,2,2168122634,1,1,0.0,SombraLocal
+V04,frame_0336,0,1049920444,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur Downscale
+V04,frame_0336,1,1240412503,1,1,0.0,Affine MotionBlur
+V04,frame_0336,2,20678075,1,1,0.0,RandomBrightnessContrast GaussNoise LluviaSuave
+V04,frame_0360,0,312515624,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V04,frame_0360,1,3424435172,1,1,0.0,HorizontalFlip Affine LluviaSuave
+V04,frame_0360,2,1816585224,1,1,0.0,HorizontalFlip RandomGamma LluviaSuave
+V04,frame_0384,0,3325146685,1,1,0.0,HorizontalFlip Downscale
+V04,frame_0384,1,1918060332,1,1,0.0,HorizontalFlip RandomGamma GaussNoise
+V04,frame_0384,2,1319113604,1,1,0.0,Affine RandomBrightnessContrast MotionBlur
+V04,frame_0408,0,1162889032,2,2,0.0,RandomBrightnessContrast SombraLocal
+V04,frame_0408,1,964104336,2,2,0.0,HorizontalFlip Affine MotionBlur
+V04,frame_0408,2,1815651083,2,2,0.0,Affine RandomGamma ISONoise OclusionTexturada
+V04,frame_0432,0,1444842785,1,1,0.0,RandomGamma MotionBlur
+V04,frame_0432,1,383544549,1,1,0.0,Affine RandomGamma MotionBlur
+V04,frame_0432,2,2870709030,1,1,0.0,HorizontalFlip RandomGamma HueSaturationValue SombraLocal
+V04,frame_0456,0,2158993324,1,1,0.0,HorizontalFlip Affine SombraLocal
+V04,frame_0456,1,801536364,1,1,0.0,HorizontalFlip Affine Downscale
+V04,frame_0456,2,1281252496,1,1,0.0,Affine Downscale OclusionTexturada
+V04,frame_0480,0,1202942123,1,1,0.0,HorizontalFlip Affine RandomGamma MotionBlur
+V04,frame_0480,1,3609620114,1,1,0.0,ISONoise SombraLocal
+V04,frame_0480,2,1630289990,1,1,0.0,Affine RandomBrightnessContrast OclusionTexturada
+V04,frame_0504,0,876069213,1,1,0.0,Affine RandomGamma ImageCompression SombraLocal OclusionTexturada
+V04,frame_0504,1,3801286511,1,1,0.0,HorizontalFlip Affine GaussNoise
+V04,frame_0504,2,818159261,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V04,frame_0528,0,3752376195,1,1,0.0,Affine RandomBrightnessContrast
+V04,frame_0528,1,3655560447,1,1,0.0,Affine
+V04,frame_0528,2,2103896920,1,1,0.0,Affine SombraLocal
+V04,frame_0552,0,4210961191,1,1,0.0,HorizontalFlip RandomGamma HueSaturationValue GaussNoise SombraLocal
+V04,frame_0552,1,2225549632,1,1,0.0,HorizontalFlip Affine MotionBlur LluviaSuave
+V04,frame_0552,2,2467441502,1,1,0.0,Affine RandomBrightnessContrast Downscale
+V04,frame_0576,0,4096606331,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V04,frame_0576,1,4286397608,1,1,0.0,HorizontalFlip Affine SombraLocal
+V04,frame_0576,2,2578298353,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V04,frame_0600,0,523961619,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V04,frame_0600,1,2691531160,1,1,0.0,Affine RandomBrightnessContrast GaussNoise SombraLocal
+V04,frame_0600,2,3230901421,1,1,0.0,HorizontalFlip Affine HueSaturationValue Downscale OclusionTexturada
+V04,frame_0624,0,2470687247,1,1,0.0,RandomBrightnessContrast RGBShift SombraLocal
+V04,frame_0624,1,3045832195,1,1,0.0,HueSaturationValue ISONoise
+V04,frame_0624,2,3834245491,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift SombraLocal
+V04,frame_0648,0,1777529723,1,1,0.0,HorizontalFlip Affine RandomGamma ImageCompression SombraLocal
+V04,frame_0648,1,1626067278,1,1,0.0,HorizontalFlip Affine
+V04,frame_0648,2,2243704484,1,1,0.0,HorizontalFlip Affine ImageCompression SombraLocal
+V04,frame_0672,0,3567059040,2,2,0.0,HorizontalFlip Affine RandomGamma ISONoise OclusionTexturada
+V04,frame_0672,1,4247681716,2,2,0.0,HorizontalFlip HueSaturationValue
+V04,frame_0672,2,3269344005,2,2,0.0,Affine SombraLocal
+V04,frame_0696,0,1870995965,2,2,0.0,Affine RandomGamma HueSaturationValue ISONoise LluviaSuave
+V04,frame_0696,1,3847435230,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift ImageCompression LluviaSuave
+V04,frame_0696,2,616637047,2,2,0.0,Affine RandomGamma
+V04,frame_0720,0,2597219776,2,2,0.0,Affine HueSaturationValue LluviaSuave
+V04,frame_0720,1,487988018,2,2,0.0,HorizontalFlip Affine LluviaSuave
+V04,frame_0720,2,4287531102,2,2,0.0,HorizontalFlip ImageCompression
+V04,frame_0744,0,2843432125,2,2,0.0,Affine HueSaturationValue MotionBlur
+V04,frame_0744,1,3163599723,2,2,0.0,RandomBrightnessContrast GaussNoise SombraLocal
+V04,frame_0744,2,2034975431,2,2,0.0,HorizontalFlip Affine GaussNoise LluviaSuave
+V04,frame_0768,0,1809942711,1,1,0.0,HorizontalFlip Affine RandomGamma MotionBlur
+V04,frame_0768,1,3603265362,1,1,0.0,Affine RandomBrightnessContrast
+V04,frame_0768,2,296304854,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V04,frame_0792,0,3582394675,1,1,0.0,Affine RandomGamma SombraLocal
+V04,frame_0792,1,440426029,1,1,0.0,Affine RandomBrightnessContrast SombraLocal
+V04,frame_0792,2,5833434,1,1,0.0,ISONoise LluviaSuave
+V04,frame_0816,0,2840064790,1,1,0.0,HorizontalFlip Affine RandomGamma MotionBlur LluviaSuave
+V04,frame_0816,1,2825304052,1,1,0.0,Affine RandomGamma HueSaturationValue Downscale
+V04,frame_0816,2,1179329032,1,1,0.0,RandomGamma MotionBlur ISONoise SombraLocal
+V04,frame_0840,0,606283231,1,1,0.0,Affine RGBShift
+V04,frame_0840,1,1731264734,1,1,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue GaussNoise
+V04,frame_0840,2,3305252859,1,1,0.0,HorizontalFlip Affine RandomGamma SombraLocal OclusionTexturada
+V04,frame_0864,0,862003588,1,1,0.0,HorizontalFlip Affine RGBShift
+V04,frame_0864,1,2435570690,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast SombraLocal
+V04,frame_0864,2,993125262,1,1,0.0,HorizontalFlip Affine
+V04,frame_0888,0,858259594,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V04,frame_0888,1,1763760023,1,1,0.0,HorizontalFlip Affine RandomGamma MotionBlur ISONoise SombraLocal
+V04,frame_0888,2,1784313305,1,1,0.0,RandomGamma HueSaturationValue ImageCompression
+V04,frame_0912,0,1071760576,1,1,0.0,Affine RandomGamma
+V04,frame_0912,1,849334481,1,1,0.0,HorizontalFlip RGBShift SombraLocal OclusionTexturada
+V04,frame_0912,2,2270114097,1,1,0.0,Affine
+V04,frame_0936,0,2017126367,1,1,0.0,HorizontalFlip GaussNoise
+V04,frame_0936,1,2981662165,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue MotionBlur
+V04,frame_0936,2,3941582883,1,1,0.0,RandomGamma MotionBlur SombraLocal OclusionTexturada
+V04,frame_0960,0,2996693867,2,2,0.0,HorizontalFlip HueSaturationValue DifficultOscuro
+V04,frame_0960,1,318241414,2,2,0.0,Affine RandomBrightnessContrast
+V04,frame_0960,2,429079987,2,2,0.0,HorizontalFlip Affine HueSaturationValue SombraLocal
+V04,frame_0984,0,2741733293,0,0,0.0,HorizontalFlip RandomGamma RGBShift Downscale
+V04,frame_0984,1,3920188605,0,0,0.0,Affine LluviaSuave
+V04,frame_0984,2,963197032,0,0,0.0,Affine RandomGamma GaussNoise OclusionTexturada
+V04,frame_1008,0,119794210,1,1,0.0,Affine SombraLocal
+V04,frame_1008,1,3799737571,1,1,0.0,Affine HueSaturationValue
+V04,frame_1008,2,2889785480,1,1,0.0,Affine
+V04,frame_1032,0,527853642,1,1,0.0,Affine RGBShift SombraLocal DifficultOscuro
+V04,frame_1032,1,278956633,1,1,0.0,Affine HueSaturationValue SombraLocal
+V04,frame_1032,2,3866805313,1,1,0.0,Affine Downscale
+V04,frame_1056,0,1665386936,1,1,0.0,Affine RandomBrightnessContrast LluviaSuave
+V04,frame_1056,1,2897549943,1,1,0.0,Affine HueSaturationValue
+V04,frame_1056,2,2766967547,1,1,0.0,HorizontalFlip Affine MotionBlur
+V04,frame_1080,0,2511998050,1,1,0.0,HorizontalFlip HueSaturationValue Downscale
+V04,frame_1080,1,2946882087,1,1,0.0,HorizontalFlip RandomGamma
+V04,frame_1080,2,1007053563,1,1,0.0,Affine RandomBrightnessContrast RGBShift GaussNoise
+V04,frame_1104,0,2002163949,1,1,0.0,Affine
+V04,frame_1104,1,2157088907,1,1,0.0,HorizontalFlip Affine
+V04,frame_1104,2,2263998593,1,1,0.0,HorizontalFlip Affine RandomGamma Downscale
+V04,frame_1128,0,3807095481,1,1,0.0,Affine RandomBrightnessContrast
+V04,frame_1128,1,1172235900,1,1,0.0,HorizontalFlip Affine MotionBlur SombraLocal
+V04,frame_1128,2,602710462,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale SombraLocal OclusionTexturada
+V04,frame_1152,0,3171393265,2,2,0.1812922614575507,MotionBlur OclusionTexturada
+V04,frame_1152,1,846045225,2,2,0.0,Affine RandomBrightnessContrast
+V04,frame_1152,2,4270865649,2,2,0.0,Affine RandomBrightnessContrast
+V04,frame_1176,0,3943234838,2,2,0.0,HorizontalFlip Affine Downscale SombraLocal
+V04,frame_1176,1,3299012985,2,2,0.0,HorizontalFlip Affine HueSaturationValue ImageCompression
+V04,frame_1176,2,2593879721,2,2,0.0,HorizontalFlip Downscale SombraLocal
+V04,frame_1200,0,3696896337,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V04,frame_1200,1,2822546961,2,2,0.0,RandomBrightnessContrast OclusionTexturada
+V04,frame_1200,2,606954576,2,2,0.0,Affine
+V04,frame_1224,0,383163149,3,3,0.0,Affine RandomBrightnessContrast
+V04,frame_1224,1,286442919,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur ImageCompression
+V04,frame_1224,2,486305667,3,2,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V04,frame_1248,0,1249893656,3,3,0.0,Affine RandomGamma SombraLocal
+V04,frame_1248,1,2458114694,3,3,0.0,HorizontalFlip Affine MotionBlur
+V04,frame_1248,2,3344242390,3,3,0.0,Affine Downscale SombraLocal
+V04,frame_1272,0,1103988855,2,2,0.0,RandomGamma GaussNoise
+V04,frame_1272,1,2284915412,2,2,0.0,HorizontalFlip RandomGamma
+V04,frame_1272,2,3198427966,2,2,0.0,HorizontalFlip Affine
+V04,frame_1296,0,2448732363,2,2,0.0,HorizontalFlip HueSaturationValue
+V04,frame_1296,1,3356765198,2,2,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V04,frame_1296,2,3382414266,2,2,0.0,Affine RandomBrightnessContrast Downscale SombraLocal
+V04,frame_1320,0,2274987268,1,1,0.0,Affine
+V04,frame_1320,1,2462335706,1,1,0.0,HorizontalFlip Affine
+V04,frame_1320,2,3228483151,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V04,frame_1344,0,3683325814,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V04,frame_1344,1,1248440947,1,1,0.0,RandomBrightnessContrast
+V04,frame_1344,2,1738603196,1,1,0.0,Affine RandomBrightnessContrast Downscale
+V04,frame_1368,0,2760097502,1,1,0.0,HorizontalFlip GaussNoise
+V04,frame_1368,1,44050924,1,1,0.0,RandomBrightnessContrast SombraLocal OclusionTexturada
+V04,frame_1368,2,3862220485,1,1,0.0,Affine RandomBrightnessContrast
+V04,frame_1392,0,3293858639,2,2,0.0,Affine RandomGamma
+V04,frame_1392,1,398349473,2,2,0.0,MotionBlur
+V04,frame_1392,2,1017654696,2,2,0.0,Affine Downscale LluviaSuave
+V04,frame_1416,0,2781347945,3,3,0.0,Affine RandomBrightnessContrast
+V04,frame_1416,1,2700146276,3,3,0.0,HorizontalFlip Affine
+V04,frame_1416,2,2965216387,3,3,0.0,HorizontalFlip Affine SombraLocal
+V04,frame_1440,0,613344885,2,2,0.0,HorizontalFlip RandomGamma MotionBlur
+V04,frame_1440,1,4012234863,2,2,0.0,HorizontalFlip RandomBrightnessContrast SombraLocal
+V04,frame_1440,2,2959696452,2,2,0.0,RandomGamma
+V04,frame_1464,0,954057300,1,1,0.0,Affine RGBShift ImageCompression
+V04,frame_1464,1,2851401839,1,1,0.0,HorizontalFlip Affine RandomGamma MotionBlur LluviaSuave
+V04,frame_1464,2,2940186912,1,1,0.0,Affine RandomGamma
+V04,frame_1488,0,4147105931,1,1,0.0,HorizontalFlip Affine RandomGamma DifficultOscuro
+V04,frame_1488,1,654019089,1,1,0.0,Affine
+V04,frame_1488,2,3530467377,1,1,0.0,Affine RandomBrightnessContrast RGBShift
+V04,frame_1512,0,4226563667,2,2,0.0,HorizontalFlip ImageCompression
+V04,frame_1512,1,249713722,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue SombraLocal OclusionTexturada
+V04,frame_1512,2,1139592995,2,2,0.0,HorizontalFlip Affine
+V04,frame_1536,0,1664635413,2,2,0.0,Affine HueSaturationValue MotionBlur GaussNoise
+V04,frame_1536,1,118468316,2,2,0.0,Affine RandomGamma RGBShift MotionBlur
+V04,frame_1536,2,4200962850,2,2,0.0,HorizontalFlip Affine ISONoise OclusionTexturada
+V04,frame_1560,0,3046209550,3,3,0.0,Affine RandomBrightnessContrast HueSaturationValue
+V04,frame_1560,1,2975576265,3,3,0.0,RandomGamma MotionBlur ISONoise
+V04,frame_1560,2,2833464421,3,2,0.0,HorizontalFlip Affine RandomBrightnessContrast LluviaSuave
+V04,frame_1584,0,2796757579,2,2,0.0,HorizontalFlip Affine MotionBlur GaussNoise DifficultOscuro
+V04,frame_1584,1,1877632250,2,2,0.0,Affine RandomBrightnessContrast GaussNoise
+V04,frame_1584,2,1636949331,2,2,0.0,Affine
+V04,frame_1608,0,2319083968,3,3,0.0,RandomGamma MotionBlur
+V04,frame_1608,1,1617698582,3,3,0.051441613941613944,HorizontalFlip RandomBrightnessContrast HueSaturationValue OclusionTexturada
+V04,frame_1608,2,625451940,3,3,0.0,Affine RandomBrightnessContrast RGBShift SombraLocal
+V04,frame_1632,0,1998200889,2,2,0.0,Affine RandomGamma LluviaSuave
+V04,frame_1632,1,2983949006,2,2,0.0,RandomGamma
+V04,frame_1632,2,2174274270,2,2,0.0,Affine RandomGamma ImageCompression SombraLocal
+V04,frame_1656,0,2095030982,2,2,0.0,HorizontalFlip Affine RandomGamma GaussNoise LluviaSuave
+V04,frame_1656,1,1750854118,2,2,0.0,LluviaSuave
+V04,frame_1656,2,1870469115,2,2,0.0,Affine RandomBrightnessContrast RGBShift ImageCompression OclusionTexturada
+V04,frame_1680,0,1992430825,2,2,0.0,Affine OclusionTexturada
+V04,frame_1680,1,3557094342,2,2,0.0,Affine RandomGamma SombraLocal
+V04,frame_1680,2,3224297049,2,2,0.0,HorizontalFlip Affine HueSaturationValue
+V04,frame_1704,0,790602678,2,2,0.0,RandomGamma HueSaturationValue ISONoise LluviaSuave
+V04,frame_1704,1,113074915,2,2,0.0,Affine RandomGamma ISONoise LluviaSuave
+V04,frame_1704,2,339656190,2,2,0.0,RandomGamma SombraLocal OclusionTexturada
+V04,frame_1728,0,2060200359,1,1,0.0,HorizontalFlip Affine RGBShift OclusionTexturada
+V04,frame_1728,1,2837457783,1,1,0.0,Affine RandomBrightnessContrast GaussNoise
+V04,frame_1728,2,347867863,1,1,0.0,HorizontalFlip SombraLocal OclusionTexturada
+V04,frame_1752,0,4071278970,1,1,0.0,HorizontalFlip RandomGamma GaussNoise
+V04,frame_1752,1,2935189632,1,1,0.0,Affine SombraLocal OclusionTexturada
+V04,frame_1752,2,328674412,1,1,0.0,Affine OclusionTexturada
+V04,frame_1776,0,3536307646,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V04,frame_1776,1,365933539,1,1,0.0,Affine Downscale
+V04,frame_1776,2,3288632841,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V04,frame_1800,0,4143538505,2,2,0.0,Affine RandomGamma HueSaturationValue ISONoise LluviaSuave
+V04,frame_1800,1,1552889214,2,2,0.0,Affine SombraLocal
+V04,frame_1800,2,3727769425,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur LluviaSuave
+V04,frame_1824,0,1388865155,3,2,0.0,Affine RandomBrightnessContrast RGBShift
+V04,frame_1824,1,4148633999,3,3,0.0,RandomBrightnessContrast
+V04,frame_1824,2,875012546,3,3,0.0,RandomGamma HueSaturationValue
+V04,frame_1848,0,3024109644,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue GaussNoise
+V04,frame_1848,1,74236732,2,2,0.0,HorizontalFlip RGBShift
+V04,frame_1848,2,2875580578,2,2,0.0,HorizontalFlip RandomGamma LluviaSuave
+V04,frame_1872,0,2956611955,2,2,0.14272671941570297,RandomGamma SombraLocal OclusionTexturada
+V04,frame_1872,1,625088580,2,2,0.0,Affine RandomBrightnessContrast
+V04,frame_1872,2,1090239462,2,2,0.0,HorizontalFlip Affine RGBShift SombraLocal
+V04,frame_1896,0,655866581,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V04,frame_1896,1,320995985,2,2,0.0,OclusionTexturada
+V04,frame_1896,2,933909489,2,2,0.0,HorizontalFlip SombraLocal
+V04,frame_1920,0,1656669573,2,2,0.0,Affine RandomGamma
+V04,frame_1920,1,358648365,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V04,frame_1920,2,3203869707,2,2,0.0,HorizontalFlip LluviaSuave
+V04,frame_1944,0,2659999107,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast SombraLocal
+V04,frame_1944,1,3177607064,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast SombraLocal
+V04,frame_1944,2,3564626579,2,2,0.0,Affine RandomGamma HueSaturationValue
+V04,frame_1968,0,3328799012,2,2,0.0,Affine RandomBrightnessContrast MotionBlur
+V04,frame_1968,1,2847517750,2,2,0.0,HorizontalFlip LluviaSuave
+V04,frame_1968,2,2879238977,2,2,0.0,RandomGamma RGBShift GaussNoise
+V04,frame_1992,0,3123038584,1,1,0.0,HorizontalFlip Affine RandomGamma Downscale SombraLocal
+V04,frame_1992,1,161551270,1,1,0.0,HorizontalFlip
+V04,frame_1992,2,4289051276,1,1,0.0,Affine RandomGamma MotionBlur
+V05,frame_0024,0,3809321589,2,2,0.0,RandomBrightnessContrast HueSaturationValue
+V05,frame_0024,1,1765316367,2,2,0.0,HorizontalFlip ImageCompression
+V05,frame_0024,2,3139154485,2,2,0.0,Affine MotionBlur ISONoise
+V05,frame_0048,0,421541940,2,2,0.0,HorizontalFlip RandomBrightnessContrast OclusionTexturada
+V05,frame_0048,1,4118161159,2,2,0.0,HorizontalFlip Affine RandomGamma
+V05,frame_0048,2,1869980480,2,2,0.0,Affine HueSaturationValue
+V05,frame_0072,0,321847612,2,2,0.0,Affine RandomBrightnessContrast OclusionTexturada
+V05,frame_0072,1,2535294217,2,2,0.0,HorizontalFlip Affine RGBShift ImageCompression
+V05,frame_0072,2,2998523749,2,2,0.0,HorizontalFlip Affine GaussNoise
+V05,frame_0096,0,1360448769,2,2,0.0,RandomGamma MotionBlur
+V05,frame_0096,1,344658606,2,2,0.0,HorizontalFlip
+V05,frame_0096,2,3344802452,2,2,0.1909323116219668,HorizontalFlip HueSaturationValue OclusionTexturada
+V05,frame_0120,0,529680819,2,2,0.1845942700291645,HorizontalFlip Affine OclusionTexturada
+V05,frame_0120,1,3097090465,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift MotionBlur
+V05,frame_0120,2,3074174677,2,2,0.0,HorizontalFlip Affine RandomGamma Downscale
+V05,frame_0144,0,318635070,2,2,0.0,Affine RandomGamma HueSaturationValue MotionBlur
+V05,frame_0144,1,3094887628,2,2,0.0,HorizontalFlip Affine
+V05,frame_0144,2,1399172454,2,2,0.0,Affine
+V05,frame_0168,0,2196134303,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast GaussNoise
+V05,frame_0168,1,2200966448,2,2,0.0,Affine RGBShift
+V05,frame_0168,2,3801523591,2,2,0.0,Affine MotionBlur ISONoise
+V05,frame_0192,0,1065208993,2,2,0.0,Affine RandomGamma
+V05,frame_0192,1,189272822,2,2,0.0,RandomGamma RGBShift Downscale
+V05,frame_0192,2,4158897662,2,2,0.0,HorizontalFlip RandomGamma HueSaturationValue GaussNoise
+V05,frame_0216,0,3966662327,2,2,0.0,Affine RandomBrightnessContrast ImageCompression OclusionTexturada
+V05,frame_0216,1,1287779026,2,2,0.0,Affine RandomBrightnessContrast Downscale OclusionTexturada
+V05,frame_0216,2,1772948854,2,2,0.0,Affine
+V05,frame_0240,0,1953270453,1,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue DifficultMovimiento OclusionTexturada
+V05,frame_0240,1,264489026,1,1,0.0,Affine HueSaturationValue
+V05,frame_0240,2,4020539708,1,1,0.0,HorizontalFlip
+V05,frame_0264,0,2619574263,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift ISONoise
+V05,frame_0264,1,3187497207,1,1,0.0,RGBShift ISONoise
+V05,frame_0264,2,4098248721,1,1,0.0,RGBShift
+V05,frame_0288,0,1888482931,1,1,0.0,Affine RandomBrightnessContrast
+V05,frame_0288,1,4061844183,1,1,0.0,HorizontalFlip Affine RandomGamma
+V05,frame_0288,2,2648265939,1,1,0.0,HorizontalFlip Affine ISONoise OclusionTexturada
+V05,frame_0312,0,3933291622,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V05,frame_0312,1,841303578,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V05,frame_0312,2,3772501468,1,1,0.0,HorizontalFlip Affine RGBShift
+V05,frame_0336,0,2115807560,2,2,0.06284928996793404,HorizontalFlip Affine HueSaturationValue MotionBlur ImageCompression OclusionTexturada
+V05,frame_0336,1,3389016318,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue ImageCompression
+V05,frame_0336,2,1027276134,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V05,frame_0360,0,2574609518,3,3,0.0,Affine HueSaturationValue
+V05,frame_0360,1,2245922153,3,3,0.0,Affine GaussNoise
+V05,frame_0360,2,79685996,3,3,0.0,Affine RandomGamma MotionBlur ImageCompression
+V05,frame_0384,0,1491883273,3,3,0.0,Affine RandomBrightnessContrast ImageCompression OclusionTexturada
+V05,frame_0384,1,2724351093,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V05,frame_0384,2,3369178577,3,3,0.0,HorizontalFlip RandomBrightnessContrast MotionBlur
+V05,frame_0408,0,2248475605,3,3,0.0,HorizontalFlip Affine RandomGamma RGBShift GaussNoise
+V05,frame_0408,1,2767877520,3,3,0.0,RGBShift MotionBlur GaussNoise
+V05,frame_0408,2,2713181529,3,3,0.0,HorizontalFlip Affine HueSaturationValue MotionBlur
+V05,frame_0432,0,1867946680,3,3,0.0,HorizontalFlip Affine Downscale
+V05,frame_0432,1,3424496633,3,3,0.0,Affine Downscale
+V05,frame_0432,2,3649755954,3,3,0.0,HorizontalFlip Affine MotionBlur
+V05,frame_0456,0,1038118324,3,3,0.0,RGBShift GaussNoise
+V05,frame_0456,1,141195771,3,3,0.0,Affine
+V05,frame_0456,2,69834385,3,3,0.0,HorizontalFlip Affine
+V05,frame_0480,0,1939819793,3,3,0.0,RandomBrightnessContrast RGBShift
+V05,frame_0480,1,3078887002,3,3,0.0,HorizontalFlip RandomBrightnessContrast RGBShift
+V05,frame_0480,2,1993373793,3,3,0.0,ImageCompression
+V05,frame_0504,0,1265196627,3,3,0.0,HueSaturationValue OclusionTexturada
+V05,frame_0504,1,2511609325,3,3,0.0,Affine RandomBrightnessContrast RGBShift
+V05,frame_0504,2,4078212529,3,3,0.0,Affine RGBShift OclusionTexturada
+V05,frame_0528,0,1975764557,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast ISONoise
+V05,frame_0528,1,3789309442,3,3,0.0,RandomBrightnessContrast
+V05,frame_0528,2,175803285,3,3,0.0,Affine RandomBrightnessContrast GaussNoise
+V05,frame_0552,0,3958851128,3,3,0.0,Affine RandomGamma RGBShift Downscale
+V05,frame_0552,1,1902374445,3,3,0.0,Affine RandomBrightnessContrast
+V05,frame_0552,2,776696956,3,3,0.0,Affine RandomGamma Downscale
+V05,frame_0576,0,2406751572,2,2,0.0,Affine
+V05,frame_0576,1,1017825556,2,2,0.0,HorizontalFlip Affine
+V05,frame_0576,2,1771667048,2,2,0.0,Affine RandomBrightnessContrast
+V05,frame_0600,0,2965939687,3,3,0.0,Affine DifficultOscuro
+V05,frame_0600,1,132917784,3,3,0.0,HorizontalFlip
+V05,frame_0600,2,7794162,3,3,0.0,Affine RandomGamma MotionBlur
+V05,frame_0624,0,3043468829,3,3,0.0,HorizontalFlip Affine
+V05,frame_0624,1,3763933769,3,3,0.18584656084656084,RandomBrightnessContrast OclusionTexturada
+V05,frame_0624,2,5985364,3,3,0.0,Affine RandomBrightnessContrast
+V05,frame_0648,0,423796151,2,2,0.0,Affine RandomGamma ImageCompression
+V05,frame_0648,1,460008025,2,2,0.0,HorizontalFlip Affine RGBShift
+V05,frame_0648,2,1855303918,2,2,0.0,Affine RandomGamma MotionBlur
+V05,frame_0672,0,674459269,3,3,0.0,RandomGamma MotionBlur GaussNoise
+V05,frame_0672,1,3093789757,3,3,0.0,HorizontalFlip RandomBrightnessContrast
+V05,frame_0672,2,873847468,3,3,0.0,Affine RandomGamma
+V05,frame_0696,0,2190171816,2,2,0.0,OclusionTexturada
+V05,frame_0696,1,722531395,2,2,0.0,Affine RandomGamma
+V05,frame_0696,2,672005984,2,2,0.0,HorizontalFlip Affine
+V05,frame_0720,0,834806587,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V05,frame_0720,1,2097385185,3,3,0.0,HorizontalFlip Affine RGBShift MotionBlur
+V05,frame_0720,2,4152369291,3,3,0.0,HorizontalFlip Affine RandomGamma ImageCompression
+V05,frame_0744,0,3171831705,3,3,0.0,HorizontalFlip Affine RandomGamma ImageCompression
+V05,frame_0744,1,268795289,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast GaussNoise
+V05,frame_0744,2,1505245817,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift GaussNoise
+V05,frame_0768,0,2451171070,3,3,0.0,GaussNoise
+V05,frame_0768,1,2960843357,3,3,0.0,MotionBlur
+V05,frame_0768,2,2183202421,3,3,0.0,HorizontalFlip Affine RandomGamma RGBShift GaussNoise OclusionTexturada
+V05,frame_0792,0,845193778,3,3,0.0,HorizontalFlip
+V05,frame_0792,1,2124296568,3,3,0.0,Affine RandomGamma
+V05,frame_0792,2,786155646,3,3,0.0,HorizontalFlip Affine MotionBlur
+V05,frame_0816,0,897711843,3,3,0.0,Affine MotionBlur ImageCompression
+V05,frame_0816,1,29195712,3,3,0.0,RandomGamma RGBShift GaussNoise
+V05,frame_0816,2,532886497,3,3,0.0,HorizontalFlip Affine RandomGamma
+V05,frame_0840,0,1642544780,3,3,0.0,HorizontalFlip Affine RGBShift
+V05,frame_0840,1,1105210484,3,3,0.0,Affine RGBShift
+V05,frame_0840,2,3525904094,3,3,0.0,HorizontalFlip Affine RGBShift MotionBlur
+V05,frame_0864,0,1098466227,3,3,0.0,Affine OclusionTexturada
+V05,frame_0864,1,1352923736,3,3,0.008911370687136936,RandomGamma HueSaturationValue GaussNoise OclusionTexturada
+V05,frame_0864,2,2178889716,3,3,0.0,HorizontalFlip RandomGamma RGBShift
+V05,frame_0888,0,3473309065,3,3,0.0,HorizontalFlip RandomGamma ISONoise
+V05,frame_0888,1,1357688856,3,2,0.0,HorizontalFlip Affine RGBShift GaussNoise
+V05,frame_0888,2,3474238546,3,3,0.0,HorizontalFlip Affine
+V05,frame_0912,0,1231039276,2,2,0.0,Affine RandomBrightnessContrast ISONoise
+V05,frame_0912,1,148397268,2,2,0.0,HorizontalFlip RandomGamma GaussNoise
+V05,frame_0912,2,3563210053,2,2,0.0,HorizontalFlip Affine ISONoise
+V05,frame_0936,0,3738962541,2,2,0.0,HorizontalFlip Affine RandomGamma
+V05,frame_0936,1,2591676146,2,2,0.0,Affine MotionBlur
+V05,frame_0936,2,560449758,2,2,0.0,HorizontalFlip Affine
+V05,frame_0960,0,1537242209,2,2,0.0,Affine HueSaturationValue DifficultMovimiento
+V05,frame_0960,1,1666533079,2,2,0.0,Affine RandomBrightnessContrast MotionBlur
+V05,frame_0960,2,1076103057,2,2,0.0,Affine RandomGamma RGBShift
+V05,frame_0984,0,2501802094,2,2,0.0,ImageCompression
+V05,frame_0984,1,1139325579,2,2,0.0,RandomBrightnessContrast RGBShift ImageCompression
+V05,frame_0984,2,3743156072,2,2,0.0,HorizontalFlip Affine
+V05,frame_1008,0,1402548470,1,1,0.0,HorizontalFlip Affine Downscale
+V05,frame_1008,1,3884110509,1,1,0.0,Affine RandomBrightnessContrast MotionBlur ISONoise
+V05,frame_1008,2,434819178,1,1,0.0,RGBShift
+V05,frame_1032,0,3759618781,1,1,0.0,Affine RandomGamma
+V05,frame_1032,1,2758955610,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift OclusionTexturada
+V05,frame_1032,2,1128810368,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift GaussNoise
+V05,frame_1056,0,3461396080,1,1,0.0,HorizontalFlip RandomGamma
+V05,frame_1056,1,2178916259,1,1,0.0,RandomBrightnessContrast MotionBlur ISONoise
+V05,frame_1056,2,804313571,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V05,frame_1080,0,606105069,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V05,frame_1080,1,3956760103,1,1,0.0039031337636976746,Affine RGBShift OclusionTexturada
+V05,frame_1080,2,2051735544,1,1,0.0,HorizontalFlip Affine RandomGamma
+V05,frame_1104,0,3807658500,0,0,0.0,RandomGamma Downscale
+V05,frame_1104,1,1048344415,0,0,0.0,Affine RandomGamma MotionBlur OclusionTexturada
+V05,frame_1104,2,358770089,0,0,0.0,Affine RandomGamma Downscale
+V05,frame_1128,0,4136430973,2,2,0.0,HorizontalFlip Affine RandomGamma Downscale DifficultOscuro
+V05,frame_1128,1,1530021054,2,2,0.0,Affine
+V05,frame_1128,2,3286990946,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur ImageCompression
+V05,frame_1152,0,2518616777,2,2,0.0,Affine RandomGamma MotionBlur
+V05,frame_1152,1,739199207,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift GaussNoise
+V05,frame_1152,2,2465746960,2,2,0.09628520386717108,Affine RandomGamma OclusionTexturada
+V05,frame_1176,0,4045144366,2,2,0.0728200371057514,Affine RandomBrightnessContrast MotionBlur OclusionTexturada
+V05,frame_1176,1,4100134478,2,2,0.0,HorizontalFlip Affine ImageCompression
+V05,frame_1176,2,333732865,2,2,0.0,Affine RandomBrightnessContrast OclusionTexturada
+V05,frame_1200,0,437412451,1,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V05,frame_1200,1,2094372519,1,1,0.0,RandomGamma
+V05,frame_1200,2,265220146,1,1,0.0,RandomGamma ImageCompression
+V05,frame_1224,0,3428004804,1,1,0.0,HorizontalFlip Affine
+V05,frame_1224,1,261018561,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V05,frame_1224,2,3265190564,1,1,0.0,Affine OclusionTexturada
+V05,frame_1248,0,2249553902,1,1,0.0,Affine RandomGamma
+V05,frame_1248,1,476698260,1,1,0.0,HueSaturationValue
+V05,frame_1248,2,2616588491,1,1,0.0,Affine RandomGamma Downscale
+V05,frame_1272,0,323878655,1,1,0.05566847335140018,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V05,frame_1272,1,3009770105,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V05,frame_1272,2,3569942944,1,1,0.0,Affine
+V05,frame_1296,0,1860380803,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V05,frame_1296,1,638308354,1,1,0.13299077387792627,HorizontalFlip Affine Downscale OclusionTexturada
+V05,frame_1296,2,1491552552,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V05,frame_1320,0,170748310,2,2,0.0,MotionBlur Downscale
+V05,frame_1320,1,238501705,2,2,0.0,HorizontalFlip
+V05,frame_1320,2,3503935259,2,2,0.0,HorizontalFlip Affine ISONoise
+V05,frame_1344,0,2140429601,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V05,frame_1344,1,3287330472,3,3,0.0,Affine RandomGamma
+V05,frame_1344,2,1769694085,3,3,0.0,HorizontalFlip Affine
+V05,frame_1368,0,2143579128,2,2,0.0,HorizontalFlip Affine RandomGamma
+V05,frame_1368,1,401033982,2,2,0.0,RandomGamma GaussNoise
+V05,frame_1368,2,618925588,2,2,0.0,Affine
+V05,frame_1392,0,689230529,1,1,0.0,HorizontalFlip Affine RGBShift
+V05,frame_1392,1,3745024889,1,1,0.0,RandomBrightnessContrast MotionBlur OclusionTexturada
+V05,frame_1392,2,1599967952,1,1,0.0,HorizontalFlip Affine HueSaturationValue MotionBlur GaussNoise
+V05,frame_1416,0,1624503125,3,3,0.0,HueSaturationValue Downscale
+V05,frame_1416,1,2752404694,3,3,0.0,HorizontalFlip Affine RGBShift
+V05,frame_1416,2,502318876,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V05,frame_1440,0,4088049838,3,3,0.0,Affine
+V05,frame_1440,1,1806798536,3,3,0.0,HorizontalFlip RandomGamma GaussNoise
+V05,frame_1440,2,4041940204,3,3,0.0,HorizontalFlip
+V05,frame_1464,0,919145485,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V05,frame_1464,1,3284308409,3,3,0.0,HorizontalFlip Affine
+V05,frame_1464,2,1330387108,3,3,0.0,HorizontalFlip RandomBrightnessContrast ISONoise
+V05,frame_1488,0,2819167939,3,3,0.0,Affine RandomBrightnessContrast
+V05,frame_1488,1,1651226809,3,3,0.0,Affine RandomBrightnessContrast ISONoise
+V05,frame_1488,2,2060716300,3,3,0.0,HorizontalFlip Affine
+V05,frame_1512,0,564899484,3,3,0.0,HorizontalFlip Affine MotionBlur OclusionTexturada
+V05,frame_1512,1,2091978035,3,3,0.0,Affine RandomGamma
+V05,frame_1512,2,1156646389,3,3,0.0,Affine RandomBrightnessContrast
+V05,frame_1536,0,4172762110,3,3,0.0,Affine RandomGamma MotionBlur
+V05,frame_1536,1,1750141313,3,3,0.0,HorizontalFlip Affine RandomGamma MotionBlur ImageCompression
+V05,frame_1536,2,2084771410,3,3,0.06692477876106195,HorizontalFlip RandomBrightnessContrast OclusionTexturada
+V05,frame_1560,0,4283138586,3,3,0.0,Affine
+V05,frame_1560,1,1288895909,3,3,0.1179430619700834,Affine RandomBrightnessContrast OclusionTexturada
+V05,frame_1560,2,1781809497,3,3,0.0,Affine RandomBrightnessContrast
+V05,frame_1608,0,1355146853,3,3,0.0,HorizontalFlip Affine RandomGamma
+V05,frame_1608,1,2877984926,3,3,0.0,Affine
+V05,frame_1608,2,3114612320,3,3,0.0,Affine
+V05,frame_1632,0,3165145049,3,3,0.0,Affine RandomBrightnessContrast
+V05,frame_1632,1,2829121097,3,3,0.0,HorizontalFlip RandomBrightnessContrast
+V05,frame_1632,2,2213815251,3,3,0.0,Affine
+V05,frame_1656,0,1280325830,2,2,0.0,Affine
+V05,frame_1656,1,3020191023,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V05,frame_1656,2,3465695396,2,2,0.0,Affine RGBShift ImageCompression OclusionTexturada
+V05,frame_1680,0,1457125861,3,3,0.0,RandomBrightnessContrast
+V05,frame_1680,1,3271545833,3,3,0.0,HorizontalFlip
+V05,frame_1680,2,4008261036,3,3,0.0,HorizontalFlip Affine HueSaturationValue MotionBlur
+V05,frame_1704,0,3772324887,3,3,0.0,HorizontalFlip Affine HueSaturationValue MotionBlur DifficultOscuro
+V05,frame_1704,1,1371097815,3,3,0.0,Affine Downscale
+V05,frame_1704,2,1197853476,3,3,0.0,Affine RandomGamma
+V05,frame_1728,0,306591252,3,3,0.0,RandomGamma
+V05,frame_1728,1,1649482407,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V05,frame_1728,2,1322965654,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V05,frame_1752,0,359018336,2,2,0.0,RandomBrightnessContrast HueSaturationValue
+V05,frame_1752,1,3854623981,2,2,0.0,Affine
+V05,frame_1752,2,3735088608,2,2,0.0,RandomGamma
+V05,frame_1776,0,2573567512,3,3,0.0,HorizontalFlip RandomGamma HueSaturationValue
+V05,frame_1776,1,1588671828,3,3,0.0,HueSaturationValue
+V05,frame_1776,2,3737030994,3,3,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_0024,0,3077216731,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V06,frame_0024,1,221768252,1,1,0.0,Affine RandomBrightnessContrast GaussNoise
+V06,frame_0024,2,3520484097,1,1,0.0,HorizontalFlip RandomBrightnessContrast ISONoise
+V06,frame_0048,0,2807648603,1,1,0.0,Affine RandomBrightnessContrast MotionBlur
+V06,frame_0048,1,110856380,1,1,0.0,Affine RandomGamma Downscale
+V06,frame_0048,2,341805425,1,1,0.0,RandomBrightnessContrast
+V06,frame_0072,0,2001144155,1,1,0.0,RGBShift GaussNoise
+V06,frame_0072,1,4088828483,1,1,0.0,Affine RandomGamma RGBShift Downscale
+V06,frame_0072,2,3984238391,1,1,0.0,HorizontalFlip
+V06,frame_0096,0,1483622241,0,0,0.0,HorizontalFlip Affine Downscale
+V06,frame_0096,1,2054280972,0,0,0.0,Affine MotionBlur OclusionTexturada
+V06,frame_0096,2,857797471,0,0,0.0,HorizontalFlip RandomBrightnessContrast OclusionTexturada
+V06,frame_0120,0,3237851820,2,2,0.0,Affine RandomGamma
+V06,frame_0120,1,3089676675,2,2,0.0,RandomGamma ImageCompression
+V06,frame_0120,2,2293667485,2,2,0.0,RandomGamma HueSaturationValue GaussNoise
+V06,frame_0144,0,1549180557,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V06,frame_0144,1,1496610881,2,2,0.0,HorizontalFlip RandomGamma
+V06,frame_0144,2,3988551069,2,2,0.0,Affine RandomGamma HueSaturationValue ISONoise OclusionTexturada
+V06,frame_0192,0,3421315465,2,2,0.0,HorizontalFlip Affine OclusionTexturada
+V06,frame_0192,1,696955255,2,2,0.0,HorizontalFlip MotionBlur
+V06,frame_0192,2,4276138656,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ImageCompression
+V06,frame_0216,0,454498304,2,2,0.0,HorizontalFlip Affine
+V06,frame_0216,1,4205120238,2,2,0.0,RandomBrightnessContrast Downscale
+V06,frame_0216,2,2405593895,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V06,frame_0240,0,2149252255,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V06,frame_0240,1,3006159629,2,2,0.0,HorizontalFlip Affine RGBShift ImageCompression
+V06,frame_0240,2,179249539,2,2,0.0,HorizontalFlip Affine ISONoise
+V06,frame_0264,0,1492081979,2,2,0.0,RandomBrightnessContrast ISONoise DifficultOscuro
+V06,frame_0264,1,2299427676,2,2,0.0,RandomBrightnessContrast ImageCompression
+V06,frame_0264,2,3092610161,2,2,0.0,RandomBrightnessContrast HueSaturationValue
+V06,frame_0288,0,175420919,1,1,0.0,HorizontalFlip Affine
+V06,frame_0288,1,2867490804,1,1,0.0,Affine GaussNoise
+V06,frame_0288,2,55473702,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast ISONoise
+V06,frame_0312,0,1610777569,2,2,0.0,Affine RandomGamma HueSaturationValue
+V06,frame_0312,1,3185980088,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V06,frame_0312,2,828796456,2,2,0.0,Affine RandomGamma
+V06,frame_0336,0,1018342560,3,3,0.0,Affine RGBShift Downscale DifficultOscuro OclusionTexturada
+V06,frame_0336,1,557656148,3,3,0.0,HorizontalFlip Affine RandomGamma ImageCompression
+V06,frame_0336,2,950539086,3,3,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_0360,0,1920979629,3,3,0.08367450138990866,Affine RandomBrightnessContrast OclusionTexturada
+V06,frame_0360,1,3150449805,3,3,0.0,HorizontalFlip RandomBrightnessContrast
+V06,frame_0360,2,3851886759,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V06,frame_0384,0,3626940801,3,3,0.0,RandomGamma GaussNoise
+V06,frame_0384,1,4077454066,3,3,0.0,Affine RandomGamma HueSaturationValue
+V06,frame_0384,2,4160718242,3,3,0.0,HueSaturationValue
+V06,frame_0408,0,1777814633,3,3,0.0,HorizontalFlip RandomGamma HueSaturationValue MotionBlur Downscale DifficultOscuro
+V06,frame_0408,1,520736855,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur ISONoise
+V06,frame_0408,2,1761271443,3,3,0.0,Affine RGBShift OclusionTexturada
+V06,frame_0432,0,3490462140,3,3,0.0,Affine RandomGamma Downscale DifficultOscuro
+V06,frame_0432,1,1650298112,3,3,0.0,HorizontalFlip RandomGamma Downscale
+V06,frame_0432,2,1389199263,3,3,0.0,Affine HueSaturationValue ISONoise
+V06,frame_0456,0,4185935,3,3,0.0,HorizontalFlip Affine HueSaturationValue DifficultOscuro
+V06,frame_0456,1,3521782728,3,3,0.0,Affine MotionBlur
+V06,frame_0456,2,1684109242,3,3,0.0,RandomGamma RGBShift GaussNoise
+V06,frame_0480,0,133649039,3,3,0.0,HorizontalFlip Affine DifficultMovimiento
+V06,frame_0480,1,2966241818,3,3,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue ISONoise
+V06,frame_0480,2,2877222357,3,3,0.0,RandomGamma Downscale
+V06,frame_0504,0,681918743,2,2,0.0,RandomGamma HueSaturationValue DifficultMovimiento
+V06,frame_0504,1,3870273284,2,2,0.0,HorizontalFlip Affine RandomGamma ISONoise OclusionTexturada
+V06,frame_0504,2,4267158379,2,2,0.0,HorizontalFlip RandomBrightnessContrast RGBShift OclusionTexturada
+V06,frame_0528,0,3677167240,2,2,0.0,Affine RandomGamma RGBShift DifficultMovimiento
+V06,frame_0528,1,3281505854,2,2,0.0,HorizontalFlip Affine ISONoise OclusionTexturada
+V06,frame_0528,2,2103715183,2,2,0.0,Affine OclusionTexturada
+V06,frame_0552,0,4135130975,2,2,0.0,HorizontalFlip RGBShift ImageCompression
+V06,frame_0552,1,687973115,2,2,0.0,HorizontalFlip Affine ImageCompression
+V06,frame_0552,2,3080510333,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V06,frame_0576,0,2924460345,2,2,0.0,Affine RandomBrightnessContrast
+V06,frame_0576,1,4165956030,2,2,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue MotionBlur OclusionTexturada
+V06,frame_0576,2,4144038900,2,2,0.0,Affine RandomBrightnessContrast
+V06,frame_0600,0,1317866121,2,2,0.0,Affine
+V06,frame_0600,1,3368042740,2,2,0.0,HorizontalFlip RandomBrightnessContrast OclusionTexturada
+V06,frame_0600,2,2504272590,2,2,0.0,RGBShift
+V06,frame_0624,0,2363824461,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift MotionBlur Downscale
+V06,frame_0624,1,4033107198,0,0,0.0,Affine RandomBrightnessContrast MotionBlur
+V06,frame_0624,2,4229625983,0,0,0.0,RGBShift GaussNoise
+V06,frame_0648,0,3661628978,0,0,0.0,HorizontalFlip Affine HueSaturationValue
+V06,frame_0648,1,3129970580,0,0,0.0,HorizontalFlip Affine RandomGamma GaussNoise
+V06,frame_0648,2,2815503013,0,0,0.0,HorizontalFlip Affine RGBShift MotionBlur GaussNoise
+V06,frame_0672,0,2285957413,0,0,0.0,HorizontalFlip
+V06,frame_0672,1,953679831,0,0,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V06,frame_0672,2,542619097,0,0,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue MotionBlur
+V06,frame_0696,0,857299302,0,0,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_0696,1,445719078,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift GaussNoise
+V06,frame_0696,2,3723449527,0,0,0.0,Affine MotionBlur GaussNoise OclusionTexturada
+V06,frame_0720,0,1948069853,0,0,0.0,Affine
+V06,frame_0720,1,1747566814,0,0,0.0,Affine RandomGamma ISONoise
+V06,frame_0720,2,1462642206,0,0,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_0744,0,1482064051,0,0,0.0,Affine RandomGamma
+V06,frame_0744,1,2748506797,0,0,0.0,Affine HueSaturationValue MotionBlur
+V06,frame_0744,2,321919786,0,0,0.0,HorizontalFlip Affine RGBShift
+V06,frame_0768,0,1738703407,2,2,0.0,HorizontalFlip
+V06,frame_0768,1,2383757952,2,2,0.0,RGBShift ImageCompression
+V06,frame_0768,2,1212097316,2,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V06,frame_0792,0,733270708,3,3,0.0,HorizontalFlip Affine HueSaturationValue MotionBlur ImageCompression
+V06,frame_0792,1,523955787,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift ImageCompression
+V06,frame_0792,2,4161074693,3,3,0.0,RGBShift
+V06,frame_0816,0,2755162360,2,2,0.0,Affine RandomGamma MotionBlur DifficultOscuro
+V06,frame_0816,1,3250358680,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V06,frame_0816,2,3188179613,2,2,0.0,Affine RandomGamma
+V06,frame_0840,0,2667000205,1,1,0.0,HorizontalFlip RandomGamma
+V06,frame_0840,1,3784131894,1,1,0.0,Affine
+V06,frame_0840,2,162606249,1,1,0.0,Affine RGBShift MotionBlur
+V06,frame_0864,0,2536927409,1,1,0.0,Affine ISONoise
+V06,frame_0864,1,2560913304,1,1,0.0,Affine RandomBrightnessContrast RGBShift
+V06,frame_0864,2,922780827,1,1,0.0,Affine Downscale
+V06,frame_0888,0,808996333,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V06,frame_0888,1,27422363,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift OclusionTexturada
+V06,frame_0888,2,1837804130,1,1,0.0,HorizontalFlip Affine Downscale
+V06,frame_0912,0,2106496751,1,1,0.0,HorizontalFlip Affine MotionBlur Downscale
+V06,frame_0912,1,460787005,1,1,0.0,Affine RandomBrightnessContrast MotionBlur
+V06,frame_0912,2,524572425,1,1,0.0,Affine Downscale OclusionTexturada
+V06,frame_0936,0,3264733370,0,0,0.0,HorizontalFlip Affine HueSaturationValue ImageCompression
+V06,frame_0936,1,2928193314,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V06,frame_0936,2,1336625587,0,0,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V06,frame_0960,0,3777781062,0,0,0.0,Affine RandomBrightnessContrast
+V06,frame_0960,1,909722680,0,0,0.0,Affine RandomBrightnessContrast ISONoise
+V06,frame_0960,2,4170569136,0,0,0.0,Affine
+V06,frame_0984,0,1457968587,0,0,0.0,HorizontalFlip Affine OclusionTexturada
+V06,frame_0984,1,349646818,0,0,0.0,Affine OclusionTexturada
+V06,frame_0984,2,3892545097,0,0,0.0,Affine
+V06,frame_1008,0,4058709542,0,0,0.0,HorizontalFlip Affine RGBShift OclusionTexturada
+V06,frame_1008,1,1678205787,0,0,0.0,Affine RandomBrightnessContrast ImageCompression
+V06,frame_1008,2,851265014,0,0,0.0,HorizontalFlip Affine ImageCompression
+V06,frame_1032,0,1680297182,0,0,0.0,HueSaturationValue
+V06,frame_1032,1,3845194675,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast GaussNoise
+V06,frame_1032,2,1202423555,0,0,0.0,Affine RandomGamma GaussNoise
+V06,frame_1056,0,4191654027,0,0,0.0,Affine RandomBrightnessContrast
+V06,frame_1056,1,1206476454,0,0,0.0,HorizontalFlip
+V06,frame_1056,2,915753384,0,0,0.0,ImageCompression
+V06,frame_1080,0,1863089884,1,1,0.0,HorizontalFlip Affine
+V06,frame_1080,1,1925651354,1,1,0.0,HorizontalFlip Affine RandomGamma GaussNoise
+V06,frame_1080,2,586633451,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V06,frame_1104,0,2937989827,1,1,0.0,HorizontalFlip RandomGamma MotionBlur Downscale
+V06,frame_1104,1,1882141220,1,1,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_1104,2,2837482922,1,1,0.0,Affine RandomGamma
+V06,frame_1128,0,7158870,3,3,0.0,Affine HueSaturationValue
+V06,frame_1128,1,2044251982,3,3,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_1128,2,3704567862,3,3,0.0,HorizontalFlip Affine
+V06,frame_1152,0,1695400642,3,3,0.0,MotionBlur
+V06,frame_1152,1,3148724967,3,3,0.0,Affine RGBShift
+V06,frame_1152,2,3471016419,3,3,0.0,HorizontalFlip MotionBlur ISONoise
+V06,frame_1176,0,3273746806,3,3,0.0,Affine ImageCompression OclusionTexturada
+V06,frame_1176,1,2143450014,3,3,0.0,RandomBrightnessContrast MotionBlur
+V06,frame_1176,2,1745885787,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V06,frame_1200,0,1485630005,3,3,0.0,Affine
+V06,frame_1200,1,3004909555,3,3,0.0,RandomGamma
+V06,frame_1200,2,3773486050,3,3,0.0,HorizontalFlip Affine
+V06,frame_1224,0,1974797265,2,2,0.0,RGBShift
+V06,frame_1224,1,2553972860,2,2,0.0,HorizontalFlip RandomGamma HueSaturationValue
+V06,frame_1224,2,3864555587,2,2,0.0,RandomGamma
+V06,frame_1248,0,1365633037,1,1,0.0,Affine
+V06,frame_1248,1,2729124532,1,1,0.0,HorizontalFlip
+V06,frame_1248,2,2880746628,1,1,0.0,Affine RandomBrightnessContrast HueSaturationValue
+V06,frame_1272,0,364430766,1,1,0.0,Affine RandomGamma HueSaturationValue DifficultOscuro
+V06,frame_1272,1,4115112120,1,1,0.0,Affine RandomGamma
+V06,frame_1272,2,2602133897,1,1,0.0,Affine Downscale
+V06,frame_1296,0,174988800,1,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue Downscale
+V06,frame_1296,1,550751885,1,1,0.0,HorizontalFlip RandomGamma
+V06,frame_1296,2,3546882950,1,1,0.0,HorizontalFlip RGBShift
+V06,frame_1320,0,1832229297,1,1,0.0,Affine DifficultOscuro
+V06,frame_1320,1,734229592,1,1,0.0,Affine RandomBrightnessContrast
+V06,frame_1320,2,1312637104,1,1,0.0,HorizontalFlip
+V06,frame_1344,0,2343334961,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V06,frame_1344,1,3012603614,1,1,0.0,Affine RandomGamma
+V06,frame_1344,2,4067401521,1,1,0.0,Affine
+V06,frame_1368,0,1925933468,1,1,0.0,HorizontalFlip Affine RGBShift GaussNoise DifficultMovimiento
+V06,frame_1368,1,1842895094,1,1,0.0,Affine RandomBrightnessContrast
+V06,frame_1368,2,4031088790,1,1,0.0,HorizontalFlip Affine
+V06,frame_1392,0,3005219007,0,0,0.0,RandomGamma GaussNoise
+V06,frame_1392,1,1524327377,0,0,0.0,HorizontalFlip Affine RandomGamma ImageCompression
+V06,frame_1392,2,3522358358,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale OclusionTexturada
+V06,frame_1416,0,3229474940,2,2,0.0,Affine RandomBrightnessContrast ImageCompression
+V06,frame_1416,1,3249626730,2,2,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V06,frame_1416,2,3365819383,2,2,0.0,Affine MotionBlur
+V06,frame_1440,0,2735990198,2,2,0.0,DifficultOscuro
+V06,frame_1440,1,3377055331,2,2,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_1440,2,875213877,2,2,0.0,RandomGamma
+V06,frame_1464,0,1630046452,1,1,0.0,HorizontalFlip Affine MotionBlur
+V06,frame_1464,1,3505484660,1,1,0.0,Affine OclusionTexturada
+V06,frame_1464,2,2287934465,1,1,0.0,HorizontalFlip Affine HueSaturationValue OclusionTexturada
+V06,frame_1488,0,3551308857,1,1,0.0,HorizontalFlip Affine DifficultMovimiento
+V06,frame_1488,1,1109160076,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V06,frame_1488,2,2150275527,1,1,0.0,HorizontalFlip Affine
+V06,frame_1512,0,764875038,1,1,0.0,Affine RandomGamma HueSaturationValue DifficultOscuro
+V06,frame_1512,1,2334072299,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue MotionBlur
+V06,frame_1512,2,4261075402,1,1,0.0,HorizontalFlip Affine Downscale
+V06,frame_1536,0,3031231326,0,0,0.0,HorizontalFlip ImageCompression
+V06,frame_1536,1,1006806092,0,0,0.0,Affine
+V06,frame_1536,2,2809581384,0,0,0.0,ImageCompression OclusionTexturada
+V06,frame_1560,0,2637563952,1,1,0.0,Affine RandomBrightnessContrast
+V06,frame_1560,1,2112782510,1,1,0.23627906976744187,Affine RandomGamma GaussNoise OclusionTexturada
+V06,frame_1560,2,147274472,1,1,0.0,HorizontalFlip ImageCompression
+V06,frame_1584,0,1955077704,1,1,0.0,Affine
+V06,frame_1584,1,992256472,1,1,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_1584,2,1843838802,1,1,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_1608,0,4015532419,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V06,frame_1608,1,1912212129,1,1,0.0,HorizontalFlip HueSaturationValue Downscale
+V06,frame_1608,2,4110580687,1,1,0.0,Affine RandomGamma ISONoise
+V06,frame_1632,0,3345942094,0,0,0.0,Affine ImageCompression
+V06,frame_1632,1,408548353,0,0,0.0,HorizontalFlip Affine
+V06,frame_1632,2,4207137753,0,0,0.0,HorizontalFlip Affine GaussNoise
+V06,frame_1656,0,2890534691,0,0,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_1656,1,3357025053,0,0,0.0,RandomGamma RGBShift
+V06,frame_1656,2,818528729,0,0,0.0,Affine RGBShift MotionBlur
+V06,frame_1680,0,2494382487,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue OclusionTexturada
+V06,frame_1680,1,1580334567,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift ISONoise
+V06,frame_1680,2,368646797,1,1,0.0,HorizontalFlip
+V06,frame_1704,0,2668340854,0,0,0.0,Affine RandomGamma
+V06,frame_1704,1,2883245496,0,0,0.0,HueSaturationValue
+V06,frame_1704,2,640390504,0,0,0.0,HorizontalFlip Affine RandomGamma MotionBlur
+V06,frame_1728,0,3899826811,2,2,0.0,RandomGamma RGBShift DifficultOscuro
+V06,frame_1728,1,924425403,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue ImageCompression
+V06,frame_1728,2,1193450452,2,2,0.0,Affine ISONoise
+V06,frame_1752,0,1089078177,2,2,0.0,HorizontalFlip Affine
+V06,frame_1752,1,2164405862,2,2,6.283201005312161e-05,HorizontalFlip RandomGamma OclusionTexturada
+V06,frame_1752,2,285740493,2,2,0.0,HorizontalFlip Affine
+V06,frame_1776,0,3493533008,1,1,0.0,HorizontalFlip Affine
+V06,frame_1776,1,3689498654,1,1,0.06097909849988378,HorizontalFlip Affine RandomGamma MotionBlur GaussNoise OclusionTexturada
+V06,frame_1776,2,596773439,1,1,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_1800,0,610726769,1,1,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_1800,1,858293875,1,1,0.0,Affine RandomBrightnessContrast Downscale
+V06,frame_1800,2,2737424374,1,1,0.0,HorizontalFlip Affine
+V06,frame_1824,0,354746348,1,1,0.0,Affine HueSaturationValue
+V06,frame_1824,1,4146191334,1,1,0.0,RandomGamma
+V06,frame_1824,2,3263118545,1,1,0.0,Affine RGBShift MotionBlur
+V06,frame_1848,0,869482879,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V06,frame_1848,1,968770069,1,1,0.020224664712271242,OclusionTexturada
+V06,frame_1848,2,928176022,1,1,0.0,HorizontalFlip
+V06,frame_1872,0,940138519,1,1,0.0,Affine RandomBrightnessContrast
+V06,frame_1872,1,1953109280,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V06,frame_1872,2,3129099687,1,1,0.0,Affine RandomGamma
+V06,frame_1896,0,2537116840,1,1,0.0,Affine RandomGamma
+V06,frame_1896,1,151265378,1,1,0.0,Affine RandomBrightnessContrast
+V06,frame_1896,2,2231280147,1,1,0.0,HorizontalFlip HueSaturationValue
+V06,frame_1920,0,1938058652,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur ImageCompression
+V06,frame_1920,1,3681135597,1,1,0.016014726184997698,HorizontalFlip Affine OclusionTexturada
+V06,frame_1920,2,3079442859,1,1,0.04128113879003559,Affine RGBShift OclusionTexturada
+V06,frame_1944,0,2957371258,1,1,0.0,Affine RandomGamma ImageCompression
+V06,frame_1944,1,4271197349,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V06,frame_1944,2,1833929966,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V06,frame_1968,0,1944143297,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast GaussNoise OclusionTexturada
+V06,frame_1968,1,1450129259,1,1,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V06,frame_1968,2,1158142394,1,1,0.0,HorizontalFlip Affine ImageCompression
+V06,frame_1992,0,1592129710,2,2,0.0,HorizontalFlip RGBShift MotionBlur
+V06,frame_1992,1,755947638,2,2,0.0,RandomBrightnessContrast
+V06,frame_1992,2,2611391366,2,1,0.0,Affine RGBShift MotionBlur
+V06,frame_2016,0,937163244,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V06,frame_2016,1,3615743722,1,1,0.0,Affine
+V06,frame_2016,2,2077225700,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V06,frame_2040,0,587000125,1,1,0.0,Affine RandomBrightnessContrast OclusionTexturada
+V06,frame_2040,1,889221705,1,1,0.0,Affine RandomBrightnessContrast HueSaturationValue GaussNoise
+V06,frame_2040,2,696323587,1,1,0.0,Affine
+V06,frame_2064,0,1560973745,1,1,0.0,Affine ImageCompression DifficultMovimiento
+V06,frame_2064,1,3670859555,1,1,0.0,RandomBrightnessContrast RGBShift MotionBlur
+V06,frame_2064,2,3902470305,1,1,0.0,Affine RandomGamma ImageCompression
+V06,frame_2088,0,1868167505,0,0,0.0,Affine RandomGamma
+V06,frame_2088,1,81581307,0,0,0.0,Affine Downscale OclusionTexturada
+V06,frame_2088,2,3892970421,0,0,0.0,HorizontalFlip Affine
+V06,frame_2112,0,3712394135,0,0,0.0,HorizontalFlip Affine HueSaturationValue
+V06,frame_2112,1,3496341865,0,0,0.0,Affine OclusionTexturada
+V06,frame_2112,2,2685118776,0,0,0.0,RandomGamma
+V06,frame_2136,0,1548570381,0,0,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_2136,1,3014201813,0,0,0.0,HorizontalFlip Affine RandomGamma
+V06,frame_2136,2,4291507852,0,0,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V06,frame_2160,0,60935865,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur GaussNoise
+V06,frame_2160,1,248083289,0,0,0.0,Affine
+V06,frame_2160,2,3332064026,0,0,0.0,Affine RandomGamma
+V06,frame_2184,0,541600739,2,2,0.0,HorizontalFlip RandomGamma Downscale
+V06,frame_2184,1,1836126893,2,2,0.0,HorizontalFlip Affine ISONoise
+V06,frame_2184,2,763685089,2,1,0.0,HorizontalFlip Affine RandomGamma ImageCompression
+V06,frame_2208,0,3744690669,1,1,0.0,Affine
+V06,frame_2208,1,3700697129,1,1,0.0,Affine GaussNoise
+V06,frame_2208,2,3448854960,1,1,0.023481973434535106,HorizontalFlip Affine RGBShift OclusionTexturada
+V06,frame_2232,0,167031333,1,1,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V06,frame_2232,1,846173327,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V06,frame_2232,2,782496227,1,1,0.0,ImageCompression
+V07,frame_0024,0,1023276569,2,2,0.0,RandomGamma RGBShift DifficultOscuro
+V07,frame_0024,1,566790534,2,2,0.0,HorizontalFlip HueSaturationValue
+V07,frame_0024,2,1299619900,2,2,0.0,Affine RandomBrightnessContrast RGBShift
+V07,frame_0048,0,50288632,1,1,0.0,Affine RandomBrightnessContrast ISONoise
+V07,frame_0048,1,3602541752,1,1,0.0,HorizontalFlip Affine RGBShift ImageCompression
+V07,frame_0048,2,4291636031,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_0072,0,2411948360,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_0072,1,2484755041,2,2,0.0,Affine
+V07,frame_0072,2,1424826646,2,2,0.0,Affine
+V07,frame_0096,0,3479798876,2,2,0.0,HorizontalFlip Affine
+V07,frame_0096,1,217928,2,2,0.0,HorizontalFlip Affine RandomGamma ISONoise OclusionTexturada
+V07,frame_0096,2,3235310445,2,2,0.0,Affine RandomGamma OclusionTexturada
+V07,frame_0120,0,3768923464,2,2,0.0,HorizontalFlip Affine RandomGamma
+V07,frame_0120,1,147666761,2,2,0.0,Affine RandomGamma
+V07,frame_0120,2,2904332373,2,2,0.0,Affine RandomBrightnessContrast MotionBlur
+V07,frame_0144,0,4182230958,2,2,0.0,HorizontalFlip Affine
+V07,frame_0144,1,508247554,2,2,0.0,Affine RandomGamma HueSaturationValue ImageCompression
+V07,frame_0144,2,473497354,2,2,0.0,RandomBrightnessContrast HueSaturationValue
+V07,frame_0168,0,4180675527,3,3,0.0,Affine DifficultMovimiento OclusionTexturada
+V07,frame_0168,1,3573872902,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_0168,2,2711184051,3,3,0.0,Affine RandomGamma
+V07,frame_0192,0,1810801543,1,1,0.0,RandomGamma RGBShift MotionBlur ImageCompression OclusionTexturada
+V07,frame_0192,1,218244433,1,1,0.0,Affine RandomGamma
+V07,frame_0192,2,1471357598,1,1,0.0,HorizontalFlip Affine ImageCompression
+V07,frame_0216,0,170878196,2,2,0.0,HorizontalFlip Affine DifficultMovimiento OclusionTexturada
+V07,frame_0216,1,1873811556,2,2,0.0,HorizontalFlip RandomBrightnessContrast
+V07,frame_0216,2,2626572694,2,2,0.0,HorizontalFlip Affine RandomGamma
+V07,frame_0240,0,538870354,3,3,0.0,HorizontalFlip OclusionTexturada
+V07,frame_0240,1,1989242280,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_0240,2,3412581968,3,3,0.0,HorizontalFlip Affine RandomGamma
+V07,frame_0264,0,1709318936,2,2,0.0,MotionBlur ISONoise
+V07,frame_0264,1,3185439264,2,2,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V07,frame_0264,2,3013889627,2,2,0.0,Affine RandomGamma HueSaturationValue
+V07,frame_0288,0,66516313,3,3,0.0,HorizontalFlip RandomBrightnessContrast RGBShift MotionBlur
+V07,frame_0288,1,3374754870,3,3,0.0,HorizontalFlip RandomBrightnessContrast Downscale
+V07,frame_0288,2,2101203247,3,3,0.0,HorizontalFlip
+V07,frame_0312,0,3816529080,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue
+V07,frame_0312,1,773830984,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V07,frame_0312,2,2686267920,2,2,0.0,Affine ISONoise
+V07,frame_0336,0,1943277397,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue Downscale
+V07,frame_0336,1,1032416922,2,2,0.0,MotionBlur
+V07,frame_0336,2,75936269,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_0360,0,143544461,3,3,0.0,RandomGamma ImageCompression
+V07,frame_0360,1,4224453129,3,3,0.0,MotionBlur
+V07,frame_0360,2,2191294771,3,3,0.0,HorizontalFlip ISONoise
+V07,frame_0384,0,4048570229,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V07,frame_0384,1,1322446380,3,2,0.0,Affine ISONoise
+V07,frame_0384,2,3755272154,3,3,0.0,HorizontalFlip Affine RandomGamma RGBShift MotionBlur GaussNoise OclusionTexturada
+V07,frame_0408,0,1319363699,3,3,0.0,HueSaturationValue ISONoise
+V07,frame_0408,1,3782649311,3,3,0.0,HorizontalFlip Affine ImageCompression
+V07,frame_0408,2,276436291,3,3,0.0,HorizontalFlip RandomGamma
+V07,frame_0432,0,1792066903,2,2,0.0,Affine RandomGamma
+V07,frame_0432,1,2364185221,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue GaussNoise
+V07,frame_0432,2,1279320735,2,2,0.0,HorizontalFlip Affine RandomGamma
+V07,frame_0456,0,174027525,2,2,0.0,HorizontalFlip RandomBrightnessContrast GaussNoise
+V07,frame_0456,1,811120585,2,2,0.0,HorizontalFlip RandomGamma MotionBlur ImageCompression
+V07,frame_0456,2,3962545789,2,2,0.0,Affine HueSaturationValue
+V07,frame_0480,0,587502199,2,2,0.0,Affine RandomGamma
+V07,frame_0480,1,3780347292,2,2,0.0,Affine MotionBlur
+V07,frame_0480,2,744987360,2,2,0.0,HorizontalFlip
+V07,frame_0504,0,2838237165,2,2,0.0,HorizontalFlip HueSaturationValue GaussNoise DifficultMovimiento
+V07,frame_0504,1,4190282556,2,2,0.0,Affine RandomGamma
+V07,frame_0504,2,1568522135,2,2,0.0,HorizontalFlip Affine RandomGamma GaussNoise
+V07,frame_0528,0,536555281,2,2,0.0,Affine RandomBrightnessContrast ISONoise
+V07,frame_0528,1,960246420,2,2,0.0,HorizontalFlip Affine
+V07,frame_0528,2,415915761,2,2,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V07,frame_0552,0,903702138,3,3,0.0,HorizontalFlip RandomGamma HueSaturationValue DifficultMovimiento
+V07,frame_0552,1,3774836819,3,3,0.0,Affine MotionBlur
+V07,frame_0552,2,670182292,3,3,0.0,HorizontalFlip
+V07,frame_0576,0,3848660996,3,3,0.0,Affine RandomGamma
+V07,frame_0576,1,2878061657,3,3,0.0,HorizontalFlip Affine
+V07,frame_0576,2,3263515690,3,3,0.0,RandomBrightnessContrast OclusionTexturada
+V07,frame_0600,0,1627389824,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V07,frame_0600,1,1773029279,2,2,0.0,RandomGamma
+V07,frame_0600,2,1833337650,2,2,0.0,Affine RandomBrightnessContrast
+V07,frame_0624,0,3641980905,2,2,0.0,HorizontalFlip Affine MotionBlur ImageCompression
+V07,frame_0624,1,3157767016,2,2,0.0,RandomGamma HueSaturationValue
+V07,frame_0624,2,1631113273,2,2,0.0,HorizontalFlip Affine ImageCompression
+V07,frame_0648,0,3260696310,2,2,0.0,Affine
+V07,frame_0648,1,914692969,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift GaussNoise
+V07,frame_0648,2,3316720057,2,2,0.0,Affine RandomGamma RGBShift
+V07,frame_0672,0,876006569,2,2,0.0,Affine RandomGamma RGBShift
+V07,frame_0672,1,4008826266,2,2,0.0,Affine
+V07,frame_0672,2,3935948576,2,2,0.0,HorizontalFlip RandomGamma HueSaturationValue
+V07,frame_0696,0,2885187162,2,2,0.0,Affine RandomGamma
+V07,frame_0696,1,289752542,2,2,0.0,Affine RandomBrightnessContrast
+V07,frame_0696,2,2177222680,2,2,0.0,HorizontalFlip Affine RGBShift MotionBlur
+V07,frame_0720,0,3362746436,1,1,0.0,HorizontalFlip Affine RandomGamma DifficultOscuro
+V07,frame_0720,1,3700062826,1,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V07,frame_0720,2,2142433919,1,1,0.0,HorizontalFlip RandomGamma RGBShift MotionBlur ImageCompression
+V07,frame_0744,0,3737646543,1,1,0.0,HorizontalFlip Affine RGBShift
+V07,frame_0744,1,2922040362,1,1,0.0,HorizontalFlip Affine RandomGamma
+V07,frame_0744,2,261011532,1,1,0.0,HorizontalFlip Downscale
+V07,frame_0768,0,1715789211,1,1,0.0,Affine Downscale
+V07,frame_0768,1,2057605570,1,1,0.0,Affine MotionBlur
+V07,frame_0768,2,3254254613,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue Downscale
+V07,frame_0792,0,1443361916,1,1,0.0,MotionBlur ImageCompression
+V07,frame_0792,1,3373421724,1,1,0.0,HorizontalFlip Affine
+V07,frame_0792,2,1242659715,1,1,0.0,HorizontalFlip Affine HueSaturationValue MotionBlur
+V07,frame_0816,0,2375093537,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V07,frame_0816,1,1301425634,2,2,0.0,RGBShift ImageCompression
+V07,frame_0816,2,2157266682,2,2,0.0,Affine RandomBrightnessContrast
+V07,frame_0840,0,3126501548,2,2,0.0,HorizontalFlip Affine RandomGamma ISONoise DifficultMovimiento
+V07,frame_0840,1,3717770597,2,2,0.0,HorizontalFlip Affine RGBShift
+V07,frame_0840,2,984519906,2,2,0.0,OclusionTexturada
+V07,frame_0864,0,4138329236,2,2,0.0,HorizontalFlip
+V07,frame_0864,1,774847319,2,2,0.0,HorizontalFlip Affine OclusionTexturada
+V07,frame_0864,2,1173280245,2,2,0.0,Affine HueSaturationValue
+V07,frame_0888,0,3737467094,2,2,0.0,HorizontalFlip
+V07,frame_0888,1,3181772817,2,2,0.0,Affine
+V07,frame_0888,2,1601559224,2,2,0.0,Affine RandomGamma
+V07,frame_0912,0,751901986,1,1,0.07039351415411964,HorizontalFlip RandomGamma MotionBlur OclusionTexturada
+V07,frame_0912,1,341733668,1,1,0.0,HorizontalFlip Affine
+V07,frame_0912,2,1558432379,1,1,0.0,HorizontalFlip Affine HueSaturationValue GaussNoise
+V07,frame_0936,0,4105606679,2,2,0.0,Affine Downscale DifficultOscuro
+V07,frame_0936,1,3581936423,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V07,frame_0936,2,3516951061,2,2,0.0,HorizontalFlip RGBShift OclusionTexturada
+V07,frame_0960,0,2586968293,2,2,0.0,HorizontalFlip Affine RandomGamma
+V07,frame_0960,1,1152151668,2,2,0.0,Affine RandomGamma
+V07,frame_0960,2,1723442696,2,2,0.0,HorizontalFlip Affine RandomGamma GaussNoise
+V07,frame_0984,0,2560607634,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V07,frame_0984,1,2462559461,1,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue GaussNoise
+V07,frame_0984,2,2473493584,1,1,0.0,Affine
+V07,frame_1008,0,3556685196,2,2,0.0,HorizontalFlip
+V07,frame_1008,1,3552134950,2,2,0.0,Affine RandomBrightnessContrast
+V07,frame_1008,2,54614080,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V07,frame_1032,0,1053271060,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V07,frame_1032,1,3775542394,2,2,0.0,HorizontalFlip Affine
+V07,frame_1032,2,537664625,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V07,frame_1056,0,697713527,3,2,0.0,HorizontalFlip Affine RandomGamma
+V07,frame_1056,1,887455280,3,2,0.0,HorizontalFlip Affine
+V07,frame_1056,2,2989873571,3,3,0.0,HorizontalFlip RandomBrightnessContrast
+V07,frame_1080,0,2155442203,1,1,0.0,Affine RandomBrightnessContrast GaussNoise
+V07,frame_1080,1,415324687,1,1,0.0,HorizontalFlip Affine ImageCompression
+V07,frame_1080,2,331296245,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V07,frame_1104,0,3018564946,1,1,0.0,RandomBrightnessContrast
+V07,frame_1104,1,4069570176,1,1,0.0,HorizontalFlip RandomGamma RGBShift GaussNoise
+V07,frame_1104,2,2375408090,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V07,frame_1128,0,2900681935,2,2,0.0,Affine RandomGamma RGBShift
+V07,frame_1128,1,2058374604,2,2,0.0,HorizontalFlip Affine HueSaturationValue ImageCompression OclusionTexturada
+V07,frame_1128,2,3680267211,2,2,0.0,HorizontalFlip Affine HueSaturationValue
+V07,frame_1152,0,3671420222,2,2,0.0,Affine
+V07,frame_1152,1,3726279365,2,2,0.0,RandomBrightnessContrast RGBShift MotionBlur OclusionTexturada
+V07,frame_1152,2,3682853236,2,2,0.0,Affine RandomBrightnessContrast
+V07,frame_1176,0,2564096265,2,2,0.0,HorizontalFlip Affine OclusionTexturada
+V07,frame_1176,1,1428745228,2,1,0.0,HorizontalFlip Affine RandomGamma
+V07,frame_1176,2,3902831362,2,2,0.0,HorizontalFlip RandomBrightnessContrast
+V07,frame_1200,0,524161965,1,1,0.0,HorizontalFlip Affine
+V07,frame_1200,1,802140622,1,1,0.0,Affine Downscale
+V07,frame_1200,2,1019903452,1,1,0.0,HorizontalFlip Affine ImageCompression
+V07,frame_1224,0,2008697244,2,2,0.0,Affine
+V07,frame_1224,1,2032143070,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V07,frame_1224,2,539249051,2,2,0.0,RandomBrightnessContrast MotionBlur Downscale
+V07,frame_1248,0,1652826677,2,2,0.0,HorizontalFlip Affine RGBShift MotionBlur DifficultOscuro
+V07,frame_1248,1,1086935338,2,2,0.0,HorizontalFlip RandomGamma GaussNoise
+V07,frame_1248,2,1011337132,2,2,0.0,HorizontalFlip RandomGamma ImageCompression
+V07,frame_1272,0,2731273945,1,1,0.0,HorizontalFlip Affine RGBShift OclusionTexturada
+V07,frame_1272,1,1770741956,1,1,0.0,HorizontalFlip Affine RGBShift MotionBlur
+V07,frame_1272,2,3997473044,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V07,frame_1296,0,3674708609,2,2,0.0,RandomGamma
+V07,frame_1296,1,3454797823,2,2,0.0,Affine RandomBrightnessContrast
+V07,frame_1296,2,406332420,2,2,0.0,HorizontalFlip Affine RandomGamma
+V07,frame_1320,0,708512265,2,2,0.0,HorizontalFlip Affine RGBShift
+V07,frame_1320,1,1787658443,2,2,0.0,Affine MotionBlur
+V07,frame_1320,2,1138499645,2,2,0.0,RandomGamma RGBShift GaussNoise
+V07,frame_1344,0,632288406,1,1,0.0,HorizontalFlip Affine MotionBlur ISONoise
+V07,frame_1344,1,2977665943,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V07,frame_1344,2,2720405009,1,1,0.0,Affine ImageCompression
+V07,frame_1368,0,3130888516,2,2,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V07,frame_1368,1,2134290995,2,2,0.0,HorizontalFlip Affine Downscale OclusionTexturada
+V07,frame_1368,2,3889072960,2,1,0.0,Affine RandomBrightnessContrast ISONoise
+V07,frame_1392,0,372027900,1,1,0.0,HorizontalFlip Affine MotionBlur ISONoise
+V07,frame_1392,1,2958754562,1,1,0.0,RandomGamma
+V07,frame_1392,2,2147937547,1,1,0.0,Affine RandomBrightnessContrast
+V07,frame_1416,0,1415265737,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_1416,1,1765101009,2,2,0.0,HorizontalFlip Affine RGBShift Downscale
+V07,frame_1416,2,1439160618,2,2,0.0,MotionBlur
+V07,frame_1440,0,997583772,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V07,frame_1440,1,3628678585,2,2,0.0,HorizontalFlip RandomBrightnessContrast MotionBlur OclusionTexturada
+V07,frame_1440,2,3222063101,2,2,0.1260345319634703,HorizontalFlip Affine OclusionTexturada
+V07,frame_1464,0,1556539947,2,2,0.0,Affine RandomBrightnessContrast MotionBlur
+V07,frame_1464,1,2119057564,2,2,0.0,Affine
+V07,frame_1464,2,225916236,2,2,0.0,HorizontalFlip ImageCompression
+V07,frame_1488,0,1672555802,1,1,0.0,HorizontalFlip Affine
+V07,frame_1488,1,1034439704,1,1,0.0,Affine RandomGamma
+V07,frame_1488,2,4091978297,1,1,0.0,HorizontalFlip Affine RandomGamma
+V07,frame_1512,0,1813513501,1,1,0.0,Affine ISONoise DifficultOscuro
+V07,frame_1512,1,1681921881,1,1,0.0,Affine RandomGamma
+V07,frame_1512,2,2868360725,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V07,frame_1536,0,3735991882,1,1,0.0,RGBShift DifficultMovimiento
+V07,frame_1536,1,682922796,1,1,0.0,Affine HueSaturationValue
+V07,frame_1536,2,2346550002,1,1,0.07544577746412609,Affine RandomBrightnessContrast RGBShift OclusionTexturada
+V07,frame_1560,0,3042969419,1,1,0.0,Affine RandomGamma HueSaturationValue MotionBlur
+V07,frame_1560,1,2033365042,1,1,0.0,Affine HueSaturationValue
+V07,frame_1560,2,3946595882,1,1,0.0,Affine HueSaturationValue GaussNoise OclusionTexturada
+V07,frame_1584,0,4247785641,2,2,0.0,Affine
+V07,frame_1584,1,2382094684,2,1,0.0,Affine
+V07,frame_1584,2,1745075613,2,2,0.0,Affine OclusionTexturada
+V07,frame_1608,0,1543417524,3,3,0.0,Affine
+V07,frame_1608,1,367887655,3,3,0.0,Affine RandomGamma MotionBlur
+V07,frame_1608,2,674421812,3,3,0.03629976580796253,HorizontalFlip MotionBlur OclusionTexturada
+V07,frame_1632,0,1375629158,2,2,0.0,RandomBrightnessContrast
+V07,frame_1632,1,2110663472,2,2,0.0,HorizontalFlip Affine MotionBlur OclusionTexturada
+V07,frame_1632,2,3669631754,2,2,0.0,HorizontalFlip
+V07,frame_1656,0,3209110303,1,1,0.0,Affine RandomGamma
+V07,frame_1656,1,444312270,1,1,0.0,Affine ISONoise
+V07,frame_1656,2,2091981470,1,1,0.0,HorizontalFlip Affine Downscale
+V07,frame_1680,0,2085096365,2,2,0.0,HorizontalFlip Affine MotionBlur ISONoise
+V07,frame_1680,1,2221722990,2,2,0.0,RandomBrightnessContrast ISONoise
+V07,frame_1680,2,3359442638,2,2,0.0,Affine RandomBrightnessContrast
+V07,frame_1704,0,1079814606,2,2,0.0,Affine RandomBrightnessContrast DifficultMovimiento OclusionTexturada
+V07,frame_1704,1,4202732426,2,2,0.0,HorizontalFlip Affine HueSaturationValue
+V07,frame_1704,2,832971972,2,2,0.0,HorizontalFlip Affine RandomGamma MotionBlur
+V07,frame_1728,0,1784324805,1,1,0.0,RandomGamma Downscale
+V07,frame_1728,1,2841800798,1,1,0.0,HorizontalFlip RandomGamma MotionBlur
+V07,frame_1728,2,3660545801,1,1,0.0,Affine HueSaturationValue
+V07,frame_1752,0,2132918052,1,1,0.0,Affine RandomBrightnessContrast RGBShift
+V07,frame_1752,1,198525219,1,1,0.0,RandomBrightnessContrast MotionBlur
+V07,frame_1752,2,968388179,1,1,0.0,Affine RandomBrightnessContrast RGBShift
+V07,frame_1776,0,1200689948,1,1,0.0,Affine RandomGamma
+V07,frame_1776,1,3713466661,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V07,frame_1776,2,1811084982,1,1,0.0,RandomGamma
+V07,frame_1800,0,1738241381,1,1,0.0,Affine RandomBrightnessContrast Downscale
+V07,frame_1800,1,243549423,1,1,0.0,Affine RandomGamma ISONoise
+V07,frame_1800,2,1749394147,1,1,0.0,Affine RandomGamma HueSaturationValue ISONoise
+V08,frame_0024,0,4176052455,2,2,0.0,HorizontalFlip RandomGamma HueSaturationValue ImageCompression
+V08,frame_0024,1,250240874,2,2,0.0,HueSaturationValue
+V08,frame_0024,2,3302213029,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue
+V08,frame_0048,0,3973526019,1,1,0.0,Affine HueSaturationValue
+V08,frame_0048,1,917818943,1,1,0.0,Affine
+V08,frame_0048,2,1735384623,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V08,frame_0072,0,4181503835,2,2,0.0,HueSaturationValue
+V08,frame_0072,1,1604839496,2,2,0.0,Affine RandomGamma
+V08,frame_0072,2,2890802126,2,2,0.0,Affine RandomGamma RGBShift
+V08,frame_0096,0,211069833,1,1,0.0,Affine HueSaturationValue MotionBlur
+V08,frame_0096,1,2685449294,1,1,0.0,HorizontalFlip Affine MotionBlur
+V08,frame_0096,2,355850728,1,1,0.0,HorizontalFlip Affine MotionBlur
+V08,frame_0120,0,2024279895,2,2,0.0,HorizontalFlip Affine MotionBlur DifficultOscuro
+V08,frame_0120,1,2134467874,2,2,0.07931286549707603,Affine OclusionTexturada
+V08,frame_0120,2,1648142730,2,2,0.0,HorizontalFlip Affine
+V08,frame_0144,0,755982535,1,1,0.0,HorizontalFlip Affine DifficultMovimiento
+V08,frame_0144,1,2601059213,1,1,0.0,Affine RandomBrightnessContrast ImageCompression
+V08,frame_0144,2,3614524851,1,1,0.0,HorizontalFlip HueSaturationValue
+V08,frame_0168,0,402431264,1,1,0.0,Affine RandomBrightnessContrast GaussNoise
+V08,frame_0168,1,2402276952,1,1,0.0,Affine ImageCompression
+V08,frame_0168,2,1494214251,1,1,0.0,Affine Downscale
+V08,frame_0192,0,1199831531,1,1,0.0,Affine
+V08,frame_0192,1,2488340640,1,1,0.0,Affine RandomGamma RGBShift MotionBlur
+V08,frame_0192,2,3457763784,1,1,0.0,Affine ISONoise
+V08,frame_0216,0,1310089805,1,1,0.0,Affine HueSaturationValue
+V08,frame_0216,1,2363690339,1,1,0.0,HorizontalFlip Affine RandomGamma
+V08,frame_0216,2,900287383,1,1,0.0,Affine RandomBrightnessContrast
+V08,frame_0240,0,539896587,1,1,0.0,Affine HueSaturationValue
+V08,frame_0240,1,4095659477,1,1,0.0,Affine OclusionTexturada
+V08,frame_0240,2,3804506710,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V08,frame_0264,0,1003315130,1,1,0.0,HorizontalFlip RandomBrightnessContrast ImageCompression DifficultMovimiento
+V08,frame_0264,1,1796497677,1,1,0.0,RGBShift MotionBlur
+V08,frame_0264,2,3588472189,1,1,0.0,Affine RandomGamma OclusionTexturada
+V08,frame_0288,0,2970057579,2,2,0.0,RandomBrightnessContrast RGBShift ISONoise DifficultOscuro
+V08,frame_0288,1,3122290397,2,2,0.0,Affine RandomGamma RGBShift ISONoise
+V08,frame_0288,2,170644359,2,2,0.0,Affine RandomBrightnessContrast GaussNoise
+V08,frame_0312,0,381239153,1,1,0.0,Affine RandomGamma Downscale
+V08,frame_0312,1,1926939027,1,1,0.0,HorizontalFlip Affine
+V08,frame_0312,2,96335524,1,1,0.0,HorizontalFlip Affine
+V08,frame_0336,0,2165003005,2,2,0.0,Affine HueSaturationValue OclusionTexturada
+V08,frame_0336,1,4174007701,2,2,0.0,HorizontalFlip Affine GaussNoise
+V08,frame_0336,2,4177253319,2,2,0.0,Affine MotionBlur
+V08,frame_0360,0,3022269010,2,2,0.1724137931034483,Affine RandomBrightnessContrast MotionBlur OclusionTexturada
+V08,frame_0360,1,1569939644,2,2,0.0,RandomGamma HueSaturationValue MotionBlur
+V08,frame_0360,2,1717426002,2,2,0.0,HorizontalFlip Affine ISONoise
+V08,frame_0384,0,441701163,2,2,0.0,HorizontalFlip RandomBrightnessContrast
+V08,frame_0384,1,56440313,2,2,0.0,HorizontalFlip RandomBrightnessContrast
+V08,frame_0384,2,1123093295,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V08,frame_0408,0,781779134,1,1,0.0,HorizontalFlip
+V08,frame_0408,1,3616629054,1,1,0.0,HorizontalFlip RGBShift
+V08,frame_0408,2,1207825434,1,1,0.0,HorizontalFlip Affine ImageCompression
+V08,frame_0432,0,2022445030,1,1,0.0,HorizontalFlip Affine ImageCompression
+V08,frame_0432,1,865984274,1,1,0.0,HorizontalFlip RandomGamma MotionBlur ISONoise
+V08,frame_0432,2,2898262332,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V08,frame_0456,0,1322074731,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast ISONoise DifficultOscuro
+V08,frame_0456,1,3511862811,1,1,0.0,Affine RandomBrightnessContrast ImageCompression
+V08,frame_0456,2,128748920,1,1,0.0,Affine RandomBrightnessContrast
+V08,frame_0480,0,711390558,3,3,0.0,HorizontalFlip Affine OclusionTexturada
+V08,frame_0480,1,2573409107,3,3,0.0,HorizontalFlip Affine
+V08,frame_0480,2,2325266948,3,3,0.0,HorizontalFlip Affine
+V08,frame_0504,0,1403130973,2,2,0.0,Affine RandomGamma Downscale
+V08,frame_0504,1,2741492161,2,2,0.0,Affine
+V08,frame_0504,2,1556505474,2,2,0.0,HorizontalFlip ISONoise
+V08,frame_0528,0,2267448573,2,2,0.0,Affine RandomGamma RGBShift
+V08,frame_0528,1,3150464980,2,2,0.0,HorizontalFlip HueSaturationValue
+V08,frame_0528,2,2058133476,2,2,0.0,RandomBrightnessContrast
+V08,frame_0552,0,2671166677,2,2,0.0,HorizontalFlip Affine RandomGamma ISONoise DifficultMovimiento
+V08,frame_0552,1,197718812,2,2,0.0,Affine RandomGamma
+V08,frame_0552,2,810048653,2,2,0.0,MotionBlur
+V08,frame_0576,0,368527845,2,2,0.0,Affine HueSaturationValue MotionBlur ImageCompression
+V08,frame_0576,1,3254892449,2,2,0.0,HorizontalFlip Affine MotionBlur ISONoise
+V08,frame_0576,2,2369096960,2,2,0.0,HorizontalFlip Affine MotionBlur Downscale
+V08,frame_0600,0,525742651,3,3,0.0,HorizontalFlip RandomGamma ISONoise
+V08,frame_0600,1,1251963196,3,3,0.0,HorizontalFlip Affine
+V08,frame_0600,2,2296790036,3,3,0.0,Affine RandomGamma MotionBlur
+V08,frame_0624,0,3855547518,2,2,0.0,HorizontalFlip MotionBlur OclusionTexturada
+V08,frame_0624,1,1090634124,2,2,0.0,MotionBlur
+V08,frame_0624,2,3722797740,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue ImageCompression
+V08,frame_0648,0,2144151955,2,2,0.0,Affine RandomGamma ISONoise DifficultOscuro
+V08,frame_0648,1,3213070940,2,2,0.0,Affine RandomGamma
+V08,frame_0648,2,2380243541,2,2,0.0,RandomGamma OclusionTexturada
+V08,frame_0672,0,3667167099,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V08,frame_0672,1,3091678268,2,2,0.0,Affine RandomGamma
+V08,frame_0672,2,1576516926,2,2,0.0,HorizontalFlip
+V08,frame_0696,0,1886132778,1,1,0.0,Affine RandomGamma MotionBlur ImageCompression
+V08,frame_0696,1,1613851716,1,1,0.0,Affine RandomBrightnessContrast ISONoise
+V08,frame_0696,2,2133017690,1,1,0.0,HorizontalFlip Affine
+V08,frame_0720,0,2801166614,2,2,0.0,DifficultMovimiento
+V08,frame_0720,1,442755162,2,2,0.0,Affine RandomGamma
+V08,frame_0720,2,2165399303,2,2,0.0,HorizontalFlip Downscale
+V08,frame_0744,0,3255262177,1,1,0.0,HorizontalFlip Affine MotionBlur
+V08,frame_0744,1,3059080949,1,1,0.0,HorizontalFlip RandomGamma
+V08,frame_0744,2,1618041982,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V08,frame_0768,0,2815909865,1,1,0.0,Affine
+V08,frame_0768,1,1199038863,1,1,0.0,Affine HueSaturationValue
+V08,frame_0768,2,1703593127,1,1,0.0,HorizontalFlip Affine RandomGamma
+V08,frame_0792,0,95339746,2,2,0.0,HorizontalFlip
+V08,frame_0792,1,2513541543,2,2,0.0,Affine HueSaturationValue OclusionTexturada
+V08,frame_0792,2,4148919099,2,2,0.0,HorizontalFlip Affine MotionBlur GaussNoise
+V08,frame_0816,0,2319144008,1,1,0.0,Affine RandomBrightnessContrast ISONoise
+V08,frame_0816,1,4248679807,1,1,0.0,Affine RandomBrightnessContrast HueSaturationValue Downscale
+V08,frame_0816,2,1297358970,1,1,0.0,Affine ISONoise
+V08,frame_0840,0,1432744037,1,1,0.0,RandomBrightnessContrast
+V08,frame_0840,1,408640177,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V08,frame_0840,2,715062068,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V08,frame_0864,0,145499104,1,1,0.0,HorizontalFlip Affine RandomGamma
+V08,frame_0864,1,1780474383,1,1,0.0,HorizontalFlip RGBShift
+V08,frame_0864,2,1230669091,1,1,0.0,Affine RGBShift MotionBlur
+V08,frame_0888,0,1762765927,1,1,0.0,Affine RandomBrightnessContrast ImageCompression
+V08,frame_0888,1,4180574827,1,1,0.0,RandomGamma RGBShift ImageCompression
+V08,frame_0888,2,1188434649,1,1,0.0,HorizontalFlip GaussNoise
+V08,frame_0912,0,1462522090,1,1,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V08,frame_0912,1,3765663111,1,1,0.0,RandomGamma
+V08,frame_0912,2,350326308,1,1,0.0,Affine RGBShift
+V08,frame_0936,0,973083721,1,1,0.0,RandomBrightnessContrast DifficultOscuro
+V08,frame_0936,1,2480107324,1,1,0.0,Affine RandomBrightnessContrast
+V08,frame_0936,2,1401096142,1,1,0.0,ISONoise
+V08,frame_0960,0,1869095999,1,1,0.0,HorizontalFlip Affine HueSaturationValue DifficultMovimiento
+V08,frame_0960,1,3872379010,1,1,0.0,Affine RandomBrightnessContrast
+V08,frame_0960,2,3220021120,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V08,frame_0984,0,2140872395,3,2,0.0,Affine RGBShift DifficultMovimiento
+V08,frame_0984,1,3042568227,3,3,0.1530448717948718,OclusionTexturada
+V08,frame_0984,2,2663491818,3,3,0.0,Affine
+V08,frame_1008,0,2745015119,1,1,0.0,HorizontalFlip Affine RandomGamma MotionBlur
+V08,frame_1008,1,1762832669,1,1,0.0,Affine ImageCompression
+V08,frame_1008,2,338974228,1,1,0.0,MotionBlur
+V08,frame_1032,0,609949457,1,1,0.0,Affine RandomGamma HueSaturationValue DifficultMovimiento
+V08,frame_1032,1,2702630626,1,1,0.0,HorizontalFlip Affine RandomGamma GaussNoise
+V08,frame_1032,2,1773792115,1,1,0.0,Affine RandomBrightnessContrast Downscale
+V08,frame_1056,0,3394941620,2,2,0.0,HorizontalFlip RGBShift MotionBlur ISONoise
+V08,frame_1056,1,3975121922,2,2,0.0,HorizontalFlip Affine HueSaturationValue
+V08,frame_1056,2,3480074453,2,2,0.0,HorizontalFlip ISONoise
+V08,frame_1080,0,3643051103,2,2,0.0,HorizontalFlip Affine RandomGamma ImageCompression
+V08,frame_1080,1,3110481007,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V08,frame_1080,2,3182252844,2,2,0.0,Affine MotionBlur
+V08,frame_1104,0,3929444641,2,2,0.0,Affine HueSaturationValue
+V08,frame_1104,1,3693624646,2,2,0.0,Affine
+V08,frame_1104,2,2699622334,2,2,0.0,HorizontalFlip
+V08,frame_1128,0,675015079,2,2,0.0,HorizontalFlip Affine RGBShift MotionBlur
+V08,frame_1128,1,2028117806,2,2,0.0,RandomBrightnessContrast
+V08,frame_1128,2,3628545216,2,2,0.0,HorizontalFlip Affine RandomGamma MotionBlur
+V08,frame_1152,0,3210127385,2,2,0.0,MotionBlur Downscale OclusionTexturada
+V08,frame_1152,1,3898277786,2,2,0.0,Affine
+V08,frame_1152,2,2626469930,2,2,0.0,HorizontalFlip
+V08,frame_1176,0,857012147,2,2,0.0,Affine RandomGamma HueSaturationValue
+V08,frame_1176,1,1712887826,2,2,0.0,HorizontalFlip Affine
+V08,frame_1176,2,3360621399,2,2,0.0,RandomGamma ImageCompression
+V08,frame_1200,0,2408749731,2,2,0.0,HorizontalFlip RandomGamma
+V08,frame_1200,1,2900277039,2,2,0.0,HorizontalFlip Affine MotionBlur
+V08,frame_1200,2,3911275967,2,2,0.0,HorizontalFlip HueSaturationValue MotionBlur ISONoise
+V08,frame_1224,0,3399376196,2,2,0.0,Affine RGBShift
+V08,frame_1224,1,597170227,2,2,0.0,HorizontalFlip HueSaturationValue
+V08,frame_1224,2,925549402,2,2,0.0,Affine RandomGamma
+V08,frame_1248,0,3078859223,1,1,0.0,Affine RandomBrightnessContrast GaussNoise
+V08,frame_1248,1,3218224025,1,1,0.12960183632029665,HorizontalFlip Affine RandomGamma OclusionTexturada
+V08,frame_1248,2,3044145241,1,1,0.0,Affine RandomBrightnessContrast
+V08,frame_1272,0,3553172578,1,1,0.0,HorizontalFlip RandomGamma HueSaturationValue GaussNoise DifficultOscuro OclusionTexturada
+V08,frame_1272,1,32283100,1,1,0.0,HorizontalFlip Affine RGBShift
+V08,frame_1272,2,402171722,1,1,0.0,RandomGamma OclusionTexturada
+V08,frame_1296,0,794029261,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift Downscale
+V08,frame_1296,1,3242385422,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V08,frame_1296,2,1155376523,2,2,0.0,HorizontalFlip OclusionTexturada
+V08,frame_1320,0,1857047631,2,2,0.0,Affine
+V08,frame_1320,1,731508498,2,2,0.0,HorizontalFlip
+V08,frame_1320,2,3236770572,2,2,0.0,HorizontalFlip Affine ImageCompression
+V08,frame_1344,0,1351398134,3,3,0.0,RandomGamma MotionBlur ImageCompression DifficultOscuro
+V08,frame_1344,1,1025835277,3,3,0.0,HorizontalFlip Affine ImageCompression
+V08,frame_1344,2,1680086952,3,3,0.0,HorizontalFlip ImageCompression OclusionTexturada
+V08,frame_1368,0,4254910511,3,3,0.0,HorizontalFlip Affine ISONoise
+V08,frame_1368,1,3801009075,3,3,0.0,HorizontalFlip Affine RGBShift
+V08,frame_1368,2,597400484,3,3,0.0,Affine GaussNoise
+V08,frame_1392,0,2192853536,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift MotionBlur OclusionTexturada
+V08,frame_1392,1,2843809368,2,2,0.0,Affine HueSaturationValue ISONoise
+V08,frame_1392,2,2626410723,2,2,0.0,RandomGamma MotionBlur
+V08,frame_1416,0,3582262989,3,3,0.18313817330210772,Affine GaussNoise OclusionTexturada
+V08,frame_1416,1,1692071821,3,3,0.0,Affine RandomGamma Downscale OclusionTexturada
+V08,frame_1416,2,4059302701,3,3,0.0,RandomGamma RGBShift
+V08,frame_1440,0,2312300573,2,2,0.0,RandomGamma
+V08,frame_1440,1,1916330910,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V08,frame_1440,2,811110059,2,2,0.0,HorizontalFlip Affine
+V08,frame_1464,0,152303932,3,3,0.0,RGBShift MotionBlur GaussNoise
+V08,frame_1464,1,3023001802,3,3,0.0,Downscale
+V08,frame_1464,2,305999945,3,3,0.15559576117859913,Affine RGBShift OclusionTexturada
+V08,frame_1488,0,4285873823,2,2,0.0,HorizontalFlip Affine RGBShift OclusionTexturada
+V08,frame_1488,1,338260841,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V08,frame_1488,2,750745933,2,2,0.0,HorizontalFlip Affine MotionBlur
+V08,frame_1512,0,379859048,1,1,0.0,HorizontalFlip Affine
+V08,frame_1512,1,1326038110,1,1,0.0,HorizontalFlip Affine RGBShift
+V08,frame_1512,2,2183510238,1,1,0.0,Affine RGBShift MotionBlur
+V08,frame_1536,0,1739595549,2,2,0.0,HorizontalFlip Affine RandomGamma DifficultOscuro
+V08,frame_1536,1,587267697,2,2,0.0,RandomGamma OclusionTexturada
+V08,frame_1536,2,678507581,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue
+V08,frame_1560,0,3568359586,2,2,0.0,HorizontalFlip Affine
+V08,frame_1560,1,3718086894,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V08,frame_1560,2,477039356,2,2,0.0,Affine ISONoise
+V08,frame_1584,0,32962579,3,3,0.0,HorizontalFlip RandomBrightnessContrast GaussNoise
+V08,frame_1584,1,1431786178,3,3,0.0,Affine RandomGamma ISONoise
+V08,frame_1584,2,29578029,3,3,0.14560439560439561,HorizontalFlip RandomBrightnessContrast HueSaturationValue GaussNoise OclusionTexturada
+V08,frame_1608,0,2582059728,3,3,0.0,RandomBrightnessContrast ImageCompression
+V08,frame_1608,1,2257760159,3,3,0.0,HorizontalFlip
+V08,frame_1608,2,3621781631,3,3,0.0,Affine HueSaturationValue
+V08,frame_1632,0,2371572461,3,3,0.0,HorizontalFlip Affine
+V08,frame_1632,1,434095537,3,3,0.0,HorizontalFlip Affine
+V08,frame_1632,2,1491565746,3,3,0.0,ImageCompression
+V08,frame_1656,0,1108470990,3,3,0.0,Affine RandomBrightnessContrast Downscale
+V08,frame_1656,1,3691980150,3,3,0.0,Affine
+V08,frame_1656,2,1691758912,3,3,0.0,HorizontalFlip RandomGamma
+V08,frame_1680,0,618904785,3,3,0.0,HorizontalFlip Affine RGBShift OclusionTexturada
+V08,frame_1680,1,1448718455,3,3,0.0,HorizontalFlip Affine RandomGamma MotionBlur Downscale
+V08,frame_1680,2,3693373923,3,3,0.0,HorizontalFlip Affine RandomGamma ISONoise
+V08,frame_1704,0,3787232168,3,3,0.0,HorizontalFlip RandomBrightnessContrast
+V08,frame_1704,1,12177640,3,3,0.0,Affine
+V08,frame_1704,2,3349603981,3,3,0.0,Affine RandomBrightnessContrast
+V08,frame_1728,0,2511528650,2,2,0.0,HorizontalFlip RandomGamma ImageCompression
+V08,frame_1728,1,803445867,2,2,0.0,RandomBrightnessContrast MotionBlur ISONoise
+V08,frame_1728,2,1958644641,2,2,0.0,HorizontalFlip
+V08,frame_1752,0,2109601358,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V08,frame_1752,1,1980751697,2,2,0.0,Affine RandomGamma
+V08,frame_1752,2,1975343487,2,2,0.18568232662192394,HorizontalFlip Affine MotionBlur OclusionTexturada
+V08,frame_1776,0,330342478,3,2,0.0,Affine RandomBrightnessContrast Downscale OclusionTexturada
+V08,frame_1776,1,3184427061,3,3,0.0,HorizontalFlip
+V08,frame_1776,2,4072501189,3,3,0.0,HorizontalFlip Affine
+V08,frame_1800,0,1524972793,1,1,0.0,Affine MotionBlur
+V08,frame_1800,1,3410045752,1,1,0.0,RandomBrightnessContrast RGBShift
+V08,frame_1800,2,3497455900,1,1,0.0,Affine RandomBrightnessContrast MotionBlur
+V08,frame_1824,0,655732210,3,3,0.0,Affine
+V08,frame_1824,1,1814989269,3,3,0.0,RandomGamma ISONoise
+V08,frame_1824,2,3011711668,3,3,0.0,Affine RandomGamma HueSaturationValue MotionBlur
+V08,frame_1848,0,2754692771,2,2,0.0,HorizontalFlip Affine RandomGamma
+V08,frame_1848,1,2931273833,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V08,frame_1848,2,1597113081,2,2,0.0,HorizontalFlip OclusionTexturada
+V08,frame_1872,0,1665737308,2,2,0.0,HorizontalFlip Affine ImageCompression
+V08,frame_1872,1,1737361396,2,2,0.0,MotionBlur
+V08,frame_1872,2,3384902158,2,2,0.0,HorizontalFlip Affine ImageCompression
+V08,frame_1896,0,3545158859,2,2,0.0,Affine RandomGamma Downscale
+V08,frame_1896,1,3474831231,2,2,0.0,HorizontalFlip RGBShift
+V08,frame_1896,2,1043402465,2,1,0.0,HorizontalFlip Affine RandomGamma
+V08,frame_1920,0,3317099078,1,1,0.0,HorizontalFlip Affine MotionBlur DifficultOscuro
+V08,frame_1920,1,46359511,1,1,0.0,HorizontalFlip Affine
+V08,frame_1920,2,622107084,1,1,0.1516606642657063,Affine RGBShift ImageCompression OclusionTexturada
+V08,frame_1944,0,1850051051,2,2,0.0,Affine RGBShift MotionBlur
+V08,frame_1944,1,85284498,2,2,0.0,HorizontalFlip Affine RandomGamma
+V08,frame_1944,2,2946389263,2,2,0.0,Affine RandomGamma
+V08,frame_1968,0,2868782401,2,2,0.0,HorizontalFlip RandomGamma
+V08,frame_1968,1,2812359457,2,2,0.08450171821305842,Affine RandomBrightnessContrast RGBShift ImageCompression OclusionTexturada
+V08,frame_1968,2,861506790,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V08,frame_1992,0,1296982730,2,2,0.0,HorizontalFlip Affine Downscale DifficultMovimiento OclusionTexturada
+V08,frame_1992,1,3970357360,2,2,0.0,Affine Downscale
+V08,frame_1992,2,3867878413,2,2,0.0,RandomBrightnessContrast RGBShift MotionBlur Downscale
+V08,frame_2016,0,1172759763,3,3,0.1491990225359761,HorizontalFlip OclusionTexturada
+V08,frame_2016,1,1723619549,3,3,0.0,RandomBrightnessContrast
+V08,frame_2016,2,2539003092,3,3,0.0,HorizontalFlip RandomBrightnessContrast
+V08,frame_2040,0,3257976394,3,3,0.0,Affine Downscale DifficultOscuro
+V08,frame_2040,1,4006823207,3,3,0.0,Affine RandomGamma ISONoise
+V08,frame_2040,2,3468658828,3,3,0.0,HorizontalFlip Affine RandomGamma
+V08,frame_2064,0,2834757381,3,3,0.0,Affine MotionBlur
+V08,frame_2064,1,2495927105,3,3,0.0,Affine RandomBrightnessContrast MotionBlur Downscale
+V08,frame_2064,2,3581768413,3,3,0.0,HorizontalFlip Affine GaussNoise
+V08,frame_2088,0,3894438457,3,3,0.0,Affine RandomGamma DifficultMovimiento
+V08,frame_2088,1,2555176461,3,3,0.0,Affine RandomBrightnessContrast
+V08,frame_2088,2,91664494,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V08,frame_2112,0,1132392528,2,2,0.0,HorizontalFlip Affine MotionBlur
+V08,frame_2112,1,860744775,2,2,0.0,Affine RandomBrightnessContrast GaussNoise
+V08,frame_2112,2,448888038,2,2,0.0,RandomBrightnessContrast RGBShift ISONoise
+V08,frame_2136,0,2489067177,2,2,0.0,HorizontalFlip Affine
+V08,frame_2136,1,2601031580,2,2,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V08,frame_2136,2,4120560444,2,2,0.0,HorizontalFlip Affine
+V08,frame_2160,0,3419548675,2,2,0.0,HorizontalFlip Affine RGBShift Downscale DifficultOscuro
+V08,frame_2160,1,3348154251,2,2,0.0,HorizontalFlip Affine
+V08,frame_2160,2,3965280622,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V08,frame_2184,0,1922136241,2,1,0.0,Affine RandomGamma RGBShift Downscale
+V08,frame_2184,1,3290017931,2,1,0.0,Affine
+V08,frame_2184,2,940441060,2,2,0.0,HorizontalFlip Affine RandomGamma
+V08,frame_2208,0,3629449284,3,3,0.0,HorizontalFlip Affine OclusionTexturada
+V08,frame_2208,1,3734267579,3,3,0.0,HorizontalFlip Affine ImageCompression
+V08,frame_2208,2,1341210706,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V08,frame_2232,0,501031400,3,3,0.0,HorizontalFlip Affine HueSaturationValue ISONoise DifficultMovimiento
+V08,frame_2232,1,736851352,3,3,0.0,HorizontalFlip Affine HueSaturationValue
+V08,frame_2232,2,1975166529,3,3,0.0,Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V08,frame_2256,0,2268968643,2,2,0.0,HorizontalFlip RandomBrightnessContrast ISONoise OclusionTexturada
+V08,frame_2256,1,2557429068,2,2,0.0,Affine RandomBrightnessContrast ImageCompression
+V08,frame_2256,2,2892895010,2,2,0.0,HorizontalFlip
+V08,frame_2280,0,2876293168,2,2,0.0,HorizontalFlip Affine
+V08,frame_2280,1,701431169,2,2,0.0,Affine HueSaturationValue ImageCompression
+V08,frame_2280,2,3712921956,2,2,0.0,RandomBrightnessContrast HueSaturationValue Downscale
+V08,frame_2304,0,3357114104,2,2,0.0,Affine RandomGamma ImageCompression
+V08,frame_2304,1,1575194586,2,2,0.0,Affine RandomGamma RGBShift OclusionTexturada
+V08,frame_2304,2,35496873,2,2,0.0,HorizontalFlip Affine OclusionTexturada
+V08,frame_2328,0,1259181252,2,2,0.05931174089068826,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue OclusionTexturada
+V08,frame_2328,1,1502359860,2,2,0.0,HueSaturationValue
+V08,frame_2328,2,2329503080,2,2,0.0,GaussNoise
+V08,frame_2352,0,1595443674,3,3,0.0,Affine RandomGamma
+V08,frame_2352,1,831881041,3,3,0.0,Affine GaussNoise
+V08,frame_2352,2,1068971552,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V08,frame_2376,0,1516187276,2,2,0.0,HorizontalFlip Affine
+V08,frame_2376,1,2560444412,2,2,0.0,HueSaturationValue OclusionTexturada
+V08,frame_2376,2,322655895,2,2,0.0,HorizontalFlip Affine GaussNoise
+V08,frame_2400,0,935171867,2,2,0.0,RandomBrightnessContrast RGBShift
+V08,frame_2400,1,211282733,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V08,frame_2400,2,2883086941,2,2,0.0,Affine Downscale
+V08,frame_2424,0,1826358020,2,2,0.0,HorizontalFlip RandomBrightnessContrast RGBShift ImageCompression
+V08,frame_2424,1,569378405,2,2,0.0,HorizontalFlip GaussNoise
+V08,frame_2424,2,552416312,2,2,0.0,Affine RandomGamma
+V08,frame_2448,0,2028790220,1,1,0.0,HorizontalFlip RGBShift
+V08,frame_2448,1,3611201993,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast ISONoise
+V08,frame_2448,2,4110098206,1,1,0.0,HorizontalFlip RGBShift
+V09,frame_0024,0,3948868324,2,2,0.0,HorizontalFlip RandomBrightnessContrast ImageCompression
+V09,frame_0024,1,4009137714,2,2,0.0,HorizontalFlip Affine RGBShift SombraLocal
+V09,frame_0024,2,2037951016,2,2,0.0,Affine RandomGamma
+V09,frame_0048,0,3620167687,1,1,0.0,Affine HueSaturationValue Downscale SombraLocal
+V09,frame_0048,1,1908473118,1,1,0.0,HorizontalFlip Affine HueSaturationValue MotionBlur
+V09,frame_0048,2,3777809628,1,1,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue
+V09,frame_0072,0,1515254675,2,2,0.0,Affine RandomBrightnessContrast MotionBlur SombraLocal
+V09,frame_0072,1,1598224431,2,2,0.0,Affine LluviaSuave
+V09,frame_0072,2,569088889,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift GaussNoise LluviaSuave
+V09,frame_0096,0,1373794718,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V09,frame_0096,1,1170212885,2,2,0.0,Affine RandomGamma RGBShift GaussNoise LluviaSuave
+V09,frame_0096,2,4021265373,2,2,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V09,frame_0120,0,1210023792,2,2,0.0,HorizontalFlip Affine HueSaturationValue GaussNoise
+V09,frame_0120,1,906889503,2,2,0.0,Affine Downscale LluviaSuave
+V09,frame_0120,2,3032132589,2,2,0.0,Affine
+V09,frame_0144,0,3785443556,2,2,0.0,Affine RandomGamma Downscale
+V09,frame_0144,1,1492546110,2,2,0.0,LluviaSuave
+V09,frame_0144,2,1782287458,2,2,0.0,Affine
+V09,frame_0168,0,3181164568,2,2,0.0,Affine RandomBrightnessContrast
+V09,frame_0168,1,2360128030,2,2,0.0,HorizontalFlip ISONoise
+V09,frame_0168,2,361931577,2,2,0.0,Affine MotionBlur SombraLocal
+V09,frame_0192,0,1225426888,2,2,0.0,HorizontalFlip HueSaturationValue DifficultMovimiento
+V09,frame_0192,1,2117212419,2,2,0.0,Affine RandomBrightnessContrast LluviaSuave
+V09,frame_0192,2,4124568885,2,2,0.0,SombraLocal OclusionTexturada
+V09,frame_0216,0,701469167,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue Downscale
+V09,frame_0216,1,3249925260,2,2,0.0,HorizontalFlip
+V09,frame_0216,2,2891684678,2,2,0.0,HorizontalFlip Affine Downscale LluviaSuave
+V09,frame_0240,0,3631948776,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast LluviaSuave
+V09,frame_0240,1,3567121630,1,1,0.0,RandomGamma ImageCompression OclusionTexturada
+V09,frame_0240,2,2876459024,1,1,0.0,HorizontalFlip Affine RandomGamma
+V09,frame_0264,0,2393082294,2,2,0.0,Affine RandomGamma SombraLocal
+V09,frame_0264,1,902505373,2,2,0.0,Affine HueSaturationValue SombraLocal
+V09,frame_0264,2,3434658639,2,2,0.0,Affine RandomGamma RGBShift MotionBlur
+V09,frame_0288,0,3843549394,2,2,0.0,HorizontalFlip RandomGamma Downscale
+V09,frame_0288,1,2465646685,2,2,0.0,HorizontalFlip Affine HueSaturationValue
+V09,frame_0288,2,1830281421,2,2,0.0,Affine RandomGamma HueSaturationValue Downscale SombraLocal
+V09,frame_0312,0,809629182,2,2,0.0,RandomGamma Downscale
+V09,frame_0312,1,2654522047,2,2,0.037950792045837546,RandomGamma MotionBlur SombraLocal OclusionTexturada
+V09,frame_0312,2,2598631288,2,2,0.0,HorizontalFlip Affine MotionBlur
+V09,frame_0336,0,2621388616,2,2,0.0,Affine RandomGamma
+V09,frame_0336,1,2639496966,2,2,0.08442460317460318,HorizontalFlip Affine OclusionTexturada
+V09,frame_0336,2,1095125118,2,2,0.0,Affine Downscale
+V09,frame_0360,0,3852288700,2,2,0.0,Affine SombraLocal
+V09,frame_0360,1,297833050,2,2,0.0,Affine OclusionTexturada
+V09,frame_0360,2,14577621,2,2,0.0,HorizontalFlip Affine RGBShift
+V09,frame_0384,0,160030938,1,1,0.0,HorizontalFlip Affine RandomGamma
+V09,frame_0384,1,3051838837,1,1,0.0,Affine RandomGamma SombraLocal
+V09,frame_0384,2,2529341903,1,1,0.0,HorizontalFlip Affine RGBShift LluviaSuave
+V09,frame_0408,0,3645041243,1,1,0.0,HorizontalFlip Affine
+V09,frame_0408,1,3508048632,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V09,frame_0408,2,2806517023,1,1,0.0,Affine RGBShift OclusionTexturada
+V09,frame_0432,0,1787256073,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_0432,1,1004171805,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V09,frame_0432,2,6556951,1,1,0.0,Affine HueSaturationValue MotionBlur
+V09,frame_0456,0,2400568355,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift ImageCompression
+V09,frame_0456,1,3239761799,1,1,0.0,HorizontalFlip RandomBrightnessContrast HueSaturationValue SombraLocal
+V09,frame_0456,2,695265676,1,1,0.0,HorizontalFlip Affine MotionBlur
+V09,frame_0480,0,1588277407,2,2,0.0,HorizontalFlip Affine GaussNoise
+V09,frame_0480,1,3184703311,2,2,0.0,HorizontalFlip RandomGamma SombraLocal
+V09,frame_0480,2,3960404690,2,2,0.0,HorizontalFlip ISONoise
+V09,frame_0504,0,924911595,2,2,0.0,Affine RGBShift
+V09,frame_0504,1,53358596,2,2,0.0,RandomGamma RGBShift ImageCompression
+V09,frame_0504,2,2295970373,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast SombraLocal OclusionTexturada
+V09,frame_0528,0,2807487591,3,3,0.0,RandomGamma RGBShift MotionBlur DifficultOscuro
+V09,frame_0528,1,4061335974,3,2,0.0,HorizontalFlip Affine RandomGamma
+V09,frame_0528,2,1722346561,3,2,0.0,Affine ImageCompression
+V09,frame_0552,0,278397721,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V09,frame_0552,1,2536708311,2,2,0.0,Affine RandomGamma
+V09,frame_0552,2,1105582003,2,2,0.0,MotionBlur Downscale LluviaSuave
+V09,frame_0576,0,2879994836,1,1,0.0,Affine RandomGamma SombraLocal
+V09,frame_0576,1,403143544,1,1,0.09778060425076959,Affine OclusionTexturada
+V09,frame_0576,2,3396185513,1,1,0.0,HorizontalFlip Affine SombraLocal
+V09,frame_0600,0,104447606,2,2,0.0,HorizontalFlip RandomGamma RGBShift SombraLocal DifficultOscuro
+V09,frame_0600,1,2295644024,2,2,0.0,RandomBrightnessContrast SombraLocal
+V09,frame_0600,2,652082879,2,2,0.0,HorizontalFlip Affine RandomGamma SombraLocal
+V09,frame_0624,0,1186950451,2,2,0.0,HorizontalFlip Affine GaussNoise
+V09,frame_0624,1,4267482968,2,2,0.0,Affine RandomGamma ISONoise
+V09,frame_0624,2,125761143,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast LluviaSuave
+V09,frame_0648,0,2637696196,1,1,0.0,HorizontalFlip Affine RandomGamma LluviaSuave
+V09,frame_0648,1,4105939524,1,1,0.029850322091701402,HorizontalFlip RandomGamma OclusionTexturada
+V09,frame_0648,2,1248468092,1,1,0.0,Affine
+V09,frame_0672,0,2766673398,2,2,0.0,Affine RandomGamma SombraLocal
+V09,frame_0672,1,4059318694,2,2,0.0,HorizontalFlip Affine RandomGamma SombraLocal
+V09,frame_0672,2,1083615503,2,2,0.0,Affine ISONoise OclusionTexturada
+V09,frame_0696,0,655770589,2,2,0.0,Affine RandomBrightnessContrast ImageCompression
+V09,frame_0696,1,707399146,2,2,0.0,Affine LluviaSuave
+V09,frame_0696,2,3108335412,2,2,0.0,Affine RandomBrightnessContrast SombraLocal
+V09,frame_0720,0,2989392326,2,2,0.0,RandomBrightnessContrast
+V09,frame_0720,1,1342299710,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_0720,2,3959278159,2,2,0.0,RandomGamma RGBShift
+V09,frame_0744,0,330737984,1,1,0.08211070545817366,Affine HueSaturationValue SombraLocal OclusionTexturada
+V09,frame_0744,1,864050810,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale SombraLocal OclusionTexturada
+V09,frame_0744,2,3617674347,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale LluviaSuave
+V09,frame_0768,0,4129023037,1,1,0.0,RandomBrightnessContrast RGBShift SombraLocal
+V09,frame_0768,1,3899639184,1,1,0.0,Affine RGBShift MotionBlur GaussNoise
+V09,frame_0768,2,2574424415,1,1,0.09168526167529159,RandomBrightnessContrast HueSaturationValue SombraLocal OclusionTexturada
+V09,frame_0792,0,1953811300,2,2,0.0,RandomBrightnessContrast ISONoise DifficultOscuro
+V09,frame_0792,1,4010969352,2,2,0.0,HorizontalFlip Affine RGBShift SombraLocal
+V09,frame_0792,2,18330118,2,2,0.0,HorizontalFlip RandomGamma RGBShift
+V09,frame_0816,0,731173065,3,3,0.0,Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V09,frame_0816,1,1871338840,3,3,0.0,Affine RandomBrightnessContrast HueSaturationValue GaussNoise SombraLocal
+V09,frame_0816,2,2168259859,3,2,0.0,Affine
+V09,frame_0840,0,2019823214,1,1,0.0,Affine RandomGamma
+V09,frame_0840,1,686727328,1,1,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V09,frame_0840,2,1707833225,1,1,0.0,HorizontalFlip Affine OclusionTexturada
+V09,frame_0864,0,3493840966,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_0864,1,3733407689,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V09,frame_0864,2,3451907188,1,1,0.0,HorizontalFlip Affine RandomGamma LluviaSuave
+V09,frame_0888,0,3554390859,1,1,0.0,Affine ImageCompression
+V09,frame_0888,1,4079436358,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V09,frame_0888,2,4004810126,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V09,frame_0912,0,166106465,1,1,0.0,HorizontalFlip Affine
+V09,frame_0912,1,3824646360,1,1,0.0,HorizontalFlip LluviaSuave
+V09,frame_0912,2,3588720348,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift OclusionTexturada
+V09,frame_0936,0,3866303923,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift SombraLocal
+V09,frame_0936,1,3884777360,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur SombraLocal
+V09,frame_0936,2,2381141688,1,1,0.0,Affine RGBShift
+V09,frame_0960,0,1885690146,1,1,0.0,RandomBrightnessContrast ISONoise
+V09,frame_0960,1,2384016348,1,1,0.0,Affine SombraLocal
+V09,frame_0960,2,2363194046,1,1,0.0,HorizontalFlip Affine GaussNoise
+V09,frame_0984,0,482988549,2,2,0.0,Affine ImageCompression SombraLocal
+V09,frame_0984,1,94196943,2,2,0.0,HorizontalFlip Affine RandomGamma MotionBlur GaussNoise SombraLocal
+V09,frame_0984,2,4080183315,2,2,0.0,HorizontalFlip Affine
+V09,frame_1008,0,2116626726,1,1,0.0,Affine DifficultMovimiento
+V09,frame_1008,1,434051190,1,1,0.0,Affine HueSaturationValue ISONoise SombraLocal
+V09,frame_1008,2,591298070,1,1,0.0,HorizontalFlip Affine RandomGamma LluviaSuave
+V09,frame_1032,0,1554520521,1,1,0.07251298152397054,HorizontalFlip Affine OclusionTexturada
+V09,frame_1032,1,2184120036,1,1,0.0,RandomBrightnessContrast Downscale
+V09,frame_1032,2,807582189,1,1,0.0,Affine
+V09,frame_1056,0,1320967422,1,1,0.0,RandomGamma RGBShift MotionBlur LluviaSuave
+V09,frame_1056,1,896013726,1,1,0.0,HorizontalFlip ISONoise
+V09,frame_1056,2,3933188148,1,1,0.0,Affine
+V09,frame_1080,0,501242519,1,1,0.0,Affine RandomGamma MotionBlur Downscale SombraLocal
+V09,frame_1080,1,4113616454,1,1,0.0,Affine RandomGamma HueSaturationValue
+V09,frame_1080,2,548796434,1,1,0.0,Affine RGBShift
+V09,frame_1104,0,3762782118,1,1,0.0,HorizontalFlip Affine RGBShift ImageCompression SombraLocal OclusionTexturada
+V09,frame_1104,1,2949956933,1,1,0.0,Affine RandomBrightnessContrast
+V09,frame_1104,2,712513032,1,1,0.0,RandomBrightnessContrast LluviaSuave
+V09,frame_1128,0,3421432953,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V09,frame_1128,1,1369523187,1,1,0.0,HorizontalFlip
+V09,frame_1128,2,1703434920,1,1,0.0,RandomBrightnessContrast
+V09,frame_1152,0,451603537,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue ISONoise LluviaSuave
+V09,frame_1152,1,3428811958,2,2,0.0,HueSaturationValue SombraLocal
+V09,frame_1152,2,1852466874,2,1,0.0,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V09,frame_1176,0,2275744208,2,2,0.0,HorizontalFlip Affine RandomGamma
+V09,frame_1176,1,1661565053,2,2,0.0,RandomBrightnessContrast ISONoise LluviaSuave
+V09,frame_1176,2,3764507982,2,2,0.0,HorizontalFlip Affine
+V09,frame_1200,0,2865682119,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift MotionBlur OclusionTexturada
+V09,frame_1200,1,1165726701,2,2,0.0,Affine RandomGamma
+V09,frame_1200,2,296629689,2,2,0.0,HorizontalFlip Affine ImageCompression LluviaSuave
+V09,frame_1224,0,1138248632,2,2,0.0,HorizontalFlip RandomGamma
+V09,frame_1224,1,1507170744,2,2,0.0,Affine RandomGamma SombraLocal
+V09,frame_1224,2,3569536142,2,2,0.0,Affine RandomGamma
+V09,frame_1248,0,1397477009,2,2,0.0,Affine RandomBrightnessContrast GaussNoise
+V09,frame_1248,1,718014404,2,2,0.0,Affine RandomBrightnessContrast RGBShift SombraLocal
+V09,frame_1248,2,1228215100,2,2,0.0,HorizontalFlip Affine MotionBlur
+V09,frame_1272,0,2069158782,2,2,0.0,HorizontalFlip SombraLocal
+V09,frame_1272,1,2517722700,2,2,0.0,Affine RandomBrightnessContrast
+V09,frame_1272,2,2173525877,2,2,0.0,HorizontalFlip Affine
+V09,frame_1296,0,3687966017,1,1,0.0,HorizontalFlip Affine RGBShift MotionBlur
+V09,frame_1296,1,3365118144,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast LluviaSuave
+V09,frame_1296,2,1595054101,1,1,0.0,GaussNoise SombraLocal
+V09,frame_1320,0,1805396562,2,2,0.0,HorizontalFlip SombraLocal DifficultOscuro
+V09,frame_1320,1,3399603628,2,2,0.0,HorizontalFlip
+V09,frame_1320,2,2656780645,2,2,0.0,HorizontalFlip Affine ISONoise SombraLocal
+V09,frame_1344,0,313779899,2,2,0.0,HorizontalFlip SombraLocal OclusionTexturada
+V09,frame_1344,1,969945239,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast LluviaSuave
+V09,frame_1344,2,1783726062,2,2,0.0,HorizontalFlip Affine RandomGamma
+V09,frame_1368,0,1986203235,2,2,0.0,RandomBrightnessContrast HueSaturationValue GaussNoise
+V09,frame_1368,1,330742074,2,2,0.0,HorizontalFlip Affine OclusionTexturada
+V09,frame_1368,2,1493906212,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V09,frame_1392,0,1224402996,2,2,0.0,Affine HueSaturationValue LluviaSuave
+V09,frame_1392,1,1756298890,2,2,0.0,HorizontalFlip Affine SombraLocal
+V09,frame_1392,2,3878970929,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast ISONoise
+V09,frame_1440,0,1913532042,3,3,0.0,HorizontalFlip Affine RandomGamma
+V09,frame_1440,1,255150661,3,3,0.0,HorizontalFlip Affine HueSaturationValue ISONoise
+V09,frame_1440,2,1227645859,3,3,0.0,HorizontalFlip Affine RandomGamma SombraLocal
+V09,frame_1464,0,4047607219,3,3,0.0,HueSaturationValue Downscale
+V09,frame_1464,1,2436308180,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_1464,2,1189038899,3,3,0.0,HorizontalFlip Affine
+V09,frame_1488,0,1374009923,2,2,0.0,HorizontalFlip Affine RGBShift
+V09,frame_1488,1,3652401385,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue Downscale OclusionTexturada
+V09,frame_1488,2,1983641491,2,2,0.0,HorizontalFlip Affine
+V09,frame_1512,0,3794430658,2,2,0.0,Affine SombraLocal
+V09,frame_1512,1,1694089726,2,2,0.0,Affine RandomGamma RGBShift
+V09,frame_1512,2,3778736727,2,2,0.0,HorizontalFlip SombraLocal
+V09,frame_1536,0,1313808560,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_1536,1,2010043131,1,1,0.0,HorizontalFlip Affine
+V09,frame_1536,2,821332513,1,1,0.0,Affine
+V09,frame_1560,0,2597918074,1,1,0.0,HorizontalFlip RandomGamma HueSaturationValue
+V09,frame_1560,1,229678278,1,1,0.0,Affine RandomGamma SombraLocal
+V09,frame_1560,2,3612029327,1,1,0.0,HorizontalFlip Affine OclusionTexturada
+V09,frame_1584,0,3657495845,1,1,0.0,RandomGamma SombraLocal
+V09,frame_1584,1,1708570349,1,1,0.0,HorizontalFlip RandomGamma OclusionTexturada
+V09,frame_1584,2,725283088,1,1,0.0,RandomBrightnessContrast HueSaturationValue
+V09,frame_1608,0,2005829446,1,1,0.0,HorizontalFlip Affine
+V09,frame_1608,1,843226837,1,1,0.0,Affine MotionBlur
+V09,frame_1608,2,3241981383,1,1,0.0,Affine RandomBrightnessContrast
+V09,frame_1632,0,1113655958,1,1,0.0,Affine RandomBrightnessContrast
+V09,frame_1632,1,4094099310,1,1,0.0,Affine MotionBlur ImageCompression
+V09,frame_1632,2,3346836037,1,1,0.0,HorizontalFlip Affine RGBShift
+V09,frame_1656,0,762946639,1,1,0.0,HorizontalFlip Affine RandomGamma MotionBlur LluviaSuave
+V09,frame_1656,1,4039228113,1,1,0.0,RandomGamma RGBShift GaussNoise OclusionTexturada
+V09,frame_1656,2,395074319,1,1,0.0,HorizontalFlip RandomGamma MotionBlur LluviaSuave
+V09,frame_1680,0,3310064624,1,1,0.0,HorizontalFlip RandomBrightnessContrast MotionBlur GaussNoise SombraLocal
+V09,frame_1680,1,637776231,1,1,0.0,RandomBrightnessContrast LluviaSuave
+V09,frame_1680,2,1809504409,1,1,0.0,Affine HueSaturationValue
+V09,frame_1704,0,3295389021,1,1,0.0,Affine
+V09,frame_1704,1,2866477057,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V09,frame_1704,2,1494138319,1,1,0.0,RandomBrightnessContrast RGBShift
+V10,frame_0024,0,1675449021,1,1,0.0,Affine RGBShift
+V10,frame_0024,1,3522881147,1,1,0.0,Affine RandomBrightnessContrast MotionBlur
+V10,frame_0024,2,3076698450,1,1,0.0,Affine MotionBlur
+V10,frame_0048,0,4278923521,1,1,0.0,HorizontalFlip Affine
+V10,frame_0048,1,500719980,1,1,0.0,HorizontalFlip
+V10,frame_0048,2,4175571663,1,1,0.0,Affine RandomBrightnessContrast OclusionTexturada
+V10,frame_0072,0,948156241,2,2,0.0,DifficultOscuro
+V10,frame_0072,1,2125238569,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue
+V10,frame_0072,2,3277402656,2,2,0.0,HorizontalFlip Affine RandomGamma ISONoise
+V10,frame_0096,0,573245665,1,1,0.0,RandomBrightnessContrast HueSaturationValue
+V10,frame_0096,1,3694868880,1,1,0.0,HorizontalFlip Affine RandomGamma ImageCompression
+V10,frame_0096,2,4270985699,1,1,0.0,RGBShift GaussNoise
+V10,frame_0120,0,3667134986,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V10,frame_0120,1,3645814443,0,0,0.0,HorizontalFlip Affine RandomGamma
+V10,frame_0120,2,3953963521,0,0,0.0,HorizontalFlip Affine OclusionTexturada
+V10,frame_0144,0,608092175,0,0,0.0,Affine
+V10,frame_0144,1,2647404709,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift OclusionTexturada
+V10,frame_0144,2,3890636104,0,0,0.0,Affine RandomGamma HueSaturationValue OclusionTexturada
+V10,frame_0168,0,4003922373,0,0,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V10,frame_0168,1,640632249,0,0,0.0,HorizontalFlip RandomBrightnessContrast
+V10,frame_0168,2,595780022,0,0,0.0,HorizontalFlip RGBShift OclusionTexturada
+V10,frame_0192,0,4225209002,1,1,0.0,HorizontalFlip RandomGamma MotionBlur
+V10,frame_0192,1,2118826951,1,1,0.0,RandomGamma OclusionTexturada
+V10,frame_0192,2,2864049743,1,1,0.06894977168949772,HorizontalFlip RandomGamma Downscale OclusionTexturada
+V10,frame_0216,0,128312298,1,1,0.0,Affine RandomGamma ISONoise DifficultMovimiento
+V10,frame_0216,1,4205184561,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast MotionBlur
+V10,frame_0216,2,3611088659,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue Downscale
+V10,frame_0240,0,1572106984,1,1,0.0,HorizontalFlip Affine
+V10,frame_0240,1,2305375102,1,1,0.0,HorizontalFlip MotionBlur ImageCompression
+V10,frame_0240,2,934685770,1,1,0.0,HorizontalFlip Affine HueSaturationValue GaussNoise
+V10,frame_0264,0,1686989741,1,1,0.0,Affine RandomGamma DifficultOscuro
+V10,frame_0264,1,3119354410,1,1,0.0,OclusionTexturada
+V10,frame_0264,2,2944192776,1,1,0.0,HorizontalFlip Affine RGBShift ISONoise
+V10,frame_0288,0,3050197569,2,2,0.0,RandomGamma
+V10,frame_0288,1,3470303518,2,2,0.16823550419632152,HorizontalFlip Affine HueSaturationValue MotionBlur Downscale OclusionTexturada
+V10,frame_0288,2,3996877954,2,2,0.0,HorizontalFlip Affine
+V10,frame_0312,0,923069972,2,2,0.0,Affine
+V10,frame_0312,1,2669343509,2,2,0.0,Affine RandomGamma RGBShift MotionBlur
+V10,frame_0312,2,1756843601,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V10,frame_0336,0,3542338768,2,2,0.0,Affine RandomBrightnessContrast DifficultMovimiento
+V10,frame_0336,1,596921752,2,2,0.0,Affine RGBShift Downscale
+V10,frame_0336,2,1347473246,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V10,frame_0360,0,950826530,2,2,0.0,HueSaturationValue Downscale DifficultMovimiento
+V10,frame_0360,1,87726644,2,2,0.0,HorizontalFlip RandomGamma ImageCompression
+V10,frame_0360,2,1302183915,2,2,0.0,HorizontalFlip Affine MotionBlur
+V10,frame_0384,0,3977003514,2,2,0.0,RandomGamma RGBShift
+V10,frame_0384,1,2199853818,2,2,0.0,HorizontalFlip Downscale
+V10,frame_0384,2,1968034832,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast HueSaturationValue ISONoise
+V10,frame_0408,0,2060618608,2,2,0.2237215909090909,Affine RandomBrightnessContrast MotionBlur OclusionTexturada
+V10,frame_0408,1,2279736348,2,2,0.0,HorizontalFlip Affine Downscale OclusionTexturada
+V10,frame_0408,2,564288230,2,2,0.0,HorizontalFlip HueSaturationValue
+V10,frame_0432,0,3375046538,2,2,0.0,HorizontalFlip Affine
+V10,frame_0432,1,1234090939,2,2,0.0,HorizontalFlip RandomBrightnessContrast
+V10,frame_0432,2,2299426823,2,2,0.0,Affine RandomGamma
+V10,frame_0456,0,3499335477,2,2,0.0,RandomBrightnessContrast ImageCompression
+V10,frame_0456,1,2517283155,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift MotionBlur
+V10,frame_0456,2,1253906533,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue
+V10,frame_0480,0,2897221184,2,2,0.0,HorizontalFlip RandomBrightnessContrast OclusionTexturada
+V10,frame_0480,1,2845778617,2,2,0.0,Affine MotionBlur
+V10,frame_0480,2,3493061251,2,2,0.0,Affine HueSaturationValue
+V10,frame_0504,0,111909026,2,2,0.0,Affine RandomBrightnessContrast MotionBlur OclusionTexturada
+V10,frame_0504,1,1472445469,2,2,0.0,Affine HueSaturationValue
+V10,frame_0504,2,351423179,2,2,0.0,HorizontalFlip RandomBrightnessContrast
+V10,frame_0528,0,751407922,2,2,0.0,Affine Downscale
+V10,frame_0528,1,1174129793,2,2,0.0,HueSaturationValue GaussNoise
+V10,frame_0528,2,1434126266,2,2,0.0,HorizontalFlip Affine
+V10,frame_0552,0,2451637263,3,3,0.17227272727272727,Affine HueSaturationValue MotionBlur OclusionTexturada
+V10,frame_0552,1,3410984951,3,3,0.0,RandomBrightnessContrast RGBShift OclusionTexturada
+V10,frame_0552,2,2583059241,3,3,0.059369070208728655,HorizontalFlip Affine OclusionTexturada
+V10,frame_0576,0,3166102468,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V10,frame_0576,1,2116872003,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift
+V10,frame_0576,2,1665706044,3,3,0.0,Affine HueSaturationValue MotionBlur
+V10,frame_0600,0,3491807694,3,3,0.0,Affine RandomGamma ISONoise
+V10,frame_0600,1,2036044620,3,3,0.0,Affine Downscale
+V10,frame_0600,2,102762654,3,3,0.0,HorizontalFlip RGBShift
+V10,frame_0624,0,3557232879,3,3,0.0,HorizontalFlip GaussNoise
+V10,frame_0624,1,4234953436,3,3,0.0,RandomBrightnessContrast GaussNoise
+V10,frame_0624,2,3122359172,3,3,0.0,Affine
+V10,frame_0648,0,3562881187,3,3,0.0,HorizontalFlip ISONoise
+V10,frame_0648,1,2625224874,3,3,0.0,HorizontalFlip RandomGamma OclusionTexturada
+V10,frame_0648,2,3967685777,3,3,0.0,Affine RGBShift GaussNoise
+V10,frame_0672,0,4041228177,2,2,0.0,Affine RandomGamma
+V10,frame_0672,1,2255723652,2,2,0.0,Affine RandomBrightnessContrast HueSaturationValue MotionBlur
+V10,frame_0672,2,979077252,2,2,0.0,Affine
+V10,frame_0696,0,418498758,2,2,0.0,HorizontalFlip ImageCompression OclusionTexturada
+V10,frame_0696,1,1905721494,2,2,0.0,Affine
+V10,frame_0696,2,973144138,2,2,0.0,HorizontalFlip Affine RandomGamma Downscale
+V10,frame_0720,0,2066658858,3,3,0.0,HorizontalFlip Affine ImageCompression
+V10,frame_0720,1,3299439241,3,3,0.0,HorizontalFlip
+V10,frame_0720,2,4036866828,3,3,0.0,Affine ISONoise
+V10,frame_0744,0,1858420972,3,3,0.0,HorizontalFlip Affine RandomGamma DifficultMovimiento
+V10,frame_0744,1,310300454,3,3,0.0,HorizontalFlip Affine
+V10,frame_0744,2,1879681509,3,3,0.0,RGBShift OclusionTexturada
+V10,frame_0768,0,3596336479,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V10,frame_0768,1,2853788338,1,1,0.0,RandomGamma MotionBlur
+V10,frame_0768,2,1576593640,1,1,0.0,Affine
+V10,frame_0792,0,2001177181,1,1,0.0,Affine RandomGamma RGBShift
+V10,frame_0792,1,3885005557,1,1,0.0,RandomBrightnessContrast GaussNoise OclusionTexturada
+V10,frame_0792,2,1475505181,1,1,0.0,Affine RandomBrightnessContrast
+V10,frame_0816,0,648010226,1,1,0.0,RGBShift
+V10,frame_0816,1,1745990479,1,1,0.0,HorizontalFlip Affine
+V10,frame_0816,2,2512829900,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale OclusionTexturada
+V10,frame_0840,0,2765463436,1,1,0.0,HorizontalFlip Affine RandomGamma RGBShift Downscale DifficultOscuro
+V10,frame_0840,1,4059056132,1,1,0.0,Affine RandomGamma
+V10,frame_0840,2,2049589103,1,1,0.0,HorizontalFlip RandomGamma
+V10,frame_0864,0,3139451802,3,3,0.0,HorizontalFlip Affine
+V10,frame_0864,1,3458822800,3,3,0.0,HorizontalFlip
+V10,frame_0864,2,1073389793,3,3,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V10,frame_0888,0,3044342490,2,2,0.0,RandomGamma RGBShift
+V10,frame_0888,1,378656127,2,2,0.0,RandomGamma RGBShift
+V10,frame_0888,2,2766556923,2,2,0.0,Affine RandomBrightnessContrast MotionBlur ImageCompression
+V10,frame_0912,0,3136234089,2,2,0.0,Affine RandomGamma
+V10,frame_0912,1,3913561119,2,2,0.00023547220586998572,Affine RandomGamma OclusionTexturada
+V10,frame_0912,2,3339955459,2,2,0.0,Affine
+V10,frame_0936,0,2939565103,2,2,0.0,HorizontalFlip DifficultMovimiento
+V10,frame_0936,1,3235799978,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast RGBShift GaussNoise
+V10,frame_0936,2,1372852661,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast ISONoise
+V10,frame_0960,0,1678418871,1,1,0.0,Affine RandomGamma DifficultOscuro
+V10,frame_0960,1,40156273,1,1,0.0,HorizontalFlip MotionBlur ImageCompression
+V10,frame_0960,2,496848627,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast
+V10,frame_0984,0,1044199433,1,1,0.0,HorizontalFlip RandomBrightnessContrast
+V10,frame_0984,1,11734277,1,1,0.0,Affine ImageCompression OclusionTexturada
+V10,frame_0984,2,2629261549,1,1,0.0,HorizontalFlip Affine
+V10,frame_1008,0,3770646559,2,2,0.0,HorizontalFlip Affine RandomGamma MotionBlur
+V10,frame_1008,1,3488806618,2,2,0.0,Affine RandomBrightnessContrast MotionBlur GaussNoise
+V10,frame_1008,2,3460065753,2,2,0.0,HorizontalFlip
+V10,frame_1032,0,1064790,3,3,0.0,Affine RandomBrightnessContrast GaussNoise
+V10,frame_1032,1,1289555906,3,3,0.0,HorizontalFlip Affine
+V10,frame_1032,2,1205729517,3,3,0.0,HorizontalFlip Affine HueSaturationValue
+V10,frame_1056,0,2676724173,2,2,0.0,Affine OclusionTexturada
+V10,frame_1056,1,1093360295,2,2,0.0,Affine RandomGamma MotionBlur
+V10,frame_1056,2,1506990371,2,2,0.0,HorizontalFlip Affine HueSaturationValue
+V10,frame_1080,0,597950329,2,2,0.0,HorizontalFlip Affine RGBShift OclusionTexturada
+V10,frame_1080,1,1005028517,2,2,0.0,HorizontalFlip Affine
+V10,frame_1080,2,584866915,2,2,0.0,RandomGamma ImageCompression
+V10,frame_1104,0,1905803873,2,2,0.0,Affine
+V10,frame_1104,1,4136051896,2,2,0.0,HorizontalFlip RandomGamma Downscale
+V10,frame_1104,2,128193950,2,2,0.0,RandomBrightnessContrast OclusionTexturada
+V10,frame_1128,0,3955754794,2,2,0.0,HorizontalFlip Affine RGBShift ImageCompression
+V10,frame_1128,1,2648494669,2,2,0.0,Affine RandomGamma RGBShift
+V10,frame_1128,2,2583101638,2,2,0.0,Affine RandomGamma
+V10,frame_1152,0,1844350139,2,2,0.0,HorizontalFlip Affine DifficultMovimiento
+V10,frame_1152,1,780442370,2,2,0.0,Affine Downscale
+V10,frame_1152,2,2869854467,2,2,0.0,HorizontalFlip Affine RGBShift
+V10,frame_1176,0,3408310810,1,1,0.0,Affine RandomBrightnessContrast
+V10,frame_1176,1,2799445944,1,1,0.2017295123177476,HorizontalFlip Affine OclusionTexturada
+V10,frame_1176,2,2848119473,1,1,0.0,HorizontalFlip Affine HueSaturationValue
+V10,frame_1200,0,3797328606,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast GaussNoise
+V10,frame_1200,1,2662892713,1,1,0.0,HorizontalFlip Affine MotionBlur
+V10,frame_1200,2,2645011957,1,1,0.05302857577139383,Affine RandomGamma OclusionTexturada
+V10,frame_1224,0,2189811379,1,1,0.0,HorizontalFlip Affine GaussNoise
+V10,frame_1224,1,449057432,1,1,0.0,Affine RandomBrightnessContrast HueSaturationValue GaussNoise
+V10,frame_1224,2,1521822090,1,1,0.0,HorizontalFlip Affine
+V10,frame_1248,0,1856864145,1,1,0.0,HorizontalFlip Affine RandomBrightnessContrast OclusionTexturada
+V10,frame_1248,1,3499688292,1,1,0.04768630616088243,HorizontalFlip Affine ImageCompression OclusionTexturada
+V10,frame_1248,2,2047949218,1,1,0.0,HorizontalFlip RGBShift
+V10,frame_1272,0,4130252052,1,1,0.0,Affine
+V10,frame_1272,1,3912194577,1,1,0.0,RandomBrightnessContrast HueSaturationValue
+V10,frame_1272,2,3640813856,1,1,0.0,HorizontalFlip Affine
+V10,frame_1296,0,3196939746,1,1,0.0,Affine RandomBrightnessContrast
+V10,frame_1296,1,2689502291,1,1,0.10404624277456648,Affine RandomBrightnessContrast MotionBlur ISONoise OclusionTexturada
+V10,frame_1296,2,4284967208,1,1,0.0,Affine RandomBrightnessContrast MotionBlur
+V10,frame_1320,0,1982103915,2,2,0.0,HorizontalFlip Affine RGBShift ISONoise
+V10,frame_1320,1,2537253681,2,2,0.0,HorizontalFlip RandomGamma RGBShift
+V10,frame_1320,2,1961309939,2,2,0.0,HorizontalFlip RandomGamma ImageCompression
+V10,frame_1344,0,587474789,2,2,0.1595744680851064,HorizontalFlip Affine OclusionTexturada
+V10,frame_1344,1,2149982949,2,2,0.0,HorizontalFlip RandomGamma RGBShift
+V10,frame_1344,2,986243661,2,2,0.0,HorizontalFlip RGBShift OclusionTexturada
+V10,frame_1368,0,1805872655,1,1,0.0,Affine RandomBrightnessContrast ISONoise OclusionTexturada
+V10,frame_1368,1,1881518847,1,1,0.0,RGBShift
+V10,frame_1368,2,652721264,1,1,0.0,Affine RandomGamma MotionBlur
+V10,frame_1392,0,2597787620,2,2,0.0,HorizontalFlip Affine RandomGamma MotionBlur GaussNoise
+V10,frame_1392,1,1917230756,2,2,0.0,Affine
+V10,frame_1392,2,2546242925,2,2,0.0,RandomGamma RGBShift ImageCompression
+V10,frame_1416,0,2831292867,2,2,0.0,Affine RandomBrightnessContrast OclusionTexturada
+V10,frame_1416,1,3658514023,2,2,0.0,HorizontalFlip Affine MotionBlur
+V10,frame_1416,2,1572271564,2,2,0.0,Affine RGBShift
+V10,frame_1440,0,2000222394,1,1,0.0,HorizontalFlip Affine HueSaturationValue DifficultMovimiento
+V10,frame_1440,1,4217300193,1,1,0.0,Affine HueSaturationValue
+V10,frame_1440,2,3740795188,1,1,0.08814517669531996,HorizontalFlip Affine OclusionTexturada
+V10,frame_1464,0,3358486461,2,2,0.0,HorizontalFlip Affine RandomGamma MotionBlur OclusionTexturada
+V10,frame_1464,1,2524955926,2,2,0.0,RandomGamma
+V10,frame_1464,2,2460924105,2,2,0.0,RandomBrightnessContrast HueSaturationValue MotionBlur ISONoise
+V10,frame_1488,0,2648278494,2,2,0.0,HorizontalFlip ImageCompression DifficultMovimiento
+V10,frame_1488,1,2422568588,2,2,0.08602150537634409,Affine OclusionTexturada
+V10,frame_1488,2,693326065,2,2,0.0,Affine
+V10,frame_1512,0,94740570,2,2,0.0,HueSaturationValue
+V10,frame_1512,1,3252482036,2,2,0.0,Affine RandomGamma HueSaturationValue
+V10,frame_1512,2,965171983,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast Downscale
+V10,frame_1536,0,2733645493,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift MotionBlur
+V10,frame_1536,1,4236549766,2,2,0.0,HorizontalFlip RandomGamma RGBShift
+V10,frame_1536,2,1394468039,2,2,0.0,HorizontalFlip GaussNoise
+V10,frame_1560,0,2174803918,2,2,0.0,HorizontalFlip RandomGamma
+V10,frame_1560,1,264431068,2,2,0.0,HorizontalFlip RandomGamma
+V10,frame_1560,2,84038533,2,2,0.0,HorizontalFlip Affine RGBShift
+V10,frame_1584,0,3625093455,2,2,0.0,HorizontalFlip Affine HueSaturationValue MotionBlur
+V10,frame_1584,1,582295672,2,2,0.0,HorizontalFlip Affine RandomGamma ImageCompression
+V10,frame_1584,2,996564354,2,2,0.17190439690613896,RandomGamma OclusionTexturada
+V10,frame_1608,0,1004074911,2,2,0.0,Affine
+V10,frame_1608,1,1943348394,2,2,0.0,HorizontalFlip Affine RandomGamma RGBShift
+V10,frame_1608,2,3093180890,2,2,0.0,ISONoise
+V10,frame_1632,0,2321146210,2,2,0.0,HorizontalFlip Affine Downscale DifficultMovimiento
+V10,frame_1632,1,2291367023,2,2,0.0,Affine
+V10,frame_1632,2,69838022,2,2,0.0,Affine MotionBlur
+V10,frame_1656,0,2556251611,2,2,0.0,Affine RandomBrightnessContrast RGBShift DifficultMovimiento
+V10,frame_1656,1,2790724942,2,2,0.0,Affine RandomGamma
+V10,frame_1656,2,1143255987,2,2,0.0,HorizontalFlip HueSaturationValue
+V10,frame_1680,0,3344493547,2,2,0.0,HorizontalFlip Affine HueSaturationValue DifficultOscuro
+V10,frame_1680,1,2709147100,2,2,0.0,HorizontalFlip RandomGamma RGBShift
+V10,frame_1680,2,2149759534,2,2,0.0,HorizontalFlip Affine RandomGamma HueSaturationValue ISONoise
+V10,frame_1704,0,62105669,2,2,0.0,Affine Downscale
+V10,frame_1704,1,1214962848,2,2,0.0,HorizontalFlip Affine RandomGamma OclusionTexturada
+V10,frame_1704,2,3046133440,2,2,0.0,RGBShift
+V10,frame_1728,0,4006669834,2,2,0.0,HorizontalFlip Affine RandomBrightnessContrast ImageCompression
+V10,frame_1728,1,177975120,2,2,0.0,Affine RandomGamma ImageCompression OclusionTexturada
+V10,frame_1728,2,562990024,2,2,0.0,HorizontalFlip Affine GaussNoise

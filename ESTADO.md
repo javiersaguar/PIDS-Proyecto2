@@ -23,8 +23,17 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 - T04–T08: **los cinco lotes anotados**, con 1420 robots. T10: revisión cruzada de todos los lotes.
 - T01: criterios v1 en [`docs/criterios_anotacion.md`](docs/criterios_anotacion.md), guía práctica en [`docs/guia_anotacion.md`](docs/guia_anotacion.md) y calibración de los cinco: IoU medio de 0,81 entre anotadores.
 - T11–T12: EDA completo en `eda.ipynb`, con figuras y tablas en `ENTREGA 1/WEEK1/resultados_eda/`.
+- T12 (15/10): mapas por vídeo y ventanas de 5 s comparando todos con `difficult`,
+  y animación de recuentos por fotograma de los diez vídeos. HTML sin conexión,
+  datos CSV y 13 figuras exportadas a PNG (300 ppp), SVG y PDF. Se usan los 808
+  originales y 375 `difficult`; ver `resultados_eda/README.md`.
 - T13: depuración. Se excluyen 12 imágenes (una con un robot sin caja y 11 casi duplicadas) y quedan **796**. Criterios en [`docs/depuracion.md`](docs/depuracion.md).
 - T14 y T18: `data_aug.ipynb` genera **3184 imágenes de entrenamiento** (nuestras 796 y 2388 copias). Validación (672) y test (718) son los conjuntos de otros grupos que da la asignatura, en `ENTREGA 1/WEEK2/DATOS_ASIGNATURA/`. Figuras en `ENTREGA 1/WEEK1/resultados_aug/`.
+- T14 (15/10): perfiles optativos de sombras locales y llovizna en V04/V09,
+  oclusiones texturadas con área limitada y refuerzo de copias con `difficult`.
+  Código y ejemplos en la sección 9 de `data_aug.ipynb`; el perfil `base` conserva
+  los datos actuales y los nuevos escriben en destinos separados. Pendiente medir
+  su efecto en validación; no se ha lanzado otro entrenamiento. PR #17.
 - Bloque 3: material de la semana 3 en `ENTREGA 2/WEEK3/` (SDK del robot y demo por completar).
 - T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
@@ -68,11 +77,21 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 
 ## Entrenamiento (15/10/2026)
 
-- En curso desde las **16:53 (Europe/Madrid)**: `faster_rcnn_v1_aug_lr001`, con tasa
-  inicial 0,001, 30 épocas, lote de 8 y semilla 0. Parte de COCO y mantiene los datos
-  y el resto de parámetros del experimento con aumento. Verificado el arranque en
-  la RTX 3060. Después se ejecutará la evaluación en validación. Resultados y
-  análisis del cambio de tasa pendientes; seguimiento en la [PR #14](https://github.com/javiersaguar/PIDS-Proyecto2/pull/14).
+- En curso desde las **23:44 Europe/Madrid**: `faster_rcnn_v1_aug_lr001_res1024`,
+  propuesta de resolución de Alejandro. min_size 1024, max_size 1820, lr 0,001,
+  30 épocas, semilla 0 y el mismo aumento base. Microbatch 4 con acumulación 2
+  (lote efectivo 8) para los 12 GB de la RTX 3060. Prueba de memoria superada y
+  PID 10327 activo, GPU al 100 %. Validación encadenada, sin usar test. Ver
+  [`docs/experimento_res1024.md`](docs/experimento_res1024.md); resultados pendientes.
+
+- Finalizado el **15/10 a las 22:13 Europe/Madrid**: `faster_rcnn_v1_aug_lr001`
+  (lr=0,001, 30 épocas, lote 8, semilla 0 y aumento base), incluida validación,
+  salida 0. Mejor época 5. Evaluación: AP@0,5 **0,9433**, AP 0,50:0,95 **0,6302**,
+  AP@0,5 difficult **0,6462**, FP 190 y FN 83. Frente a lr=0,0001: +0,17 pp en
+  AP@0,5 y +2,21 pp en AP 0,50:0,95; los FN difficult suben de 63 a 65 al umbral
+  0,5. Las últimas épocas empeoran respecto a la mejor: no se elige la época 30.
+  Resultados y análisis recuperados; comparación en `comparaciones/lr001/`.
+  PR #14 ya fusionada; el seguimiento del trabajo continúa en la PR abierta.
 
 - T19: entrenados en JupyterHub `faster_rcnn_v1` con y sin aumento. El aumento sube el mAP@0,5 en validación de 0,923 a **0,942**, y en los `difficult` de 0,552 a **0,634**. Se toma como base el modelo con aumento.
 - T20: evaluación en validación por grupos y por secuencia hecha. Resultados en `ENTREGA 1/WEEK2/resultados_train/` y `resultados_test/`, y su análisis en [`docs/informe_borrador.md`](docs/informe_borrador.md).
@@ -81,7 +100,9 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 
 - **T01:** cerrar los criterios en grupo. El borde superior del robot (gimbal y antenas) es donde más discrepamos.
 - **Bloque 2:** una mejora dirigida a los `difficult` y, con el modelo definitivo, la evaluación en test una sola vez (T20).
-- **Memoria (T15–T17):** pasar el borrador a la plantilla oficial cuando la tengamos.
+- **Memoria (T15–T17):** versiones Word/PDF sobre la plantilla oficial en
+  `docs/informes/`: completa, fase 1 y fase 2. Falta revisión del grupo y confirmar
+  fecha de entrega y número administrativo del grupo.
 
 ## Por confirmar
 

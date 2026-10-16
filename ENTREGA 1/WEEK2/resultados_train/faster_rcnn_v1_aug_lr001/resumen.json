@@ -1,0 +1,61 @@
+{
+ "experimento": "faster_rcnn_v1_aug_lr001",
+ "model_name": "faster_rcnn_v1",
+ "usar_aumento": true,
+ "seed": 0,
+ "num_epochs": 30,
+ "batch_size": 8,
+ "lr": 0.001,
+ "criterio_mejor": "map_50",
+ "mejor_epoca": 5,
+ "valid_map": 0.629899263381958,
+ "valid_map_50": 0.9431688189506531,
+ "valid_loss": 0.22178377849715097,
+ "conjuntos": [
+  {
+   "conjunto": "train",
+   "imagenes": 3184,
+   "robots": 5566,
+   "difficult": 1490,
+   "negativas": 160,
+   "aumentadas": 2388,
+   "videos": [
+    "V01",
+    "V02",
+    "V03",
+    "V04",
+    "V05",
+    "V06",
+    "V07",
+    "V08",
+    "V09",
+    "V10"
+   ]
+  },
+  {
+   "conjunto": "val",
+   "imagenes": 672,
+   "robots": 1561,
+   "difficult": 255,
+   "negativas": 0,
+   "aumentadas": 0,
+   "videos": [
+    "PIDS2023_GR04_0008",
+    "PIDS2024_GR02_0001",
+    "PIDS2024_GR02_0007",
+    "PIDS2024_GR02_0008",
+    "PIDS2024_GR04_0002",
+    "PIDS2024_GR04_0003",
+    "PIDS2025_GR01_0002",
+    "PIDS2025_GR01_0010",
+    "PIDS2025_GR03_0007",
+    "PIDS2025_GR03_0011",
+    "PIDS2025_GR04_0011"
+   ]
+  }
+ ],
+ "versiones": {
+  "torch": "2.4.1+cu121",
+  "torchvision": "0.19.1+cu121"
+ }
+}

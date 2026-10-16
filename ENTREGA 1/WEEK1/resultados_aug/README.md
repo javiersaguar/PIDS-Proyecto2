@@ -9,6 +9,18 @@ validación y test son los conjuntos de la asignatura.
 Las imágenes aumentadas no están en el repositorio: el notebook las crea en
 `data_train/`, `data_val/` y `data_test/`, en la raíz, que Git ignora. Son unos 810 MB.
 
+## Ampliaciones experimentales (15/10)
+
+La sección 9 del notebook añade perfiles optativos de sombras, oclusiones
+texturadas, refuerzo de imágenes con `difficult` y lluvia suave. El perfil por
+defecto sigue siendo `base`: **las cifras siguientes describen el aumento usado
+en los entrenamientos existentes**, no una mejora medida de las ampliaciones.
+
+Ver [configuración, ejemplos y comprobaciones](experimentos/README.md).
+Los perfiles nuevos generan en `datasets_experimentos/<perfil>/` y guardan sus
+resultados en `resultados_aug/<perfil>/`; no reemplazan los datos ni las figuras
+del aumento base.
+
 ## Figuras
 
 | Figura | Qué muestra | Pie de figura propuesto |

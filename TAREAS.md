@@ -164,6 +164,13 @@ El enunciado exige **al menos un análisis propio**, explicando qué pregunta re
 
 **Hecha cuando:** hay al menos uno, con su figura e interpretación.
 
+**Ampliación (15/10/2026, rama `javier-saguar`):** mapas de centros por vídeo y
+ventanas temporales de 5 s, con comparación todos/`difficult` y escala común;
+recuentos de robots de los diez vídeos sincronizados por fotograma anotado.
+Se han generado los HTML, sus CSV y 13 figuras en PNG (300 ppp), SVG y PDF desde
+las 808 imágenes originales. Código en `eda.ipynb` y
+`herramientas/visualizaciones_eda.py`; metodología y pies en `resultados_eda/README.md`.
+
 ### T13 · Depuración del dataset (P2)
 
 Buscar y corregir o eliminar:
@@ -179,6 +186,14 @@ Cuidado con no quitar todos los casos difíciles: el modelo fallaría en la real
 **Hecha (14/10/2026):** se revisaron a ojo las 69 candidatas (52 poco nítidas, 11 casi duplicadas y 6 casos dudosos) y se excluyen 12: una con un robot sin caja y 11 casi duplicadas. Quedan 796 imágenes. Criterios y lista en [`docs/depuracion.md`](docs/depuracion.md); `data_aug.ipynb` aplica la exclusión leyendo `docs/depuracion_excluir.csv`. No se borra ningún original. El dataset limpio llega a JupyterHub con T03.
 
 ### T14 · Aumento de datos con `data_aug.ipynb` (P2)
+
+Ampliación del 15/10 en PR #17: perfiles `sombras_v1`, `oclusion_v1`,
+`difficult_v1`, `lluvia_v1` y el combinado `robusto_v1`. Incluyen sombras y lluvia
+solo en exteriores, obstáculos con textura y control del área tapada, y oscuridad
+o movimiento en una de las copias de imágenes con `difficult`. Son optativos y no
+reemplazan el dataset del entrenamiento en curso. Ejemplos y comprobaciones en
+`resultados_aug/experimentos/`; falta comparar los perfiles elegidos en validación
+(T19/T20), manteniendo semilla, lr, épocas y tamaño del conjunto.
 
 **Hecha (14/10/2026):** regenerado con la depuración y con el reparto nuevo: 796 imágenes de entrenamiento y 2388 copias (3184 en total); validación (672) y test (718) son los conjuntos de la asignatura.
 
@@ -245,3 +260,22 @@ test con su interpretación, y la comparación con y sin aumento.
   - una mejora para los `difficult`;
   - bajar las figuras del laboratorio;
   - la evaluación final en test, una sola vez.
+
+
+### Actualización del 15/10 tras lr001
+
+T19/T20: finalizados entrenamiento y validación de `faster_rcnn_v1_aug_lr001`
+(salida 0 a las 22:13). Mejor época 5; AP@0,5 0,9433 y AP 0,50:0,95 0,6302.
+Se recuperan métricas, curvas y ejemplos, y se documenta la anotación incompleta
+de `PIDS2024_GR02_0001/frame_0444.jpg`. No se ha evaluado test.
+
+T15–T17: plantilla oficial rellenada con el trabajo disponible; versiones completa,
+solo fase 1 y solo fase 2, con figuras, en `docs/informes/`. La fase 2 sigue siendo
+un avance: falta comparar arquitecturas y evaluar el modelo definitivo en test.
+Siguiente experimento autorizado: resolución 1024/1820, manteniendo lr=0,001 y
+el aumento base, antes de combinar más cambios.
+
+**En marcha desde las 23:44:** `faster_rcnn_v1_aug_lr001_res1024`, PID 10327.
+Microbatch 4, acumulación 2 y lote efectivo 8; prueba de memoria y arranque en GPU
+verificados. Se ejecutará validación al terminar. Los informes recogen el trabajo
+medido hasta lr001; el resultado de resolución sigue pendiente.
