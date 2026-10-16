@@ -2,6 +2,7 @@
 
 Propuesta de Alejandro, autorizada por Javier tras cerrar el análisis de lr001.
 Arrancado el **15/10/2026 a las 23:44 Europe/Madrid**, después de subir los informes.
+Finalizado el **16/10 hacia las 08:45**, entrenamiento y validación con salida 0.
 
 | Parámetro | Valor |
 |---|---|
@@ -58,7 +59,18 @@ El log de nbconvert no muestra las épocas en tiempo real: quedan en `historial.
 Mientras no termine la primera época aún no habrá historial. Los notebooks ejecutados
 se conservan en el laboratorio y los pesos permanecen ignorados en Git.
 
-Al terminar se comparará con el mejor lr001: AP50 0,9433, AP 0,50:0,95 0,6302,
-AP50 difficult 0,6462, AP small 0,1182, FP 190 y FN 83, junto con curvas, secuencias,
-latencia y memoria. El seguimiento horario avisa solo de finalización, fallo o
-intervención necesaria.
+## Resultado recuperado
+
+Mejor AP50 del historial en época 2 (0,946440), no en la 30. Evaluación final del
+mejor checkpoint: AP50 0,9465, AP 0,50:0,95 0,6047, AP50 difficult 0,6282,
+AP small 0,1886, TP 1493, FP 324 y FN 68 (56 difficult), a confianza/IoU 0,5.
+Latencia individual 121,6 ms, en lote de cuatro 120,5 ms/imagen. Mayor F1
+muestreado en confianza 0,95, extremo de la rejilla. El máximo AP promedio del
+historial está en época 5 (0,632233), pero se respetó selección por AP50.
+
+La resolución ayuda a pequeños y recall a confianza fija, pero cuesta +61,9 % de
+latencia individual y empeora otras métricas del checkpoint seleccionado. Se
+mantiene lr001 a resolución original como referencia provisional. Comparación
+completa y límites en [comparaciones/res1024](../ENTREGA%201/WEEK2/comparaciones/res1024/README.md).
+No se ha evaluado test, cambiado conjuntos ni entrenado perfiles nuevos de aumento.
+Seguimiento horario ya desactivado.

@@ -457,33 +457,94 @@ Figuras: `comparaciones/lr001/curvas_comparadas.png`, `lr_comparado.png` y
 `PIDS2024_GR02_0001/frame_0444.jpg` muestra **cuatro robots visibles**, pero su XML
 contiene **una sola caja**. Por tanto, detectar correctamente alguno de los otros
 robots puede contarse como falso positivo. Esto limita la interpretación de
-precisión, FP, F1 y AP frente a esas etiquetas: los 190 FP no equivalen necesariamente
-a 190 errores visuales del detector. No se ha cuantificado cuántos casos presentan
+precisión, FP, F1 y AP frente a esas etiquetas: los 190 FP de lr001 y los 324 de
+res1024 no equivalen necesariamente al mismo número de errores visuales del detector. No se ha cuantificado cuántos casos presentan
 este problema ni se han corregido las etiquetas, para conservar la comparación.
 No se ha usado test para tomar estas decisiones.
 
-### 8.7 Siguientes pasos
+### 8.7 Experimento de resolución 1024/1820
 
-1. **Resolución de entrada 1024/1820 con lr=0,001**, como siguiente experimento de Alejandro, comparado en
-   validación igual que aquí. Después, si hace falta:
-   - un desenfoque de movimiento y una oclusión más agresivos en el aumento;
-   - dar más peso a las imágenes con robots difíciles.
-2. **Revisar las detecciones falsas** de las cuatro secuencias señaladas.
-3. **Evaluar en test una sola vez**, con el modelo definitivo, y fijar el umbral de la
-   *demo*.
+Validación de los checkpoints seleccionados por AP50. Misma semilla 0, COCO,
+lr inicial 0,001, SGD, ReduceLROnPlateau y aumento base. No se usa test.
+La resolución cambia de 800/1333 a 1024/1820. Para memoria, el lote físico 8
+se sustituye por microbatch 4 y acumulación 2 (efectivo 8); no son numéricamente
+idénticos. Ejecución terminada el 16/10/2026 hacia las 08:45 Europe/Madrid, salida 0.
+
+| Métrica | lr001 800 | lr001 1024 | Cambio |
+|---|---:|---:|---:|
+| AP50 | 0,9433 | 0,9465 | +0,32 pp |
+| AP 0,50:0,95 | 0,6302 | 0,6047 | −2,55 pp |
+| AP75 | 0,7460 | 0,6990 | −4,70 pp |
+| AP50 difficult | 0,6462 | 0,6282 | −1,80 pp |
+| AP small | 0,1182 | 0,1886 | +7,04 pp |
+| AP large | 0,6919 | 0,6459 | −4,60 pp |
+| TP / FN a confianza 0,5 e IoU 0,5 | 1478 / 83 | 1493 / 68 | 15 FN menos |
+| FN difficult | 65 | 56 | 9 menos |
+| FP frente a etiquetas | 190 | 324 | 134 más |
+| Precisión / F1 a confianza 0,5 | 0,8861 / 0,9155 | 0,8217 / 0,8840 | Empeoran |
+| Recall difficult a confianza 0,5 | 0,7451 | 0,7804 | +3,53 pp |
+| Inferencia individual, ms/imagen | 75,1 | 121,6 | +61,9 % |
+
+**Decisión provisional:** conservar lr001 a resolución original como referencia
+por equilibrio entre AP, FP y coste. La resolución beneficia pequeños y recall al
+umbral fijo, pero no mejora de forma uniforme. Una semilla no prueba estabilidad.
+
+**Selección del checkpoint:** res1024 alcanza su mejor AP50 del historial en la
+época 2 (0,946440), frente a la 5 de lr001 (0,943169). Su máximo AP 0,50:0,95 está
+en la época 5 (0,632233), mientras la época 2 da 0,605390. Se mantiene el criterio
+AP50 definido antes del entrenamiento. No se ha reevaluado otro checkpoint ni se
+afirma que toda ejecución de mayor resolución empeore el ajuste de cajas.
+El historial y la evaluación final proceden de procedimientos distintos.
+
+**Curvas:** pérdida de validación mínima en época 3 (0,215909), final 0,232343;
+AP50 final 0,933510. Indicios de sobreajuste y posterior estancamiento. Las tasas
+usadas son 0,001 en 1–9, 0,0001 en 10–15, 1e−5 en 16–21, 1e−6 en 22–27 y 1e−7
+en 28–30. Las bajadas no recuperan el máximo AP50. No se recomienda prolongarlo.
+
+**Secuencias:** AP50 sube en 4, baja en 6 y empata en una. GR03_0011 de 2025 gana
+4,16 pp y reduce FN 28→22. GR04_0011 de 2025 reduce FN 33→25 pero sube FP 28→58.
+GR01_0002 de 2025 pierde 1,20 pp. GR04_0003 de 2024 sigue perdiendo sus 6 difficult.
+
+**Límites:** `PIDS2024_GR02_0001/frame_0444.jpg` contiene cuatro robots visibles,
+pero su XML solo una caja. Algunas detecciones correctas cuentan como FP; no se
+ha cuantificado la extensión ni se atribuyen todos los 324 FP a etiquetas omitidas.
+GR02_0001 pasa de 49 a 71 FP frente a esas etiquetas. No se corrigen los conjuntos.
+La latencia en lote (72,7→120,5 ms/imagen) usa lotes distintos, 8→4; se prefiere
+la comparación individual. El pico de 8482 MiB fue del preflight, no del entrenamiento
+completo. El mejor F1 muestreado pasa de confianza 0,85 a 0,95 (extremo de la rejilla).
+
+
+La muestra de `res1024` en `PIDS2025_GR03_0011/frame_0600` incluye una caja
+roja sobre una pierna y varias cajas solapadas en torno a un objetivo. Las omisiones
+confirmadas en otras etiquetas no explican todos los errores.
+
+Figuras y datos auditables en `ENTREGA 1/WEEK2/comparaciones/res1024/`.
+
+### 8.8 Siguientes pasos
+
+1. Mantener provisionalmente lr001 a resolución original como referencia por equilibrio
+   entre ajuste de cajas, FP y latencia. Conservar res1024 como alternativa para pequeños.
+2. Revisar visualmente los errores, distinguiendo omisiones de etiquetas y errores reales.
+3. Si hay margen, comparar una ampliación dirigida a `difficult` con el resto fijo o una
+   segunda arquitectura. Las nuevas sombras, lluvia y oclusiones no se han entrenado.
+4. Elegir modelo y umbral antes de evaluar test una sola vez. No se ha usado test.
 
 ## 9. Conclusiones
 
-**[PENDIENTE]** Redactarlas al final. Puntos previstos:
-- **Dataset:** 796 imágenes y 1399 robots, anotados con criterios comunes y medidos
-  (IoU de 0,81 entre anotadores).
-- **Aumento de datos:** las decisiones salen del EDA y se han comprobado con datos. Sin
-  perder robots ni deformarlos, sube el mAP@0,5 de 0,923 a 0,942, y en los robots
-  difíciles de 0,552 a 0,634.
-- **Generalización:** el modelo funciona en escenas de otros grupos y años. Tiene un
-  mAP@0,5 de 0,942 y de 0,966 en los robots claros.
-- **Punto débil:** los robots difíciles, con un mAP@0,5 de 0,634 y una cuarta parte
-  sin detectar. La mejora va por ahí, no por entrenar más épocas.
+Conclusiones provisionales de las fases 1 y 2; falta comparación de arquitecturas,
+evaluación final de test y revisión del grupo.
+
+- **Datos:** 796 originales depurados y 1399 cajas; con aumento base, 3184 imágenes
+  y 5566 cajas. El IoU medio entre anotadores es 0,81, sin implicar un techo del AP.
+- **Aumento base:** AP50 de 0,9228 a 0,9416; AP50 difficult de 0,5518 a 0,6341.
+  La comparación también cambia el número de actualizaciones a igual número de épocas.
+- **Tasa:** lr001 alcanza su mejor AP50 en época 5 y mejora el ajuste de cajas;
+  evaluación final AP50 0,9433, AP 0,50:0,95 0,6302 y 190 FP frente a etiquetas.
+- **Resolución:** AP50 0,9465 y AP small 0,1886, con 15 FN menos, pero 134 FP más,
+  AP 0,50:0,95 0,6047 y latencia individual 121,6 ms frente a 75,1 ms. No mejora
+  uniformemente: se mantiene lr001 800 como referencia y se explicita la selección por AP50.
+- **Límites:** una semilla, adaptación del microbatch y etiquetas incompletas de
+  validación. Las ampliaciones del aumento están preparadas, sin resultados entrenados.
 
 ## 10. Reparto del trabajo
 

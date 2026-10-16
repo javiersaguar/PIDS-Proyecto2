@@ -1,0 +1,45 @@
+{
+  "salida": 0,
+  "log_nbconvert": "[NbConvertApp] Converting notebook train_res1024.ipynb to notebook\n[NbConvertApp] Writing 4241059 bytes to train_res1024_ejecutado.ipynb\n[NbConvertApp] Converting notebook test_val_res1024.ipynb to notebook\n[NbConvertApp] Writing 4160071 bytes to test_val_res1024_ejecutado.ipynb\n",
+  "lanzamiento": {
+    "pid": 10327,
+    "inicio": "2026-10-15T23:44:21.483571+02:00",
+    "experimento": "faster_rcnn_v1_aug_lr001_res1024",
+    "lr": 0.001,
+    "epocas": 30,
+    "microbatch": 4,
+    "acumulacion": 2,
+    "batch_efectivo": 8,
+    "semilla": 0,
+    "min_size": 1024,
+    "max_size": 1820,
+    "aumento": "base",
+    "revision_codigo": "dc8dc20"
+  },
+  "preflight": {
+    "estado": "ok",
+    "experimento": "faster_rcnn_v1_aug_lr001_res1024",
+    "microbatch": 4,
+    "acumulacion": 2,
+    "batch_efectivo": 8,
+    "min_size": [
+      1024
+    ],
+    "max_size": 1820,
+    "perdidas": [
+      0.9381555318832397,
+      1.1116567850112915
+    ],
+    "memoria_max_reservada_mib": 8482.0,
+    "memoria_total_mib": 11906.1,
+    "detecciones": [
+      100,
+      100,
+      100,
+      100
+    ],
+    "checkpoint_guardado": false
+  },
+  "fin_aproximado_madrid": "2026-10-16T08:45:00+02:00",
+  "nota_fin": "Hora aproximada según modificación de salida y notebook ejecutado en JupyterLab."
+}
