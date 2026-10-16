@@ -75,14 +75,17 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 
 **Decisión de T02:** la variabilidad permite empezar la anotación sin repetir ahora un escenario. Reservar una grabación complementaria para reponer originales si la depuración deja menos de 800; para el Bloque 3 añadir secuencias del circuito real y de sus obstáculos. Las limitaciones y justificación están en las fichas.
 
-## Entrenamiento (15/10/2026)
+## Entrenamiento (16/10/2026)
 
-- En curso desde las **23:44 Europe/Madrid**: `faster_rcnn_v1_aug_lr001_res1024`,
-  propuesta de resolución de Alejandro. min_size 1024, max_size 1820, lr 0,001,
-  30 épocas, semilla 0 y el mismo aumento base. Microbatch 4 con acumulación 2
-  (lote efectivo 8) para los 12 GB de la RTX 3060. Prueba de memoria superada y
-  PID 10327 activo, GPU al 100 %. Validación encadenada, sin usar test. Ver
-  [`docs/experimento_res1024.md`](docs/experimento_res1024.md); resultados pendientes.
+- Finalizado el **16/10 hacia las 08:45 Europe/Madrid**: `faster_rcnn_v1_aug_lr001_res1024`,
+  entrenamiento y validación con salida 0. Mejor AP50 en época 2; AP50 evaluado
+  **0,9465**, AP 0,50:0,95 **0,6047**, AP50 difficult **0,6282**, AP small **0,1886**.
+  Frente a lr001: +0,32 pp AP50 y +7,04 pp AP small, pero −2,55 pp AP promedio,
+  FP 190→324 y latencia individual 75,1→121,6 ms. FN 83→68 (difficult 65→56).
+  Misma base de aumento y scheduler; microbatch 4 × acumulación 2. Se conserva
+  lr001 800 como referencia provisional por equilibrio. Métricas, figuras e informes
+  actualizados; `comparaciones/res1024/` documenta selección y límites. Test sin usar.
+  Seguimiento horario desactivado al finalizar.
 
 - Finalizado el **15/10 a las 22:13 Europe/Madrid**: `faster_rcnn_v1_aug_lr001`
   (lr=0,001, 30 épocas, lote 8, semilla 0 y aumento base), incluida validación,
@@ -91,7 +94,7 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
   AP@0,5 y +2,21 pp en AP 0,50:0,95; los FN difficult suben de 63 a 65 al umbral
   0,5. Las últimas épocas empeoran respecto a la mejor: no se elige la época 30.
   Resultados y análisis recuperados; comparación en `comparaciones/lr001/`.
-  PR #14 ya fusionada; el seguimiento del trabajo continúa en la PR abierta.
+  PR #14 y #17 ya fusionadas; esta actualización se presenta en una nueva PR personal.
 
 - T19: entrenados en JupyterHub `faster_rcnn_v1` con y sin aumento. El aumento sube el mAP@0,5 en validación de 0,923 a **0,942**, y en los `difficult` de 0,552 a **0,634**. Se toma como base el modelo con aumento.
 - T20: evaluación en validación por grupos y por secuencia hecha. Resultados en `ENTREGA 1/WEEK2/resultados_train/` y `resultados_test/`, y su análisis en [`docs/informe_borrador.md`](docs/informe_borrador.md).
@@ -118,3 +121,5 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 - **Perder datos en JupyterHub.** No se pueden borrar carpetas desde el panel y `rm -r` no tiene vuelta atrás. Las etiquetas están a salvo en `main` y `data_aug.ipynb` regenera el resto.
 - **Que el JupyterHub no esté disponible.** El servicio está deshabilitado por las mañanas en horas de docencia.
 - **No llegar al hito del Bloque 1.** Si no lo conseguimos, los profesores nos dan el dataset, pero con penalización en la nota.
+
+Resultados res1024 e informes actualizados en [PR #18](https://github.com/javiersaguar/PIDS-Proyecto2/pull/18), pendiente de revisión y sin fusionar.
