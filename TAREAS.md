@@ -288,3 +288,5 @@ resolución, curvas, secuencias, costes y conclusiones. Se mantiene lr001 800 co
 referencia provisional; falta revisión del grupo, arquitectura alternativa y test final.
 Los perfiles nuevos de aumento siguen pendientes de entrenamiento. PR #17 fusionada;
 esta continuación usa una nueva PR en javier-saguar. Seguimiento desactivado.
+
+Resultados res1024 e informes actualizados en [PR #18](https://github.com/javiersaguar/PIDS-Proyecto2/pull/18), pendiente de revisión y sin fusionar.

@@ -121,3 +121,5 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 - **Perder datos en JupyterHub.** No se pueden borrar carpetas desde el panel y `rm -r` no tiene vuelta atrás. Las etiquetas están a salvo en `main` y `data_aug.ipynb` regenera el resto.
 - **Que el JupyterHub no esté disponible.** El servicio está deshabilitado por las mañanas en horas de docencia.
 - **No llegar al hito del Bloque 1.** Si no lo conseguimos, los profesores nos dan el dataset, pero con penalización en la nota.
+
+Resultados res1024 e informes actualizados en [PR #18](https://github.com/javiersaguar/PIDS-Proyecto2/pull/18), pendiente de revisión y sin fusionar.
