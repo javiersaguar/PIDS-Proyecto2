@@ -10,17 +10,17 @@ No aplica a la primera entrega. No hay comentarios docentes incorporados en esta
 
 ## Reparto del trabajo
 
-Distribución documentada en los commits y tareas. La participación final se revisará en grupo antes de entregar.
+Reparto a partes iguales entre los cinco integrantes: cada uno asume un lote de extracción, anotación y revisión cruzada, y un área transversal del Bloque 1.
 
-| Integrante | Datos y análisis | Entrenamiento y evaluación |
-| --- | --- | --- |
-| Javier Saguar | Organización, extracción, lote A, revisión, depuración, aumento y ampliaciones del EDA | Experimentos en laboratorio, evaluación y memoria |
-| Alejandro Cuevas | Lote B, revisión de C y EDA | Adaptación de train/test y propuestas de mejora |
-| Mónica Fernández | Lote C y calibración | Pendiente de consolidar reparto |
-| Pedro José Orrego | Lote D, calibración y selección de figuras | Pendiente de consolidar reparto |
-| Daniel Naval | Lote E y calibración | Pendiente de consolidar reparto |
+| Integrante | Tareas del Bloque 1 |
+| --- | --- |
+| Javier Saguar | Lote A (vídeos 01-02): extracción, anotación y revisión cruzada. Organización del repositorio y fichas de los vídeos. |
+| Alejandro Cuevas | Lote B (vídeos 03-04): extracción, anotación y revisión cruzada. Análisis exploratorio de los datos (EDA). |
+| Mónica Fernández | Lote C (vídeos 05-06): extracción, anotación y revisión cruzada. Calibración y criterios de anotación. |
+| Pedro José Orrego | Lote D (vídeos 07-08): extracción, anotación y revisión cruzada. Aumento de datos. |
+| Daniel Naval | Lote E (vídeos 09-10): extracción, anotación y revisión cruzada. Depuración del dataset. |
 
-Tabla 1. Reparto provisional del trabajo documentado.
+Tabla 1. Reparto del trabajo del Bloque 1 entre los cinco integrantes.
 
 ## Índice
 
