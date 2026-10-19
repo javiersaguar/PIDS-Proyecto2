@@ -75,14 +75,24 @@ class Informe:
         self.h('Respuesta a la revisión anterior')
         self.p('No aplica a la primera entrega. No hay comentarios docentes incorporados en esta versión de trabajo.')
         self.h('Reparto del trabajo')
-        self.p('Distribución documentada en los commits y tareas. La participación final se revisará en grupo antes de entregar.')
-        self.table(['Integrante','Datos y análisis','Entrenamiento y evaluación'],[
-            ['Javier Saguar','Organización, extracción, lote A, revisión, depuración, aumento y ampliaciones del EDA','Experimentos en laboratorio, evaluación y memoria'],
-            ['Alejandro Cuevas','Lote B, revisión de C y EDA','Adaptación de train/test y propuestas de mejora'],
-            ['Mónica Fernández','Lote C y calibración','Pendiente de consolidar reparto'],
-            ['Pedro José Orrego','Lote D, calibración y selección de figuras','Pendiente de consolidar reparto'],
-            ['Daniel Naval','Lote E y calibración','Pendiente de consolidar reparto']],widths=[3.0,6.5,6.5],size=9)
-        self.caption('Reparto provisional del trabajo documentado.',tipo='Tabla')
+        if self.modo=='fase1':
+            self.p('Reparto a partes iguales entre los cinco integrantes: cada uno asume un lote de extracción, anotación y revisión cruzada, y un área transversal del Bloque 1.')
+            self.table(['Integrante','Tareas del Bloque 1'],[
+                ['Javier Saguar','Lote A (vídeos 01-02): extracción, anotación y revisión cruzada. Organización del repositorio y fichas de los vídeos.'],
+                ['Alejandro Cuevas','Lote B (vídeos 03-04): extracción, anotación y revisión cruzada. Análisis exploratorio de los datos (EDA).'],
+                ['Mónica Fernández','Lote C (vídeos 05-06): extracción, anotación y revisión cruzada. Calibración y criterios de anotación.'],
+                ['Pedro José Orrego','Lote D (vídeos 07-08): extracción, anotación y revisión cruzada. Aumento de datos.'],
+                ['Daniel Naval','Lote E (vídeos 09-10): extracción, anotación y revisión cruzada. Depuración del dataset.']],widths=[3.5,12.5],size=9)
+            self.caption('Reparto del trabajo del Bloque 1 entre los cinco integrantes.',tipo='Tabla')
+        else:
+            self.p('Distribución documentada en los commits y tareas. La participación final se revisará en grupo antes de entregar.')
+            self.table(['Integrante','Datos y análisis','Entrenamiento y evaluación'],[
+                ['Javier Saguar','Organización, extracción, lote A, revisión, depuración, aumento y ampliaciones del EDA','Experimentos en laboratorio, evaluación y memoria'],
+                ['Alejandro Cuevas','Lote B, revisión de C y EDA','Adaptación de train/test y propuestas de mejora'],
+                ['Mónica Fernández','Lote C y calibración','Pendiente de consolidar reparto'],
+                ['Pedro José Orrego','Lote D, calibración y selección de figuras','Pendiente de consolidar reparto'],
+                ['Daniel Naval','Lote E y calibración','Pendiente de consolidar reparto']],widths=[3.0,6.5,6.5],size=9)
+            self.caption('Reparto provisional del trabajo documentado.',tipo='Tabla')
         self.page();self.h('Índice')
         p=self.doc.add_paragraph();r=p.add_run()
         for kind,text in [('begin',None),(None,' TOC \\o "1-1" \\h \\z \\u '),('separate',None)]:
