@@ -1,5 +1,6 @@
-# Publica en GitHub Pages las figuras interactivas de la memoria.
-# Solo se publican web/ y las carpetas de figuras, no el dataset.
+# Publica en GitHub Pages la web de figuras interactivas de la memoria.
+# La monta herramientas/construir_web.py con web/index.html, las figuras del EDA y los
+# resultados del entrenamiento. No publica el dataset.
 name: Figuras interactivas
 
 on:
@@ -7,8 +8,10 @@ on:
     branches: [main]
     paths:
       - 'web/**'
+      - 'herramientas/construir_web.py'
       - 'ENTREGA 1/WEEK1/resultados_eda/**'
-      - 'ENTREGA 1/WEEK2/comparaciones/**'
+      - 'ENTREGA 1/WEEK2/resultados_train/**'
+      - 'ENTREGA 1/WEEK2/resultados_test/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -29,20 +32,15 @@ jobs:
         with:
           sparse-checkout: |
             web
+            herramientas/construir_web.py
             ENTREGA 1/WEEK1/resultados_eda
-            ENTREGA 1/WEEK2/comparaciones
+            ENTREGA 1/WEEK2/resultados_train
+            ENTREGA 1/WEEK2/resultados_test
+          sparse-checkout-cone-mode: false
 
       - name: Montar la web
         run: |
-          set -eu
-          mkdir -p _site/eda
-          cp -r web/. _site/
-          eda="ENTREGA 1/WEEK1/resultados_eda"
-          cp -r "$eda/interactivos" "$eda/para_informe" "$eda/README.md" _site/eda/
-          # Figuras interactivas del Bloque 2, cuando existan
-          if [ -d "ENTREGA 1/WEEK2/comparaciones/interactivos" ]; then
-            cp -r "ENTREGA 1/WEEK2/comparaciones/interactivos" _site/entrenamiento
-          fi
+          python3 herramientas/construir_web.py _site
           du -sh _site
 
       - uses: actions/configure-pages@v5

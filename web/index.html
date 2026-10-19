@@ -1,31 +1,250 @@
-<!doctype html><html lang="es"><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>PIDS · Detección de RoboMasters</title>
-<style>*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#172b40;font:16px/1.6 Arial,sans-serif}
-main{max-width:1100px;margin:auto;padding:56px 30px}header{max-width:820px;margin-bottom:38px}
-.etiqueta{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#2463a6;font-weight:700}
-h1{font-size:40px;line-height:1.15;margin:14px 0 20px;letter-spacing:-1px}header p,article p{color:#53677a}
-h2{font-size:24px;margin:40px 0 16px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
-article{padding:24px;background:white;border:1px solid #dce4ec;border-radius:12px}h3{font-size:19px;line-height:1.25;margin:0 0 8px}
-article p{font-size:14px;margin:0 0 14px}a{color:#2463a6}.boton{font-size:14px;font-weight:700}
-.pendiente{padding:20px 24px;border:1px dashed #b9c7d4;border-radius:12px;color:#53677a;font-size:14px}
-footer{margin-top:48px;font-size:13px;color:#53677a}
-@media(max-width:900px){main{padding:40px 16px}.grid{grid-template-columns:1fr}h1{font-size:30px}}</style>
-<main><header><div class="etiqueta">PIDS 2026 · UPM</div><h1>Detección de RoboMasters<br>con redes neuronales</h1>
-<p>Figuras interactivas de la memoria del proyecto. Cada una se puede ampliar, filtrar y reproducir en el navegador; las versiones estáticas están en la memoria.</p></header>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIDS · Detección de RoboMasters</title>
+<meta name="description" content="Figuras interactivas del proyecto de detección de RoboMasters: análisis de los datos y resultados del entrenamiento, con sus conclusiones.">
+<style>
+:root{--fondo:#f4f7fa;--papel:#fff;--tinta:#172b40;--suave:#53677a;--linea:#dce4ec;--azul:#2463a6;--azul-claro:#e9f0f7;--naranja:#c65d23}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--fondo);color:var(--tinta);font:16px/1.6 Arial,Helvetica,sans-serif}
+a{color:var(--azul)}
+nav{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);border-bottom:1px solid var(--linea);backdrop-filter:blur(6px)}
+nav .barra{max-width:1180px;margin:auto;padding:0 24px;display:flex;align-items:center;gap:22px;height:56px;overflow-x:auto;scrollbar-width:none}
+nav .barra::-webkit-scrollbar{display:none}
+nav .marca{font-weight:700;white-space:nowrap;text-decoration:none;color:var(--tinta)}
+nav .grupo{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--suave);white-space:nowrap;margin-left:6px}
+nav a.ir{font-size:14px;text-decoration:none;color:var(--suave);white-space:nowrap;padding:16px 0;border-bottom:2px solid transparent}
+nav a.ir:hover{color:var(--tinta)}
+nav a.ir.activo{color:var(--azul);border-bottom-color:var(--azul);font-weight:700}
+main{max-width:1180px;margin:auto;padding:0 24px 64px}
+header.portada{padding:56px 0 24px;max-width:860px}
+.etiqueta{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--azul);font-weight:700}
+h1{font-size:42px;line-height:1.12;margin:12px 0 18px;letter-spacing:-1px}
+header.portada p{color:var(--suave);font-size:17px;margin:0}
+.cifras{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:30px 0 8px}
+.cifra{background:var(--papel);border:1px solid var(--linea);border-radius:12px;padding:16px 18px}
+.cifra b{display:block;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.cifra span{font-size:13px;color:var(--suave)}
+h2.bloque{font-size:28px;margin:56px 0 6px;letter-spacing:-.4px}
+p.bloque{color:var(--suave);margin:0 0 8px;max-width:860px}
+section.figura{background:var(--papel);border:1px solid var(--linea);border-radius:14px;padding:30px 30px 26px;margin-top:26px}
+.numero{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--azul);font-weight:700}
+h3{font-size:24px;line-height:1.2;margin:8px 0 10px}
+.descripcion{color:var(--suave);max-width:900px;margin:0 0 6px}
+.uso{font-size:14px;color:var(--suave);margin:0 0 16px}
+.grafica{position:relative;min-height:420px;border-top:1px solid #edf1f5;padding-top:8px;overflow:hidden}
+.grafica .cargando{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--suave);font-size:14px}
+.conclusiones{margin-top:18px;background:var(--azul-claro);border-left:3px solid var(--azul);border-radius:0 10px 10px 0;padding:16px 22px}
+.conclusiones h4{margin:0 0 8px;font-size:15px}
+.conclusiones ul{margin:0;padding-left:20px}
+.conclusiones li{margin:6px 0}
+.fuente{font-size:13px;color:var(--suave);margin:14px 0 0}
+code{overflow-wrap:anywhere}
+footer{max-width:1180px;margin:auto;padding:28px 24px 48px;font-size:13px;color:var(--suave);border-top:1px solid var(--linea)}
+@media(max-width:820px){
+  main,nav .barra{padding-left:16px;padding-right:16px}
+  h1{font-size:30px}.cifras{grid-template-columns:repeat(2,minmax(0,1fr))}
+  section.figura{padding:22px 16px 18px}h3{font-size:21px}
+}
+</style>
+</head>
+<body>
+<nav aria-label="Figuras">
+  <div class="barra">
+    <a class="marca" href="#inicio">PIDS · RoboMasters</a>
+    <span class="grupo">Bloque 1</span>
+    <a class="ir" href="#mapas-video">Posición por vídeo</a>
+    <a class="ir" href="#mapas-tiempo">Posición en el tiempo</a>
+    <a class="ir" href="#robots-fotograma">Robots por fotograma</a>
+    <span class="grupo">Bloque 2</span>
+    <a class="ir" href="#curvas">Entrenamiento</a>
+    <a class="ir" href="#grupos">Resultados por grupo</a>
+    <a class="ir" href="#secuencias">Resultados por secuencia</a>
+  </div>
+</nav>
 
-<h2>Bloque 1 · Análisis exploratorio de los datos</h2>
-<section class="grid">
-<article><h3>Distribución por vídeo</h3><p>Dónde aparecen los centros de los robots en cada uno de los diez vídeos, con todos los robots y solo los difficult.</p>
-<a class="boton" href="eda/interactivos/mapas_calor_por_video.html">Abrir figura →</a></article>
-<article><h3>Evolución espacial</h3><p>Cómo se mueven los robots por la imagen a lo largo de cada vídeo, en ventanas de 5 segundos.</p>
-<a class="boton" href="eda/interactivos/mapas_calor_temporales.html">Abrir figura →</a></article>
-<article><h3>Robots por fotograma</h3><p>Cuántos robots hay en cada fotograma anotado de los diez vídeos, sincronizados.</p>
-<a class="boton" href="eda/interactivos/robots_por_fotograma.html">Abrir figura →</a></article>
+<main>
+<header class="portada" id="inicio">
+  <div class="etiqueta">PIDS 2026 · UPM · Proyecto 2</div>
+  <h1>Detección de RoboMasters<br>con redes neuronales</h1>
+  <p>Figuras interactivas de la memoria: cómo son los datos que grabamos y anotamos, y cómo se comporta el detector entrenado con ellos. Cada figura tiene lo que muestra, cómo usarla y lo que concluimos de ella.</p>
+  <div class="cifras">
+    <div class="cifra"><b>808</b><span>imágenes anotadas de 10 vídeos</span></div>
+    <div class="cifra"><b>1420</b><span>robots, 375 de ellos difficult</span></div>
+    <div class="cifra"><b>4</b><span>entrenamientos comparados</span></div>
+    <div class="cifra"><b>0,943</b><span>AP@0,5 en validación del modelo de referencia</span></div>
+  </div>
+</header>
+
+<h2 class="bloque">Bloque 1 · Análisis de los datos</h2>
+<p class="bloque">Las 808 imágenes originales de nuestros diez vídeos, antes de la depuración. Los mapas cuentan <strong>centros de cajas por cada 100 imágenes</strong> en una cuadrícula de 16 × 9, incluyendo las imágenes sin robots; el color es no lineal para que también se vean las zonas con pocos robots.</p>
+
+<section class="figura" id="mapas-video">
+  <div class="numero">Figura 1</div>
+  <h3>Dónde aparecen los robots en cada vídeo</h3>
+  <p class="descripcion">Mapa de calor de los centros de las cajas en cada uno de los diez vídeos. A la izquierda, todos los robots; a la derecha, solo los difficult. Los dos paneles y los diez vídeos comparten la misma escala de color.</p>
+  <p class="uso">Mueve el control o pulsa ▶ para pasar de un vídeo a otro. Al pasar el cursor por una celda se ve su frecuencia.</p>
+  <div class="grafica" data-figura="mapas_calor_por_video"><div class="cargando">Cargando figura…</div></div>
+  <div class="conclusiones">
+    <h4>Qué concluimos</h4>
+    <ul>
+      <li><strong>Los robots están siempre a media altura:</strong> el 92 % de los centros cae en el tercio central de la imagen, y la mitad en una sola fila de la cuadrícula. La cámara del robot va a la altura de sus rivales.</li>
+      <li><strong>Izquierda y derecha están equilibradas</strong> (49 % frente a 51 %). Esto justifica el volteo horizontal en el aumento de datos y descarta el vertical: un robot nunca aparece en el techo.</li>
+      <li><strong>Los difficult están a la misma altura, pero el doble de veces junto a los bordes laterales</strong> (23 % frente a 11 %): muchos son robots cortados por el borde de la imagen. En los exteriores (V04 y V09) llega a la mitad.</li>
+      <li><strong>V06 es el vídeo más disperso:</strong> solo el 71 % de sus centros está en la franja central, y es también el de más imágenes sin robots.</li>
+    </ul>
+  </div>
+  <p class="fuente">Datos: <a href="eda/interactivos/recuentos_ventanas.csv">recuentos_ventanas.csv</a> · Versiones para el informe: <a href="eda/para_informe/mapa_calor_por_video_todos.png">todos</a> y <a href="eda/para_informe/mapa_calor_por_video_difficult.png">difficult</a> · <a href="eda/README.md">Método</a></p>
 </section>
-<p><a href="eda/interactivos/indice.html">Índice del análisis exploratorio, con las figuras para el informe →</a></p>
 
-<h2>Bloque 2 · Entrenamiento y evaluación</h2>
-<div class="pendiente">Se añadirán las curvas de entrenamiento y la comparación de los experimentos.</div>
+<section class="figura" id="mapas-tiempo">
+  <div class="numero">Figura 2</div>
+  <h3>Cómo cambia la posición a lo largo de cada vídeo</h3>
+  <p class="descripcion">Los mismos mapas, pero en 132 ventanas consecutivas de 5 segundos. El título indica en cada momento el vídeo, el tramo y cuántas imágenes, robots y difficult hay en él, para no confundir un patrón con una ventana de pocas muestras.</p>
+  <p class="uso">Pulsa ▶ para ver la evolución, o usa «Saltar a vídeo…» para ir al principio de uno concreto.</p>
+  <div class="grafica" data-figura="mapas_calor_temporales"><div class="cargando">Cargando figura…</div></div>
+  <div class="conclusiones">
+    <h4>Qué concluimos</h4>
+    <ul>
+      <li><strong>Dentro de un vídeo la escena cambia:</strong> la posición horizontal media de los robots se desplaza de una ventana a otra; en V06 va del 32 % al 84 % del ancho. Cada vídeo aporta variedad, no una sola vista repetida.</li>
+      <li><strong>Los difficult llegan en rachas:</strong> en nueve de los diez vídeos hay ventanas sin ninguno, y en seis hay ventanas en las que son más de la mitad de los robots (en V08, todos los de una ventana). No se reparten de forma uniforme, sino en tramos concretos de cada grabación.</li>
+      <li><strong>Las imágenes vecinas se parecen mucho.</strong> Por eso nunca se mezclan fotogramas de un mismo vídeo entre entrenamiento y validación: entrenamos con nuestros diez vídeos y validamos con secuencias de otros grupos.</li>
+    </ul>
+  </div>
+  <p class="fuente">Datos: <a href="eda/interactivos/recuentos_ventanas.csv">recuentos_ventanas.csv</a> · Versión para el informe: <a href="eda/para_informe/mapas_temporales_V01.png">una hoja por vídeo</a></p>
+</section>
 
-<footer>Javier Saguar, Alejandro Cuevas, Mónica Fernández, Pedro José Orrego y Daniel Naval ·
-<a href="https://github.com/javiersaguar/PIDS-Proyecto2">Repositorio del proyecto</a></footer></main></html>
+<section class="figura" id="robots-fotograma">
+  <div class="numero">Figura 3</div>
+  <h3>Cuántos robots hay en cada fotograma</h3>
+  <p class="descripcion">Número de robots en cada fotograma anotado (uno de cada 24) de los diez vídeos, que avanzan sincronizados. La línea punteada es la media de cada vídeo, contando como cero los fotogramas sin robots.</p>
+  <p class="uso">Pulsa ▶ para reproducir los diez vídeos a la vez. Al pasar el cursor se ven el fotograma, los robots y los difficult.</p>
+  <div class="grafica" data-figura="robots_por_fotograma"><div class="cargando">Cargando figura…</div></div>
+  <div class="conclusiones">
+    <h4>Qué concluimos</h4>
+    <ul>
+      <li><strong>Nunca hay más de 3 robots en una imagen:</strong> el 42 % tiene dos, el 33 % uno, el 19 % tres y el 5 % ninguno. El detector no tiene que separar multitudes.</li>
+      <li><strong>La media va de 1,26 robots por imagen (V06) a 2,27 (V05).</strong> V06 tiene tramos enteros sin rivales: concentra 22 de las 41 imágenes sin robots.</li>
+      <li><strong>Las imágenes sin robots son pocas</strong> (41 de 808). Se conservan con su anotación vacía porque enseñan al modelo a no disparar cuando no hay nadie.</li>
+    </ul>
+  </div>
+  <p class="fuente">Datos: <a href="eda/interactivos/recuentos_fotogramas.csv">recuentos_fotogramas.csv</a> · Versión para el informe: <a href="eda/para_informe/robots_por_fotograma_videos.png">diez paneles</a></p>
+</section>
+
+<h2 class="bloque">Bloque 2 · Entrenamiento y evaluación</h2>
+<p class="bloque">Faster R-CNN ResNet-50 FPN preentrenado en COCO, entrenado con nuestros diez vídeos y evaluado en <strong>validación</strong>: 672 imágenes y 1561 robots de otros grupos y años, 255 de ellos difficult. El conjunto de test se reserva para el modelo definitivo. Cuatro entrenamientos, cambiando una cosa cada vez.</p>
+
+<section class="figura" id="curvas">
+  <div class="numero">Figura 4</div>
+  <h3>Cómo aprende cada entrenamiento</h3>
+  <p class="descripcion">AP@0,5 en validación (izquierda) y pérdida en validación (derecha) después de cada época, para los cuatro entrenamientos: sin y con aumento de datos con tasa de aprendizaje 0,0001, con tasa 0,001, y con tasa 0,001 a resolución 1024.</p>
+  <p class="uso">Pulsa un experimento en la leyenda para ocultarlo y haz doble clic para verlo solo. Arrastra sobre la gráfica para ampliar una zona.</p>
+  <div class="grafica" data-figura="curvas_entrenamiento"><div class="cargando">Cargando figura…</div></div>
+  <div class="conclusiones">
+    <h4>Qué concluimos</h4>
+    <ul>
+      <li><strong>El aumento de datos acelera y mejora el aprendizaje:</strong> en la primera época ya está en 0,866 de AP@0,5, frente a 0,544 sin aumento, y termina en 0,942 frente a 0,923.</li>
+      <li><strong>Con tasa 0,0001 el modelo aprende demasiado despacio:</strong> sigue mejorando poco a poco en la época 30.</li>
+      <li><strong>Con tasa 0,001 llega a su mejor resultado en la época 5</strong> (0,943) y después empeora mientras la pérdida de validación sube: sobreajusta. Por eso se usa el modelo de la mejor época, no el último, y bastan unas 12 épocas.</li>
+      <li><strong>A resolución 1024 el pico llega aún antes,</strong> en la época 2.</li>
+    </ul>
+  </div>
+  <p class="fuente">Datos: <code>ENTREGA 1/WEEK2/resultados_train/*/historial.csv</code> en el <a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_train">repositorio</a></p>
+</section>
+
+<section class="figura" id="grupos">
+  <div class="numero">Figura 5</div>
+  <h3>Qué robots detecta y cuántos errores comete</h3>
+  <p class="descripcion">A la izquierda, AP@0,5 en validación para todos los robots, solo los normales y solo los difficult (movidos, lejanos, tapados o cortados). A la derecha, falsos positivos y robots perdidos con confianza mínima de 0,5.</p>
+  <p class="uso">Pasa el cursor por una barra para ver su valor. Pulsa un experimento en la leyenda para ocultarlo.</p>
+  <div class="grafica" data-figura="resultados_por_grupo"><div class="cargando">Cargando figura…</div></div>
+  <div class="conclusiones">
+    <h4>Qué concluimos</h4>
+    <ul>
+      <li><strong>Con los robots normales el detector está cerca del techo:</strong> AP@0,5 de 0,974 con tasa 0,001.</li>
+      <li><strong>El punto débil son los difficult:</strong> se quedan en torno a 0,63–0,65, unos 33 puntos menos.</li>
+      <li><strong>El aumento de datos es lo que más los mejora</strong> (+8 puntos, de 0,552 a 0,634) y reduce los robots perdidos de 115 a 83.</li>
+      <li><strong>La tasa 0,001 es la más equilibrada:</strong> mejor AP en los difficult (0,646) y menos falsos positivos (190).</li>
+      <li><strong>La resolución 1024 no compensa:</strong> pierde menos robots (68), pero tiene un 70 % más de falsos positivos (324) y tarda un 62 % más por imagen (122 ms frente a 75). En el robot, un falso positivo es un disparo al aire. Se queda como referencia el modelo de tasa 0,001.</li>
+    </ul>
+  </div>
+  <p class="fuente">Datos: <code>ENTREGA 1/WEEK2/resultados_test/*_val/map.csv</code> y <code>errores_por_video.csv</code> en el <a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_test">repositorio</a></p>
+</section>
+
+<section class="figura" id="secuencias">
+  <div class="numero">Figura 6</div>
+  <h3>Dónde falla: resultados por secuencia</h3>
+  <p class="descripcion">AP@0,5 de los cuatro entrenamientos en cada una de las once secuencias de validación, grabadas por otros grupos entre 2023 y 2025. El eje empieza en 0,7 para que se vean las diferencias.</p>
+  <p class="uso">Pasa el cursor por una barra para ver cuántos robots y difficult tiene la secuencia, y sus falsos positivos y robots perdidos.</p>
+  <div class="grafica" data-figura="resultados_por_secuencia"><div class="cargando">Cargando figura…</div></div>
+  <div class="conclusiones">
+    <h4>Qué concluimos</h4>
+    <ul>
+      <li><strong>El modelo generaliza a escenas que no ha visto:</strong> con aumento de datos, nueve de las once secuencias superan 0,90 de AP@0,5.</li>
+      <li><strong>Las dos más difíciles son <code>2024_GR04_0003</code> y <code>2025_GR03_0011</code>:</strong> tienen muchos difficult, y ahí es donde más ayudan el aumento y la mayor resolución.</li>
+      <li><strong>Parte de los falsos positivos no son errores del modelo.</strong> Algunas secuencias tienen robots sin anotar: en <code>2024_GR02_0001/frame_0444</code> se ven cuatro robots y solo hay una caja.</li>
+      <li><strong>Para mejorar los difficult, el siguiente paso son los perfiles nuevos de aumento:</strong> más desenfoque de movimiento, oscuridad y oclusiones.</li>
+    </ul>
+  </div>
+  <p class="fuente">Datos: <code>ENTREGA 1/WEEK2/resultados_test/*_val/errores_por_video.csv</code> en el <a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_test">repositorio</a></p>
+</section>
+</main>
+
+<footer>Javier Saguar, Alejandro Cuevas, Mónica Fernández, Pedro José Orrego y Daniel Naval · PIDS 2026, UPM ·
+<a href="https://github.com/javiersaguar/PIDS-Proyecto2">Repositorio del proyecto</a></footer>
+
+<script src="plotly.min.js"></script>
+<script>
+// Las figuras se cargan una tras otra, en el orden de la página
+const CONFIG = {displaylogo: false, responsive: true, scrollZoom: false};
+
+async function dibujar(contenedor) {
+  const nombre = contenedor.dataset.figura;
+  try {
+    const respuesta = await fetch(`datos/${nombre}.json`);
+    if (!respuesta.ok) throw new Error(respuesta.status);
+    const figura = await respuesta.json();
+    const layout = Object.assign({}, figura.layout, {autosize: true});
+    delete layout.width;
+    if (contenedor.clientWidth < 600) {
+      // Móvil: letra más pequeña y sitio para la leyenda, que ocupa varias líneas
+      layout.font = Object.assign({}, layout.font, {size: 10});
+      if (layout.title) layout.title = Object.assign({}, layout.title, {font: {size: 11}, x: 0});
+      if (layout.legend) {
+        layout.margin = Object.assign({}, layout.margin, {b: (layout.margin.b || 60) + 90});
+        layout.height = (layout.height || 450) + 90;
+      }
+    }
+    const config = Object.assign({}, figura.config || {}, CONFIG,
+      {toImageButtonOptions: {format: 'png', scale: 2, filename: nombre}});
+    contenedor.innerHTML = '';
+    await Plotly.newPlot(contenedor, figura.data, layout, config);
+    if (figura.frames && figura.frames.length) await Plotly.addFrames(contenedor, figura.frames);
+  } catch (error) {
+    contenedor.querySelector('.cargando').textContent = 'No se ha podido cargar la figura.';
+  }
+}
+
+(async () => {
+  for (const contenedor of document.querySelectorAll('.grafica')) await dibujar(contenedor);
+})();
+
+// Resalta en la barra la sección que se está viendo
+const enlaces = [...document.querySelectorAll('nav a.ir')];
+const secciones = new IntersectionObserver(entradas => {
+  for (const entrada of entradas) {
+    if (!entrada.isIntersecting) continue;
+    enlaces.forEach(a => {
+      const activo = a.getAttribute('href') === `#${entrada.target.id}`;
+      a.classList.toggle('activo', activo);
+      if (activo) a.scrollIntoView({block: 'nearest', inline: 'nearest'});
+    });
+  }
+}, {rootMargin: '-45% 0px -50% 0px'});
+document.querySelectorAll('section.figura').forEach(s => secciones.observe(s));
+</script>
+</body>
+</html>

@@ -136,23 +136,25 @@ portada. GitHub muestra los `.html` como código, así que hace falta publicarlo
 
 | Tarea | Responsable | Estado |
 |---|---|---|
-| **Publicar con GitHub Pages solo las figuras.** El repositorio es público, así que es gratis. El flujo [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) monta la web con la portada [`web/index.html`](../web/index.html) y las carpetas del EDA (más `comparaciones/interactivos/` cuando exista). Se publica en cada push a `main` que toque esas carpetas. No publica el dataset | Javier Saguar | Hecho, pendiente de fusionar |
-| Activar Pages en *Settings → Pages → Source: GitHub Actions*. **Lo tiene que hacer Javier,** que es el administrador del repositorio | Javier Saguar | Pendiente |
-| Añadir las gráficas interactivas del Bloque 2 en `ENTREGA 1/WEEK2/comparaciones/interactivos/`, con el mismo estilo que las del EDA. Contenido: curvas de AP@0,5 y pérdida de todos los experimentos, AP@0,5 por secuencia y la curva del umbral de confianza | | Pendiente |
+| **Publicar con GitHub Pages una página única con todas las figuras.** Cada figura tiene título, descripción, cómo usarla y conclusiones. La página es [`web/index.html`](../web/index.html); la monta [`herramientas/construir_web.py`](../herramientas/construir_web.py), y el flujo [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) la publica en cada push a `main` que toque la web o los resultados. No publica el dataset | Javier Saguar | Hecho |
+| Activar Pages en *Settings → Pages → Source: GitHub Actions* | Javier Saguar | Hecho |
+| Gráficas interactivas del Bloque 2, generadas desde los CSV de resultados: curvas de entrenamiento, AP@0,5 y errores por grupo, y AP@0,5 por secuencia. **Al añadir experimentos (E1–E4),** hay que añadirlos a `EXPERIMENTOS` en `construir_web.py` y revisar las conclusiones de la página. Falta la curva del umbral de confianza | Javier Saguar | Hecha, salvo el umbral |
 | Comprobar que cada enlace se abre sin sesión iniciada, también en el móvil, y que `plotly.min.js` se carga desde la propia web | | Pendiente |
 | Poner los enlaces en la memoria: uno por figura, en el pie («versión interactiva: …»), y una lista en un anexo | | Pendiente |
 
-Enlaces, cuando esté publicado:
+Enlaces (cada figura tiene su ancla en la página única):
 
 | Figura | Enlace |
 |---|---|
-| Portada | https://javiersaguar.github.io/PIDS-Proyecto2/ |
-| Índice del EDA | https://javiersaguar.github.io/PIDS-Proyecto2/eda/interactivos/indice.html |
-| Distribución por vídeo | https://javiersaguar.github.io/PIDS-Proyecto2/eda/interactivos/mapas_calor_por_video.html |
-| Evolución espacial | https://javiersaguar.github.io/PIDS-Proyecto2/eda/interactivos/mapas_calor_temporales.html |
-| Robots por fotograma | https://javiersaguar.github.io/PIDS-Proyecto2/eda/interactivos/robots_por_fotograma.html |
+| Página completa | https://javiersaguar.github.io/PIDS-Proyecto2/ |
+| 1 · Posición por vídeo | https://javiersaguar.github.io/PIDS-Proyecto2/#mapas-video |
+| 2 · Posición en el tiempo | https://javiersaguar.github.io/PIDS-Proyecto2/#mapas-tiempo |
+| 3 · Robots por fotograma | https://javiersaguar.github.io/PIDS-Proyecto2/#robots-fotograma |
+| 4 · Curvas de entrenamiento | https://javiersaguar.github.io/PIDS-Proyecto2/#curvas |
+| 5 · Resultados por grupo | https://javiersaguar.github.io/PIDS-Proyecto2/#grupos |
+| 6 · Resultados por secuencia | https://javiersaguar.github.io/PIDS-Proyecto2/#secuencias |
 
-Las figuras del Bloque 2 irán en `.../entrenamiento/` y hay que añadirlas a la portada.
+Las páginas sueltas del EDA (`.../eda/interactivos/*.html`) se siguen publicando, para que no se rompan los enlaces antiguos.
 
 **Alternativa sin configurar nada:** `https://htmlpreview.github.io/?<URL del html en
 GitHub>`. Es más lenta y depende de un servicio externo; mejor solo como reserva.
