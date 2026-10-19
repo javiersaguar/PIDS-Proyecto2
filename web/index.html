@@ -11,7 +11,7 @@
 html{scroll-behavior:smooth;scroll-padding-top:72px}
 body{margin:0;background:var(--fondo);color:var(--tinta);font:16px/1.6 Arial,Helvetica,sans-serif}
 a{color:var(--azul)}
-nav{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);border-bottom:1px solid var(--linea);backdrop-filter:blur(6px)}
+nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--linea)}
 nav .barra{max-width:1180px;margin:auto;padding:0 24px;display:flex;align-items:center;gap:22px;height:56px;overflow-x:auto;scrollbar-width:none}
 nav .barra::-webkit-scrollbar{display:none}
 nav .marca{font-weight:700;white-space:nowrap;text-decoration:none;color:var(--tinta)}
@@ -37,6 +37,8 @@ h3{font-size:24px;line-height:1.2;margin:8px 0 10px}
 .uso{font-size:14px;color:var(--suave);margin:0 0 16px}
 .grafica{position:relative;min-height:420px;border-top:1px solid #edf1f5;padding-top:8px;overflow:hidden}
 .grafica .cargando{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--suave);font-size:14px}
+.grafica.pendiente{min-height:0}
+.grafica.pendiente .cargando{position:static;padding:28px 18px;margin-top:8px;border:1px dashed #b9c7d4;border-radius:10px;text-align:center}
 .conclusiones{margin-top:18px;background:var(--azul-claro);border-left:3px solid var(--azul);border-radius:0 10px 10px 0;padding:16px 22px}
 .conclusiones h4{margin:0 0 8px;font-size:15px}
 .conclusiones ul{margin:0;padding-left:20px}
@@ -60,9 +62,11 @@ footer{max-width:1180px;margin:auto;padding:28px 24px 48px;font-size:13px;color:
     <a class="ir" href="#mapas-tiempo">Posición en el tiempo</a>
     <a class="ir" href="#robots-fotograma">Robots por fotograma</a>
     <span class="grupo">Bloque 2</span>
-    <a class="ir" href="#curvas">Entrenamiento</a>
+    <a class="ir" href="#epocas">Época a época</a>
+    <a class="ir" href="#curvas">Comparación</a>
     <a class="ir" href="#grupos">Resultados por grupo</a>
     <a class="ir" href="#secuencias">Resultados por secuencia</a>
+    <a class="ir" href="#test">Test</a>
   </div>
 </nav>
 
@@ -74,7 +78,7 @@ footer{max-width:1180px;margin:auto;padding:28px 24px 48px;font-size:13px;color:
   <div class="cifras">
     <div class="cifra"><b>808</b><span>imágenes anotadas de 10 vídeos</span></div>
     <div class="cifra"><b>1420</b><span>robots, 375 de ellos difficult</span></div>
-    <div class="cifra"><b>4</b><span>entrenamientos comparados</span></div>
+    <div class="cifra"><b>4</b><span>entrenamientos comparados, época a época</span></div>
     <div class="cifra"><b>0,943</b><span>AP@0,5 en validación del modelo de referencia</span></div>
   </div>
 </header>
@@ -137,9 +141,28 @@ footer{max-width:1180px;margin:auto;padding:28px 24px 48px;font-size:13px;color:
 <h2 class="bloque">Bloque 2 · Entrenamiento y evaluación</h2>
 <p class="bloque">Faster R-CNN ResNet-50 FPN preentrenado en COCO, entrenado con nuestros diez vídeos y evaluado en <strong>validación</strong>: 672 imágenes y 1561 robots de otros grupos y años, 255 de ellos difficult. El conjunto de test se reserva para el modelo definitivo. Cuatro entrenamientos, cambiando una cosa cada vez.</p>
 
-<section class="figura" id="curvas">
+<section class="figura" id="epocas">
   <div class="numero">Figura 4</div>
-  <h3>Cómo aprende cada entrenamiento</h3>
+  <h3>Entrenamiento época a época</h3>
+  <p class="descripcion">Para un experimento cada vez: a la izquierda, la pérdida en el conjunto de entrenamiento y en el de validación después de cada época; a la derecha, el AP@0,5 y el AP 0,50:0,95 en validación. La línea punteada marca la mejor época, que es la que se guarda como modelo.</p>
+  <p class="uso">Elige el experimento en el desplegable. Al pasar el cursor se ven el valor y la tasa de aprendizaje de esa época.</p>
+  <div class="grafica" data-figura="curvas_por_experimento"><div class="cargando">Cargando figura…</div></div>
+  <div class="conclusiones">
+    <h4>Qué concluimos</h4>
+    <ul>
+      <li><strong>Con tasa 0,001 se ve el sobreajuste:</strong> la pérdida de entrenamiento sigue bajando hasta el final (de 0,209 a 0,066), pero la de validación llega a su mínimo en la época 4 (0,221) y luego sube hasta 0,241. El mejor AP@0,5 está en la época 5.</li>
+      <li><strong>Bajar la tasa no lo arregla:</strong> el programador la divide entre 10 en las épocas 11, 17, 23 y 29 y el AP@0,5 ya no vuelve a su máximo. Por eso basta con unas 12 épocas.</li>
+      <li><strong>Con tasa 0,0001 no hay sobreajuste, pero es lento:</strong> con aumento, la pérdida de validación baja poco a poco hasta la época 26 y la tasa nunca llega a reducirse.</li>
+      <li><strong>Sin aumento de datos,</strong> el AP@0,5 se estanca en 0,92 desde la época 16. Bajar la tasa en la época 24 tampoco ayuda.</li>
+      <li><strong>El AP 0,50:0,95 queda siempre unos 0,33 por debajo del AP@0,5</strong> y no mejora con más épocas. El modelo encuentra los robots, pero sus cajas no coinciden al píxel con las de otros grupos, que siguen otro criterio de anotación.</li>
+    </ul>
+  </div>
+  <p class="fuente">Datos: <code>ENTREGA 1/WEEK2/resultados_train/*/historial.csv</code>, los mismos que dibuja <code>train.ipynb</code>, en el <a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_train">repositorio</a></p>
+</section>
+
+<section class="figura" id="curvas">
+  <div class="numero">Figura 5</div>
+  <h3>Comparación de los cuatro entrenamientos</h3>
   <p class="descripcion">AP@0,5 en validación (izquierda) y pérdida en validación (derecha) después de cada época, para los cuatro entrenamientos: sin y con aumento de datos con tasa de aprendizaje 0,0001, con tasa 0,001, y con tasa 0,001 a resolución 1024.</p>
   <p class="uso">Pulsa un experimento en la leyenda para ocultarlo y haz doble clic para verlo solo. Arrastra sobre la gráfica para ampliar una zona.</p>
   <div class="grafica" data-figura="curvas_entrenamiento"><div class="cargando">Cargando figura…</div></div>
@@ -156,7 +179,7 @@ footer{max-width:1180px;margin:auto;padding:28px 24px 48px;font-size:13px;color:
 </section>
 
 <section class="figura" id="grupos">
-  <div class="numero">Figura 5</div>
+  <div class="numero">Figura 6</div>
   <h3>Qué robots detecta y cuántos errores comete</h3>
   <p class="descripcion">A la izquierda, AP@0,5 en validación para todos los robots, solo los normales y solo los difficult (movidos, lejanos, tapados o cortados). A la derecha, falsos positivos y robots perdidos con confianza mínima de 0,5.</p>
   <p class="uso">Pasa el cursor por una barra para ver su valor. Pulsa un experimento en la leyenda para ocultarlo.</p>
@@ -175,7 +198,7 @@ footer{max-width:1180px;margin:auto;padding:28px 24px 48px;font-size:13px;color:
 </section>
 
 <section class="figura" id="secuencias">
-  <div class="numero">Figura 6</div>
+  <div class="numero">Figura 7</div>
   <h3>Dónde falla: resultados por secuencia</h3>
   <p class="descripcion">AP@0,5 de los cuatro entrenamientos en cada una de las once secuencias de validación, grabadas por otros grupos entre 2023 y 2025. El eje empieza en 0,7 para que se vean las diferencias.</p>
   <p class="uso">Pasa el cursor por una barra para ver cuántos robots y difficult tiene la secuencia, y sus falsos positivos y robots perdidos.</p>
@@ -190,6 +213,21 @@ footer{max-width:1180px;margin:auto;padding:28px 24px 48px;font-size:13px;color:
     </ul>
   </div>
   <p class="fuente">Datos: <code>ENTREGA 1/WEEK2/resultados_test/*_val/errores_por_video.csv</code> en el <a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_test">repositorio</a></p>
+</section>
+<section class="figura" id="test">
+  <div class="numero">Figura 8</div>
+  <h3>Evaluación final en test</h3>
+  <p class="descripcion">El modelo definitivo evaluado una sola vez en el conjunto de test (718 imágenes y 1721 robots de otros grupos, 270 de ellos difficult). A la izquierda, su AP@0,5 por grupo de robots en validación y en test. A la derecha, la precisión, la exhaustividad y el F1 según el umbral de confianza, que sirve para fijar el de la <em>demo</em>.</p>
+  <p class="uso">Pasa el cursor por las barras y las curvas para ver sus valores.</p>
+  <div class="grafica" data-figura="evaluacion_test" data-pendiente="Pendiente. El test se evalúa una sola vez, al final, con el modelo definitivo. Esta figura aparecerá sola cuando sus resultados estén en el repositorio."><div class="cargando">Cargando figura…</div></div>
+  <div class="conclusiones">
+    <h4>Por qué no hay curvas por época en test</h4>
+    <ul>
+      <li><strong>El test no se mira durante el entrenamiento.</strong> Las curvas por época se calculan en validación, y con ellas se elige la mejor época y el mejor experimento.</li>
+      <li><strong>Si se eligiera mirando el test,</strong> su resultado dejaría de medir cómo funciona el modelo con imágenes nuevas. Por eso solo se evalúa una vez, con el modelo ya elegido.</li>
+    </ul>
+  </div>
+  <p class="fuente">Datos, cuando existan: <code>ENTREGA 1/WEEK2/resultados_test/&lt;modelo&gt;_test/</code>, con <code>map.csv</code> y <code>umbral_confianza.csv</code> de <code>test.ipynb</code></p>
 </section>
 </main>
 
@@ -224,7 +262,8 @@ async function dibujar(contenedor) {
     await Plotly.newPlot(contenedor, figura.data, layout, config);
     if (figura.frames && figura.frames.length) await Plotly.addFrames(contenedor, figura.frames);
   } catch (error) {
-    contenedor.querySelector('.cargando').textContent = 'No se ha podido cargar la figura.';
+    if (contenedor.dataset.pendiente) contenedor.classList.add('pendiente');
+    contenedor.querySelector('.cargando').textContent = contenedor.dataset.pendiente || 'No se ha podido cargar la figura.';
   }
 }
 
@@ -232,7 +271,10 @@ async function dibujar(contenedor) {
   for (const contenedor of document.querySelectorAll('.grafica')) await dibujar(contenedor);
 })();
 
-// Resalta en la barra la sección que se está viendo
+// Resalta en la barra la sección que se está viendo.
+// La barra se desplaza solo en horizontal: scrollIntoView movería también la página
+// y frenaría el desplazamiento del usuario al llegar a cada figura.
+const barra = document.querySelector('nav .barra');
 const enlaces = [...document.querySelectorAll('nav a.ir')];
 const secciones = new IntersectionObserver(entradas => {
   for (const entrada of entradas) {
@@ -240,7 +282,10 @@ const secciones = new IntersectionObserver(entradas => {
     enlaces.forEach(a => {
       const activo = a.getAttribute('href') === `#${entrada.target.id}`;
       a.classList.toggle('activo', activo);
-      if (activo) a.scrollIntoView({block: 'nearest', inline: 'nearest'});
+      if (activo && barra.scrollWidth > barra.clientWidth) {
+        const izquierda = a.getBoundingClientRect().left - barra.getBoundingClientRect().left + barra.scrollLeft;
+        barra.scrollTo({left: izquierda - (barra.clientWidth - a.offsetWidth) / 2, behavior: 'smooth'});
+      }
     });
   }
 }, {rootMargin: '-45% 0px -50% 0px'});
