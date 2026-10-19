@@ -272,10 +272,21 @@ de `PIDS2024_GR02_0001/frame_0444.jpg`. No se ha evaluado test.
 T15–T17: plantilla oficial rellenada con el trabajo disponible; versiones completa,
 solo fase 1 y solo fase 2, con figuras, en `docs/informes/`. La fase 2 sigue siendo
 un avance: falta comparar arquitecturas y evaluar el modelo definitivo en test.
-Siguiente experimento autorizado: resolución 1024/1820, manteniendo lr=0,001 y
-el aumento base, antes de combinar más cambios.
+El experimento de resolución autorizado ya se completó; se mantiene el aumento base.
 
-**En marcha desde las 23:44:** `faster_rcnn_v1_aug_lr001_res1024`, PID 10327.
-Microbatch 4, acumulación 2 y lote efectivo 8; prueba de memoria y arranque en GPU
-verificados. Se ejecutará validación al terminar. Los informes recogen el trabajo
-medido hasta lr001; el resultado de resolución sigue pendiente.
+### Actualización del 16/10 tras res1024
+
+T19/T20: entrenamiento y validación de `faster_rcnn_v1_aug_lr001_res1024` terminados
+hacia las 08:45 con salida 0. Mejor época por AP50: 2. AP50 0,9465, AP promedio
+0,6047, AP50 difficult 0,6282 y AP small 0,1886. FN 68 (56 difficult), FP 324;
+latencia individual 121,6 ms. Comparación reproducible y figuras en
+`ENTREGA 1/WEEK2/comparaciones/res1024/`. Se documentan el microbatch 4 × 2,
+la selección por AP50 y las anotaciones incompletas. Test no se ha evaluado.
+
+T15–T17: boceto y versiones Word/PDF pertinentes actualizadas con resultados de
+resolución, curvas, secuencias, costes y conclusiones. Se mantiene lr001 800 como
+referencia provisional; falta revisión del grupo, arquitectura alternativa y test final.
+Los perfiles nuevos de aumento siguen pendientes de entrenamiento. PR #17 fusionada;
+esta continuación usa una nueva PR en javier-saguar. Seguimiento desactivado.
+
+Resultados res1024 e informes actualizados en [PR #18](https://github.com/javiersaguar/PIDS-Proyecto2/pull/18), pendiente de revisión y sin fusionar.

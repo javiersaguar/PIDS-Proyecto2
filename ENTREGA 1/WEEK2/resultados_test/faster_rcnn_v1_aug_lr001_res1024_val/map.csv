@@ -1,0 +1,4 @@
+grupo,variante,robots,map,map_50,map_75,map_small,map_medium,map_large,mar_100
+todos,Todos los robots,1561,0.6047,0.9465,0.699,0.1886,0.5626,0.6459,0.6803
+normales,Solo los normales,1306,0.6366,0.9755,0.7452,0.2632,0.5935,0.6617,0.7128
+difficult,Solo los difficult,255,0.3394,0.6282,0.3637,0.1415,0.2634,0.4556,0.5145
