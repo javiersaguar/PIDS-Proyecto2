@@ -11,7 +11,7 @@
 html{scroll-behavior:smooth;scroll-padding-top:72px}
 body{margin:0;background:var(--fondo);color:var(--tinta);font:16px/1.6 Arial,Helvetica,sans-serif}
 a{color:var(--azul)}
-nav{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);border-bottom:1px solid var(--linea);backdrop-filter:blur(6px)}
+nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--linea)}
 nav .barra{max-width:1180px;margin:auto;padding:0 24px;display:flex;align-items:center;gap:22px;height:56px;overflow-x:auto;scrollbar-width:none}
 nav .barra::-webkit-scrollbar{display:none}
 nav .marca{font-weight:700;white-space:nowrap;text-decoration:none;color:var(--tinta)}
@@ -232,7 +232,10 @@ async function dibujar(contenedor) {
   for (const contenedor of document.querySelectorAll('.grafica')) await dibujar(contenedor);
 })();
 
-// Resalta en la barra la sección que se está viendo
+// Resalta en la barra la sección que se está viendo.
+// La barra se desplaza solo en horizontal: scrollIntoView movería también la página
+// y frenaría el desplazamiento del usuario al llegar a cada figura.
+const barra = document.querySelector('nav .barra');
 const enlaces = [...document.querySelectorAll('nav a.ir')];
 const secciones = new IntersectionObserver(entradas => {
   for (const entrada of entradas) {
@@ -240,7 +243,10 @@ const secciones = new IntersectionObserver(entradas => {
     enlaces.forEach(a => {
       const activo = a.getAttribute('href') === `#${entrada.target.id}`;
       a.classList.toggle('activo', activo);
-      if (activo) a.scrollIntoView({block: 'nearest', inline: 'nearest'});
+      if (activo && barra.scrollWidth > barra.clientWidth) {
+        const izquierda = a.getBoundingClientRect().left - barra.getBoundingClientRect().left + barra.scrollLeft;
+        barra.scrollTo({left: izquierda - (barra.clientWidth - a.offsetWidth) / 2, behavior: 'smooth'});
+      }
     });
   }
 }, {rootMargin: '-45% 0px -50% 0px'});
