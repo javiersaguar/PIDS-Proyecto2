@@ -11,14 +11,43 @@ validación de `faster_rcnn_v1_aug_lr001_res1024`.
 
 La copia de fase 2 es una extracción de trabajo solicitada para revisar ese bloque.
 La segunda entrega oficial es **incremental** y debe incluir también la fase 1
-corregida. Los PDF contienen 11, 14 y 22 páginas totales respectivamente para fase 1,
-fase 2 y completa: portada, reparto, índice y referencias no se cuentan como cuerpo.
-Las fases 1 y 2 suman diecisiete páginas de cuerpo en la completa.
+corregida. Los PDF contienen 13, 14 y 23 páginas totales respectivamente para fase 1,
+fase 2 y completa (portada, reparto, índice y referencias no cuentan como cuerpo).
+Comprobar antes de entregar que el cuerpo sigue dentro del máximo de 10 páginas de T17.
 
 Se conserva Calibri 11, interlineado 1,15, geometría, cabecera y pie de la plantilla.
 Las figuras van incrustadas; no requieren archivos externos para abrir el Word.
 El índice y la paginación se verifican en el PDF. En Word se pueden actualizar con
 F9 si se cambia el contenido. La plantilla original permanece sin modificar.
+
+**19/10/2026:** se añadieron hyperlinks reales (clicables) a los notebooks ejecutados
+y a las figuras interactivas de GitHub Pages, editando los `.docx` directamente (no
+con `generar_informes.py`, ver aviso debajo). Los notebooks se citan como una vista
+HTML estática (`ENTREGA 1/WEEK1/eda.html` y `data_aug.html`, generados con
+`jupyter nbconvert --to html --embed-images` y commiteados junto a los `.ipynb`),
+abierta con `htmlpreview.github.io` — igual que ya se hace con los HTML del EDA en
+`docs/plan_entrega.md` — porque **nbviewer.org no es fiable**: depende del límite de
+peticiones de la API de GitHub, compartido entre todos sus usuarios, y falla con
+"GitHub API rate limit" de forma intermitente:
+
+- EDA ejecutado: https://htmlpreview.github.io/?https://github.com/javiersaguar/PIDS-Proyecto2/blob/main/ENTREGA%201/WEEK1/eda.html
+- Aumento de datos ejecutado: https://htmlpreview.github.io/?https://github.com/javiersaguar/PIDS-Proyecto2/blob/main/ENTREGA%201/WEEK1/data_aug.html
+- Figuras de EDA y de entrenamiento: anclas `#mapas-video`, `#mapas-tiempo`,
+  `#robots-fotograma`, `#curvas`, `#grupos` y `#secuencias` en https://javiersaguar.github.io/PIDS-Proyecto2/
+
+Si se regeneran los notebooks, hay que volver a exportarlos con el mismo comando y
+commitear los `.html` de nuevo; no se generan solos.
+
+## Aviso: `informe_fase1.docx` (y partes de la completa) ya no coincide con el generador
+
+`informe_fase1.docx` tiene correcciones manuales en Word (título, numeración de
+figuras, secciones 5.1–5.5, referencia [6] a la web) que **no están reflejadas en
+`herramientas/generar_informes.py`**. Ejecutar ese script sobrescribe el `.docx`
+entero con su propio texto y **borra esas correcciones**, que no se recuperan salvo
+con `git checkout` a un commit anterior. `informe_fase2.docx` sí coincide con el
+script. Antes de volver a generar nada, comprobar con `git diff` si el `.docx` que se
+va a sobrescribir tiene cambios que el script no reproduce; si los tiene, hay que
+llevar esos mismos cambios al script primero, o editar el `.docx` a mano.
 
 También se proporcionan [versión Markdown completa](informe_completo_fases_1_2.md),
 [fase 1](informe_fase1.md) y [fase 2](informe_fase2.md), para revisar diferencias en Git.
