@@ -2,6 +2,8 @@
 
 Lista de tareas **ordenadas por prioridad**: cuanto más arriba, antes hay que hacerla. El estado general del proyecto está en [`ESTADO.md`](ESTADO.md).
 
+**Hasta la entrega de los bloques 1 y 2:** reentrenar con los perfiles nuevos de aumento, comparar, preparar los notebooks finales, publicar las gráficas interactivas y actualizar los informes. Todo está en [`docs/plan_entrega.md`](docs/plan_entrega.md), con columna de responsable para apuntarse.
+
 ## Cómo asignarse una tarea
 
 1. Elige una tarea con **Responsable** vacío (`—`). Empieza por las de arriba cuyas dependencias ya estén hechas.
