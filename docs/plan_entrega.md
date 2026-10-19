@@ -136,15 +136,23 @@ portada. GitHub muestra los `.html` como código, así que hace falta publicarlo
 
 | Tarea | Responsable | Estado |
 |---|---|---|
-| **Publicar con GitHub Pages solo las carpetas `interactivos/`.** El repositorio es público, así que es gratis. Se hace con un flujo de GitHub Actions en `.github/workflows/`: copia esas carpetas a un sitio y lo despliega. No publica las imágenes del dataset | | Pendiente |
+| **Publicar con GitHub Pages solo las figuras.** El repositorio es público, así que es gratis. El flujo [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) monta la web con la portada [`web/index.html`](../web/index.html) y las carpetas del EDA (más `comparaciones/interactivos/` cuando exista). Se publica en cada push a `main` que toque esas carpetas. No publica el dataset | Javier Saguar | Hecho, pendiente de fusionar |
 | Activar Pages en *Settings → Pages → Source: GitHub Actions*. **Lo tiene que hacer Javier,** que es el administrador del repositorio | Javier Saguar | Pendiente |
 | Añadir las gráficas interactivas del Bloque 2 en `ENTREGA 1/WEEK2/comparaciones/interactivos/`, con el mismo estilo que las del EDA. Contenido: curvas de AP@0,5 y pérdida de todos los experimentos, AP@0,5 por secuencia y la curva del umbral de confianza | | Pendiente |
 | Comprobar que cada enlace se abre sin sesión iniciada, también en el móvil, y que `plotly.min.js` se carga desde la propia web | | Pendiente |
 | Poner los enlaces en la memoria: uno por figura, en el pie («versión interactiva: …»), y una lista en un anexo | | Pendiente |
 
-Cuando Pages esté activo, los enlaces tendrán la forma
-`https://javiersaguar.github.io/PIDS-Proyecto2/<ruta del html>`. La ruta exacta depende
-de cómo los coloque el flujo, así que se apuntan aquí cuando se publiquen.
+Enlaces, cuando esté publicado:
+
+| Figura | Enlace |
+|---|---|
+| Portada | https://javiersaguar.github.io/PIDS-Proyecto2/ |
+| Índice del EDA | https://javiersaguar.github.io/PIDS-Proyecto2/eda/interactivos/indice.html |
+| Distribución por vídeo | https://javiersaguar.github.io/PIDS-Proyecto2/eda/interactivos/mapas_calor_por_video.html |
+| Evolución espacial | https://javiersaguar.github.io/PIDS-Proyecto2/eda/interactivos/mapas_calor_temporales.html |
+| Robots por fotograma | https://javiersaguar.github.io/PIDS-Proyecto2/eda/interactivos/robots_por_fotograma.html |
+
+Las figuras del Bloque 2 irán en `.../entrenamiento/` y hay que añadirlas a la portada.
 
 **Alternativa sin configurar nada:** `https://htmlpreview.github.io/?<URL del html en
 GitHub>`. Es más lenta y depende de un servicio externo; mejor solo como reserva.

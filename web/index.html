@@ -1,0 +1,31 @@
+<!doctype html><html lang="es"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>PIDS · Detección de RoboMasters</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#172b40;font:16px/1.6 Arial,sans-serif}
+main{max-width:1100px;margin:auto;padding:56px 30px}header{max-width:820px;margin-bottom:38px}
+.etiqueta{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#2463a6;font-weight:700}
+h1{font-size:40px;line-height:1.15;margin:14px 0 20px;letter-spacing:-1px}header p,article p{color:#53677a}
+h2{font-size:24px;margin:40px 0 16px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+article{padding:24px;background:white;border:1px solid #dce4ec;border-radius:12px}h3{font-size:19px;line-height:1.25;margin:0 0 8px}
+article p{font-size:14px;margin:0 0 14px}a{color:#2463a6}.boton{font-size:14px;font-weight:700}
+.pendiente{padding:20px 24px;border:1px dashed #b9c7d4;border-radius:12px;color:#53677a;font-size:14px}
+footer{margin-top:48px;font-size:13px;color:#53677a}
+@media(max-width:900px){main{padding:40px 16px}.grid{grid-template-columns:1fr}h1{font-size:30px}}</style>
+<main><header><div class="etiqueta">PIDS 2026 · UPM</div><h1>Detección de RoboMasters<br>con redes neuronales</h1>
+<p>Figuras interactivas de la memoria del proyecto. Cada una se puede ampliar, filtrar y reproducir en el navegador; las versiones estáticas están en la memoria.</p></header>
+
+<h2>Bloque 1 · Análisis exploratorio de los datos</h2>
+<section class="grid">
+<article><h3>Distribución por vídeo</h3><p>Dónde aparecen los centros de los robots en cada uno de los diez vídeos, con todos los robots y solo los difficult.</p>
+<a class="boton" href="eda/interactivos/mapas_calor_por_video.html">Abrir figura →</a></article>
+<article><h3>Evolución espacial</h3><p>Cómo se mueven los robots por la imagen a lo largo de cada vídeo, en ventanas de 5 segundos.</p>
+<a class="boton" href="eda/interactivos/mapas_calor_temporales.html">Abrir figura →</a></article>
+<article><h3>Robots por fotograma</h3><p>Cuántos robots hay en cada fotograma anotado de los diez vídeos, sincronizados.</p>
+<a class="boton" href="eda/interactivos/robots_por_fotograma.html">Abrir figura →</a></article>
+</section>
+<p><a href="eda/interactivos/indice.html">Índice del análisis exploratorio, con las figuras para el informe →</a></p>
+
+<h2>Bloque 2 · Entrenamiento y evaluación</h2>
+<div class="pendiente">Se añadirán las curvas de entrenamiento y la comparación de los experimentos.</div>
+
+<footer>Javier Saguar, Alejandro Cuevas, Mónica Fernández, Pedro José Orrego y Daniel Naval ·
+<a href="https://github.com/javiersaguar/PIDS-Proyecto2">Repositorio del proyecto</a></footer></main></html>

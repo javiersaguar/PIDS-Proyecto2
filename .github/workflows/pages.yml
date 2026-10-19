@@ -1,0 +1,61 @@
+# Publica en GitHub Pages las figuras interactivas de la memoria.
+# Solo se publican web/ y las carpetas de figuras, no el dataset.
+name: Figuras interactivas
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - 'ENTREGA 1/WEEK1/resultados_eda/**'
+      - 'ENTREGA 1/WEEK2/comparaciones/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            web
+            ENTREGA 1/WEEK1/resultados_eda
+            ENTREGA 1/WEEK2/comparaciones
+
+      - name: Montar la web
+        run: |
+          set -eu
+          mkdir -p _site/eda
+          cp -r web/. _site/
+          eda="ENTREGA 1/WEEK1/resultados_eda"
+          cp -r "$eda/interactivos" "$eda/para_informe" "$eda/README.md" _site/eda/
+          # Figuras interactivas del Bloque 2, cuando existan
+          if [ -d "ENTREGA 1/WEEK2/comparaciones/interactivos" ]; then
+            cp -r "ENTREGA 1/WEEK2/comparaciones/interactivos" _site/entrenamiento
+          fi
+          du -sh _site
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  publicar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - id: despliegue
+        uses: actions/deploy-pages@v4
