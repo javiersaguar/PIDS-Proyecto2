@@ -10,6 +10,9 @@ __pycache__/
 data_train/
 data_val/
 data_test/
+models/
+dataset_pids.zip
+datasets_experimentos/
 
 # Sistema
 .DS_Store

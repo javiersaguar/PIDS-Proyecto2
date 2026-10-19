@@ -2,11 +2,24 @@
 
 Figuras y tablas que genera [`data_aug.ipynb`](../data_aug.ipynb) (T14). Se
 sobrescriben cada vez que se ejecuta el notebook, así que **no se editan a mano**.
-Las cifras actuales corresponden a las etiquetas del 12/10/2026, **antes de la
-depuración (T13)**.
+Las cifras actuales corresponden a las etiquetas del 12/10/2026 **con la depuración
+(T13) aplicada**: las 796 imágenes de nuestros diez vídeos son el entrenamiento, y
+validación y test son los conjuntos de la asignatura.
 
 Las imágenes aumentadas no están en el repositorio: el notebook las crea en
-`data_train/`, `data_val/` y `data_test/`, en la raíz, que Git ignora. Son 352 MB.
+`data_train/`, `data_val/` y `data_test/`, en la raíz, que Git ignora. Son unos 810 MB.
+
+## Ampliaciones experimentales (15/10)
+
+La sección 9 del notebook añade perfiles optativos de sombras, oclusiones
+texturadas, refuerzo de imágenes con `difficult` y lluvia suave. El perfil por
+defecto sigue siendo `base`: **las cifras siguientes describen el aumento usado
+en los entrenamientos existentes**, no una mejora medida de las ampliaciones.
+
+Ver [configuración, ejemplos y comprobaciones](experimentos/README.md).
+Los perfiles nuevos generan en `datasets_experimentos/<perfil>/` y guardan sus
+resultados en `resultados_aug/<perfil>/`; no reemplazan los datos ni las figuras
+del aumento base.
 
 ## Figuras
 
@@ -31,6 +44,6 @@ Para la memoria, que tiene un máximo de 10 páginas, bastan
 
 | | Imágenes | Robots | Robots perdidos | Relación de aspecto |
 |---|---:|---:|---:|---:|
-| Entrenamiento original | 483 | 837 | — | 1,11 |
-| Copias aumentadas | 1449 | 2496 | 0,6 % | 1,11 |
-| Aumentador del notebook original (simulado) | 1449 | 2164 | 13,8 % | 1,18 |
+| Entrenamiento original | 796 | 1399 | — | 1,11 |
+| Copias aumentadas | 2388 | 4167 | 0,7 % | 1,10 |
+| Aumentador del notebook original (simulado) | 2388 | 3606 | 14,1 % | 1,18 |

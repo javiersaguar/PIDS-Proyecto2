@@ -56,6 +56,10 @@ El proyecto se divide en tres bloques, cada uno con un hito:
 | `herramientas/preparar_fotogramas.py` | Extracción reproducible desde los ZIP y comprobación de integridad |
 | `herramientas/empaquetar_anotacion.py` | ZIP de un lote o del conjunto para importar a JupyterHub |
 | `herramientas/revisar_anotaciones.py` | Validación de las etiquetas y acuerdo entre anotadores |
+| `docs/depuracion.md` | Depuración del dataset (T13): qué se excluye y por qué |
+| `ENTREGA 1/WEEK2/DATOS_ASIGNATURA/` | Validación y test de otros grupos que da la asignatura (solo imágenes con `.xml`) |
+| `ENTREGA 2/WEEK3/` | Semana 3: SDK del robot y demo por completar (Bloque 3) |
+| `docs/jupyterhub.md` | Cómo llevar los datos al laboratorio y dejar el entrenamiento corriendo |
 | `ESTADO.md` | Estado actual del proyecto y datos de los vídeos |
 | `TAREAS.md` | Tareas por orden de prioridad y quién se encarga de cada una |
 | `AGENTS.md` | Normas del repositorio (autoría, ramas y datos) |
