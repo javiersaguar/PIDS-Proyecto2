@@ -2,4 +2,3 @@
 "ENTREGA 1/WEEK1/resultados_eda/para_informe/*.svg" linguist-generated=true -diff
 "ENTREGA 1/WEEK1/resultados_eda/interactivos/*.html" linguist-generated=true
 "ENTREGA 1/WEEK1/resultados_eda/interactivos/plotly.min.js" linguist-vendored=true -diff -text
-*.zip filter=lfs diff=lfs merge=lfs -text
