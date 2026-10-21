@@ -1,31 +1,106 @@
-<!doctype html><html lang="es"><meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1"><title>EDA · Espacio y tiempo</title>
-    <style>*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#172b40;font:16px/1.6 Arial,sans-serif}
-    main{max-width:1280px;margin:auto;padding:56px 30px}header{max-width:850px;margin-bottom:38px}
-    .etiqueta,.numero{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#2463a6;font-weight:700}
-    h1{font-size:42px;line-height:1.15;margin:14px 0 20px;letter-spacing:-1px}header p{color:#53677a}
-    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}article{padding:25px;background:white;border:1px solid #dce4ec;border-radius:12px}
-    h2{font-size:22px;line-height:1.25;margin:12px 0}article p{color:#53677a;font-size:14px}img{width:100%;height:225px;object-fit:contain;border:1px solid #edf1f5;margin:12px 0 20px}
-    a{color:#2463a6}.boton{font-size:14px;font-weight:700}.formatos{font-size:12px}aside{margin-top:32px;border-left:3px solid #2463a6;padding:10px 20px;background:#e9f0f7;font-size:14px}
-    @media(max-width:900px){.grid{grid-template-columns:1fr}h1{font-size:32px}img{height:260px}}</style>
-    <main><header><div class="etiqueta">PIDS · Entrega 1 · Análisis exploratorio</div><h1>Dónde aparecen los robots<br>y cómo cambia cada vídeo</h1>
-    <p>Comparación espacial y temporal de las anotaciones originales. Reproduce, pausa o desplaza el control para explorar las muestras.</p></header>
-    <section class="grid"><article><span class="numero">01</span><h2>Distribución por vídeo</h2><p>Todos los robots y difficult, con una escala común.</p>
-        <a href="mapas_calor_por_video.html"><img src="../para_informe/mapa_calor_por_video_todos.png" alt="Distribución por vídeo"></a>
-        <a class="boton" href="mapas_calor_por_video.html">Abrir figura interactiva →</a>
-        <p class="formatos">Exportar: <a href="../para_informe/mapa_calor_por_video_todos.png">PNG 300 ppp</a> ·
-        <a href="../para_informe/mapa_calor_por_video_todos.svg">SVG</a> · <a href="../para_informe/mapa_calor_por_video_todos.pdf">PDF</a></p></article><article><span class="numero">02</span><h2>Evolución espacial</h2><p>Ventanas de 5 segundos, con recuentos visibles y salto por vídeo.</p>
-        <a href="mapas_calor_temporales.html"><img src="../para_informe/mapas_temporales_V01.png" alt="Evolución espacial"></a>
-        <a class="boton" href="mapas_calor_temporales.html">Abrir figura interactiva →</a>
-        <p class="formatos">Exportar: <a href="../para_informe/mapas_temporales_V01.png">PNG 300 ppp</a> ·
-        <a href="../para_informe/mapas_temporales_V01.svg">SVG</a> · <a href="../para_informe/mapas_temporales_V01.pdf">PDF</a></p></article><article><span class="numero">03</span><h2>Robots por fotograma</h2><p>Diez vídeos sincronizados. Cada curva termina con su última muestra.</p>
-        <a href="robots_por_fotograma.html"><img src="../para_informe/robots_por_fotograma_videos.png" alt="Robots por fotograma"></a>
-        <a class="boton" href="robots_por_fotograma.html">Abrir figura interactiva →</a>
-        <p class="formatos">Exportar: <a href="../para_informe/robots_por_fotograma_videos.png">PNG 300 ppp</a> ·
-        <a href="../para_informe/robots_por_fotograma_videos.svg">SVG</a> · <a href="../para_informe/robots_por_fotograma_videos.pdf">PDF</a></p></article></section><aside><strong>Cómo leer las figuras.</strong>
-    Los mapas muestran centros por 100 imágenes, con colores cálidos y una intensidad no lineal que resalta frecuencias bajas.
-    La escala es la misma en todos y difficult; el blanco indica cero. Los recuentos incluyen las imágenes sin robots.
-    Se observan los fotogramas anotados cada 24 frames; no se infieren muestras intermedias.
-    <br>Para Word/PDF: usa los archivos de <code>para_informe/</code>. Para abrir sin conexión: conserva esta carpeta con <code>plotly.min.js</code>.
-    <br><a href="recuentos_fotogramas.csv">Datos por fotograma</a> · <a href="recuentos_ventanas.csv">Datos por ventana</a> ·
-    <a href="../README.md">Metodología y pies de figura</a></aside></main></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Distribución espacial y temporal de las anotaciones de RoboMasters. Tres gráficas interactivas para recorrer en una sola página.">
+  <title>Espacio y tiempo · PIDS</title>
+  <link rel="stylesheet" href="estilos.css">
+  <script src="explorador.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#graficas">Saltar a las gráficas</a>
+  <main>
+    <header class="page-header">
+      <p class="project">PIDS <span aria-hidden="true">/</span> Análisis exploratorio</p>
+      <div class="intro-row">
+        <h1>Espacio y tiempo</h1>
+        <p>Dónde aparecen los robots y cómo cambia cada vídeo. Recorre las tres figuras para explorar las anotaciones originales, desde su distribución hasta el número de robots en cada muestra.</p>
+      </div>
+    </header>
+
+    <div id="graficas">
+      <section id="distribucion" class="figure-panel" aria-labelledby="titulo-distribucion">
+        <div class="section-heading">
+          <h2 id="titulo-distribucion">Distribución por vídeo</h2>
+          <div class="figure-description">
+            <p>Compara dónde se concentran los centros de los robots en cada vídeo. Todos los robots y los <em>difficult</em> comparten escala, expresada en centros por 100 imágenes.</p>
+            <p class="interaction-hint">Elige un vídeo o recorre las secuencias con el control de reproducción. Pasa el cursor por una celda para consultar su valor.</p>
+          </div>
+        </div>
+        <div class="chart-stage">
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <iframe title="Distribución de los centros de robots por vídeo" src="mapas_calor_por_video.html" height="510"></iframe>
+        </div>
+        <div class="figure-caption">
+          <p class="reading-note">El blanco indica cero. El color no lineal resalta las frecuencias bajas; se incluyen las imágenes sin robots en la normalización.</p>
+          <div class="figure-links"><span class="sr-only">Exportar distribución por vídeo:</span><a href="../para_informe/mapa_calor_por_video_todos.png" download>PNG · 300 ppp</a><a href="../para_informe/mapa_calor_por_video_todos.svg" download>SVG</a><a href="../para_informe/mapa_calor_por_video_todos.pdf" download>PDF</a><a href="mapas_calor_por_video.html" target="_blank" rel="noopener">Abrir aparte ↗</a></div>
+        </div>
+        <div class="figure-conclusions" aria-labelledby="conclusiones-distribucion">
+          <h3 id="conclusiones-distribucion">Qué concluimos</h3>
+          <ul>
+            <li>Los robots aparecen sobre todo a media altura: el 92 % de los centros está en el tercio central. Izquierda y derecha están equilibradas (49 % y 51 %), lo que respalda el volteo horizontal y descarta el vertical en el aumento de datos.</li>
+            <li>Los <em>difficult</em> se sitúan a la misma altura, pero aparecen junto a los bordes laterales el doble de veces (23 % frente al 11 %), a menudo porque quedan cortados. En los exteriores V04 y V09, esta proporción llega a la mitad.</li>
+            <li>V06 es el vídeo más disperso: solo el 71 % de los centros está en la franja central y también reúne más imágenes sin robots.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="evolucion" class="figure-panel" aria-labelledby="titulo-evolucion">
+        <div class="section-heading">
+          <h2 id="titulo-evolucion">Evolución espacial</h2>
+          <div class="figure-description">
+            <p>Observa cómo cambia la distribución de los centros en ventanas de cinco segundos. Cada intervalo compara todos los robots con los <em>difficult</em> e indica cuántas imágenes y cajas contiene.</p>
+            <p class="interaction-hint">Reproduce, pausa o recorre los intervalos. El selector de vídeo permite saltar al inicio de cada secuencia.</p>
+          </div>
+        </div>
+        <div class="chart-stage">
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <iframe title="Evolución espacial en ventanas de cinco segundos" src="mapas_calor_temporales.html" height="510" loading="lazy"></iframe>
+        </div>
+        <div class="figure-caption">
+          <p class="reading-note">La última ventana puede contener menos imágenes. Consulta la barra de color al comparar esta figura con los mapas por vídeo.</p>
+          <div class="figure-links"><span>V01:</span><a href="../para_informe/mapas_temporales_V01.png" download>PNG · 300 ppp</a><a href="../para_informe/mapas_temporales_V01.svg" download>SVG</a><a href="../para_informe/mapas_temporales_V01.pdf" download>PDF</a><a href="mapas_calor_temporales.html" target="_blank" rel="noopener">Abrir aparte ↗</a></div>
+        </div>
+        <div class="figure-conclusions" aria-labelledby="conclusiones-evolucion">
+          <h3 id="conclusiones-evolucion">Qué concluimos</h3>
+          <ul>
+            <li>Cada vídeo aporta distintas vistas: la posición de los robots cambia entre intervalos. En V06, su posición horizontal media oscila entre el 32 % y el 84 % del ancho de la imagen.</li>
+            <li>Los <em>difficult</em> se concentran en rachas. Nueve vídeos tienen ventanas sin ninguno y seis incluyen intervalos donde superan la mitad de los robots; en una ventana de V08, todos son <em>difficult</em>.</li>
+            <li>Como las imágenes vecinas se parecen mucho, no repartimos fotogramas de un mismo vídeo entre entrenamiento y validación. Entrenamos con nuestros diez vídeos y validamos con secuencias de otros grupos.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="recuentos" class="figure-panel" aria-labelledby="titulo-recuentos">
+        <div class="section-heading">
+          <h2 id="titulo-recuentos">Robots por fotograma</h2>
+          <div class="figure-description">
+            <p>Los diez vídeos avanzan a la vez, muestra a muestra. Las curvas incluyen las imágenes sin robots y terminan en la última muestra de cada grabación, sin añadir ceros.</p>
+            <p class="interaction-hint">Reproduce la secuencia o selecciona una muestra con el control deslizante. La línea punteada indica la media de cada vídeo.</p>
+          </div>
+        </div>
+        <div class="chart-stage">
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <iframe title="Número de robots por fotograma en los diez vídeos" src="robots_por_fotograma.html" height="1090" loading="lazy"></iframe>
+        </div>
+        <div class="figure-caption">
+          <p class="reading-note">Se anotó un fotograma cada 24 frames (≈ 0,79 s). La animación no infiere muestras intermedias ni sigue la identidad de los robots.</p>
+          <div class="figure-links"><span class="sr-only">Exportar robots por fotograma:</span><a href="../para_informe/robots_por_fotograma_videos.png" download>PNG · 300 ppp</a><a href="../para_informe/robots_por_fotograma_videos.svg" download>SVG</a><a href="../para_informe/robots_por_fotograma_videos.pdf" download>PDF</a><a href="robots_por_fotograma.html" target="_blank" rel="noopener">Abrir aparte ↗</a></div>
+        </div>
+        <div class="figure-conclusions" aria-labelledby="conclusiones-recuentos">
+          <h3 id="conclusiones-recuentos">Qué concluimos</h3>
+          <ul>
+            <li>Las escenas son poco concurridas: nunca hay más de tres robots por imagen. Lo más habitual es ver dos (42 %), seguido de uno (33 %) y tres (19 %).</li>
+            <li>La media va de 1,26 robots por imagen en V06 a 2,27 en V05. V06 concentra 22 de las 41 imágenes sin robots, con tramos enteros sin rivales.</li>
+            <li>Las imágenes sin robots son pocas: 41 de 808, alrededor del 5 %. Las conservamos con su anotación vacía para que el modelo aprenda a reconocer cuándo no hay rivales y reduzca las falsas detecciones.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <footer><span>PIDS · Dataset RoboMaster</span><div><a href="recuentos_fotogramas.csv" download>Datos por fotograma</a><a href="recuentos_ventanas.csv" download>Datos por ventana</a><a href="../README.md">Metodología</a></div></footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,78 @@
+:root {
+  color-scheme: light;
+  --text: #233342;
+  --muted: #526576;
+  --accent: #245e9b;
+  --line: #dce3e9;
+  --soft: #f3f6f9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #fff; color: var(--text); font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+main { width: min(100% - 80px, 1160px); margin: 0 auto; }
+a { color: var(--accent); text-underline-offset: 4px; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip-link { position: absolute; top: -80px; left: 20px; background: #fff; padding: 10px 16px; z-index: 2; }
+.skip-link:focus { top: 12px; }
+.page-header { padding: 48px 0 44px; border-bottom: 1px solid var(--line); margin-bottom: 44px; }
+.project { color: var(--muted); font-size: 12px; margin: 0 0 24px; }
+.project span { margin: 0 9px; }
+.intro-row, .section-heading { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 48px; align-items: start; }
+h1, h2 { text-wrap: balance; font-weight: 600; margin: 0; }
+h1 { font-size: clamp(32px, 3.2vw, 42px); line-height: 1.15; letter-spacing: -.03em; }
+.intro-row > p { font-size: 16px; line-height: 1.8; color: var(--muted); margin: 0; max-width: 65ch; }
+h2 { font-size: 25px; line-height: 1.3; letter-spacing: -.02em; padding-top: 2px; }
+.figure-panel { scroll-margin-top: 28px; }
+.figure-panel + .figure-panel { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 44px; }
+.figure-description { max-width: 70ch; }
+.figure-description p { margin: 0; }
+.interaction-hint { color: var(--muted); font-size: 13px; padding-top: 10px; line-height: 1.75; }
+.chart-stage { margin-top: 28px; }
+iframe { display: block; border: 0; width: 100%; background: #fff; }
+.figure-caption { display: flex; flex-direction: column; gap: 12px; padding-top: 12px; }
+.reading-note { color: var(--muted); font-size: 12px; line-height: 1.8; margin: 0; max-width: 100ch; }
+.figure-links { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 20px; font-size: 12px; }
+.figure-links > span { color: var(--muted); }
+.figure-links a { display: inline-flex; align-items: center; min-height: 32px; }
+.figure-links a:last-child { margin-left: auto; }
+.figure-conclusions { max-width: 90ch; margin-top: 24px; }
+.figure-conclusions h3 { margin: 0 0 10px; font-size: 15px; line-height: 1.5; font-weight: 600; }
+.figure-conclusions ul { display: grid; gap: 10px; margin: 0; padding-left: 20px; }
+.figure-conclusions li { font-size: 14px; line-height: 1.75; }
+.figure-conclusions li::marker { color: var(--muted); }
+.chart-status { padding: 18px; background: var(--soft); color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+.chart-status a { display: inline-block; margin-left: 10px; color: var(--accent); }
+footer { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line); margin-top: 44px; padding: 24px 0 32px; color: var(--muted); font-size: 12px; }
+footer > div { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+footer a { color: var(--muted); min-height: 32px; display: inline-flex; align-items: center; }
+@media (max-width: 800px) {
+  main { width: calc(100% - 48px); }
+  .intro-row, .section-heading { grid-template-columns: 1fr; gap: 16px; }
+  .page-header { padding: 32px 0; margin-bottom: 32px; }
+  .intro-row > p { font-size: 15px; }
+  .figure-description { max-width: 74ch; }
+  .figure-panel + .figure-panel { margin-top: 32px; padding-top: 32px; }
+}
+@media (max-width: 560px) {
+  main { width: calc(100% - 32px); }
+  .project { margin-bottom: 20px; }
+  h1 { font-size: 32px; }
+  h2 { font-size: 23px; }
+  .figure-description > p:first-child { font-size: 14px; }
+  .interaction-hint { font-size: 12px; }
+  .chart-stage { margin-top: 20px; }
+  .figure-links { column-gap: 16px; }
+  .figure-links a:last-child { margin-left: 0; }
+  footer { font-size: 11px; gap: 8px; padding-bottom: 24px; }
+  footer > div { column-gap: 20px; }
+}
+@media print {
+  .skip-link, .chart-status, .figure-links, footer { display: none; }
+  main { width: 100%; }
+  .section-heading, .intro-row { grid-template-columns: 1fr; gap: 12px; }
+  .figure-panel { break-before: page; }
+  .figure-panel:first-child { break-before: auto; }
+}

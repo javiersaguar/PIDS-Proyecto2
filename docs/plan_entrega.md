@@ -138,7 +138,7 @@ portada. GitHub muestra los `.html` como código, así que hace falta publicarlo
 |---|---|---|
 | **Publicar con GitHub Pages una página única con todas las figuras.** Cada figura tiene título, descripción, cómo usarla y conclusiones. La página es [`web/index.html`](../web/index.html); la monta [`herramientas/construir_web.py`](../herramientas/construir_web.py), y el flujo [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) la publica en cada push a `main` que toque la web o los resultados. No publica el dataset | Javier Saguar | Hecho |
 | Activar Pages en *Settings → Pages → Source: GitHub Actions* | Javier Saguar | Hecho |
-| Gráficas interactivas del Bloque 2, generadas desde los CSV de resultados: curvas de entrenamiento, AP@0,5 y errores por grupo, y AP@0,5 por secuencia. **Al añadir experimentos (E1–E4),** hay que añadirlos a `EXPERIMENTOS` en `construir_web.py` y revisar las conclusiones de la página. Falta la curva del umbral de confianza | Javier Saguar | Hecha, salvo el umbral |
+| Gráficas interactivas del Bloque 2, generadas desde los CSV de resultados: pérdidas y AP época a época de cada experimento, comparación de los entrenamientos, AP@0,5 y errores por grupo, AP@0,5 por secuencia y evaluación final en test. **La figura de test aparece sola** cuando exista `resultados_test/<modelo>_test/`. `test.ipynb` guarda ahora `umbral_confianza.csv` para la curva del umbral. **Al añadir experimentos (E1–E4),** hay que añadirlos a `EXPERIMENTOS` en `construir_web.py` y revisar las conclusiones de la página | Javier Saguar | Hecha; falta la evaluación en test |
 | Comprobar que cada enlace se abre sin sesión iniciada, también en el móvil, y que `plotly.min.js` se carga desde la propia web | | Pendiente |
 | Poner los enlaces en la memoria: uno por figura, en el pie («versión interactiva: …»), y una lista en un anexo | | Pendiente |
 
@@ -150,9 +150,11 @@ Enlaces (cada figura tiene su ancla en la página única):
 | 1 · Posición por vídeo | https://javiersaguar.github.io/PIDS-Proyecto2/#mapas-video |
 | 2 · Posición en el tiempo | https://javiersaguar.github.io/PIDS-Proyecto2/#mapas-tiempo |
 | 3 · Robots por fotograma | https://javiersaguar.github.io/PIDS-Proyecto2/#robots-fotograma |
-| 4 · Curvas de entrenamiento | https://javiersaguar.github.io/PIDS-Proyecto2/#curvas |
-| 5 · Resultados por grupo | https://javiersaguar.github.io/PIDS-Proyecto2/#grupos |
-| 6 · Resultados por secuencia | https://javiersaguar.github.io/PIDS-Proyecto2/#secuencias |
+| 4 · Entrenamiento época a época | https://javiersaguar.github.io/PIDS-Proyecto2/#epocas |
+| 5 · Comparación de los entrenamientos | https://javiersaguar.github.io/PIDS-Proyecto2/#curvas |
+| 6 · Resultados por grupo | https://javiersaguar.github.io/PIDS-Proyecto2/#grupos |
+| 7 · Resultados por secuencia | https://javiersaguar.github.io/PIDS-Proyecto2/#secuencias |
+| 8 · Evaluación final en test | https://javiersaguar.github.io/PIDS-Proyecto2/#test |
 
 Las páginas sueltas del EDA (`.../eda/interactivos/*.html`) se siguen publicando, para que no se rompan los enlaces antiguos.
 

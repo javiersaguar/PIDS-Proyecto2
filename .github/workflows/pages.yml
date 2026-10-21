@@ -1,17 +1,14 @@
-# Publica en GitHub Pages la web de figuras interactivas de la memoria.
-# La monta herramientas/construir_web.py con web/index.html, las figuras del EDA y los
-# resultados del entrenamiento. No publica el dataset.
+# Publica la SPA de resultados_eda/interactivos, con sus figuras y conclusiones.
+# La empaqueta herramientas/construir_spa.py. No publica el dataset.
 name: Figuras interactivas
 
 on:
   push:
     branches: [main]
     paths:
-      - 'web/**'
-      - 'herramientas/construir_web.py'
+      - 'herramientas/construir_spa.py'
+      - 'herramientas/tests/test_construir_spa.py'
       - 'ENTREGA 1/WEEK1/resultados_eda/**'
-      - 'ENTREGA 1/WEEK2/resultados_train/**'
-      - 'ENTREGA 1/WEEK2/resultados_test/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -31,16 +28,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            web
-            herramientas/construir_web.py
+            herramientas/construir_spa.py
+            herramientas/tests/test_construir_spa.py
             ENTREGA 1/WEEK1/resultados_eda
-            ENTREGA 1/WEEK2/resultados_train
-            ENTREGA 1/WEEK2/resultados_test
           sparse-checkout-cone-mode: false
 
-      - name: Montar la web
+      - name: Comprobar el constructor de la SPA
+        run: python3 -m unittest discover -s herramientas/tests -p test_construir_spa.py
+
+      - name: Montar la SPA
         run: |
-          python3 herramientas/construir_web.py _site
+          python3 herramientas/construir_spa.py _site
           du -sh _site
 
       - uses: actions/configure-pages@v5
