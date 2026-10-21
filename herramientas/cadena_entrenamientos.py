@@ -8,6 +8,12 @@ Desde la raíz del repositorio:
     python herramientas/cadena_entrenamientos.py estado      # qué se ha hecho y qué falta
     python herramientas/cadena_entrenamientos.py empaquetar  # resultados en un zip, sin los pesos
 
+Opciones de preflight y cadena:
+
+    --modelos a,b,c   solo esos modelos, en ese orden (por defecto, los siete)
+    --sin-fase2       no hace la fase 2 (variar el lr de los mejores)
+    --simular         solo muestra lo que haría, sin tocar la GPU ni ejecutar nada
+
 Pensado para lanzarse con nohup. Se puede relanzar: salta lo que ya tiene su evaluación y
 reanuda el entrenamiento que quedó a medias.
 
@@ -18,6 +24,7 @@ Cada experimento ejecuta train.ipynb y test.ipynb (conjunto `val`) con la config
 PIDS_CONFIG. El test no se toca. Solo usa la biblioteca estándar.
 """
 
+import argparse
 import csv
 import json
 import os
@@ -44,6 +51,39 @@ EPOCAS, EPOCAS_LR_BAJO = 12, 15           # el mejor AP@0,5 de los entrenamiento
 IMAGENES = {'train': 3184, 'val': 672, 'test': 718}   # esperadas en datasets_experimentos/<perfil>
 CANDIDATOS_LOTE = ((8, 1), (4, 2), (2, 4))            # (lote, acumulación): lote efectivo 8
 PASOS_PRUEBA, IMAGENES_PRUEBA = 20, 48
+
+
+# ------------------------------------------------------------------ entorno
+def validar_modelos(texto: str) -> list:
+    """'a,b' -> ['a', 'b']; falla si algún nombre no es de los siete modelos."""
+    modelos = [m.strip() for m in texto.split(',') if m.strip()]
+    desconocidos = [m for m in modelos if m not in MODELOS]
+    if not modelos or desconocidos:
+        raise ValueError(f'Modelos no válidos: {desconocidos or texto!r}. Opciones: {MODELOS}')
+    if len(set(modelos)) != len(modelos):
+        raise ValueError(f'Modelos repetidos: {modelos}')
+    return modelos
+
+
+def comprobar_gpu() -> None:
+    """Se detiene si no hay GPU CUDA: sin ella, un entrenamiento tardaría días."""
+    r = subprocess.run([sys.executable, '-c',
+                        'import torch; assert torch.cuda.is_available(); p = torch.cuda.get_device_properties(0); '
+                        "print(p.name, round(p.total_memory / 2**30, 1), 'GB')"], capture_output=True, text=True)
+    if r.returncode != 0:
+        raise RuntimeError('No hay GPU CUDA disponible: ' + (r.stderr or r.stdout)[-300:])
+    print(f'[{ahora()}] GPU: {r.stdout.strip()}', flush=True)
+
+
+def evitar_suspension() -> None:
+    """En Windows, impide que el equipo se suspenda mientras corre este proceso.
+
+    No evita la suspensión al cerrar la tapa del portátil: eso depende del plan de energía.
+    """
+    if os.name == 'nt':
+        import ctypes
+        ES_CONTINUOUS, ES_SYSTEM_REQUIRED = 0x80000000, 0x00000001
+        ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
 
 
 # ------------------------------------------------------------------ nombres y tablas
@@ -200,11 +240,14 @@ def configuracion(modelo: str, lr: float, lote: int, acum: int, **extra) -> dict
     return cfg
 
 
-def preflight() -> dict:
+def preflight(modelos=None) -> dict:
     """Entrena 20 pasos y evalúa 48 imágenes con cada modelo; elige el lote y estima el tiempo."""
+    modelos = list(modelos or MODELOS)
+    comprobar_gpu()
+    evitar_suspension()
     generar_datos()
-    plan = {}
-    for modelo in MODELOS:
+    plan = leer_json(CADENA / 'plan.json', {})
+    for modelo in modelos:
         info = {'viable': False}
         exp = f'{modelo}_aug_preflight'
         log = CADENA / 'logs' / f'preflight_{modelo}.log'
@@ -243,7 +286,7 @@ def preflight() -> dict:
         limpiar(exp)
         escribir_json(CADENA / 'plan.json', plan)
         print(f'[{ahora()}] {modelo}: {info}', flush=True)
-    horas = sum(plan[m]['min_por_epoca'] * EPOCAS for m in plan if plan[m].get('viable')) / 60
+    horas = sum(plan[m]['min_por_epoca'] * EPOCAS for m in modelos if plan[m].get('viable')) / 60
     print(f'Estimación de la fase 1: {horas:.1f} h de entrenamiento más la evaluación de cada modelo', flush=True)
     return plan
 
@@ -338,17 +381,54 @@ def escribir_resumen_csv(estado: dict) -> None:
         w.writerows(filas)
 
 
-def cadena() -> None:
+def simular(modelos: list, fase2: bool) -> None:
+    """Muestra qué ejecutaría la cadena, sin comprobar la GPU ni ejecutar nada."""
+    plan = leer_json(CADENA / 'plan.json', {})
+    print(f'Perfil de aumento: {PERFIL} · conjunto de evaluación: val (el test no se toca)')
+    print(f'Fase 1, lr {LR_BASE}, {epocas(LR_BASE)} épocas, en este orden:')
+    total = 0.0
+    for m in modelos:
+        p = plan.get(m, {})
+        minutos = p.get('min_por_epoca')
+        total += (minutos or 0) * epocas(LR_BASE)
+        if p.get('viable'):
+            coste = f"{minutos} min/época (lote {p['batch_size']}x{p['acumulacion_gradiente']})"
+        else:
+            coste = 'sin preflight todavía: lo hace al empezar y elige el lote'
+        print(f'  {nombre(m, LR_BASE):45s} {coste}')
+    print(f'  Entrenamiento estimado de la fase 1: {total / 60:.1f} h (solo con lo ya medido en esta máquina)')
+    if fase2:
+        print(f'Fase 2: los {TOP_FASE2} mejores por AP@0,5 con lr {LR_FASE2[0]} ({epocas(LR_FASE2[0])} épocas) '
+              f'y {LR_FASE2[1]} ({epocas(LR_FASE2[1])} épocas)')
+    else:
+        print('Fase 2: no se hace (--sin-fase2)')
+    print('Datos:', 'listos' if datos_listos() else f'faltan; el preflight los genera (~5 min) en datasets_experimentos/{PERFIL}')
+
+
+def cadena(modelos=None, fase2: bool = True) -> None:
+    modelos = list(modelos or MODELOS)
     CADENA.mkdir(parents=True, exist_ok=True)
-    plan = leer_json(CADENA / 'plan.json') or preflight()
-    viables = [m for m in MODELOS if plan.get(m, {}).get('viable')]
+    comprobar_gpu()
+    evitar_suspension()
+    plan = leer_json(CADENA / 'plan.json', {})
+    if any(m not in plan for m in modelos):
+        plan = preflight([m for m in modelos if m not in plan])
+    viables = [m for m in modelos if plan.get(m, {}).get('viable')]
     estado = leer_json(CADENA / 'estado.json') or {'inicio': ahora(), 'perfil': PERFIL, 'experimentos': {}}
-    estado['no_viables'] = {m: plan[m].get('error') for m in MODELOS if m in plan and not plan[m].get('viable')}
+    estado['no_viables'] = {m: plan[m].get('error') for m in modelos if m in plan and not plan[m].get('viable')}
     guardar_estado(estado)
     print(f'[{ahora()}] modelos viables: {viables}; no viables: {estado["no_viables"]}', flush=True)
 
     for modelo in viables:                                        # fase 1
         experimento(modelo, LR_BASE, plan, estado, fase=1)
+
+    if not fase2:
+        estado['fin'] = ahora()
+        guardar_estado(estado)
+        escribir_resumen_csv(estado)
+        empaquetar()
+        print(f'[{ahora()}] cadena terminada (sin fase 2)', flush=True)
+        return
 
     candidatos = {m: r for m in viables if (r := resultado_val(nombre(m, LR_BASE)))}
     mejores = elegir_mejores(candidatos, TOP_FASE2)
@@ -409,6 +489,27 @@ def empaquetar() -> Path:
     return destino
 
 
+def main(argv=None) -> None:
+    ap = argparse.ArgumentParser(description='Cadena de entrenamientos (ver el docstring del módulo).')
+    ap.add_argument('accion', nargs='?', default='estado', choices=['preflight', 'cadena', 'estado', 'empaquetar'])
+    ap.add_argument('--modelos', type=validar_modelos, default=None, help='lista separada por comas, en orden de ejecución')
+    ap.add_argument('--sin-fase2', action='store_true', help='no varía el lr de los mejores')
+    ap.add_argument('--simular', action='store_true', help='solo muestra lo que haría')
+    a = ap.parse_args(argv)
+    modelos = a.modelos or MODELOS
+    if a.simular:
+        if a.accion not in ('preflight', 'cadena'):
+            ap.error('--simular solo vale con preflight o cadena')
+        simular(modelos, fase2=not a.sin_fase2)
+    elif a.accion == 'preflight':
+        preflight(modelos)
+    elif a.accion == 'cadena':
+        cadena(modelos, fase2=not a.sin_fase2)
+    elif a.accion == 'estado':
+        estado_actual()
+    else:
+        empaquetar()
+
+
 if __name__ == '__main__':
-    accion = sys.argv[1] if len(sys.argv) > 1 else 'estado'
-    {'preflight': preflight, 'cadena': cadena, 'estado': estado_actual, 'empaquetar': empaquetar}[accion]()
+    main()

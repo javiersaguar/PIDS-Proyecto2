@@ -57,6 +57,31 @@ class Eleccion(unittest.TestCase):
         self.assertEqual(c.elegir_mejores({'a': resumen(0.9, 0.5)}, 3), ['a'])
 
 
+class Opciones(unittest.TestCase):
+    def test_modelos_validos_en_su_orden(self):
+        self.assertEqual(c.validar_modelos('retinanet_v2, faster_rcnn_v2'), ['retinanet_v2', 'faster_rcnn_v2'])
+
+    def test_rechaza_modelos_desconocidos_o_repetidos_o_vacios(self):
+        for malo in ('inventado', 'ssd_v1,ssd_v1', '', 'ssd_v1,otro'):
+            with self.assertRaises(ValueError):
+                c.validar_modelos(malo)
+
+    def test_simular_no_ejecuta_nada(self):
+        import contextlib
+        import io
+        llamadas = []
+        original = c.ejecutar
+        c.ejecutar = lambda *a, **k: llamadas.append(a) or 0
+        try:
+            with contextlib.redirect_stdout(io.StringIO()) as salida:
+                c.main(['cadena', '--simular', '--modelos', 'ssd_v2', '--sin-fase2'])
+        finally:
+            c.ejecutar = original
+        self.assertEqual(llamadas, [])
+        self.assertIn('ssd_v2_aug_robusto_v1_lr001', salida.getvalue())
+        self.assertIn('--sin-fase2', salida.getvalue())
+
+
 class MejorUmbral(unittest.TestCase):
     def test_elige_la_fila_de_mayor_f1(self):
         import tempfile
