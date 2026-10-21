@@ -37,6 +37,14 @@
           <p class="reading-note">El blanco indica cero. El color no lineal resalta las frecuencias bajas; se incluyen las imágenes sin robots en la normalización.</p>
           <div class="figure-links"><span class="sr-only">Exportar distribución por vídeo:</span><a href="../para_informe/mapa_calor_por_video_todos.png" download>PNG · 300 ppp</a><a href="../para_informe/mapa_calor_por_video_todos.svg" download>SVG</a><a href="../para_informe/mapa_calor_por_video_todos.pdf" download>PDF</a><a href="mapas_calor_por_video.html" target="_blank" rel="noopener">Abrir aparte ↗</a></div>
         </div>
+        <div class="figure-conclusions" aria-labelledby="conclusiones-distribucion">
+          <h3 id="conclusiones-distribucion">Qué concluimos</h3>
+          <ul>
+            <li>Los robots aparecen sobre todo a media altura: el 92 % de los centros está en el tercio central. Izquierda y derecha están equilibradas (49 % y 51 %), lo que respalda el volteo horizontal y descarta el vertical en el aumento de datos.</li>
+            <li>Los <em>difficult</em> se sitúan a la misma altura, pero aparecen junto a los bordes laterales el doble de veces (23 % frente al 11 %), a menudo porque quedan cortados. En los exteriores V04 y V09, esta proporción llega a la mitad.</li>
+            <li>V06 es el vídeo más disperso: solo el 71 % de los centros está en la franja central y también reúne más imágenes sin robots.</li>
+          </ul>
+        </div>
       </section>
 
       <section id="evolucion" class="figure-panel" aria-labelledby="titulo-evolucion">
@@ -55,6 +63,14 @@
           <p class="reading-note">La última ventana puede contener menos imágenes. Consulta la barra de color al comparar esta figura con los mapas por vídeo.</p>
           <div class="figure-links"><span>V01:</span><a href="../para_informe/mapas_temporales_V01.png" download>PNG · 300 ppp</a><a href="../para_informe/mapas_temporales_V01.svg" download>SVG</a><a href="../para_informe/mapas_temporales_V01.pdf" download>PDF</a><a href="mapas_calor_temporales.html" target="_blank" rel="noopener">Abrir aparte ↗</a></div>
         </div>
+        <div class="figure-conclusions" aria-labelledby="conclusiones-evolucion">
+          <h3 id="conclusiones-evolucion">Qué concluimos</h3>
+          <ul>
+            <li>Cada vídeo aporta distintas vistas: la posición de los robots cambia entre intervalos. En V06, su posición horizontal media oscila entre el 32 % y el 84 % del ancho de la imagen.</li>
+            <li>Los <em>difficult</em> se concentran en rachas. Nueve vídeos tienen ventanas sin ninguno y seis incluyen intervalos donde superan la mitad de los robots; en una ventana de V08, todos son <em>difficult</em>.</li>
+            <li>Como las imágenes vecinas se parecen mucho, no repartimos fotogramas de un mismo vídeo entre entrenamiento y validación. Entrenamos con nuestros diez vídeos y validamos con secuencias de otros grupos.</li>
+          </ul>
+        </div>
       </section>
 
       <section id="recuentos" class="figure-panel" aria-labelledby="titulo-recuentos">
@@ -72,6 +88,14 @@
         <div class="figure-caption">
           <p class="reading-note">Se anotó un fotograma cada 24 frames (≈ 0,79 s). La animación no infiere muestras intermedias ni sigue la identidad de los robots.</p>
           <div class="figure-links"><span class="sr-only">Exportar robots por fotograma:</span><a href="../para_informe/robots_por_fotograma_videos.png" download>PNG · 300 ppp</a><a href="../para_informe/robots_por_fotograma_videos.svg" download>SVG</a><a href="../para_informe/robots_por_fotograma_videos.pdf" download>PDF</a><a href="robots_por_fotograma.html" target="_blank" rel="noopener">Abrir aparte ↗</a></div>
+        </div>
+        <div class="figure-conclusions" aria-labelledby="conclusiones-recuentos">
+          <h3 id="conclusiones-recuentos">Qué concluimos</h3>
+          <ul>
+            <li>Las escenas son poco concurridas: nunca hay más de tres robots por imagen. Lo más habitual es ver dos (42 %), seguido de uno (33 %) y tres (19 %).</li>
+            <li>La media va de 1,26 robots por imagen en V06 a 2,27 en V05. V06 concentra 22 de las 41 imágenes sin robots, con tramos enteros sin rivales.</li>
+            <li>Las imágenes sin robots son pocas: 41 de 808, alrededor del 5 %. Las conservamos con su anotación vacía para que el modelo aprenda a reconocer cuándo no hay rivales y reduzca las falsas detecciones.</li>
+          </ul>
         </div>
       </section>
     </div>

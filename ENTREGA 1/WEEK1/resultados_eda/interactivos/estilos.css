@@ -38,6 +38,11 @@ iframe { display: block; border: 0; width: 100%; background: #fff; }
 .figure-links > span { color: var(--muted); }
 .figure-links a { display: inline-flex; align-items: center; min-height: 32px; }
 .figure-links a:last-child { margin-left: auto; }
+.figure-conclusions { max-width: 90ch; margin-top: 24px; }
+.figure-conclusions h3 { margin: 0 0 10px; font-size: 15px; line-height: 1.5; font-weight: 600; }
+.figure-conclusions ul { display: grid; gap: 10px; margin: 0; padding-left: 20px; }
+.figure-conclusions li { font-size: 14px; line-height: 1.75; }
+.figure-conclusions li::marker { color: var(--muted); }
 .chart-status { padding: 18px; background: var(--soft); color: var(--muted); font-size: 13px; margin: 0 0 12px; }
 .chart-status a { display: inline-block; margin-left: 10px; color: var(--accent); }
 footer { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line); margin-top: 44px; padding: 24px 0 32px; color: var(--muted); font-size: 12px; }
