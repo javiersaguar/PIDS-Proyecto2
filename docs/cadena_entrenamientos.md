@@ -49,6 +49,34 @@ python herramientas/cadena_entrenamientos.py empaquetar                 # zip de
 - **Se puede relanzar:** salta lo que ya tiene su evaluación y reanuda el entrenamiento que
   quedó a medias desde `model_last.pt`.
 
+### Opciones
+
+```bash
+python herramientas/cadena_entrenamientos.py cadena --modelos retinanet_v2,faster_rcnn_v2   # solo esos, en ese orden
+python herramientas/cadena_entrenamientos.py cadena --sin-fase2                             # no varía el lr
+python herramientas/cadena_entrenamientos.py cadena --simular                               # muestra el plan sin ejecutar nada
+```
+
+### En un ordenador local con GPU (Windows)
+
+Se hizo el 21/10/2026 como copia de seguridad cuando el laboratorio dejó de responder.
+
+1. Clonar la rama en una carpeta nueva, para no mezclar los resultados con el repositorio de trabajo.
+2. Crear un entorno que reutilice `torch`: `python -m venv --system-site-packages .venv-cadena`, e instalar
+   `albumentations==1.4.18 albucore==0.0.17 torchmetrics==1.9.0 pycocotools==2.0.11`.
+3. Registrar su kernel: `.venv-cadena\Scripts\python.exe -m ipykernel install --sys-prefix --name pids-cadena`.
+   Con `PIDS_KERNEL=pids-cadena` la cadena ejecuta los notebooks con ese kernel.
+4. Lanzar con `cadena_entrenamientos.py cadena`. El `preflight` se hace solo al empezar y elige
+   el lote según la memoria de **esa** GPU (con 8 GB, `faster_rcnn_v1` y `retinanet_v2` no caben con lote 8).
+
+El script impide que Windows se suspenda mientras corre, pero no si se cierra la tapa del portátil.
+Usa `python -m nbconvert` y no `jupyter nbconvert`, porque el control de aplicaciones de Windows
+bloquea el ejecutable `jupyter.exe` de un entorno nuevo.
+
+Si se ejecuta la misma cadena en dos máquinas, los modelos se repiten: conviene repartirlos con `--modelos`.
+Las versiones de `torch` y `torchvision` también difieren (laboratorio: 2.4.1 y 0.19.1), así que los
+resultados de las dos máquinas se pueden comparar, pero no son bit a bit iguales.
+
 ## Qué deja
 
 | Dónde | Qué |
