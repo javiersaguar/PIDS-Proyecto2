@@ -13,6 +13,7 @@ Opciones de preflight y cadena:
     --modelos a,b,c   solo esos modelos, en ese orden (por defecto, los siete)
     --sin-fase2       no hace la fase 2 (variar el lr de los mejores)
     --simular         solo muestra lo que haría, sin tocar la GPU ni ejecutar nada
+    --desacoplar      (Windows) se relanza sin consola y sigue aunque se cierre la ventana desde la que se lanzó
 
 Pensado para lanzarse con nohup. Se puede relanzar: salta lo que ya tiene su evaluación y
 reanuda el entrenamiento que quedó a medias.
@@ -172,7 +173,8 @@ def ejecutar(notebook: Path, salida: str, cfg, log: Path) -> int:
     with open(log, 'a', encoding='utf-8') as f:
         f.write(f'\n=== {ahora()} {notebook.name} -> {salida}\n')
         f.flush()
-        return subprocess.run(orden, cwd=str(notebook.parent), env=entorno, stdout=f, stderr=subprocess.STDOUT).returncode
+        return subprocess.run(orden, cwd=str(notebook.parent), env=entorno, stdout=f, stderr=subprocess.STDOUT,
+                              creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0)).returncode
 
 
 def sin_memoria(log: Path) -> bool:
@@ -489,13 +491,43 @@ def empaquetar() -> Path:
     return destino
 
 
+def desacoplar(argv: list) -> int:
+    """Relanza este mismo comando como proceso independiente, sin consola (solo Windows).
+
+    Una consola cerrada, o un cierre de sesión de la aplicación que lo lanzó, manda un evento de cierre a los
+    procesos que cuelgan de ella y los mata a mitad de un entrenamiento. Un proceso sin consola no lo recibe.
+    """
+    if os.name != 'nt':
+        raise RuntimeError('--desacoplar solo hace falta en Windows; en Linux, nohup')
+    DETACHED_PROCESS, NUEVO_GRUPO, FUERA_DEL_JOB = 0x00000008, 0x00000200, 0x01000000
+    orden = [sys.executable, '-u', str(Path(__file__).resolve())] + [a for a in argv if a != '--desacoplar']
+    CADENA.mkdir(parents=True, exist_ok=True)
+    log = open(CADENA / 'cadena.log', 'a', encoding='utf-8')
+    for banderas in (DETACHED_PROCESS | NUEVO_GRUPO | FUERA_DEL_JOB, DETACHED_PROCESS | NUEVO_GRUPO):
+        try:
+            proceso = subprocess.Popen(orden, cwd=str(RAIZ), stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
+                                       creationflags=banderas, close_fds=True)
+            break
+        except OSError:                                  # el job de quien nos lanza no permite salir de él
+            continue
+    else:
+        raise RuntimeError('No se pudo lanzar el proceso desacoplado')
+    print(f'Cadena lanzada sin consola, PID {proceso.pid}. Log: {CADENA / "cadena.log"}')
+    return proceso.pid
+
+
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description='Cadena de entrenamientos (ver el docstring del módulo).')
     ap.add_argument('accion', nargs='?', default='estado', choices=['preflight', 'cadena', 'estado', 'empaquetar'])
     ap.add_argument('--modelos', type=validar_modelos, default=None, help='lista separada por comas, en orden de ejecución')
     ap.add_argument('--sin-fase2', action='store_true', help='no varía el lr de los mejores')
     ap.add_argument('--simular', action='store_true', help='solo muestra lo que haría')
+    ap.add_argument('--desacoplar', action='store_true', help='(Windows) sigue aunque se cierre la ventana que lo lanzó')
+    argumentos = list(sys.argv[1:] if argv is None else argv)
     a = ap.parse_args(argv)
+    if a.desacoplar and not a.simular:
+        desacoplar(argumentos)
+        return
     modelos = a.modelos or MODELOS
     if a.simular:
         if a.accion not in ('preflight', 'cadena'):
