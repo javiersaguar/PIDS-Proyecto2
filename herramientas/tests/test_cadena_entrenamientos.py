@@ -57,6 +57,28 @@ class Eleccion(unittest.TestCase):
         self.assertEqual(c.elegir_mejores({'a': resumen(0.9, 0.5)}, 3), ['a'])
 
 
+class MejorUmbral(unittest.TestCase):
+    def test_elige_la_fila_de_mayor_f1(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            exp = 'x_aug_robusto_v1_lr001'
+            carpeta = Path(d) / 'resultados_test' / f'{exp}_val'
+            carpeta.mkdir(parents=True)
+            filas = ['umbral,precision,recall,recall_normales,recall_difficult,f1,tp,fp,fn',
+                     '0.1,0.5,0.95,1,0.9,0.65,95,95,5',
+                     '0.3,0.8,0.9,1,0.7,0.85,90,22,10',
+                     '0.9,0.99,0.3,0.5,0.1,0.46,30,1,70']
+            (carpeta / 'umbral_confianza.csv').write_text('\n'.join(filas) + '\n', encoding='utf-8')
+            anterior, c.WEEK2 = c.WEEK2, Path(d)
+            try:
+                mejor = c.mejor_umbral(exp)
+                self.assertEqual(mejor['umbral'], 0.3)
+                self.assertEqual(mejor['fp'], 22.0)
+                self.assertEqual(c.mejor_umbral('no_existe'), {})
+            finally:
+                c.WEEK2 = anterior
+
+
 class ParcheDeData(unittest.TestCase):
     def nb(self, fuente):
         return {'cells': [{'cell_type': 'markdown', 'source': ["PERFIL_AUMENTO = 'base'"]},

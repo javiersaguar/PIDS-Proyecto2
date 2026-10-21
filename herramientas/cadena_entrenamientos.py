@@ -294,10 +294,24 @@ def experimento(modelo: str, lr: float, plan: dict, estado: dict, fase: int) -> 
     print(f'[{ahora()}] {exp}: {elem["estado"]} {elem.get("ap50_todos", "")}', flush=True)
 
 
+def mejor_umbral(exp: str) -> dict:
+    """Fila de umbral_confianza.csv con el mayor F1: compara modelos con confianzas muy distintas.
+
+    RetinaNet y SSD dan confianzas más bajas que Faster R-CNN, así que contar errores con el
+    mismo umbral (0,5) los penaliza. Con el umbral de su mejor F1 la comparación es justa.
+    """
+    filas = leer_csv(WEEK2 / 'resultados_test' / f'{exp}_val' / 'umbral_confianza.csv')
+    if not filas:
+        return {}
+    mejor = max(filas, key=lambda f: float(f['f1']))
+    return {k: (float(v) if k != 'umbral' else float(v)) for k, v in mejor.items()}
+
+
 def escribir_resumen_csv(estado: dict) -> None:
     columnas = ['experimento', 'modelo', 'lr', 'fase', 'epocas', 'lote', 'acumulacion', 'mejor_epoca',
                 'ap50_todos', 'ap50_normales', 'ap50_difficult', 'ap_0.5:0.95', 'fp', 'fn', 'fn_difficult',
-                'precision', 'exhaustividad', 'ms_una_a_una', 'minutos_train', 'mem_pico_mib']
+                'precision', 'exhaustividad', 'umbral_f1', 'f1_max', 'precision_f1', 'exhaustividad_f1',
+                'exhaustividad_difficult_f1', 'fp_f1', 'fn_f1', 'ms_una_a_una', 'minutos_train', 'mem_pico_mib']
     filas = []
     for exp, e in estado['experimentos'].items():
         r = resultado_val(exp)
@@ -306,13 +320,17 @@ def escribir_resumen_csv(estado: dict) -> None:
             continue
         total = next((f for f in r['por_video'] if f['grupo'] == 'Total'), {})
         todos = next((f for f in r['map'] if f['grupo'] == 'todos'), {})
+        mejor_f1 = mejor_umbral(exp)
         filas.append({
             'experimento': exp, 'modelo': e['modelo'], 'lr': e['lr'], 'fase': e['fase'], 'epocas': t.get('num_epochs'),
             'lote': t.get('batch_size'), 'acumulacion': t.get('acumulacion_gradiente'), 'mejor_epoca': t.get('mejor_epoca'),
             'ap50_todos': ap50(r), 'ap50_normales': ap50(r, 'normales'), 'ap50_difficult': ap50(r, 'difficult'),
             'ap_0.5:0.95': todos.get('map'), 'fp': total.get('fp'), 'fn': total.get('fn'),
             'fn_difficult': total.get('fn_difficult'), 'precision': total.get('precision'),
-            'exhaustividad': total.get('recall'), 'ms_una_a_una': r.get('ms_por_imagen_una_a_una'),
+            'exhaustividad': total.get('recall'), 'umbral_f1': mejor_f1.get('umbral'), 'f1_max': mejor_f1.get('f1'),
+            'precision_f1': mejor_f1.get('precision'), 'exhaustividad_f1': mejor_f1.get('recall'),
+            'exhaustividad_difficult_f1': mejor_f1.get('recall_difficult'), 'fp_f1': mejor_f1.get('fp'),
+            'fn_f1': mejor_f1.get('fn'), 'ms_una_a_una': r.get('ms_por_imagen_una_a_una'),
             'minutos_train': t.get('tiempo_train_min'), 'mem_pico_mib': t.get('mem_pico_mib')})
     with open(CADENA / 'resumen.csv', 'w', newline='', encoding='utf-8') as f:
         w = csv.DictWriter(f, fieldnames=columnas)
