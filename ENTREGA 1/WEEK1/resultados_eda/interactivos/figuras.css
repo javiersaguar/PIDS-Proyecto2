@@ -1,0 +1,52 @@
+:root {
+  color-scheme: light;
+  --text: #233342;
+  --muted: #526576;
+  --accent: #245e9b;
+  --accent-hover: #194b80;
+  --line: #dce3e9;
+  --soft: #f3f6f9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--text); background: #fff; }
+body.figure-enhanced { max-width: 1200px; margin: auto; padding: 28px; }
+body.embedded { padding: 0; }
+.chart-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 16px; }
+.chart-title { margin: 0 0 8px; font-size: 24px; line-height: 1.3; font-weight: 600; letter-spacing: -.02em; }
+.embedded .chart-title { display: none; }
+.chart-context { color: var(--muted); font-size: 13px; line-height: 1.7; margin: 0; font-variant-numeric: tabular-nums; }
+.video-field { display: flex; align-items: center; gap: 9px; flex-shrink: 0; color: var(--muted); font-size: 12px; }
+.video-field select { min-height: 40px; border: 1px solid #a9b8c5; border-radius: 6px; padding: 7px 28px 7px 10px; background: #fff; color: var(--text); font: inherit; cursor: pointer; }
+.chart-toolbar { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 12px; background: var(--soft); border-radius: 8px; }
+.playback { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+.chart-button { min-height: 40px; padding: 0 13px; border-radius: 6px; border: 1px solid #a9b8c5; background: #fff; color: var(--text); font: 500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background-color 150ms ease-out, border-color 150ms ease-out; }
+.chart-button:hover { background: #e5edf5; border-color: var(--accent); }
+.chart-button.play-button { width: 137px; border-color: var(--accent); background: var(--accent); color: #fff; }
+.chart-button.play-button:hover { background: var(--accent-hover); }
+.chart-button.step-button { width: 40px; padding: 0; }
+.chart-button:disabled { cursor: default; opacity: .4; }
+.chart-button svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.play-button svg { fill: currentColor; stroke: none; }
+.timeline { display: flex; flex: 1; gap: 14px; align-items: center; min-width: 0; }
+.timeline input { min-width: 60px; width: 100%; min-height: 40px; margin: 0; cursor: pointer; accent-color: var(--accent); background: transparent; }
+.sample-count { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 62px; text-align: right; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.figure-enhanced .g-gtitle { display: none; }
+.chart-error { margin: 8px 0; color: #9b2929; font-size: 13px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 560px) {
+  body.figure-enhanced { padding: 16px; }
+  body.embedded { padding: 0; }
+  .chart-header { align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .chart-title { font-size: 21px; }
+  .chart-context { font-size: 12px; }
+  .video-field { gap: 4px; flex-direction: column; align-items: flex-start; font-size: 11px; }
+  .video-field select { padding-right: 18px; min-height: 36px; }
+  .chart-toolbar { flex-wrap: wrap; gap: 8px; padding: 10px; }
+  .playback { width: 100%; }
+  .play-button { margin-right: auto; }
+  .timeline { flex-basis: 100%; gap: 12px; }
+  .timeline input { min-height: 28px; }
+}
+@media (prefers-reduced-motion: reduce) { .chart-button { transition: none; } }
