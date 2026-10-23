@@ -64,7 +64,7 @@ class Informe:
         portada=self.doc.tables[0]
         valores=['2', '\n'.join(AUTORES),
                  'Entrega 1 · Bloque 1' if modo=='fase1' else 'Avance de entrega 2 · Bloques 1 y 2' if modo=='completo' else 'Copia de trabajo · solo Bloque 2',
-                 'Pendiente de confirmación', '2026/2027']
+                 '20/10/2026' if modo=='fase1' else 'Pendiente de confirmación', '2026/2027']
         for row,text in zip(portada.rows,valores):
             row.cells[1].text=text
             for p in row.cells[1].paragraphs:
@@ -76,13 +76,12 @@ class Informe:
         self.p('No aplica a la primera entrega. No hay comentarios docentes incorporados en esta versión de trabajo.')
         self.h('Reparto del trabajo')
         if self.modo=='fase1':
-            self.p('Reparto a partes iguales entre los cinco integrantes: cada uno asume un lote de extracción, anotación y revisión cruzada, y un área transversal del Bloque 1.')
             self.table(['Integrante','Tareas del Bloque 1'],[
-                ['Javier Saguar','Lote A (vídeos 01-02): extracción, anotación y revisión cruzada. Organización del repositorio y fichas de los vídeos.'],
-                ['Alejandro Cuevas','Lote B (vídeos 03-04): extracción, anotación y revisión cruzada. Análisis exploratorio de los datos (EDA).'],
-                ['Mónica Fernández','Lote C (vídeos 05-06): extracción, anotación y revisión cruzada. Calibración y criterios de anotación.'],
-                ['Pedro José Orrego','Lote D (vídeos 07-08): extracción, anotación y revisión cruzada. Aumento de datos.'],
-                ['Daniel Naval','Lote E (vídeos 09-10): extracción, anotación y revisión cruzada. Depuración del dataset.']],widths=[3.5,12.5],size=9)
+                ['Javier Saguar','Lote A (vídeos 01-02): extracción, anotación y revisión cruzada. Fichas de los vídeos, criterios de anotación y depuración del dataset. Aumento de datos sobre el script de Alejandro, que mejoró y ejecutó. Redacción de la memoria.'],
+                ['Alejandro Cuevas','Lote B (vídeos 03-04): extracción, anotación y revisión cruzada. Análisis exploratorio de los datos (EDA) y script de entrenamiento sobre el que se integró el aumento. Redacción de la memoria.'],
+                ['Mónica Fernández','Lote C (vídeos 05-06): extracción, anotación y revisión cruzada. Calibración entre anotadores y revisión de la memoria.'],
+                ['Pedro José Orrego','Lote D (vídeos 07-08): extracción, anotación y revisión cruzada. Calibración, selección de figuras del EDA y diseño de la web de figuras interactivas (GitHub Pages).'],
+                ['Daniel Naval','Lote E (vídeos 09-10): extracción, anotación y revisión cruzada. Calibración y redacción de la memoria.']],widths=[3.5,12.5],size=9)
             self.caption('Reparto del trabajo del Bloque 1 entre los cinco integrantes.',tipo='Tabla')
         else:
             self.p('Distribución documentada en los commits y tareas. La participación final se revisará en grupo antes de entregar.')

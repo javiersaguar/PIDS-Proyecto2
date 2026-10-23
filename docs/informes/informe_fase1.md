@@ -2,7 +2,7 @@
 
 Autores: Javier Saguar, Alejandro Cuevas, Mónica Fernández, Pedro José Orrego, Daniel Naval
 
-Contenido actualizado el 16 de octubre de 2026. Grupo 2 según el usuario pids2; confirmar identificación administrativa y fecha de entrega.
+Grupo 2. Fecha de entrega: 20/10/2026.
 
 ## Respuesta a la revisión anterior
 
@@ -10,15 +10,13 @@ No aplica a la primera entrega. No hay comentarios docentes incorporados en esta
 
 ## Reparto del trabajo
 
-Reparto a partes iguales entre los cinco integrantes: cada uno asume un lote de extracción, anotación y revisión cruzada, y un área transversal del Bloque 1.
-
 | Integrante | Tareas del Bloque 1 |
 | --- | --- |
-| Javier Saguar | Lote A (vídeos 01-02): extracción, anotación y revisión cruzada. Organización del repositorio y fichas de los vídeos. |
-| Alejandro Cuevas | Lote B (vídeos 03-04): extracción, anotación y revisión cruzada. Análisis exploratorio de los datos (EDA). |
-| Mónica Fernández | Lote C (vídeos 05-06): extracción, anotación y revisión cruzada. Calibración y criterios de anotación. |
-| Pedro José Orrego | Lote D (vídeos 07-08): extracción, anotación y revisión cruzada. Aumento de datos. |
-| Daniel Naval | Lote E (vídeos 09-10): extracción, anotación y revisión cruzada. Depuración del dataset. |
+| Javier Saguar | Lote A (vídeos 01-02): extracción, anotación y revisión cruzada. Fichas de los vídeos, criterios de anotación y depuración del dataset. Aumento de datos sobre el script de Alejandro, que mejoró y ejecutó. Redacción de la memoria. |
+| Alejandro Cuevas | Lote B (vídeos 03-04): extracción, anotación y revisión cruzada. Análisis exploratorio de los datos (EDA) y script de entrenamiento sobre el que se integró el aumento. Redacción de la memoria. |
+| Mónica Fernández | Lote C (vídeos 05-06): extracción, anotación y revisión cruzada. Calibración entre anotadores y revisión de la memoria. |
+| Pedro José Orrego | Lote D (vídeos 07-08): extracción, anotación y revisión cruzada. Calibración, selección de figuras del EDA y diseño de la web de figuras interactivas (GitHub Pages). |
+| Daniel Naval | Lote E (vídeos 09-10): extracción, anotación y revisión cruzada. Calibración y redacción de la memoria. |
 
 Tabla 1. Reparto del trabajo del Bloque 1 entre los cinco integrantes.
 

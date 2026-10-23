@@ -38,6 +38,14 @@ peticiones de la API de GitHub, compartido entre todos sus usuarios, y falla con
 Si se regeneran los notebooks, hay que volver a exportarlos con el mismo comando y
 commitear los `.html` de nuevo; no se generan solos.
 
+**20/10/2026:** cambios en `informe_fase1.docx`, editado también a mano: fecha de
+entrega (20/10/2026), reparto del trabajo acordado en el grupo, «2. Recolección de
+datos» como encabezado de primer nivel (ya sale en el índice), «Tabla 9» en la
+depuración (estaba repetida la 6) y referencia [9] a `video2frames.ipynb`. El PDF se
+exportó desde Word con el índice actualizado: 13 páginas, 10 de cuerpo. A Moodle se
+sube solo ese PDF, con el nombre `PIDS_grupo2_entrega1.pdf`; el dataset y los
+notebooks se citan por enlace al repositorio y no se versiona ningún zip de entrega.
+
 ## Aviso: `informe_fase1.docx` (y partes de la completa) ya no coincide con el generador
 
 `informe_fase1.docx` tiene correcciones manuales en Word (título, numeración de
