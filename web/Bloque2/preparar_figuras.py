@@ -13,6 +13,7 @@ CARPETA = Path(__file__).resolve().parent
 RAIZ = CARPETA.parents[1]
 sys.path.insert(0, str(RAIZ / 'herramientas'))
 import construir_web  # noqa: E402
+import construir_web_cadena  # noqa: E402
 
 
 def preparar():
@@ -27,6 +28,7 @@ def preparar():
     origen = RAIZ / 'ENTREGA 1/WEEK1/resultados_eda/interactivos/plotly.min.js'
     shutil.copyfile(origen, CARPETA / 'plotly.min.js')
     print(f'Preparadas {len(figuras)} figuras en {CARPETA}')
+    construir_web_cadena.escribir()
 
 
 if __name__ == '__main__':

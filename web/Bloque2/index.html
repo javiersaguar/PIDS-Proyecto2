@@ -4,12 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Entrenamiento y validación del detector de RoboMasters: cuatro gráficas interactivas y sus conclusiones en una sola página.">
+  <meta name="description" content="Entrenamiento y validación del detector de RoboMasters: catorce gráficas interactivas y sus conclusiones en una sola página.">
   <title>Entrenamiento y evaluación · PIDS</title>
   <link rel="stylesheet" href="estilos.css">
   <script src="plotly.min.js" defer></script>
   <script src="datos.js" defer></script>
   <script src="graficas.js" defer></script>
+  <script src="datos_cadena.js" defer></script>
+  <script src="graficas_cadena.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#graficas">Saltar a las gráficas</a>
@@ -18,11 +20,16 @@
       <p class="project">PIDS <span aria-hidden="true">/</span> Bloque 2</p>
       <div class="intro-row">
         <h1>Entrenamiento y evaluación</h1>
-        <p>Cómo aprende el detector de robots y dónde se equivoca. Comparamos cuatro configuraciones de Faster R-CNN, entrenadas con nuestros diez vídeos y validadas con 672 imágenes de otras secuencias.</p>
+        <p>Cómo aprende el detector de robots y dónde se equivoca. Primero, cuatro configuraciones de Faster R-CNN entrenadas con nuestros diez vídeos y validadas con 672 imágenes de otras secuencias. Después, la comparación de siete arquitecturas, tres tasas de aprendizaje y la evaluación final en test.</p>
       </div>
     </header>
 
     <div id="graficas">
+      <div class="bloque-titulo bloque-inicial">
+        <h2>Primeros experimentos con Faster R-CNN</h2>
+        <p>Aumento de datos, tasa de aprendizaje y resolución de entrada con una sola arquitectura. <a href="#cadena">Saltar a la comparativa de arquitecturas y test.</a></p>
+      </div>
+
       <section class="figure-panel" aria-labelledby="titulo-epocas">
         <div class="section-heading">
           <h2 id="titulo-epocas">Cómo aprende el modelo</h2>
@@ -127,6 +134,277 @@
         </div>
       </section>
 
+
+      <div class="bloque-titulo" id="cadena">
+        <h2>Comparativa de arquitecturas, tasa de aprendizaje y test</h2>
+        <p>Trece entrenamientos en JupyterHub con los mismos datos y el perfil de aumento <code>robusto_v1</code>: siete arquitecturas con tasa 0,001 y, con las tres mejores, también 0,0005 y 0,002. Se comparan con la validación (672 imágenes). El test (718 imágenes, de otros grupos) se evaluó una sola vez por modelo, con el umbral de confianza fijado antes en validación. Una sola semilla por configuración.</p>
+        <p class="atajos">Ir a: <a href="#arquitecturas">Arquitecturas</a> · <a href="#tasa">Tasa de aprendizaje</a> · <a href="#coste">Coste</a> · <a href="#validacion_test">Test</a> · <a href="#mapa">Resumen</a></p>
+      </div>
+
+      <section class="figure-panel" id="arquitecturas" aria-labelledby="titulo-arquitecturas">
+        <div class="section-heading">
+          <h2 id="titulo-arquitecturas">Cómo aprende cada arquitectura</h2>
+          <div class="figure-description">
+            <p>Siete arquitecturas con la misma tasa (0,001) y los mismos datos. El rombo marca la época del mejor checkpoint, la que se conserva.</p>
+            <p class="interaction-hint">Cambia la medida con el selector. En «escala completa» se ven también SSD300 y SSDlite320. Pulsa una etiqueta de la leyenda para ocultar esa serie.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-cadena="arquitecturas">
+          <div class="chart-controls"></div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-cadena-arquitecturas" class="plot" role="img" aria-label="Curvas por época de las siete arquitecturas"></div>
+          <div class="figure-caption">
+            <p class="reading-note">Las curvas son las medidas durante el entrenamiento; las cifras de las tablas de la memoria vienen de la evaluación final del checkpoint guardado y pueden diferir unas diezmilésimas.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_train" target="_blank" rel="noopener">Historiales de entrenamiento ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>Faster R-CNN alcanza su máximo pronto (épocas 3 a 5) y después se estanca o baja algo. RetinaNet arranca más despacio y llega a su máximo en las épocas 6 y 7.</li>
+            <li>SSD300 sigue mejorando en la época 12, así que doce épocas quizá se queden cortas para esa red. SSDlite320 no pasa de 0,68: redimensiona la imagen a 320 × 320 y los robots lejanos casi desaparecen.</li>
+            <li>Las cuatro redes con ResNet-50 terminan a 1,2 puntos entre sí (de 0,9513 a 0,9396): dentro de esa familia, cambiar de arquitectura mueve poco el AP@0,5.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="aprendizaje" aria-labelledby="titulo-aprendizaje">
+        <div class="section-heading">
+          <h2 id="titulo-aprendizaje">Pérdida y AP en cada entrenamiento</h2>
+          <div class="figure-description">
+            <p>Para cada uno de los 13 entrenamientos: pérdida de entrenamiento y de validación (eje izquierdo) y AP@0,5 en validación (eje derecho). La línea punteada es el mejor checkpoint.</p>
+            <p class="interaction-hint">Elige un entrenamiento en el selector y pasa el cursor por las curvas.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-cadena="aprendizaje">
+          <div class="chart-controls"></div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-cadena-aprendizaje" class="plot" role="img" aria-label="Pérdidas y AP@0,5 por época del entrenamiento seleccionado"></div>
+          <div class="figure-caption">
+            <p class="reading-note">Una pérdida menor es mejor; un AP mayor es mejor. Las escalas de la pérdida cambian mucho entre arquitecturas: no se comparan entre sí.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_train" target="_blank" rel="noopener">Historiales de entrenamiento ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>La pérdida de entrenamiento baja siempre; la de validación toca fondo pronto y el AP@0,5 sigue un poco más. En 11 de los 13 entrenamientos el mínimo de la pérdida de validación llega antes que la mejor época de AP@0,5, y por eso el checkpoint se elige por AP@0,5 y no por la pérdida.</li>
+            <li>Quedarse hasta el final en vez de conservar la mejor época cuesta hasta 1,4 puntos de AP@0,5 (Faster R-CNN v2 con tasa 0,002) y casi nada con tasa 0,0005 (de 0,01 a 0,5 puntos).</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="tasa" aria-labelledby="titulo-tasa">
+        <div class="section-heading">
+          <h2 id="titulo-tasa">Qué cambia la tasa de aprendizaje</h2>
+          <div class="figure-description">
+            <p>Las tres mejores arquitecturas se entrenaron con tasas de 0,0005, 0,001 y 0,002. Con 0,0005 se usaron 15 épocas en lugar de 12. El rombo es el mejor checkpoint de cada tasa.</p>
+            <p class="interaction-hint">Elige el modelo y la medida. Compara cuándo llega cada curva a su máximo y qué hace después.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-cadena="tasa">
+          <div class="chart-controls"></div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-cadena-tasa" class="plot" role="img" aria-label="Curvas por época de las tres tasas de aprendizaje para el modelo elegido"></div>
+          <div class="figure-caption">
+            <p class="reading-note">La tasa se cambió sola: mismo perfil de aumento, mismos datos y semilla 0. Una sola semilla por configuración.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/cadena" target="_blank" rel="noopener">Resumen de la cadena ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>La tasa casi no cambia el mejor AP@0,5: entre la mejor y la peor hay 0,16 puntos en Faster R-CNN v2, 0,22 en RetinaNet v2 y 0,14 en Faster R-CNN v1.</li>
+            <li>Sí cambia la estabilidad. Con 0,002 el máximo de Faster R-CNN llega en la época 1 o 2 y después el AP cae de 1,1 a 1,4 puntos hacia la época 12. Con 0,0005 el máximo llega tarde (épocas 5, 11 y 14) y exige más épocas.</li>
+            <li>Se mantiene 0,001: iguala a las otras y no necesita más épocas.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="coste" aria-labelledby="titulo-coste">
+        <div class="section-heading">
+          <h2 id="titulo-coste">Cuánto cuesta entrenar</h2>
+          <div class="figure-description">
+            <p>Minutos de entrenamiento, época del mejor checkpoint, memoria de GPU y tiempo de inferencia de los 13 entrenamientos, ordenados de mayor a menor.</p>
+            <p class="interaction-hint">Cambia la medida con el selector; el color indica la arquitectura.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-cadena="coste">
+          <div class="chart-controls"></div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-cadena-coste" class="plot" role="img" aria-label="Barras con el coste de cada entrenamiento"></div>
+          <div class="figure-caption">
+            <p class="reading-note">Los minutos hasta el mejor checkpoint son una estimación: minutos totales × (mejor época ÷ épocas), suponiendo épocas de igual duración. Faster R-CNN v2 usó lote 4 con acumulación 2 para caber en memoria. La inferencia se midió en una RTX 3060, imagen a imagen.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/cadena" target="_blank" rel="noopener">Resumen de la cadena ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>Los 13 entrenamientos suman 1306 minutos (unas 21,8 horas). Faster R-CNN v2 es la más cara: 151 minutos con 12 épocas y 189 con 15, frente a 19 de Faster R-CNN MobileNet.</li>
+            <li>Con tasa 0,002 el mejor checkpoint de Faster R-CNN llega en la época 1 o 2 (unos 13 a 18 minutos, estimados): un entrenamiento corto da casi todo el AP@0,5 y el resto del tiempo apenas aporta.</li>
+            <li>RetinaNet v2 es la que más memoria necesita (10.550 MiB), por encima de Faster R-CNN v2 (7462 MiB, aun con lote 4). SSD300 y SSDlite320 caben en poco más de 1 GiB.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="latencia" aria-labelledby="titulo-latencia">
+        <div class="section-heading">
+          <h2 id="titulo-latencia">Precisión frente a velocidad</h2>
+          <div class="figure-description">
+            <p>Cada punto es un entrenamiento: calidad en el eje vertical y tiempo por imagen en el horizontal (escala logarítmica). Los puntos grandes tienen tasa 0,001; los pequeños, 0,0005 y 0,002.</p>
+            <p class="interaction-hint">Cambia la medida (validación o test) y la escala con los selectores. Pasa el cursor por un punto para ver también cuánto costó entrenarlo.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-cadena="latencia">
+          <div class="chart-controls"></div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-cadena-latencia" class="plot" role="img" aria-label="Calidad frente a tiempo por imagen de los entrenamientos"></div>
+          <div class="figure-caption">
+            <p class="reading-note">La latencia es de la RTX 3060, imagen a imagen, sin captura de cámara ni actuación; la del robot se medirá en el Bloque 3. En test solo están los siete modelos con tasa 0,001.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/cadena" target="_blank" rel="noopener">Resumen de la cadena ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>Faster R-CNN v2 es la más precisa y la más lenta (99,5 ms por imagen en validación). Faster R-CNN MobileNet pierde 2,3 puntos de AP@0,5 pero tarda 16,0 ms, seis veces menos.</li>
+            <li>Faster R-CNN v1 y RetinaNet v1 quedan dominadas: RetinaNet v2 es más rápida (67,3 ms) y más precisa (0,9447 frente a 0,9426 y 0,9396).</li>
+            <li>SSD300 (12,5 ms, 0,9008) no compensa frente a MobileNet: es 3,5 ms más rápida, pero 2,7 puntos menos precisa.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="validacion_test" aria-labelledby="titulo-validacion_test">
+        <div class="section-heading">
+          <h2 id="titulo-validacion_test">Validación frente a test</h2>
+          <div class="figure-description">
+            <p>Las mismas medidas en el conjunto con el que se eligió (validación) y en el de test, que se abrió una sola vez por modelo. Precisión, exhaustividad y F1 usan el umbral de confianza fijado en validación.</p>
+            <p class="interaction-hint">Cambia la medida con el selector. Pasa el cursor por una barra para ver su valor exacto.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-cadena="validacion_test">
+          <div class="chart-controls"></div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-cadena-validacion_test" class="plot" role="img" aria-label="Barras de validación y test para cada modelo"></div>
+          <div class="figure-caption">
+            <p class="reading-note">Los ejes de las medidas de AP no empiezan en cero. Los errores se dan por cada 100 robots porque validación (1561 robots) y test (1721) no tienen el mismo tamaño.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_test" target="_blank" rel="noopener">Resultados de test ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>El orden de los modelos se mantiene salvo un intercambio de 0,07 puntos entre RetinaNet v1 y Faster R-CNN v1. Las cuatro redes con ResNet-50 varían entre −0,7 y +0,1 puntos al pasar a test; las SSD pierden 2,1 (SSD300) y 4,1 (SSDlite320).</li>
+            <li>En difficult, el modelo final sube 5,0 puntos (de 0,6422 a 0,6921) y Faster R-CNN v1 baja 4,1. Con 270 robots difficult en test, cambios de unos pocos puntos no son concluyentes.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="errores" aria-labelledby="titulo-errores">
+        <div class="section-heading">
+          <h2 id="titulo-errores">Dónde falla cada modelo en test</h2>
+          <div class="figure-description">
+            <p>Con el umbral fijado en validación: falsos positivos, robots normales perdidos y robots difficult perdidos. Test tiene 1721 robots, 270 de ellos difficult.</p>
+            <p class="interaction-hint">Pasa el cursor por las barras. La leyenda permite ocultar un tipo de error.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-cadena="errores">
+          <div class="chart-controls"></div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-cadena-errores" class="plot" role="img" aria-label="Falsos positivos y robots perdidos de cada modelo en test"></div>
+          <div class="figure-caption">
+            <p class="reading-note">Un falso positivo es una detección sin robot; un robot perdido es uno anotado que no se detecta. Una anotación incompleta puede contar como falso positivo.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_test" target="_blank" rel="noopener">Resultados de test ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>El modelo final comete 94 falsos positivos y pierde 115 robots, 74 de ellos difficult: el 64 % de los fallos corresponde al 16 % de los robots.</li>
+            <li>Las SSD fallan sobre todo por robots perdidos (307 y 691), probablemente porque la entrada pequeña deja sin resolución a los robots lejanos.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="umbral" aria-labelledby="titulo-umbral">
+        <div class="section-heading">
+          <h2 id="titulo-umbral">Cómo se elige el umbral de confianza</h2>
+          <div class="figure-description">
+            <p>Precisión, exhaustividad y F1 en test para cada umbral, con el modelo final y con la opción rápida. La línea punteada es el umbral que se fijó antes en validación; el rombo, el mejor F1 posible en test.</p>
+            <p class="interaction-hint">Cambia de modelo con el selector. Pasa el cursor por las curvas para ver el valor en cada umbral.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-cadena="umbral">
+          <div class="chart-controls"></div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-cadena-umbral" class="plot" role="img" aria-label="Precisión, exhaustividad y F1 de test según el umbral de confianza"></div>
+          <div class="figure-caption">
+            <p class="reading-note">El umbral se eligió con la validación (el que da el mejor F1) y se fijó antes de abrir test; el rombo solo sirve para ver lo que se habría podido ganar.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_test" target="_blank" rel="noopener">Resultados de test ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>Modelo final: con el umbral 0,95 elegido en validación el F1 es 0,9389; el mejor posible en test (0,9413, con umbral 0,90) está a 0,24 puntos. Elegir en validación casi no cuesta nada.</li>
+            <li>Subir el umbral quita falsos positivos (226 con 0,5 y 94 con 0,95) pero pierde robots, sobre todo difficult: su exhaustividad baja de 0,84 a 0,73.</li>
+            <li>En Faster R-CNN MobileNet el F1 es casi plano entre los umbrales 0,5 y 0,7 (de 0,911 a 0,9155).</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="secuencias" aria-labelledby="titulo-secuencias">
+        <div class="section-heading">
+          <h2 id="titulo-secuencias">Qué secuencias de test cuestan más</h2>
+          <div class="figure-description">
+            <p>AP@0,5 en cada una de las 13 secuencias de test, para el modelo final y para la opción rápida.</p>
+            <p class="interaction-hint">Cambia la medida con el selector. Pasa el cursor por una barra para ver imágenes, robots y errores de esa secuencia.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-cadena="secuencias">
+          <div class="chart-controls"></div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-cadena-secuencias" class="plot" role="img" aria-label="Resultados por secuencia de test del modelo final y de la opción rápida"></div>
+          <div class="figure-caption">
+            <p class="reading-note">Hay secuencias de solo 4 a 13 imágenes: sus cifras son muy sensibles a un solo error.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_test" target="_blank" rel="noopener">Resultados de test ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>Con el modelo final, 11 de las 13 secuencias superan 0,94. Las excepciones son PIDS2025_GR02_0009 (0,8695, con 33 robots difficult perdidos) y PIDS2025_GR04_0000 (0,4967, solo 13 imágenes).</li>
+            <li>Los dos modelos fallan en las mismas secuencias (0,8719 y 0,3498 con MobileNet), lo que apunta a las propias secuencias y sus anotaciones más que a la arquitectura.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="mapa" aria-labelledby="titulo-mapa">
+        <div class="section-heading">
+          <h2 id="titulo-mapa">Todas las medidas de un vistazo</h2>
+          <div class="figure-description">
+            <p>Una fila por entrenamiento y una columna por medida. El color compara dentro de cada columna (más oscuro es mejor); el número es el valor real.</p>
+            <p class="interaction-hint">Cambia entre validación y test con el selector.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-cadena="mapa">
+          <div class="chart-controls"></div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-cadena-mapa" class="plot" role="img" aria-label="Mapa de calor con las medidas de cada entrenamiento"></div>
+          <div class="figure-caption">
+            <p class="reading-note">Precisión, exhaustividad y F1 usan el umbral fijado en validación. El color se escala por columnas, así que no sirve para comparar una columna con otra.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/cadena" target="_blank" rel="noopener">Resumen de la cadena ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>En test, Faster R-CNN v2 es el mejor en seis de las siete medidas; solo RetinaNet v2 lo supera en robots normales (0,9682).</li>
+            <li>En validación ninguna configuración gana en todo: el mejor AP@0,5 de difficult es de Faster R-CNN v1 (0,6471) y el mejor AP 0,50:0,95, de Faster R-CNN v2 con tasa 0,002 (0,6403).</li>
+          </ul>
+        </div>
+      </section>
     </div>
     <noscript><p class="chart-status">Activa JavaScript para explorar las figuras. Las descripciones y conclusiones se pueden leer sin él.</p></noscript>
     <footer><span>PIDS · Entrenamiento y evaluación</span><a href="https://github.com/javiersaguar/PIDS-Proyecto2" target="_blank" rel="noopener">Repositorio del proyecto ↗</a></footer>
