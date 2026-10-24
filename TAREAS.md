@@ -306,3 +306,12 @@ fijado en validación. Modelo final: `faster_rcnn_v2_aug_robusto_v1_lr001`, AP@0
 T15–T17: memoria con los apartados 11.7 (arquitecturas), 11.8 (tasa y aumento) y 11.9
 (test) y conclusiones reescritas; PDF regenerados (fase 2: 19 páginas; completa: 27).
 Pendiente: comprobar el límite de páginas de la segunda entrega.
+
+GitHub Pages (Bloque 2): diez figuras interactivas nuevas con la comparativa de la
+cadena y el test (arquitecturas, pérdida y AP por entrenamiento, tasa de aprendizaje,
+coste, precisión frente a velocidad, validación frente a test, errores, umbral,
+secuencias y mapa de medidas), con selectores. Las genera
+`herramientas/construir_web_cadena.py` y se dibujan con `web/Bloque2/graficas_cadena.js`.
+La memoria añade tres figuras estáticas (coste, tasa y errores de test); la fase 2 queda en
+20 páginas y la completa en 28.
+

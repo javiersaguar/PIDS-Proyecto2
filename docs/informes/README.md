@@ -11,7 +11,7 @@ siete arquitecturas, el estudio de la tasa de aprendizaje y la evaluación final
 
 La copia de fase 2 es una extracción de trabajo solicitada para revisar ese bloque.
 La segunda entrega oficial es **incremental** y debe incluir también la fase 1
-corregida. Los PDF contienen 13, 19 y 27 páginas totales respectivamente para fase 1,
+corregida. Los PDF contienen 13, 20 y 28 páginas totales respectivamente para fase 1,
 fase 2 y completa (portada, reparto, índice y referencias no cuentan como cuerpo).
 **Atención:** con los resultados de la cadena, el cuerpo de la fase 2 ya supera las diez
 páginas que fija T17; hay que confirmar el límite de la segunda entrega y, si se aplica,
@@ -65,6 +65,7 @@ También se proporcionan [versión Markdown completa](informe_completo_fases_1_2
   (regla en `docs/seleccion_modelo_final.md`). Modelo final: `faster_rcnn_v2` lr 0,001,
   AP@0,5 de 0,9523 en test (0,9513 en validación) y F1 de 0,9389 con umbral 0,95.
   Opción rápida: `faster_rcnn_v3`, 0,9240 en test y 16,0 ms por imagen frente a 96,3 ms.
+- Figuras nuevas en la memoria: coste de entrenamiento y mejor época, curvas de las tres tasas y errores de test con curvas de umbral (`herramientas/generar_figuras_cadena.py`). Las versiones interactivas, con selectores, están en GitHub Pages (`web/Bloque2/`, diez figuras nuevas).
 - Conclusiones: la arquitectura pesa más que la tasa (cuatro redes ResNet-50 a 1,2
   puntos) o el aumento (`robusto_v1` no mejora al base); los `difficult` siguen siendo el
   punto débil (0,57–0,69 en test); las SSD no sirven por su entrada pequeña.

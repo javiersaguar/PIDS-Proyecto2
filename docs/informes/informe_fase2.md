@@ -199,7 +199,7 @@ AP50 mejora en 4 secuencias, baja en 6 y empata en una. GR03_0011 de 2025 gana 4
 
 ### 11.7. Comparación de arquitecturas
 
-Se entrenaron las siete arquitecturas del código de partida, todas inicializadas con COCO y con la cabeza sustituida por fondo y robot: Faster R-CNN ResNet-50 FPN en sus versiones v1 y v2 y con MobileNetV3, RetinaNet ResNet-50 FPN (v1 y v2), SSD300 con VGG16 y SSDlite320 con MobileNetV3 [3,4,6,7]. Todas usan el perfil de aumento robusto_v1 (las 796 originales y tres copias por imagen), 12 épocas, SGD con tasa 0,001 y semilla 0, y se conserva el checkpoint con mayor AP@0,5 en validación.
+Se entrenaron las siete arquitecturas del código de partida, todas inicializadas con COCO y con la cabeza sustituida por fondo y robot: Faster R-CNN ResNet-50 FPN en sus versiones v1 y v2 y con MobileNetV3, RetinaNet ResNet-50 FPN (v1 y v2), SSD300 con VGG16 y SSDlite320 con MobileNetV3 [3,4,6,7]. Todas usan el perfil de aumento robusto_v1 (las 796 originales y tres copias por imagen), 12 épocas, SGD con tasa 0,001 y semilla 0, y se conserva el checkpoint con mayor AP@0,5 en validación. Las figuras interactivas de esta comparación, con selectores de medida, modelo y conjunto, están en https://javiersaguar.github.io/PIDS-Proyecto2/bloque2/.
 
 | Modelo | Época | AP50 todos | AP50 normales | AP50 difficult | AP 0,50:0,95 | F1 máx. (umbral) | ms/imagen | Min |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -225,6 +225,12 @@ Figura 10. Precisión frente a tiempo por imagen. Faster R-CNN con MobileNet es 
 
 ![Precisión frente a tiempo por imagen. Faster R-CNN con MobileNet es el mejor compromiso rápido; los círculos pequeños son las variantes de tasa.](figuras/precision_latencia.png)
 
+Figura 11. Minutos de entrenamiento de los 13 entrenamientos y época del mejor checkpoint (rombo). Los minutos hasta el mejor checkpoint son una estimación: minutos totales por mejor época entre épocas, suponiendo épocas de igual duración.
+
+![Minutos de entrenamiento de los 13 entrenamientos y época del mejor checkpoint (rombo). Los minutos hasta el mejor checkpoint son una estimación: minutos totales por mejor época entre épocas, suponiendo épocas de igual duración.](figuras/coste_entrenamiento.png)
+
+El coste también separa a las arquitecturas. Los 13 entrenamientos suman 1306 minutos, unas 21,8 horas de GPU. Faster R-CNN v2 es la más cara (151 minutos con 12 épocas y 189 con 15, con lote 4 y acumulación 2 para caber en memoria) y Faster R-CNN con MobileNet cuesta 19. RetinaNet v2 es la que más memoria necesita (10.550 MiB, frente a 7462 de Faster R-CNN v2), y SSD300 y SSDlite320 caben en poco más de 1 GiB. Con lr 0,001 el mejor checkpoint llega en las épocas 3 (v2), 5 (v1) y 6 (RetinaNet v2), de modo que entre el 50 % y el 75 % del tiempo posterior no mejora el checkpoint elegido.
+
 Las curvas muestran dos comportamientos. Faster R-CNN alcanza el máximo en las épocas 3 a 5 y después pierde entre 0,6 y 1 punto mientras su pérdida de entrenamiento sigue bajando: sobreajuste temprano, como en los experimentos anteriores. RetinaNet arranca más despacio (RetinaNet v1 está en 0,48 en la primera época) pero es más estable y llega al máximo en las épocas 6 y 7. SSD300 sigue mejorando en la época 12, por lo que doce épocas pueden ser pocas para ese modelo; no se probó con más.
 
 Los difficult siguen siendo el punto débil de todas las arquitecturas: su AP@0,5 queda entre 0,60 y 0,65, de 33 a 37 puntos por debajo del de los robots normales. Cambiar de arquitectura no cierra esa brecha; Faster R-CNN v1 (0,6471) y v2 (0,6422) son las que mejor los detectan.
@@ -246,6 +252,10 @@ Los difficult siguen siendo el punto débil de todas las arquitecturas: su AP@0,
 Tabla 9. Variación de la tasa de aprendizaje en los tres modelos con mejor AP@0,5 en validación. Con 0,0005 se entrenaron 15 épocas; con 0,001 y 0,002, 12.
 
 Con los tres mejores modelos se repitió el entrenamiento con tasas de 0,0005 y 0,002. La tasa casi no cambia el AP@0,5: entre la mejor y la peor variante hay 0,16 puntos en Faster R-CNN v2 (0,9497 a 0,9513), 0,22 en RetinaNet v2 (0,9447 a 0,9469) y 0,14 en Faster R-CNN v1 (0,9420 a 0,9434), lo que cabe esperar de cambiar la semilla. No hay razón para preferir otra tasa que 0,001, que además necesita menos épocas que 0,0005.
+
+Figura 12. AP@0,5 en validación por época con tres tasas de aprendizaje. El rombo marca el mejor checkpoint de cada curva; con 0,0005 hay 15 épocas. Las primeras épocas de algunas curvas quedan fuera de escala.
+
+![AP@0,5 en validación por época con tres tasas de aprendizaje. El rombo marca el mejor checkpoint de cada curva; con 0,0005 hay 15 épocas. Las primeras épocas de algunas curvas quedan fuera de escala.](figuras/tasa_aprendizaje.png)
 
 Lo que sí cambia es la estabilidad. Con 0,002, Faster R-CNN alcanza su máximo en la primera o la segunda época y después pierde entre 1,1 y 1,4 puntos: de 0,9497 a 0,9355 en la v2 y de 0,9432 a 0,9320 en la v1. Con 0,0005 el máximo llega más tarde (época 5 en la v2) y la caída posterior es de 0,5 puntos. RetinaNet v2 es poco sensible a la tasa. Que el mejor checkpoint con lr 0,002 sea el de una sola época indica que apenas se ha entrenado, y recuerda que cada cifra es el máximo de una curva y por tanto algo optimista.
 
@@ -269,11 +279,17 @@ El criterio se fijó antes de abrir el test y quedó registrado en el repositori
 
 Tabla 10. Evaluación final en test, una vez por modelo, con el umbral fijado en validación. Precisión, exhaustividad, F1 y recuento de falsos positivos y robots perdidos a ese umbral; AP50 en todos los robots y en difficult.
 
-Figura 11. AP@0,5 en validación y en test. El orden de las arquitecturas se mantiene; las de SSD pierden más al pasar a test.
+Figura 13. AP@0,5 en validación y en test. El orden de las arquitecturas se mantiene; las de SSD pierden más al pasar a test.
 
 ![AP@0,5 en validación y en test. El orden de las arquitecturas se mantiene; las de SSD pierden más al pasar a test.](figuras/validacion_vs_test.png)
 
 El modelo final, Faster R-CNN v2 con lr 0,001, obtiene en test un AP@0,5 de 0,9523 (0,9513 en validación): 0,9658 en robots normales y 0,6921 en difficult. Con el umbral 0,95 detecta 1606 de los 1721 robots (exhaustividad 0,9332, y 0,7259 en difficult), con 94 falsos positivos (precisión 0,9447) y un F1 de 0,9389. El mejor F1 posible en test sería 0,9413, con umbral 0,90: el umbral elegido en validación queda a 0,24 puntos del óptimo.
+
+Figura 14. Errores en test con el umbral fijado en validación (izquierda) y curvas de umbral del modelo final (derecha); la línea punteada es el umbral elegido.
+
+![Errores en test con el umbral fijado en validación (izquierda) y curvas de umbral del modelo final (derecha); la línea punteada es el umbral elegido.](figuras/errores_test.png)
+
+En test, 74 de los 115 robots que pierde el modelo final (64 %) son difficult, que son 270 de 1721 (16 %). Las SSD fallan sobre todo por robots perdidos (307 y 691). Subir el umbral de 0,5 a 0,95 baja los falsos positivos de 226 a 94, pero la exhaustividad en difficult cae de 0,84 a 0,73: el umbral decide cuántos difficult se sacrifican.
 
 Las cifras de test son coherentes con las de validación. El orden se mantiene salvo el intercambio entre RetinaNet v1 y Faster R-CNN v1, a solo 0,07 puntos (0,9362 y 0,9355). Las redes con ResNet-50 varían entre −0,7 y +0,1 puntos al pasar a test, mientras que las de SSD pierden más (2,1 puntos SSD300 y 4,1 SSDlite320). En difficult, el modelo final sube 5,0 puntos (de 0,6422 a 0,6921) y Faster R-CNN v1 y MobileNet bajan 4,1 y 2,8; con 270 robots, cambios de unos pocos puntos no son concluyentes.
 
@@ -285,13 +301,13 @@ La opción rápida para la demo, Faster R-CNN con MobileNet, obtiene 0,9240 en t
 
 La inspección de las predicciones distingue errores del detector y carencias de las etiquetas. En la figura siguiente se ven cuatro robots, pero el XML de GR02_0001/frame_0444 de 2024 contiene una sola caja. Una detección correcta de los otros tres puede contarse como FP. No se modifican las etiquetas para conservar la comparación.
 
-Figura 12. Caso confirmado de anotación incompleta. La caja azul es la única del XML.
+Figura 15. Caso confirmado de anotación incompleta. La caja azul es la única del XML.
 
 ![Caso confirmado de anotación incompleta. La caja azul es la única del XML.](figuras/etiqueta_incompleta.png)
 
 Esto limita la interpretación de los 190 FP de lr001 y los 324 de res1024, y de precisión, F1 y AP. No se ha cuantificado la extensión del problema ni se atribuyen todos los FP a omisiones. GR02_0001 pasa de 49 a 71 FP frente a etiquetas; no son necesariamente errores visuales nuevos.
 
-Figura 13. Res1024 en PIDS2025_GR03_0011/frame_0600: TP 4, FP 4 y FN 1 frente a las etiquetas; rojo indica detección sin pareja.
+Figura 16. Res1024 en PIDS2025_GR03_0011/frame_0600: TP 4, FP 4 y FN 1 frente a las etiquetas; rojo indica detección sin pareja.
 
 ![Res1024 en PIDS2025_GR03_0011/frame_0600: TP 4, FP 4 y FN 1 frente a las etiquetas; rojo indica detección sin pareja.](../../ENTREGA%201/WEEK2/comparaciones/res1024/ejemplo_errores_res1024.png)
 

@@ -129,10 +129,127 @@ def validacion_vs_test():
     plt.close(fig)
 
 
+def etiqueta_exp(modelo, lr):
+    return f"{NOMBRES[modelo]} · lr {f'{lr:.4f}'.rstrip('0').replace('.', ',') if lr < 0.001 else f'{lr:.3f}'.replace('.', ',')}"
+
+
+def tasa_aprendizaje():
+    """AP@0,5 de validación por época con las tres tasas, para los tres modelos que se repitieron."""
+    val = {(f['modelo'], float(f['lr'])): f for f in leer(WEEK2 / 'cadena' / 'resumen.csv')}
+    estilos = {0.0005: ('#6E9BCB', ':', 'lr 0,0005'), 0.001: ('#2463A6', '-', 'lr 0,001'), 0.002: ('#C65D23', '--', 'lr 0,002')}
+    fig, ejes = plt.subplots(1, 3, figsize=(8.6, 3.6), sharey=True)
+    for ax, modelo in zip(ejes, ['faster_rcnn_v2', 'retinanet_v2', 'faster_rcnn_v1']):
+        for lr, (color, trazo, etiqueta) in estilos.items():
+            filas = leer(WEEK2 / 'resultados_train' / f"{modelo}_aug_{PERFIL}_lr{str(lr).replace('0.', '')}" / 'historial.csv')
+            ap = [float(f['valid_map_50']) for f in filas]
+            mejor = max(range(len(ap)), key=ap.__getitem__)
+            ax.plot(range(1, len(ap) + 1), ap, color=color, linestyle=trazo, linewidth=1.8, label=etiqueta)
+            ax.plot(mejor + 1, ap[mejor], 'D', color=color, markersize=6.5, markeredgecolor='white')
+        ax.set_title(NOMBRES[modelo], fontsize=10, color=TINTA)
+        ax.set_xlabel('Época')
+        ax.set_xticks([1, 3, 5, 7, 9, 11, 13, 15])
+        ax.set_ylim(0.928, 0.955)
+        ax.set_yticks([0.93, 0.935, 0.94, 0.945, 0.95])
+        ax.grid(axis='y', color='#E5EBF0')
+        ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f'{v:.3f}'.replace('.', ',')))
+    ejes[0].set_ylabel('AP@0,5 en validación')
+    ejes[0].legend(fontsize=8.5, frameon=False, loc='lower right')
+    fig.tight_layout()
+    fig.savefig(SALIDA / 'tasa_aprendizaje.png', dpi=200)
+    plt.close(fig)
+
+
+def coste_entrenamiento():
+    """Minutos de entrenamiento (total y hasta el mejor checkpoint, estimado) de los 13 entrenamientos."""
+    filas = sorted(leer(WEEK2 / 'cadena' / 'resumen.csv'), key=lambda f: -float(f['minutos_train']))
+    etiquetas = [etiqueta_exp(f['modelo'], float(f['lr'])) for f in filas]
+    total = [float(f['minutos_train']) for f in filas]
+    hasta = [t * int(f['mejor_epoca']) / int(f['epocas']) for t, f in zip(total, filas)]
+    colores = [COLORES[f['modelo']] for f in filas]
+    y = list(range(len(filas)))
+    fig, ejes = plt.subplots(1, 2, figsize=(8.4, 4.4), gridspec_kw={'width_ratios': [1.5, 1]})
+    ax = ejes[0]
+    ax.barh(y, total, color='#D5DCE4', height=0.68, label='Entrenamiento completo')
+    ax.barh(y, hasta, color=colores, height=0.68, label='Hasta el mejor checkpoint (estimado)')
+    for yi, t in zip(y, total):
+        ax.text(t + 2, yi, f'{t:.0f}'.replace('.', ','), va='center', fontsize=8, color=TINTA)
+    ax.set_yticks(y)
+    ax.set_yticklabels(etiquetas, fontsize=7.5)
+    ax.invert_yaxis()
+    ax.set_xlabel('Minutos')
+    ax.set_xlim(0, 215)
+    ax.grid(axis='x', color='#E5EBF0')
+    ax.set_axisbelow(True)
+    ax.legend(fontsize=7.5, frameon=False, loc='lower right')
+    ax = ejes[1]
+    for yi, f in zip(y, filas):
+        ax.plot([1, int(f['epocas'])], [yi, yi], color='#D5DCE4', linewidth=6, solid_capstyle='butt')
+        ax.plot(int(f['mejor_epoca']), yi, 'D', color=COLORES[f['modelo']], markersize=7, markeredgecolor='white')
+    ax.set_yticks(y)
+    ax.set_yticklabels([])
+    ax.invert_yaxis()
+    ax.set_xlabel('Época (rombo: mejor checkpoint)')
+    ax.set_xlim(0.5, 15.5)
+    ax.set_xticks([1, 3, 5, 7, 9, 11, 13, 15])
+    ax.grid(axis='x', color='#E5EBF0')
+    ax.set_axisbelow(True)
+    fig.tight_layout()
+    fig.savefig(SALIDA / 'coste_entrenamiento.png', dpi=200)
+    plt.close(fig)
+
+
+def errores_test():
+    """Errores en test de los siete modelos y curvas de umbral del modelo final."""
+    ruta = WEEK2 / 'cadena' / 'resumen_test.csv'
+    if not ruta.exists():
+        print('Sin resumen_test.csv: no se dibuja errores_test.png')
+        return
+    test = {f['modelo']: f for f in leer(ruta) if float(f['lr']) == 0.001}
+    modelos = [m for m in NOMBRES if m in test]
+    fig, ejes = plt.subplots(1, 2, figsize=(8.6, 4.0), gridspec_kw={'width_ratios': [1.2, 1]})
+    ax = ejes[0]
+    x = range(len(modelos))
+    series = [('Falsos positivos', lambda f: float(f['fp']), '#C65D23'), ('Robots normales perdidos', lambda f: float(f['fn']) - float(f['fn_difficult']), '#2463A6'),
+              ('Robots difficult perdidos', lambda f: float(f['fn_difficult']), '#8E6BB5')]
+    for k, (nombre, fn, color) in enumerate(series):
+        valores = [fn(test[m]) for m in modelos]
+        barras = ax.bar([i + (k - 1) * 0.27 for i in x], valores, width=0.27, color=color, label=nombre)
+        for b, v in zip(barras, valores):
+            if v < 300:
+                ax.text(b.get_x() + b.get_width() / 2, v + 6, f'{v:.0f}', ha='center', fontsize=6.5, color=TINTA)
+    ax.set_xticks(list(x))
+    ax.set_xticklabels([CORTAS[m] for m in modelos], fontsize=7.5)
+    ax.set_ylabel('Errores en test (1721 robots)')
+    ax.grid(axis='y', color='#E5EBF0')
+    ax.set_axisbelow(True)
+    ax.legend(fontsize=8, frameon=False, loc='upper left')
+    ax = ejes[1]
+    detalle = WEEK2 / 'resultados_test' / f'faster_rcnn_v2_aug_{PERFIL}_lr001_test' / 'umbral_confianza.csv'
+    filas = leer(detalle)
+    u = [float(f['umbral']) for f in filas]
+    for columna, nombre, color, trazo in (('precision', 'Precisión', '#2463A6', '-'), ('recall', 'Exhaustividad', '#C65D23', '-'),
+                                          ('recall_difficult', 'Exhaustividad difficult', '#8E6BB5', '--'), ('f1', 'F1', TINTA, '-')):
+        ax.plot(u, [float(f[columna]) for f in filas], color=color, linestyle=trazo, linewidth=1.8, label=nombre)
+    ax.axvline(0.95, color='#788797', linestyle=':', linewidth=1.3)
+    ax.text(0.935, 0.53, 'umbral fijado' + chr(10) + 'en validación', ha='right', fontsize=7.5, color='#53677A')
+    ax.set_ylim(0.4, 1.0)
+    ax.set_xlabel('Umbral de confianza')
+    ax.set_title('Faster R-CNN v2 (modelo final)', fontsize=9.5, color=TINTA)
+    ax.grid(color='#E5EBF0')
+    ax.legend(fontsize=7.5, frameon=False, loc='lower center', ncol=2)
+    coma(ax)
+    fig.tight_layout()
+    fig.savefig(SALIDA / 'errores_test.png', dpi=200)
+    plt.close(fig)
+
+
 if __name__ == '__main__':
     estilo()
     SALIDA.mkdir(parents=True, exist_ok=True)
     curvas_arquitecturas()
     precision_latencia()
     validacion_vs_test()
+    tasa_aprendizaje()
+    coste_entrenamiento()
+    errores_test()
     print('Figuras en', SALIDA)
