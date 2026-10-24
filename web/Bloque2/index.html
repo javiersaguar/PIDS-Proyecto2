@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Entrenamiento y validación del detector de RoboMasters: cuatro gráficas interactivas y sus conclusiones en una sola página.">
+  <title>Entrenamiento y evaluación · PIDS</title>
+  <link rel="stylesheet" href="estilos.css">
+  <script src="plotly.min.js" defer></script>
+  <script src="datos.js" defer></script>
+  <script src="graficas.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#graficas">Saltar a las gráficas</a>
+  <main>
+    <header class="page-header">
+      <p class="project">PIDS <span aria-hidden="true">/</span> Bloque 2</p>
+      <div class="intro-row">
+        <h1>Entrenamiento y evaluación</h1>
+        <p>Cómo aprende el detector de robots y dónde se equivoca. Comparamos cuatro configuraciones de Faster R-CNN, entrenadas con nuestros diez vídeos y validadas con 672 imágenes de otras secuencias.</p>
+      </div>
+    </header>
+
+    <div id="graficas">
+      <section class="figure-panel" aria-labelledby="titulo-epocas">
+        <div class="section-heading">
+          <h2 id="titulo-epocas">Cómo aprende el modelo</h2>
+          <div class="figure-description">
+            <p>La pérdida y el AP muestran cómo avanza cada entrenamiento. La línea punteada señala la época con mejor AP@0,5 en validación.</p>
+            <p class="interaction-hint">Elige un experimento y pasa el cursor por sus curvas. En todas las figuras puedes ampliar una zona arrastrando y volver con un doble clic.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-figure="epocas">
+          <div class="chart-controls">
+            <label for="experimento">Experimento</label>
+            <select id="experimento" disabled aria-controls="grafica-epocas"></select>
+          </div>
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-epocas" class="plot" role="img" aria-label="Pérdida de entrenamiento y validación, y AP por época del experimento seleccionado"></div>
+          <div class="figure-caption">
+            <p class="reading-note">Una pérdida menor es mejor; un AP mayor es mejor. AP@0,5 mide la detección con un criterio de solapamiento; AP 0,50:0,95 exige cajas cada vez más precisas.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_train" target="_blank" rel="noopener">Datos de entrenamiento ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>El modelo de referencia, con aumento y tasa 0,001, alcanza su mejor AP en la época 5. Seguir reduciendo la pérdida de entrenamiento después no mejora la validación: conviene conservar ese punto.</li>
+            <li>Con tasa 0,0001, el aprendizaje es más lento y la mejora llega más tarde. Encontrar los robots funciona mejor que ajustar sus cajas con precisión: el AP baja al exigir un mayor solapamiento.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" aria-labelledby="titulo-comparacion">
+        <div class="section-heading">
+          <h2 id="titulo-comparacion">Qué cambia entre experimentos</h2>
+          <div class="figure-description">
+            <p>Cuatro entrenamientos comparan el aumento de datos, la tasa de aprendizaje y la resolución de entrada. Aquí se ve cuánto mejora cada uno y cuándo deja de hacerlo.</p>
+            <p class="interaction-hint">Pulsa una etiqueta de la leyenda para ocultar o mostrar ese experimento en ambos paneles.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-figure="comparacion">
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-comparacion" class="plot" role="img" aria-label="Comparación del AP y la pérdida de validación de los cuatro experimentos"></div>
+          <div class="figure-caption">
+            <p class="reading-note">«lr» es la tasa de aprendizaje. La configuración de resolución 1024 también utiliza aumento de datos. El eje del AP comienza en 0,5 para distinguir las curvas.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_train" target="_blank" rel="noopener">Datos de entrenamiento ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>El aumento de datos aporta la mejora más clara: el AP@0,5 pasa de aproximadamente 0,923 a 0,942 con la misma tasa de aprendizaje.</li>
+            <li>La tasa 0,001 alcanza un resultado similar mucho antes. Con resolución 1024, el máximo llega ya en la época 2; entrenar más tiempo no garantiza un mejor modelo.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" aria-labelledby="titulo-grupos">
+        <div class="section-heading">
+          <h2 id="titulo-grupos">Qué detecta y qué se le escapa</h2>
+          <div class="figure-description">
+            <p>El AP separa los robots normales de los anotados como <em>difficult</em>. El recuento de errores distingue las falsas detecciones de los robots que el modelo no encuentra.</p>
+            <p class="interaction-hint">Compara las barras con el cursor. La leyenda permite mostrar solo los experimentos que te interesan.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-figure="grupos">
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-grupos" class="plot" role="img" aria-label="AP por grupo de robots y número de errores en validación"></div>
+          <div class="figure-caption">
+            <p class="reading-note">Los errores se cuentan con confianza ≥ 0,5. «Perdidos difficult» forma parte de «Robots perdidos»; no son grupos que se sumen.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_test" target="_blank" rel="noopener">Datos de validación ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>Los <em>difficult</em> siguen siendo el reto: en el modelo de referencia su AP es 0,646, frente a 0,974 en los normales. El aumento ayuda: con tasa 0,0001, mejora su AP de 0,552 a 0,634.</li>
+            <li>La resolución 1024 encuentra más robots, pero dispara más falsas alarmas: deja 68 sin detectar frente a 83 del modelo de referencia, a cambio de 324 falsos positivos frente a 190.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" aria-labelledby="titulo-secuencias">
+        <div class="section-heading">
+          <h2 id="titulo-secuencias">Dónde cuesta más detectar</h2>
+          <div class="figure-description">
+            <p>El promedio no cuenta toda la historia. Estas once secuencias de validación muestran en qué grabaciones funciona mejor cada configuración.</p>
+            <p class="interaction-hint">Pasa el cursor por una barra para ver el AP, los robots presentes y sus errores. Usa la leyenda para simplificar la comparación.</p>
+          </div>
+        </div>
+        <div class="chart-stage" data-figure="secuencias">
+          <p class="chart-status" role="status">Cargando la figura…</p>
+          <div id="grafica-secuencias" class="plot" role="img" aria-label="AP de los cuatro experimentos en cada una de las once secuencias de validación"></div>
+          <div class="figure-caption">
+            <p class="reading-note">El eje empieza en 0,7 para apreciar las diferencias. FP significa falsos positivos; «perdidos» son robots que no se detectaron.</p>
+            <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_test" target="_blank" rel="noopener">Datos por secuencia ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>Las secuencias 2024_GR04_0003 y 2025_GR03_0011 están entre las más difíciles y contienen muchos robots <em>difficult</em>. El aumento y la resolución ayudan de forma distinta según la grabación.</li>
+            <li>También hay que revisar las anotaciones: un robot visible sin etiquetar puede contar como falso positivo. Las métricas orientan la revisión, pero no sustituyen mirar las imágenes.</li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+    <noscript><p class="chart-status">Activa JavaScript para explorar las figuras. Las descripciones y conclusiones se pueden leer sin él.</p></noscript>
+    <footer><span>PIDS · Entrenamiento y evaluación</span><a href="https://github.com/javiersaguar/PIDS-Proyecto2" target="_blank" rel="noopener">Repositorio del proyecto ↗</a></footer>
+  </main>
+</body>
+</html>

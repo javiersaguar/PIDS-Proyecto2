@@ -1,4 +1,4 @@
-"""Comprueba la portada de Pages, sus recursos y la reconstrucción del destino."""
+"""Comprueba ambos bloques de Pages, su navegación y la reconstrucción del destino."""
 
 from html.parser import HTMLParser
 from pathlib import Path
@@ -38,6 +38,7 @@ class ConstruirSpaTests(unittest.TestCase):
         self.indice = '''<!doctype html>
 <html lang="es"><head><link rel="stylesheet" href="estilos.css">
 <script src="explorador.js" defer></script></head><body>
+<header class="page-header"><h1>Bloque 1</h1></header>
 <a href="#distribucion">Saltar a la figura</a>
 <section id="distribucion"><h2>Distribución por vídeo</h2>
 <iframe src="mapas_calor_por_video.html"></iframe>
@@ -60,6 +61,22 @@ class ConstruirSpaTests(unittest.TestCase):
         self.fuente = patch.object(construir_spa, 'EDA', self.eda)
         self.fuente.start()
         self.addCleanup(self.fuente.stop)
+        self.bloque2 = base / 'bloque2'
+        self.bloque2.mkdir()
+        self.indice_bloque2 = '''<!doctype html><html lang="es"><head>
+<link rel="stylesheet" href="estilos.css"><script src="plotly.min.js" defer></script>
+<script src="datos.js" defer></script><script src="graficas.js" defer></script>
+</head><body><header class="page-header"><h1>Entrenamiento y evaluación</h1></header>
+<p>Qué concluimos: el aumento de datos mejora el aprendizaje.</p></body></html>'''
+        (self.bloque2 / 'index.html').write_text(self.indice_bloque2, encoding='utf-8')
+        for nombre in ('estilos.css', 'graficas.js', 'datos.js', 'plotly.min.js'):
+            (self.bloque2 / nombre).write_text(f'Recurso {nombre}', encoding='utf-8')
+        self.estilos_navegacion = base / 'navegacion_bloques.css'
+        self.estilos_navegacion.write_text('nav { display: flex; }', encoding='utf-8')
+        for nombre, valor in (('BLOQUE2', self.bloque2), ('ESTILOS_NAVEGACION', self.estilos_navegacion)):
+            cambio = patch.object(construir_spa, nombre, valor)
+            cambio.start()
+            self.addCleanup(cambio.stop)
 
     def test_portada_conserva_conclusiones_anclas_y_recursos(self):
         construir_spa.construir(self.destino)
@@ -88,17 +105,40 @@ class ConstruirSpaTests(unittest.TestCase):
         self.assertEqual((self.interactivos / 'indice.html').read_text(encoding='utf-8'), self.indice)
         self.assertFalse((self.destino / 'datos').exists())
 
-    def test_no_publica_documentacion_interna_ni_caches(self):
-        for nombre in ('PRODUCT.md', 'DESIGN.md', 'notas.py', '.env'):
-            (self.interactivos / nombre).write_text('interno', encoding='utf-8')
-        for nombre in ('.impeccable', '__pycache__'):
-            carpeta = self.interactivos / nombre
-            carpeta.mkdir()
-            (carpeta / 'interno.js').write_text('interno', encoding='utf-8')
+    def test_incluye_bloque2_con_sus_datos_y_sin_modificar_la_fuente(self):
         construir_spa.construir(self.destino)
-        publico = self.destino / 'eda' / 'interactivos'
-        for nombre in ('PRODUCT.md', 'DESIGN.md', 'notas.py', '.env', '.impeccable', '__pycache__'):
-            self.assertFalse((publico / nombre).exists())
+        pagina = (self.destino / 'bloque2' / 'index.html').read_text(encoding='utf-8')
+        self.assertIn('Qué concluimos: el aumento de datos mejora el aprendizaje.', pagina)
+        for nombre in ('estilos.css', 'graficas.js', 'datos.js', 'plotly.min.js'):
+            self.assertEqual((self.bloque2 / nombre).read_bytes(),
+                             (self.destino / 'bloque2' / nombre).read_bytes())
+        self.assertEqual((self.bloque2 / 'index.html').read_text(encoding='utf-8'), self.indice_bloque2)
+
+    def test_selector_marca_el_bloque_activo_y_funciona_bajo_un_subdirectorio(self):
+        construir_spa.construir(self.destino)
+        base = 'https://equipo.github.io/PIDS-Proyecto2/'
+        for ruta, activo, prefijo in (('index.html', 1, ''), ('bloque2/index.html', 2, '../')):
+            texto = (self.destino / ruta).read_text(encoding='utf-8')
+            self.assertEqual(texto.count('aria-current="page"'), 1)
+            self.assertIn(f'aria-current="page">Bloque {activo}</a>', texto)
+            self.assertIn(f'href="{prefijo}navegacion_bloques.css"', texto)
+            for objetivo in ('index.html', 'bloque2/index.html'):
+                url = prefijo + objetivo
+                self.assertIn(f'href="{url}"', texto)
+                self.assertEqual(urljoin(base + ruta, url), base + objetivo)
+
+    def test_no_publica_documentacion_interna_ni_caches(self):
+        for fuente in (self.interactivos, self.bloque2):
+            for nombre in ('PRODUCT.md', 'DESIGN.md', 'notas.py', '.env'):
+                (fuente / nombre).write_text('interno', encoding='utf-8')
+            for nombre in ('.impeccable', '__pycache__'):
+                carpeta = fuente / nombre
+                carpeta.mkdir()
+                (carpeta / 'interno.js').write_text('interno', encoding='utf-8')
+        construir_spa.construir(self.destino)
+        for publico in (self.destino / 'eda' / 'interactivos', self.destino / 'bloque2'):
+            for nombre in ('PRODUCT.md', 'DESIGN.md', 'notas.py', '.env', '.impeccable', '__pycache__'):
+                self.assertFalse((publico / nombre).exists())
 
     def test_reconstruccion_retira_archivos_obsoletos(self):
         construir_spa.construir(self.destino)
@@ -123,9 +163,25 @@ class ConstruirSpaTests(unittest.TestCase):
             construir_spa.construir(self.destino)
         self.assertEqual((self.destino / 'index.html').read_bytes(), portada)
 
+    def test_bloque2_incompleto_conserva_la_salida_anterior(self):
+        construir_spa.construir(self.destino)
+        portada = (self.destino / 'index.html').read_bytes()
+        (self.bloque2 / 'datos.js').unlink()
+        with self.assertRaises(FileNotFoundError):
+            construir_spa.construir(self.destino)
+        self.assertEqual((self.destino / 'index.html').read_bytes(), portada)
+
+    def test_cabecera_invalida_conserva_la_salida_anterior(self):
+        construir_spa.construir(self.destino)
+        portada = (self.destino / 'index.html').read_bytes()
+        (self.bloque2 / 'index.html').write_text('<html></html>', encoding='utf-8')
+        with self.assertRaises(ValueError):
+            construir_spa.construir(self.destino)
+        self.assertEqual((self.destino / 'index.html').read_bytes(), portada)
+
     def test_no_sustituye_el_repositorio_ni_las_fuentes(self):
         for destino in (construir_spa.RAIZ, construir_spa.RAIZ.parent,
-                        self.eda, self.interactivos):
+                        self.eda, self.interactivos, self.bloque2, self.bloque2 / 'salida'):
             with self.subTest(destino=destino), self.assertRaises(ValueError):
                 construir_spa.construir(destino)
 
