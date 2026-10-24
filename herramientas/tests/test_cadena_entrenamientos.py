@@ -82,6 +82,92 @@ class Opciones(unittest.TestCase):
         self.assertIn('--sin-fase2', salida.getvalue())
 
 
+class EvaluacionEnTest(unittest.TestCase):
+    """La acción `test` evalúa una sola vez, con el umbral de validación, y deja registro."""
+
+    def setUp(self):
+        import tempfile
+        self.tmp = tempfile.TemporaryDirectory()
+        base = Path(self.tmp.name)
+        self.guardado = (c.RAIZ, c.WEEK2, c.CADENA, c.ejecutar, c.comprobar_gpu, c.evitar_suspension)
+        c.RAIZ, c.WEEK2, c.CADENA = base, base / 'WEEK2', base / 'WEEK2' / 'cadena'
+        c.CADENA.mkdir(parents=True)
+        self.exp = c.nombre('ssd_v1', c.LR_BASE)
+        estado = {'experimentos': {self.exp: {'modelo': 'ssd_v1', 'lr': c.LR_BASE, 'fase': 1, 'batch_size': 8, 'acumulacion_gradiente': 1}}}
+        c.escribir_json(c.CADENA / 'estado.json', estado)
+        val = c.WEEK2 / 'resultados_test' / f'{self.exp}_val'
+        val.mkdir(parents=True)
+        c.escribir_json(val / 'resumen.json', resumen(0.90, 0.52))
+        filas = ['umbral,precision,recall,recall_normales,recall_difficult,f1,tp,fp,fn',
+                 '0.1,0.5,0.95,1,0.9,0.65,95,95,5', '0.25,0.9,0.9,1,0.7,0.89,90,10,10', '0.9,0.99,0.3,0.5,0.1,0.46,30,1,70']
+        (val / 'umbral_confianza.csv').write_text('\n'.join(filas) + '\n', encoding='utf-8')
+        self.llamadas = []
+
+        def falso_ejecutar(notebook, salida, cfg, log):
+            self.llamadas.append(cfg)
+            carpeta = c.WEEK2 / 'resultados_test' / f'{self.exp}_test'
+            carpeta.mkdir(parents=True, exist_ok=True)
+            c.escribir_json(carpeta / 'resumen.json', resumen(0.91, 0.55))
+            return 0
+
+        c.ejecutar, c.comprobar_gpu, c.evitar_suspension = falso_ejecutar, lambda: None, lambda: None
+
+    def tearDown(self):
+        c.RAIZ, c.WEEK2, c.CADENA, c.ejecutar, c.comprobar_gpu, c.evitar_suspension = self.guardado
+        self.tmp.cleanup()
+
+    def lanzar(self, **kw):
+        import contextlib
+        import io
+        with contextlib.redirect_stdout(io.StringIO()) as salida:
+            c.evaluar_test(self.exp, **kw)
+        return salida.getvalue()
+
+    def test_sin_confirmar_solo_muestra_el_plan(self):
+        salida = self.lanzar()
+        self.assertEqual(self.llamadas, [])
+        self.assertIn('Solo es el plan', salida)
+        self.assertIn('umbral 0.25', salida)
+
+    def test_confirmado_usa_el_umbral_de_validacion_y_el_conjunto_test(self):
+        self.lanzar(confirmar=True)
+        self.assertEqual(len(self.llamadas), 1)
+        cfg = self.llamadas[0]
+        self.assertEqual((cfg['conjunto'], cfg['score_threshold'], cfg['model_name'], cfg['perfil_aumento']),
+                         ('test', 0.25, 'ssd_v1', c.PERFIL))
+        registro = c.leer_json(c.CADENA / 'test_registro.json')
+        self.assertEqual(registro[self.exp]['veces'], 1)
+        self.assertEqual(registro[self.exp]['umbral'], 0.25)
+        self.assertTrue((c.CADENA / 'resumen_test.csv').is_file())
+
+    def test_no_repite_una_evaluacion_ya_hecha(self):
+        self.lanzar(confirmar=True)
+        salida = self.lanzar(confirmar=True)
+        self.assertEqual(len(self.llamadas), 1)
+        self.assertIn('YA evaluado', salida)
+
+    def test_forzar_repite_y_lo_anota(self):
+        self.lanzar(confirmar=True)
+        self.lanzar(confirmar=True, forzar=True)
+        self.assertEqual(len(self.llamadas), 2)
+        self.assertEqual(c.leer_json(c.CADENA / 'test_registro.json')[self.exp]['veces'], 2)
+
+    def test_sin_validacion_no_se_evalua_en_test(self):
+        import shutil
+        shutil.rmtree(c.WEEK2 / 'resultados_test' / f'{self.exp}_val')
+        with self.assertRaises(RuntimeError):
+            self.lanzar(confirmar=True)
+        self.assertEqual(self.llamadas, [])
+
+    def test_experimento_desconocido(self):
+        with self.assertRaises(ValueError):
+            c.evaluar_test('no_existe', confirmar=True)
+
+    def test_fase1_son_los_siete_de_lr_001(self):
+        estado = {'experimentos': {c.nombre(m, c.LR_BASE): {} for m in c.MODELOS}}
+        self.assertEqual(c.seleccionar_experimentos('fase1', estado), [c.nombre(m, c.LR_BASE) for m in c.MODELOS])
+
+
 class MejorUmbral(unittest.TestCase):
     def test_elige_la_fila_de_mayor_f1(self):
         import tempfile

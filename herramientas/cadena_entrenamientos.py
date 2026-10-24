@@ -7,12 +7,16 @@ Desde la raíz del repositorio:
     python herramientas/cadena_entrenamientos.py cadena      # fase 1 y fase 2 (llama antes al preflight si falta)
     python herramientas/cadena_entrenamientos.py estado      # qué se ha hecho y qué falta
     python herramientas/cadena_entrenamientos.py empaquetar  # resultados en un zip, sin los pesos
+    python herramientas/cadena_entrenamientos.py test --experimentos a,b [--confirmar]   # evaluación final en TEST
 
 Opciones de preflight y cadena:
 
     --modelos a,b,c   solo esos modelos, en ese orden (por defecto, los siete)
     --sin-fase2       no hace la fase 2 (variar el lr de los mejores)
     --simular         solo muestra lo que haría, sin tocar la GPU ni ejecutar nada
+    --experimentos    (test) nombres de experimento separados por comas, o `fase1` para los siete de lr 0,001
+    --confirmar       (test) sin esta opción solo muestra el plan: el test se evalúa UNA vez por modelo
+    --forzar          (test) repite una evaluación ya hecha; deja constancia en el registro
     --desacoplar      (Windows) se relanza sin consola y sigue aunque se cierre la ventana desde la que se lanzó
 
 Pensado para lanzarse con nohup. Se puede relanzar: salta lo que ya tiene su evaluación y
@@ -129,9 +133,14 @@ def leer_csv(ruta: Path) -> list:
         return []
 
 
+def resultado(exp: str, conjunto: str = 'val'):
+    """resumen.json de la evaluación de un experimento en `val` o `test`, o None."""
+    return leer_json(WEEK2 / 'resultados_test' / f'{exp}_{conjunto}' / 'resumen.json')
+
+
 def resultado_val(exp: str):
     """resumen.json de la evaluación en validación de un experimento, o None."""
-    return leer_json(WEEK2 / 'resultados_test' / f'{exp}_val' / 'resumen.json')
+    return resultado(exp, 'val')
 
 
 def ap50(resumen: dict, grupo: str = 'todos') -> float:
@@ -339,35 +348,35 @@ def experimento(modelo: str, lr: float, plan: dict, estado: dict, fase: int) -> 
     print(f'[{ahora()}] {exp}: {elem["estado"]} {elem.get("ap50_todos", "")}', flush=True)
 
 
-def mejor_umbral(exp: str) -> dict:
+def mejor_umbral(exp: str, conjunto: str = 'val') -> dict:
     """Fila de umbral_confianza.csv con el mayor F1: compara modelos con confianzas muy distintas.
 
     RetinaNet y SSD dan confianzas más bajas que Faster R-CNN, así que contar errores con el
     mismo umbral (0,5) los penaliza. Con el umbral de su mejor F1 la comparación es justa.
     """
-    filas = leer_csv(WEEK2 / 'resultados_test' / f'{exp}_val' / 'umbral_confianza.csv')
+    filas = leer_csv(WEEK2 / 'resultados_test' / f'{exp}_{conjunto}' / 'umbral_confianza.csv')
     if not filas:
         return {}
     mejor = max(filas, key=lambda f: float(f['f1']))
     return {k: (float(v) if k != 'umbral' else float(v)) for k, v in mejor.items()}
 
 
-def escribir_resumen_csv(estado: dict) -> None:
+def escribir_resumen_csv(estado: dict, conjunto: str = 'val') -> None:
     columnas = ['experimento', 'modelo', 'lr', 'fase', 'epocas', 'lote', 'acumulacion', 'mejor_epoca',
                 'ap50_todos', 'ap50_normales', 'ap50_difficult', 'ap_0.5:0.95', 'fp', 'fn', 'fn_difficult',
                 'precision', 'exhaustividad', 'umbral_f1', 'f1_max', 'precision_f1', 'exhaustividad_f1',
                 'exhaustividad_difficult_f1', 'fp_f1', 'fn_f1', 'ms_una_a_una', 'minutos_train', 'mem_pico_mib']
     filas = []
     for exp, e in estado['experimentos'].items():
-        r = resultado_val(exp)
+        r = resultado(exp, conjunto)
         t = leer_json(WEEK2 / 'resultados_train' / exp / 'resumen.json', {})
         if not r:
             continue
-        total = next((f for f in r['por_video'] if f['grupo'] == 'Total'), {})
+        total = next((f for f in r.get('por_video', []) if f['grupo'] == 'Total'), {})
         todos = next((f for f in r['map'] if f['grupo'] == 'todos'), {})
-        mejor_f1 = mejor_umbral(exp)
+        mejor_f1 = mejor_umbral(exp, conjunto)
         filas.append({
-            'experimento': exp, 'modelo': e['modelo'], 'lr': e['lr'], 'fase': e['fase'], 'epocas': t.get('num_epochs'),
+            'experimento': exp, 'modelo': e['modelo'], 'lr': e['lr'], 'fase': e.get('fase'), 'epocas': t.get('num_epochs'),
             'lote': t.get('batch_size'), 'acumulacion': t.get('acumulacion_gradiente'), 'mejor_epoca': t.get('mejor_epoca'),
             'ap50_todos': ap50(r), 'ap50_normales': ap50(r, 'normales'), 'ap50_difficult': ap50(r, 'difficult'),
             'ap_0.5:0.95': todos.get('map'), 'fp': total.get('fp'), 'fn': total.get('fn'),
@@ -377,7 +386,7 @@ def escribir_resumen_csv(estado: dict) -> None:
             'exhaustividad_difficult_f1': mejor_f1.get('recall_difficult'), 'fp_f1': mejor_f1.get('fp'),
             'fn_f1': mejor_f1.get('fn'), 'ms_una_a_una': r.get('ms_por_imagen_una_a_una'),
             'minutos_train': t.get('tiempo_train_min'), 'mem_pico_mib': t.get('mem_pico_mib')})
-    with open(CADENA / 'resumen.csv', 'w', newline='', encoding='utf-8') as f:
+    with open(CADENA / ('resumen.csv' if conjunto == 'val' else f'resumen_{conjunto}.csv'), 'w', newline='', encoding='utf-8') as f:
         w = csv.DictWriter(f, fieldnames=columnas)
         w.writeheader()
         w.writerows(filas)
@@ -446,6 +455,78 @@ def cadena(modelos=None, fase2: bool = True) -> None:
     escribir_resumen_csv(estado)
     empaquetar()
     print(f'[{ahora()}] cadena terminada', flush=True)
+
+
+# ------------------------------------------------------------------ evaluación final en test
+def umbral_de_validacion(exp: str) -> float:
+    """Umbral con el mejor F1 en VALIDACIÓN: se fija antes de mirar el test."""
+    mejor = mejor_umbral(exp, 'val')
+    if not mejor:
+        raise RuntimeError(f'{exp}: no hay umbral_confianza.csv de validación; no se puede fijar el umbral')
+    return float(mejor['umbral'])
+
+
+def seleccionar_experimentos(texto: str, estado: dict) -> list:
+    """'fase1' -> los siete modelos con lr 0,001; si no, nombres de experimento separados por comas."""
+    if texto.strip() == 'fase1':
+        nombres = [nombre(m, LR_BASE) for m in MODELOS]
+    else:
+        nombres = [n.strip() for n in texto.split(',') if n.strip()]
+    desconocidos = [n for n in nombres if n not in estado.get('experimentos', {})]
+    if not nombres or desconocidos:
+        raise ValueError(f'Experimentos desconocidos o vacíos: {desconocidos or texto!r}')
+    return nombres
+
+
+def evaluar_test(texto: str, confirmar: bool = False, forzar: bool = False) -> None:
+    """Evalúa en TEST los experimentos elegidos, una sola vez cada uno, con el umbral fijado en validación.
+
+    Sin --confirmar solo muestra el plan. Se niega a repetir una evaluación ya hecha salvo con --forzar,
+    y deja un registro (cadena/test_registro.json) con la fecha, el umbral y la versión del código.
+    """
+    estado = leer_json(CADENA / 'estado.json')
+    if not estado:
+        raise RuntimeError('No hay cadena/estado.json: no se sabe qué experimentos existen')
+    nombres = seleccionar_experimentos(texto, estado)
+    registro = leer_json(CADENA / 'test_registro.json', {})
+    plan = []
+    for exp in nombres:
+        hecho = resultado(exp, 'test') is not None or exp in registro
+        if hecho and not forzar:
+            print(f'  {exp}: YA evaluado en test ({registro.get(exp, {}).get("fecha", "sin registro")}); se salta (usa --forzar para repetirlo)')
+            continue
+        if not resultado_val(exp):
+            raise RuntimeError(f'{exp}: no tiene evaluación en validación; no se evalúa en test')
+        plan.append((exp, umbral_de_validacion(exp)))
+    print(f'Evaluación final en TEST ({IMAGENES["test"]} imágenes). Experimentos: {len(plan)}')
+    for exp, umbral in plan:
+        print(f'  {exp:48s} umbral {umbral} (mejor F1 en validación)')
+    if not plan:
+        return
+    if not confirmar:
+        print('Solo es el plan. Añade --confirmar para ejecutarlo: el test debe mirarse UNA vez.')
+        return
+    comprobar_gpu()
+    evitar_suspension()
+    commit = subprocess.run(['git', '-C', str(RAIZ), '-c', 'safe.directory=*', 'rev-parse', '--short', 'HEAD'],
+                            capture_output=True, text=True).stdout.strip() or 'desconocido'
+    for exp, umbral in plan:
+        e = estado['experimentos'][exp]
+        cfg = dict(configuracion(e['modelo'], e['lr'], e.get('batch_size', 8), e.get('acumulacion_gradiente', 1)),
+                   conjunto='test', score_threshold=umbral)
+        print(f'[{ahora()}] {exp}: evaluando en test con umbral {umbral}', flush=True)
+        rc = ejecutar(WEEK2 / 'test.ipynb', f'{exp}_test_final', cfg, CADENA / 'logs' / f'{exp}_test.log')
+        r = resultado(exp, 'test')
+        if rc != 0 or not r:
+            print(f'[{ahora()}] {exp}: FALLÓ la evaluación en test (código {rc})', flush=True)
+            continue
+        veces = registro.get(exp, {}).get('veces', 0) + 1
+        registro[exp] = {'fecha': ahora(), 'umbral': umbral, 'commit': commit, 'veces': veces,
+                         'ap50_todos': ap50(r), 'ap50_difficult': ap50(r, 'difficult')}
+        escribir_json(CADENA / 'test_registro.json', registro)
+        print(f'[{ahora()}] {exp}: AP@0,5 test {ap50(r):.4f} (difficult {ap50(r, "difficult"):.4f})', flush=True)
+    escribir_resumen_csv({'experimentos': {n: estado['experimentos'][n] for n in registro if n in estado['experimentos']}}, 'test')
+    print(f'[{ahora()}] evaluación en test terminada', flush=True)
 
 
 # ------------------------------------------------------------------ consulta y empaquetado
@@ -518,10 +599,13 @@ def desacoplar(argv: list) -> int:
 
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description='Cadena de entrenamientos (ver el docstring del módulo).')
-    ap.add_argument('accion', nargs='?', default='estado', choices=['preflight', 'cadena', 'estado', 'empaquetar'])
+    ap.add_argument('accion', nargs='?', default='estado', choices=['preflight', 'cadena', 'estado', 'empaquetar', 'test'])
     ap.add_argument('--modelos', type=validar_modelos, default=None, help='lista separada por comas, en orden de ejecución')
     ap.add_argument('--sin-fase2', action='store_true', help='no varía el lr de los mejores')
     ap.add_argument('--simular', action='store_true', help='solo muestra lo que haría')
+    ap.add_argument('--experimentos', default=None, help='(test) experimentos separados por comas, o fase1')
+    ap.add_argument('--confirmar', action='store_true', help='(test) ejecuta de verdad; sin esto solo muestra el plan')
+    ap.add_argument('--forzar', action='store_true', help='(test) repite una evaluación ya hecha')
     ap.add_argument('--desacoplar', action='store_true', help='(Windows) sigue aunque se cierre la ventana que lo lanzó')
     argumentos = list(sys.argv[1:] if argv is None else argv)
     a = ap.parse_args(argv)
@@ -537,6 +621,10 @@ def main(argv=None) -> None:
         preflight(modelos)
     elif a.accion == 'cadena':
         cadena(modelos, fase2=not a.sin_fase2)
+    elif a.accion == 'test':
+        if not a.experimentos:
+            ap.error('test necesita --experimentos')
+        evaluar_test(a.experimentos, confirmar=a.confirmar, forzar=a.forzar)
     elif a.accion == 'estado':
         estado_actual()
     else:
