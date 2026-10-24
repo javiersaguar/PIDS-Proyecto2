@@ -1,19 +1,21 @@
 # Informes sobre la plantilla oficial
 
-Contenido actualizado el **16/10/2026**, después de finalizar entrenamiento y
-validación de `faster_rcnn_v1_aug_lr001_res1024`.
+Contenido actualizado el **24/10/2026**, después de la cadena de entrenamientos de las
+siete arquitecturas, el estudio de la tasa de aprendizaje y la evaluación final en test.
 
 | Versión | Word editable | PDF | Contenido |
 |---|---|---|---|
 | Completa | [Word](informe_completo_fases_1_2.docx) | [PDF](informe_completo_fases_1_2.pdf) | Fases 1 y 2 con lo medido; conserva la estructura pendiente de fase 3 |
 | Solo fase 1 | [Word](informe_fase1.docx) | [PDF](informe_fase1.pdf) | Datos, anotación, EDA, aumento y depuración; siete páginas de cuerpo |
-| Solo fase 2 | [Word](informe_fase2.docx) | [PDF](informe_fase2.pdf) | Pipeline, modelo, hiperparámetros, métricas, experimentos y análisis cualitativo; diez páginas de cuerpo |
+| Solo fase 2 | [Word](informe_fase2.docx) | [PDF](informe_fase2.pdf) | Pipeline, modelos, hiperparámetros, métricas, experimentos (con arquitecturas y test) y análisis cualitativo; el cuerpo ocupa unas quince páginas |
 
 La copia de fase 2 es una extracción de trabajo solicitada para revisar ese bloque.
 La segunda entrega oficial es **incremental** y debe incluir también la fase 1
-corregida. Los PDF contienen 13, 14 y 23 páginas totales respectivamente para fase 1,
+corregida. Los PDF contienen 13, 19 y 27 páginas totales respectivamente para fase 1,
 fase 2 y completa (portada, reparto, índice y referencias no cuentan como cuerpo).
-Comprobar antes de entregar que el cuerpo sigue dentro del máximo de 10 páginas de T17.
+**Atención:** con los resultados de la cadena, el cuerpo de la fase 2 ya supera las diez
+páginas que fija T17; hay que confirmar el límite de la segunda entrega y, si se aplica,
+condensar los apartados 11.4–11.6 antes de entregar.
 
 Se conserva Calibri 11, interlineado 1,15, geometría, cabecera y pie de la plantilla.
 Las figuras van incrustadas; no requieren archivos externos para abrir el Word.
@@ -54,6 +56,21 @@ También se proporcionan [versión Markdown completa](informe_completo_fases_1_2
 
 ## Resultados incorporados
 
+**24/10/2026 (cadena de entrenamientos y test)** — detalle en `ENTREGA 1/WEEK2/cadena/`:
+
+- Siete arquitecturas con lr 0,001 y perfil `robusto_v1` (12 épocas, semilla 0), y tres
+  tasas (0,0005, 0,001, 0,002) con las tres mejores. Trece entrenamientos, validación
+  completa de cada uno.
+- Test evaluado **una sola vez** por modelo, con el umbral fijado antes en validación
+  (regla en `docs/seleccion_modelo_final.md`). Modelo final: `faster_rcnn_v2` lr 0,001,
+  AP@0,5 de 0,9523 en test (0,9513 en validación) y F1 de 0,9389 con umbral 0,95.
+  Opción rápida: `faster_rcnn_v3`, 0,9240 en test y 16,0 ms por imagen frente a 96,3 ms.
+- Conclusiones: la arquitectura pesa más que la tasa (cuatro redes ResNet-50 a 1,2
+  puntos) o el aumento (`robusto_v1` no mejora al base); los `difficult` siguen siendo el
+  punto débil (0,57–0,69 en test); las SSD no sirven por su entrada pequeña.
+
+**Hasta el 16/10/2026:**
+
 - `lr001`: mejor época 5, AP@0,5 de 0,9433 y AP 0,50:0,95 de 0,6302 en evaluación
   final de validación. AP@0,5 de difficult 0,6462; 190 FP y 83 FN a confianza 0,5.
 - `res1024`: mejor época por AP50 2; AP50 0,9465, AP 0,50:0,95 0,6047,
@@ -67,10 +84,10 @@ También se proporcionan [versión Markdown completa](informe_completo_fases_1_2
   cuatro robots visibles y una sola caja XML. No se alteran esas etiquetas.
 - Perfiles nuevos de aumento distinguidos de los resultados del aumento base.
 
-La fase 2 **no está cerrada**: falta comparar arquitecturas y evaluar el modelo
-definitivo en test. La resolución ya está medida; lluvia, sombras y oclusión
-texturada siguen pendientes de entrenamiento. Falta confirmar fecha de entrega, número
-administrativo del grupo y reparto final con todos los integrantes.
+La fase 2 queda como un avance: arquitecturas, tasa y test ya están medidos, pero falta
+repetir con varias semillas, mejorar los `difficult` y medir la latencia en el robot
+(Bloque 3). Falta confirmar fecha de entrega, número administrativo del grupo y reparto
+final con todos los integrantes.
 
 ## Regeneración
 
