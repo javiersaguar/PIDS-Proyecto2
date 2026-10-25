@@ -318,7 +318,7 @@ def guardar_estado(estado: dict, archivo: str = 'estado.json') -> None:
 
 
 def experimento(modelo: str, lr: float, plan: dict, estado: dict, fase: int, num_epochs: int = None,
-                archivo: str = 'estado.json', resumen: str = 'resumen.csv') -> None:
+                archivo: str = 'estado.json', csv_resumen: str = 'resumen.csv') -> None:
     marca = sufijo_largo(num_epochs) if num_epochs else ''
     n_epocas = num_epochs or epocas(lr)
     exp = nombre(modelo, lr) + marca
@@ -356,7 +356,7 @@ def experimento(modelo: str, lr: float, plan: dict, estado: dict, fase: int, num
         elem.update(estado='hecho', fin=ahora(), minutos=round((time.time() - inicio) / 60, 1),
                     ap50_todos=ap50(resumen), ap50_difficult=ap50(resumen, 'difficult'))
     guardar_estado(estado, archivo)
-    escribir_resumen_csv(estado, archivo=resumen)
+    escribir_resumen_csv(estado, archivo=csv_resumen)
     print(f'[{ahora()}] {exp}: {elem["estado"]} {elem.get("ap50_todos", "")}', flush=True)
 
 
@@ -500,7 +500,7 @@ def largo(modelos: list, num_epochs: int) -> None:
             print(f'[{ahora()}] {modelo}: no viable en el preflight, se salta', flush=True)
             continue
         experimento(modelo, LR_BASE, plan, estado, fase=3, num_epochs=num_epochs,
-                    archivo='estado_largo.json', resumen='resumen_largo.csv')
+                    archivo='estado_largo.json', csv_resumen='resumen_largo.csv')
     estado['fin'] = ahora()
     guardar_estado(estado, 'estado_largo.json')
     escribir_resumen_csv(estado, archivo='resumen_largo.csv')

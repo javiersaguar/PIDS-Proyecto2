@@ -199,6 +199,31 @@ class EntrenamientosLargos(unittest.TestCase):
         self.assertIn('lr001_ep40', salida.getvalue())
         self.assertIn('el test no se toca', salida.getvalue())
 
+    def test_experimento_largo_escribe_su_propio_resumen(self):
+        """Regresión: el nombre del CSV se pisaba con el resumen de la evaluación y fallaba tras entrenar."""
+        import tempfile
+        llamadas = []
+        originales = (c.CADENA, c.ejecutar, c.resultado_val, c.escribir_resumen_csv)
+        with tempfile.TemporaryDirectory() as tmp:
+            try:
+                c.CADENA = Path(tmp)
+                evaluado = {}
+                c.ejecutar = lambda *a, **k: 0
+                c.resultado_val = lambda exp: evaluado.get('r')
+                c.escribir_resumen_csv = lambda estado, conjunto='val', archivo=None: llamadas.append(archivo)
+                evaluado['r'] = resumen(0.9, 0.5)
+                estado = {'experimentos': {}}
+                plan = {'ssd_v1': {'batch_size': 8, 'acumulacion_gradiente': 1}}
+                # la primera comprobación (ya evaluado) debe fallar para que entrene: se simula que aún no existe
+                c.resultado_val = lambda exp, _n=[0]: (_n.__setitem__(0, _n[0] + 1) or (None if _n[0] == 1 else evaluado['r']))
+                c.experimento('ssd_v1', c.LR_BASE, plan, estado, fase=3, num_epochs=40,
+                              archivo='estado_largo.json', csv_resumen='resumen_largo.csv')
+            finally:
+                c.CADENA, c.ejecutar, c.resultado_val, c.escribir_resumen_csv = originales
+        self.assertEqual(llamadas, ['resumen_largo.csv'])
+        self.assertEqual(estado['experimentos'][f'ssd_v1_aug_{c.PERFIL}_lr001_ep40']['estado'], 'hecho')
+        self.assertEqual(estado['experimentos'][f'ssd_v1_aug_{c.PERFIL}_lr001_ep40']['epocas'], 40)
+
 
 class MejorUmbral(unittest.TestCase):
     def test_elige_la_fila_de_mayor_f1(self):
