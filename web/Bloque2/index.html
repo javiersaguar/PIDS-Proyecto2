@@ -162,7 +162,7 @@
           <h3>Qué concluimos</h3>
           <ul>
             <li>Faster R-CNN alcanza su máximo pronto (épocas 3 a 5) y después se estanca o baja algo. RetinaNet arranca más despacio y llega a su máximo en las épocas 6 y 7.</li>
-            <li>SSD300 sigue mejorando en la época 12, así que doce épocas quizá se queden cortas para esa red. SSDlite320 no pasa de 0,68: redimensiona la imagen a 320 × 320 y los robots lejanos casi desaparecen.</li>
+            <li>SSD300 todavía mejoraba en la época 12, pero repetida con 40 épocas (se puede ver en «Pérdida y AP en cada entrenamiento») su AP@0,5 solo sube de 0,9008 a 0,9009: doce épocas no eran pocas. SSDlite320 no pasa de 0,68: redimensiona la imagen a 320 × 320 y los robots lejanos casi desaparecen.</li>
             <li>Las cuatro redes con ResNet-50 terminan a 1,2 puntos entre sí (de 0,9513 a 0,9396): dentro de esa familia, cambiar de arquitectura mueve poco el AP@0,5.</li>
           </ul>
         </div>
@@ -172,7 +172,7 @@
         <div class="section-heading">
           <h2 id="titulo-aprendizaje">Pérdida y AP en cada entrenamiento</h2>
           <div class="figure-description">
-            <p>Para cada uno de los 13 entrenamientos: pérdida de entrenamiento y de validación (eje izquierdo) y AP@0,5 en validación (eje derecho). La línea punteada es el mejor checkpoint.</p>
+            <p>Para cada uno de los 13 entrenamientos, y para SSD300 repetida con 40 épocas: pérdida de entrenamiento y de validación (eje izquierdo) y AP@0,5 en validación (eje derecho). La línea punteada es el mejor checkpoint y las líneas grises finas, las épocas en que el planificador baja la tasa ×0,1.</p>
             <p class="interaction-hint">Elige un entrenamiento en el selector y pasa el cursor por las curvas.</p>
           </div>
         </div>
@@ -181,15 +181,16 @@
           <p class="chart-status" role="status">Cargando la figura…</p>
           <div id="grafica-cadena-aprendizaje" class="plot" role="img" aria-label="Pérdidas y AP@0,5 por época del entrenamiento seleccionado"></div>
           <div class="figure-caption">
-            <p class="reading-note">Una pérdida menor es mejor; un AP mayor es mejor. Las escalas de la pérdida cambian mucho entre arquitecturas: no se comparan entre sí.</p>
+            <p class="reading-note">Una pérdida menor es mejor; un AP mayor es mejor. Las escalas de la pérdida cambian mucho entre arquitecturas: no se comparan entre sí. El planificador baja la tasa cuando la pérdida de validación no mejora durante 5 épocas.</p>
             <div class="figure-links"><button type="button" data-export="png" disabled>Descargar PNG</button><button type="button" data-export="svg" disabled>Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%201/WEEK2/resultados_train" target="_blank" rel="noopener">Historiales de entrenamiento ↗</a></div>
           </div>
         </div>
         <div class="figure-conclusions">
           <h3>Qué concluimos</h3>
           <ul>
-            <li>La pérdida de entrenamiento baja siempre; la de validación toca fondo pronto y el AP@0,5 sigue un poco más. En 11 de los 13 entrenamientos el mínimo de la pérdida de validación llega antes que la mejor época de AP@0,5, y por eso el checkpoint se elige por AP@0,5 y no por la pérdida.</li>
+            <li>La pérdida de entrenamiento baja siempre; la de validación toca fondo pronto y el AP@0,5 sigue un poco más. En 11 de los 13 entrenamientos de la cadena el mínimo de la pérdida de validación llega antes que la mejor época de AP@0,5, y por eso el checkpoint se elige por AP@0,5 y no por la pérdida.</li>
             <li>Quedarse hasta el final en vez de conservar la mejor época cuesta hasta 1,4 puntos de AP@0,5 (Faster R-CNN v2 con tasa 0,002) y casi nada con tasa 0,0005 (de 0,01 a 0,5 puntos).</li>
+            <li>No faltaban épocas. SSD300 era la única que seguía mejorando al final de las 12; con 40 épocas, las 12 primeras idénticas, su AP@0,5 pasa de 0,9008 a 0,9009 (mejor época, la 18) y acaba en 0,9006, aunque la pérdida de entrenamiento baja otro 15 % y la tasa se reduce en las épocas 15, 21, 27, 33 y 39. Cuesta 62 minutos en vez de 19.</li>
           </ul>
         </div>
       </section>

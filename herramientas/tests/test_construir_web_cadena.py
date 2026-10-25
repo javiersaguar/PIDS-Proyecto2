@@ -36,6 +36,12 @@ class FigurasCadena(unittest.TestCase):
                         if eje in traza:
                             self.assertTrue(len(traza[eje]) > 0, f'{nombre} {clave}')
 
+    def test_el_entrenamiento_largo_aparece_en_la_figura_de_aprendizaje(self):
+        opciones = self.figuras['aprendizaje']['controles'][0]['opciones']
+        self.assertEqual(len(opciones), 13 + len(web.cargar_largo()))
+        if web.cargar_largo():
+            self.assertIn('SSD300 VGG16 · lr 0,001 · 40 épocas', opciones)
+
     def test_valor_de_test_del_modelo_final(self):
         variante = self.figuras['validacion_test']['variantes']['0']
         test = next(t for t in variante['data'] if t['name'] == 'Test')

@@ -26,6 +26,14 @@ así que no se debe regenerar.
 
 ## Historial
 
+**25/10/2026** — se comprueba si las doce épocas se quedaban cortas, tras el comentario de que había
+infraajuste. No era así: SSD300 VGG16, la única que seguía mejorando al final, repetida con 40 épocas
+(`cadena/resumen_largo.csv`, acción `largo`) pasa de 0,9008 a 0,9009 de AP@0,5 y la pérdida de
+validación sube mientras la de entrenamiento baja. Se corrigen en `informe_entrega2.docx` (a mano, sin
+regenerarlo) la tabla de hiperparámetros («30 épocas»), el párrafo de épocas, la frase sobre SSD300 y la
+de la tasa 0,002 («entrenamiento insuficiente», que era inestabilidad y sobreajuste). El PDF se
+exporta de nuevo y sigue en 23 páginas.
+
 **24/10/2026** — cadena de entrenamientos y test (detalle en `ENTREGA 1/WEEK2/cadena/`):
 siete arquitecturas con lr 0,001 y perfil `robusto_v1`, tres tasas con las tres mejores y
 test evaluado una sola vez por modelo con el umbral fijado antes en validación
