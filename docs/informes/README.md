@@ -1,107 +1,46 @@
 # Informes sobre la plantilla oficial
 
-Contenido actualizado el **24/10/2026**, después de la cadena de entrenamientos de las
-siete arquitecturas, el estudio de la tasa de aprendizaje y la evaluación final en test.
+Contenido actualizado el **25/10/2026**.
 
-| Versión | Word editable | PDF | Contenido |
-|---|---|---|---|
-| Completa | [Word](informe_completo_fases_1_2.docx) | [PDF](informe_completo_fases_1_2.pdf) | Fases 1 y 2 con lo medido; conserva la estructura pendiente de fase 3 |
-| Solo fase 1 | [Word](informe_fase1.docx) | [PDF](informe_fase1.pdf) | Datos, anotación, EDA, aumento y depuración; siete páginas de cuerpo |
-| Solo fase 2 | [Word](informe_fase2.docx) | [PDF](informe_fase2.pdf) | Pipeline, modelos, hiperparámetros, métricas, experimentos (con arquitecturas y test) y análisis cualitativo; el cuerpo ocupa unas quince páginas |
+| Documento | Contenido |
+|---|---|
+| [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 (redactado a mano) y Bloque 2 completo, sin tabla de respuesta a la revisión (no se recibieron comentarios). El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (23 páginas, 19 de cuerpo; el límite es 20). |
+| [`informe_fase1.docx`](informe_fase1.docx) | Fuente de la memoria de la entrega 1 (Bloque 1), base de `generar_entrega2.py`. El PDF entregado está en `docs/entregas/PIDS_grupo2_entrega1.pdf` y difiere en algo de redacción. |
+| `figuras/` | Figuras de maquetación del Bloque 2 que no están en `ENTREGA 1/WEEK2/`. |
 
-La copia de fase 2 es una extracción de trabajo solicitada para revisar ese bloque.
-La segunda entrega oficial es **incremental** y debe incluir también la fase 1
-corregida. Los PDF contienen 13, 20 y 28 páginas totales respectivamente para fase 1,
-fase 2 y completa (portada, reparto, índice y referencias no cuentan como cuerpo).
-**Atención:** con los resultados de la cadena, el cuerpo de la fase 2 ya supera las diez
-páginas que fija T17; hay que confirmar el límite de la segunda entrega y, si se aplica,
-condensar los apartados 11.4–11.6 antes de entregar.
+Se conserva Calibri 11, interlineado 1,15, geometría, cabecera y pie de la plantilla
+(`docs/PIDS-template.docx`, que permanece sin modificar). Las figuras van incrustadas.
 
-Se conserva Calibri 11, interlineado 1,15, geometría, cabecera y pie de la plantilla.
-Las figuras van incrustadas; no requieren archivos externos para abrir el Word.
-El índice y la paginación se verifican en el PDF. En Word se pueden actualizar con
-F9 si se cambia el contenido. La plantilla original permanece sin modificar.
+## Entrega 2: versión final editada a mano
 
-**19/10/2026:** se añadieron hyperlinks reales (clicables) a los notebooks ejecutados
-y a las figuras interactivas de GitHub Pages, editando los `.docx` directamente (no
-con `generar_informes.py`, ver aviso debajo). Los notebooks se citan como una vista
-HTML estática (`ENTREGA 1/WEEK1/eda.html` y `data_aug.html`, generados con
-`jupyter nbconvert --to html --embed-images` y commiteados junto a los `.ipynb`),
-abierta con `htmlpreview.github.io` — igual que ya se hace con los HTML del EDA en
-`docs/plan_entrega.md` — porque **nbviewer.org no es fiable**: depende del límite de
-peticiones de la API de GitHub, compartido entre todos sus usuarios, y falla con
-"GitHub API rate limit" de forma intermitente:
+`informe_entrega2.docx` partió de `herramientas/generar_entrega2.py` (Bloque 1 de `informe_fase1.docx` con la redacción del
+PDF entregado, más el Bloque 2 de `generar_informes.py`), pero **la versión final se ha editado a mano en Word**.
+Por eso el script ya no sobrescribe ese fichero: sin argumentos se niega, y con una ruta de salida genera una copia.
+Los cambios posteriores se hacen en el `.docx`; después hay que actualizar el índice (F9) y exportar a PDF
+como `docs/entregas/PIDS_grupo2_entrega2.pdf`.
 
-- EDA ejecutado: https://htmlpreview.github.io/?https://github.com/javiersaguar/PIDS-Proyecto2/blob/main/ENTREGA%201/WEEK1/eda.html
-- Aumento de datos ejecutado: https://htmlpreview.github.io/?https://github.com/javiersaguar/PIDS-Proyecto2/blob/main/ENTREGA%201/WEEK1/data_aug.html
-- Figuras de EDA y de entrenamiento: anclas `#mapas-video`, `#mapas-tiempo`,
-  `#robots-fotograma`, `#curvas`, `#grupos` y `#secuencias` en https://javiersaguar.github.io/PIDS-Proyecto2/
+`generar_informes.py` no genera nada sin argumentos. `fase1` y `completo` sobrescriben los
+`.docx` con el texto del script; `informe_fase1.docx` tiene correcciones manuales (título,
+numeración de figuras, apartados 5.1–5.5, referencias [6]–[8]) que el script no reproduce,
+así que no se debe regenerar.
 
-Si se regeneran los notebooks, hay que volver a exportarlos con el mismo comando y
-commitear los `.html` de nuevo; no se generan solos.
+## Historial
 
-## Aviso: `informe_fase1.docx` (y partes de la completa) ya no coincide con el generador
+**24/10/2026** — cadena de entrenamientos y test (detalle en `ENTREGA 1/WEEK2/cadena/`):
+siete arquitecturas con lr 0,001 y perfil `robusto_v1`, tres tasas con las tres mejores y
+test evaluado una sola vez por modelo con el umbral fijado antes en validación
+(`docs/seleccion_modelo_final.md`). Modelo final: `faster_rcnn_v2`, AP@0,5 de 0,9523 en test
+y F1 de 0,9389 con umbral 0,95. Opción rápida: `faster_rcnn_v3`, 0,9240 en test y 16,0 ms
+por imagen frente a 96,3.
 
-`informe_fase1.docx` tiene correcciones manuales en Word (título, numeración de
-figuras, secciones 5.1–5.5, referencia [6] a la web) que **no están reflejadas en
-`herramientas/generar_informes.py`**. Ejecutar ese script sobrescribe el `.docx`
-entero con su propio texto y **borra esas correcciones**, que no se recuperan salvo
-con `git checkout` a un commit anterior. `informe_fase2.docx` sí coincide con el
-script. Antes de volver a generar nada, comprobar con `git diff` si el `.docx` que se
-va a sobrescribir tiene cambios que el script no reproduce; si los tiene, hay que
-llevar esos mismos cambios al script primero, o editar el `.docx` a mano.
+**20/10/2026** — `informe_fase1.docx`, editado a mano: fecha de entrega, reparto del trabajo
+acordado, «2. Recolección de datos» como encabezado de primer nivel, «Tabla 9» en la
+depuración y referencia [9] a `video2frames.ipynb`. A Moodle se subió solo el PDF
+`PIDS_grupo2_entrega1.pdf`.
 
-También se proporcionan [versión Markdown completa](informe_completo_fases_1_2.md),
-[fase 1](informe_fase1.md) y [fase 2](informe_fase2.md), para revisar diferencias en Git.
+**19/10/2026** — enlaces a los notebooks ejecutados (`eda.html`, `data_aug.html`, generados
+con `jupyter nbconvert --to html --embed-images`; no se usa nbviewer.org porque falla por el
+límite de la API de GitHub) y a las figuras interactivas de GitHub Pages.
 
-## Resultados incorporados
-
-**24/10/2026 (cadena de entrenamientos y test)** — detalle en `ENTREGA 1/WEEK2/cadena/`:
-
-- Siete arquitecturas con lr 0,001 y perfil `robusto_v1` (12 épocas, semilla 0), y tres
-  tasas (0,0005, 0,001, 0,002) con las tres mejores. Trece entrenamientos, validación
-  completa de cada uno.
-- Test evaluado **una sola vez** por modelo, con el umbral fijado antes en validación
-  (regla en `docs/seleccion_modelo_final.md`). Modelo final: `faster_rcnn_v2` lr 0,001,
-  AP@0,5 de 0,9523 en test (0,9513 en validación) y F1 de 0,9389 con umbral 0,95.
-  Opción rápida: `faster_rcnn_v3`, 0,9240 en test y 16,0 ms por imagen frente a 96,3 ms.
-- Figuras nuevas en la memoria: coste de entrenamiento y mejor época, curvas de las tres tasas y errores de test con curvas de umbral (`herramientas/generar_figuras_cadena.py`). Las versiones interactivas, con selectores, están en GitHub Pages (`web/Bloque2/`, diez figuras nuevas).
-- Conclusiones: la arquitectura pesa más que la tasa (cuatro redes ResNet-50 a 1,2
-  puntos) o el aumento (`robusto_v1` no mejora al base); los `difficult` siguen siendo el
-  punto débil (0,57–0,69 en test); las SSD no sirven por su entrada pequeña.
-
-**Hasta el 16/10/2026:**
-
-- `lr001`: mejor época 5, AP@0,5 de 0,9433 y AP 0,50:0,95 de 0,6302 en evaluación
-  final de validación. AP@0,5 de difficult 0,6462; 190 FP y 83 FN a confianza 0,5.
-- `res1024`: mejor época por AP50 2; AP50 0,9465, AP 0,50:0,95 0,6047,
-  AP small 0,1886, AP50 difficult 0,6282, 324 FP y 68 FN (56 difficult).
-- Curvas de resolución, selección del checkpoint, secuencias y latencia individual
-  121,6 ms frente a 75,1 ms. Se documenta microbatch 4 con acumulación 2.
-- La referencia provisional sigue siendo lr001 800 por su equilibrio; no se presenta
-  la mayor resolución como una mejora uniforme. Se distingue AP50 de AP promedio.
-- Curvas comparadas, cambios por secuencia, búsqueda del umbral y latencia.
-- Anotación incompleta confirmada en `PIDS2024_GR02_0001/frame_0444.jpg`:
-  cuatro robots visibles y una sola caja XML. No se alteran esas etiquetas.
-- Perfiles nuevos de aumento distinguidos de los resultados del aumento base.
-
-La fase 2 queda como un avance: arquitecturas, tasa y test ya están medidos, pero falta
-repetir con varias semillas, mejorar los `difficult` y medir la latencia en el robot
-(Bloque 3). Falta confirmar fecha de entrega, número administrativo del grupo y reparto
-final con todos los integrantes.
-
-## Regeneración
-
-Con `python-docx`, `lxml`, Pillow y las figuras disponibles:
-
-```bash
-python herramientas/comparar_entrenamientos.py
-python herramientas/comparar_resolucion.py
-python herramientas/generar_informes.py
-```
-
-El último comando crea las tres copias Word y Markdown; no sobreescribe la
-plantilla ni exporta por sí solo PDF. Para obtener los PDF, actualizar los campos
-y exportar desde Word, comprobando otra vez todas las páginas. Las figuras
-específicas de maquetación están en `figuras/`; las curvas y los resultados del
-laboratorio conservan sus rutas en `ENTREGA 1/WEEK2/`.
+**Hasta el 16/10/2026** — experimentos `lr001` y `res1024`, curvas, secuencias, umbral de
+confianza y latencia; anotación incompleta confirmada en `PIDS2024_GR02_0001/frame_0444.jpg`.
