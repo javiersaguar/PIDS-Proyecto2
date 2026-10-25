@@ -11,7 +11,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 | Bloque | Estado | Hito |
 |---|---|---|
 | 1. Datos | 808 imágenes anotadas y revisadas, 796 tras la depuración; falta cerrar T01 en grupo | Dataset de ~800 imágenes anotadas |
-| 2. Entrenamiento | Entrenado con y sin aumento; mAP@0,5 en validación de 0,942 (0,634 en `difficult`). Falta una mejora para los `difficult` y el test (T20) | Modelo que detecta RoboMasters |
+| 2. Entrenamiento | Siete arquitecturas comparadas y test evaluado una vez. Modelo final `faster_rcnn_v2`: AP@0,5 de 0,9523 en test (0,6921 en `difficult`). Falta mejorar los `difficult` | Modelo que detecta RoboMasters |
 | 3. Integración en el robot | Sin empezar | *Demo* en circuito |
 
 ## Hecho
@@ -97,12 +97,13 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
   PR #14 y #17 ya fusionadas; esta actualización se presenta en una nueva PR personal.
 
 - T19: entrenados en JupyterHub `faster_rcnn_v1` con y sin aumento. El aumento sube el mAP@0,5 en validación de 0,923 a **0,942**, y en los `difficult` de 0,552 a **0,634**. Se toma como base el modelo con aumento.
+- T19/T20 (24/10): cadena de 13 entrenamientos en JupyterHub (siete arquitecturas y tres tasas) y evaluación en test, una vez por modelo y con el umbral fijado en validación. Resultados en `ENTREGA 1/WEEK2/cadena/` y `resultados_test/`; regla de selección en [`docs/seleccion_modelo_final.md`](docs/seleccion_modelo_final.md).
 - T20: evaluación en validación por grupos y por secuencia hecha. Resultados en `ENTREGA 1/WEEK2/resultados_train/` y `resultados_test/`, y su análisis en [`docs/informe_borrador.md`](docs/informe_borrador.md).
 
 ## Pendiente
 
 - **T01:** cerrar los criterios en grupo. El borde superior del robot (gimbal y antenas) es donde más discrepamos.
-- **Bloque 2:** una mejora dirigida a los `difficult` y, con el modelo definitivo, la evaluación en test una sola vez (T20).
+- **Bloque 2:** una mejora dirigida a los `difficult` (0,57–0,69 en test), repetir con varias semillas y decidir con la latencia medida en el robot entre el modelo final (96 ms por imagen) y el rápido `faster_rcnn_v3` (16 ms, 0,9240 en test). El test ya se ha usado una vez por modelo; no debe volver a usarse para elegir.
 - **Memoria (T15–T17):** versiones Word/PDF sobre la plantilla oficial en
   `docs/informes/`: completa, fase 1 y fase 2. Falta revisión del grupo y confirmar
   fecha de entrega y número administrativo del grupo.
