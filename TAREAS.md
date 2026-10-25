@@ -89,7 +89,7 @@ mientras se hace T13: `train.ipynb` y `test.ipynb` están adaptados a nuestros d
 | T17 | P2 | Memoria: reparto del trabajo, revisión final y PDF | T15, T16 | — | Pendiente |
 | T18 | P3 | Separar los datos en entrenamiento, validación y test | T14 | — | Pendiente |
 | T19 | P3 | Primer entrenamiento con `train.ipynb` | T18 | Alejandro Cuevas | Hecha: con y sin aumento (15/10) |
-| T20 | P3 | Evaluación con `test.ipynb` (mAP y resultados cualitativos) | T19 | Alejandro Cuevas | En curso: validación hecha, falta test |
+| T20 | P3 | Evaluación con `test.ipynb` (mAP y resultados cualitativos) | T19 | Alejandro Cuevas | Hecha: validación y test (una vez por modelo, 24/10) |
 
 ## Detalle
 
@@ -292,3 +292,26 @@ Los perfiles nuevos de aumento siguen pendientes de entrenamiento. PR #17 fusion
 esta continuación usa una nueva PR en javier-saguar. Seguimiento desactivado.
 
 Resultados res1024 e informes actualizados en [PR #18](https://github.com/javiersaguar/PIDS-Proyecto2/pull/18), pendiente de revisión y sin fusionar.
+
+### Actualización del 24/10 tras la cadena de entrenamientos y el test
+
+T19/T20: la cadena (`herramientas/cadena_entrenamientos.py`) entrenó en JupyterHub siete
+arquitecturas con lr 0,001 y las tres mejores con lr 0,0005 y 0,002 (13 entrenamientos,
+terminados a las 02:30 UTC). El test se evaluó una sola vez por modelo con el umbral
+fijado en validación. Modelo final: `faster_rcnn_v2_aug_robusto_v1_lr001`, AP@0,5 de
+0,9523 en test y F1 de 0,9389 (umbral 0,95). Opción rápida: `faster_rcnn_v3`, 0,9240 y
+16,0 ms por imagen. Los `difficult` siguen en 0,57–0,69. Datos en
+`ENTREGA 1/WEEK2/cadena/` (`resumen.csv`, `resumen_test.csv`, `test_registro.json`).
+
+T15–T17: memoria con los apartados 11.7 (arquitecturas), 11.8 (tasa y aumento) y 11.9
+(test) y conclusiones reescritas; PDF regenerados (fase 2: 19 páginas; completa: 27).
+Pendiente: comprobar el límite de páginas de la segunda entrega.
+
+GitHub Pages (Bloque 2): diez figuras interactivas nuevas con la comparativa de la
+cadena y el test (arquitecturas, pérdida y AP por entrenamiento, tasa de aprendizaje,
+coste, precisión frente a velocidad, validación frente a test, errores, umbral,
+secuencias y mapa de medidas), con selectores. Las genera
+`herramientas/construir_web_cadena.py` y se dibujan con `web/Bloque2/graficas_cadena.js`.
+La memoria añade tres figuras estáticas (coste, tasa y errores de test); la fase 2 queda en
+20 páginas y la completa en 28.
+

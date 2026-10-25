@@ -1,12 +1,13 @@
-"""Empaqueta la SPA de resultados_eda/interactivos para GitHub Pages.
+"""Empaqueta las SPAs de los bloques 1 y 2 para GitHub Pages.
 
 Uso: python3 herramientas/construir_spa.py [destino]
 
 El destino por defecto es _site. Debe estar vacío o contener una construcción
 previa de este script. Solo se usa la biblioteca estándar de Python.
 
-La portada conserva el contenido de indice.html y adapta sus enlaces. Los
-originales se publican bajo eda/ para mantener sus rutas y descargas existentes.
+La portada conserva el contenido de indice.html y adapta sus enlaces. El Bloque 2
+se publica bajo bloque2/. Ambas páginas incluyen un selector de bloque.
+Los originales del EDA se publican bajo eda/ para mantener sus rutas y descargas.
 No se regeneran las figuras ni se requieren resultados de entrenamiento.
 """
 
@@ -21,6 +22,8 @@ from urllib.parse import urlsplit, urlunsplit
 
 RAIZ = Path(__file__).resolve().parent.parent
 EDA = RAIZ / 'ENTREGA 1' / 'WEEK1' / 'resultados_eda'
+BLOQUE2 = RAIZ / 'web' / 'Bloque2'
+ESTILOS_NAVEGACION = RAIZ / 'web' / 'navegacion_bloques.css'
 RUTA_INTERACTIVOS = 'eda/interactivos'
 EXTENSIONES_PUBLICAS = {'.html', '.css', '.js', '.csv', '.png', '.pdf', '.jpg', '.jpeg',
                         '.svg', '.ico', '.woff', '.woff2'}
@@ -72,21 +75,47 @@ def ignorar_privados(carpeta, nombres):
                 and Path(nombre).suffix.lower() not in EXTENSIONES_PUBLICAS)]
 
 
+def agregar_navegacion(texto: str, bloque: int) -> str:
+    """Añade el selector a las copias publicadas, con rutas relativas a Pages."""
+    cabecera = '<header class="page-header">'
+    if texto.count(cabecera) != 1 or texto.count('</head>') != 1:
+        raise ValueError(f'La página del Bloque {bloque} no tiene la cabecera esperada.')
+    prefijo = '' if bloque == 1 else '../'
+    enlaces = []
+    for numero, ruta in ((1, 'index.html'), (2, 'bloque2/index.html')):
+        activo = ' aria-current="page"' if numero == bloque else ''
+        enlaces.append(f'<a href="{prefijo}{ruta}"{activo}>Bloque {numero}</a>')
+    navegacion = ('\n      <nav class="navegacion-bloques" aria-label="Bloques del proyecto">'
+                  + ''.join(enlaces) + '</nav>')
+    texto = texto.replace(cabecera, cabecera + navegacion, 1)
+    return texto.replace('</head>',
+                         f'  <link rel="stylesheet" href="{prefijo}navegacion_bloques.css">\n</head>', 1)
+
+
 def construir(destino: Path) -> None:
     destino = destino.resolve()
-    if destino == RAIZ or destino in RAIZ.parents or destino == EDA or EDA in destino.parents:
-        raise ValueError('El destino no puede sustituir al repositorio ni a los resultados del EDA.')
+    if destino == RAIZ or destino in RAIZ.parents or any(
+            destino == fuente or destino in fuente.parents or fuente in destino.parents
+            for fuente in (EDA.resolve(), BLOQUE2.resolve())):
+        raise ValueError('El destino no puede sustituir al repositorio ni a las fuentes de los bloques.')
 
     interactivos = EDA / 'interactivos'
     necesarios = ['indice.html', 'estilos.css', 'explorador.js', 'figuras.css',
                   'figuras.js', 'plotly.min.js', 'mapas_calor_por_video.html',
                   'mapas_calor_temporales.html', 'robots_por_fotograma.html',
                   'recuentos_fotogramas.csv', 'recuentos_ventanas.csv']
-    for ruta in [*(interactivos / nombre for nombre in necesarios), EDA / 'README.md']:
+    necesarios_bloque2 = ['index.html', 'estilos.css', 'graficas.js', 'datos.js', 'plotly.min.js']
+    for ruta in [*(interactivos / nombre for nombre in necesarios), EDA / 'README.md',
+                 *(BLOQUE2 / nombre for nombre in necesarios_bloque2), ESTILOS_NAVEGACION]:
         if not ruta.is_file():
             raise FileNotFoundError(f'Falta un recurso necesario: {ruta}')
     if not (EDA / 'para_informe').is_dir():
         raise FileNotFoundError(f'Falta la carpeta de exportaciones: {EDA / "para_informe"}')
+
+    # Valida ambas páginas antes de reemplazar una salida anterior.
+    indice = (interactivos / 'indice.html').read_text(encoding='utf-8')
+    portada = agregar_navegacion(adaptar_indice(indice), 1)
+    segundo_bloque = agregar_navegacion((BLOQUE2 / 'index.html').read_text(encoding='utf-8'), 2)
 
     # Solo se reemplaza una salida identificable de este constructor.
     if destino.exists():
@@ -103,14 +132,16 @@ def construir(destino: Path) -> None:
     shutil.copytree(interactivos, publico / 'interactivos', ignore=ignorar_privados)
     shutil.copytree(EDA / 'para_informe', publico / 'para_informe', ignore=ignorar_privados)
     shutil.copy2(EDA / 'README.md', publico / 'README.md')
-    indice = (interactivos / 'indice.html').read_text(encoding='utf-8')
-    (destino / 'index.html').write_text(adaptar_indice(indice), encoding='utf-8')
+    shutil.copytree(BLOQUE2, destino / 'bloque2', ignore=ignorar_privados)
+    shutil.copy2(ESTILOS_NAVEGACION, destino / 'navegacion_bloques.css')
+    (destino / 'index.html').write_text(portada, encoding='utf-8')
+    (destino / 'bloque2' / 'index.html').write_text(segundo_bloque, encoding='utf-8')
     (destino / '.nojekyll').touch()
-    print(f'SPA en {destino}: 3 figuras, conclusiones y exportaciones del EDA')
+    print(f'SPAs en {destino}: Bloque 1 (3 figuras) y Bloque 2 (4 figuras), con selector común')
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Construye la SPA del EDA para GitHub Pages.')
+    parser = argparse.ArgumentParser(description='Publica los bloques 1 y 2 con un selector en GitHub Pages.')
     parser.add_argument('destino', nargs='?', default='_site', type=Path)
     argumentos = parser.parse_args()
     try:

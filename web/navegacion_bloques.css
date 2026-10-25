@@ -1,0 +1,33 @@
+.navegacion-bloques {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 24px;
+}
+.navegacion-bloques a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 6px 12px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted, #526576);
+  font-size: 13px;
+  text-decoration: none;
+}
+.navegacion-bloques a:hover {
+  background: var(--soft, #f3f6f9);
+  color: var(--accent, #245e9b);
+}
+.navegacion-bloques a[aria-current="page"] {
+  border-bottom-color: currentColor;
+  color: var(--accent, #245e9b);
+  font-weight: 600;
+}
+.navegacion-bloques a:focus-visible {
+  outline: 2px solid var(--accent, #245e9b);
+  outline-offset: 4px;
+}
+@media print {
+  .navegacion-bloques { display: none; }
+}

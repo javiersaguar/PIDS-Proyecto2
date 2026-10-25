@@ -3,6 +3,8 @@
 Requiere python-docx, lxml y Pillow. Los PDF se exportan y revisan por separado.
 """
 from copy import deepcopy
+import csv
+import json
 from datetime import datetime, timezone
 from io import BytesIO
 import hashlib
@@ -25,6 +27,23 @@ DESTINO=RAIZ/'docs/informes'
 FIG=DESTINO/'figuras'
 WEEK=RAIZ/'ENTREGA 1/WEEK2'
 AUTORES=['Javier Saguar','Alejandro Cuevas','Mónica Fernández','Pedro José Orrego','Daniel Naval']
+NOMBRES={'faster_rcnn_v2':'Faster R-CNN v2','retinanet_v2':'RetinaNet v2','faster_rcnn_v1':'Faster R-CNN v1','retinanet_v1':'RetinaNet v1',
+         'faster_rcnn_v3':'Faster R-CNN MobileNet','ssd_v1':'SSD300 VGG16','ssd_v2':'SSDlite320'}
+
+
+def num(x,dec=4):
+    return f'{float(x):.{dec}f}'.replace('.',',')
+
+
+def leer_csv(ruta):
+    with open(ruta,newline='',encoding='utf-8') as f:return list(csv.DictReader(f))
+
+
+def f1(precision,exhaustividad):
+    p,r=float(precision),float(exhaustividad)
+    return 2*p*r/(p+r)
+
+
 SHA_TEMPLATE='e05f22eed16ea28bd2cab409d0d37c1274ff563232d53dc9b523a3ee016c7f4b'
 
 
@@ -217,17 +236,17 @@ class Informe:
 
     def fase2(self):
         self.h('7. El pipeline de entrenamiento')
-        self.p('Se entrena sobre 3184 imágenes con aumento base o sobre las 796 originales. Validación contiene 672 imágenes de 11 secuencias externas, con 1561 robots, 255 difficult y ningún negativo. Test contiene 718 imágenes y se reserva para evaluar el modelo definitivo una sola vez; no hay resultados de test en este informe.')
+        self.p('Se entrena sobre 3184 imágenes con aumento base o sobre las 796 originales. Validación contiene 672 imágenes de 11 secuencias externas, con 1561 robots, 255 difficult y ningún negativo. Test contiene 718 imágenes de 13 secuencias externas, con 1721 robots y 270 difficult, y se reservó para evaluar una sola vez cada modelo final, sin usarlo para elegir nada (apartado 11.9).')
         self.fig(FIG/'pipeline.png','Flujo realmente usado para ajustar pesos y seleccionar el checkpoint con validación.',maxheight=8)
         self.p('La imagen se carga en RGB, se pasa a tensor en [0,1] y el modelo normaliza y escala internamente. Los primeros experimentos usan lote físico 8; res1024 acumula dos microbatches de 4 antes de actualizar. Una época recorre todo entrenamiento. Se suman las pérdidas de RPN, clasificación y regresión; SGD actualiza los pesos mediante retropropagación.')
         self.p('Las cajas difficult también participan en el entrenamiento: sin_difficult elimina el flag del diccionario que se entrega al detector, no sus cajas. Para la pérdida de validación se usa no_grad; para las detecciones y AP, eval. Cada época se guarda model_last y solo se reemplaza model_best cuando sube AP@0,5.')
         self.h('8. Modelos')
-        self.p('Se ha probado Faster R-CNN ResNet-50 con FPN [3,4], una red de dos etapas: el RPN propone regiones y la cabeza clasifica y ajusta sus cajas. Se inicializa con COCO y se sustituye la cabeza por fondo y robot. FPN combina escalas, relevante para objetivos a distancias diferentes. No se ha realizado todavía una comparación de arquitecturas.')
-        self.p('El código contempla Faster R-CNN v2 y una variante MobileNet, entre otras. Los resultados de COCO no predicen la ganancia en nuestros datos. Cualquier comparación futura debe medir precisión y latencia para el uso en el robot.')
+        self.p('Se ha probado Faster R-CNN ResNet-50 con FPN [3,4], una red de dos etapas: el RPN propone regiones y la cabeza clasifica y ajusta sus cajas. Se inicializa con COCO y se sustituye la cabeza por fondo y robot. FPN combina escalas, relevante para objetivos a distancias diferentes. Los apartados 11.7 a 11.9 comparan siete arquitecturas: además de esta, Faster R-CNN v2 y una variante con MobileNet, RetinaNet [6] y SSD [7].')
+        self.p('Los resultados de COCO no predicen la ganancia en nuestros datos, por eso la comparación mide precisión y también latencia, que es lo que condiciona el uso en el robot.')
         self.page();self.h('9. Hiperparámetros')
         self.table(['Parámetro','Valor aplicado'],[['Épocas / lote efectivo / semilla','30 / 8 / 0; res1024: microbatch 4 × 2'],['Optimizador','SGD; momentum 0,9; weight decay 0,0005'],['Tasa inicial','0,0001 en originales; 0,001 en lr001 y res1024'],['Programador','ReduceLROnPlateau con pérdida de validación'],['Bajada / paciencia / mínimo','×0,1 / 5 épocas / 1e−10'],['Resolución del detector','800/1333; res1024: 1024/1820'],['Datos aumentados','Originales y 3 copias; mismo aumento base'],['Checkpoint seleccionado','Mayor AP@0,5 en validación'],['Entorno','PyTorch 2.4.1; torchvision 0.19.1; RTX 3060 12 GB']],widths=[5.7,10.3])
         self.caption('Configuración común de los experimentos medidos.',tipo='Tabla')
-        self.p('La tasa 0,001 se ensayó como salto de diez veces manteniendo los otros parámetros. No se añadieron warmup, otra arquitectura ni los perfiles nuevos de aumento. Cambiar una variable facilita interpretar el resultado, aunque una sola semilla no mide su variabilidad.')
+        self.p('La tasa 0,001 se ensayó como salto de diez veces manteniendo los otros parámetros. En estos cuatro experimentos no se añadieron warmup, otra arquitectura ni los perfiles nuevos de aumento: cambiar una variable facilita interpretar el resultado, aunque una sola semilla no mide su variabilidad. La comparación de los apartados 11.7 a 11.9 sí cambia de arquitectura y usa el perfil robusto_v1, con 12 épocas y lote efectivo 8; Faster R-CNN v2 acumula microlotes de 4 por falta de memoria.')
         self.h('10. Métricas')
         self.p('IoU es la intersección entre caja predicha y real dividida por su unión. Con IoU≥0,5 y confianza≥0,5 se emparejan detecciones por confianza: acierto TP, detección sin pareja FP y robot sin pareja FN. Precisión es TP/(TP+FP), exhaustividad TP/(TP+FN) y F1 la media armónica de ambas.')
         self.p('AP resume la curva precisión–exhaustividad al variar confianza. AP@0,5 fija IoU en 0,5; AP@0,75 exige cajas más ajustadas; AP 0,50:0,95 promedia umbrales de IoU de 0,50 a 0,95. Al haber una clase, la media entre clases coincide con su AP. En los grupos normales/difficult se ignoran las anotaciones y detecciones emparejadas del otro grupo.')
@@ -258,6 +277,7 @@ class Informe:
         self.fig(WEEK/'comparaciones/lr001/secuencias_comparadas.png','Cambio de AP50 por secuencia en puntos porcentuales.',maxheight=7.8)
         self.p('AP50 mejora en 7 de 11 secuencias y baja en 4. GR01_0010 de 2025 gana 3,55 puntos y reduce sus FN de 4 a 1. En GR04_0011 de 2025 aumentan de 29 a 33 los FN y de 25 a 28 los difficult perdidos. GR04_0003 de 2024 sigue perdiendo sus seis difficult; el cambio de tasa no resuelve ese caso.')
         self.resolucion()
+        self.cadena()
         self.page();self.h('12. Análisis cualitativo')
         self.p('La inspección de las predicciones distingue errores del detector y carencias de las etiquetas. En la figura siguiente se ven cuatro robots, pero el XML de GR02_0001/frame_0444 de 2024 contiene una sola caja. Una detección correcta de los otros tres puede contarse como FP. No se modifican las etiquetas para conservar la comparación.')
         self.fig(FIG/'etiqueta_incompleta.png','Caso confirmado de anotación incompleta. La caja azul es la única del XML.',maxheight=8.7)
@@ -265,10 +285,10 @@ class Informe:
         self.fig(WEEK/'comparaciones/res1024/ejemplo_errores_res1024.png','Res1024 en PIDS2025_GR03_0011/frame_0600: TP 4, FP 4 y FN 1 frente a las etiquetas; rojo indica detección sin pareja.',width=12,maxheight=6)
         self.p('La muestra de res1024 incluye una caja roja sobre una pierna y varias cajas solapadas en torno a un objetivo: las etiquetas omitidas no explican todos los errores. Los difficult concentran 65/83 FN de lr001 y 56/68 de res1024. Su recall al umbral 0,5 mejora, pero no su AP50 agregado; el flag agrupa tamaños, oclusión y movimiento.')
         self.page();self.h('12.1. Conclusiones y trabajo pendiente',2)
-        self.p('Se conserva provisionalmente lr=0,001 a resolución 800/1333 y el checkpoint de la época 5 como referencia: mejora AP agregado, ajuste de cajas y FP frente a lr=0,0001, con una latencia similar. La diferencia de +0,17 puntos en AP50 con una única semilla no prueba una mejora estable; tampoco hay mejora uniforme en difficult al umbral fijo.')
-        self.p('Se han completado cuatro entrenamientos y su evaluación en validación. La resolución mayor aporta +7,04 puntos de AP small y reduce 15 FN, pero aumenta FP y latencia y baja AP 0,50:0,95 en el checkpoint seleccionado. Se conserva lr001 a resolución original como referencia por su equilibrio; res1024 queda como alternativa si prima detectar pequeños y se acepta ese coste.')
-        self.p('La selección por AP50 tiene consecuencias: en res1024 el máximo AP 0,50:0,95 del historial está en la época 5, no en la 2 elegida. No se ha reevaluado otro checkpoint ni se concluye que la resolución empeore siempre el ajuste de cajas. Una semilla y el cambio de microbatch impiden aislar completamente su efecto.')
-        self.p('Falta comparar arquitecturas y evaluar el modelo definitivo en test; la fase 2 sigue siendo un avance. Como experimento posterior se plantea una ampliación dirigida a difficult, con los demás parámetros fijos. Los perfiles de sombras, lluvia y oclusión están preparados, pero no participan en estos resultados. Se limita la selección sobre validación y test se reserva para una única evaluación final.')
+        self.p('El modelo final es Faster R-CNN v2 con lr 0,001 y el perfil robusto_v1, checkpoint de la época 3: AP@0,5 de 0,9523 en test (0,9658 en robots normales y 0,6921 en difficult) y F1 de 0,9389 con el umbral 0,95 fijado en validación. La opción rápida es Faster R-CNN con MobileNet, con 0,9240 en test y 16,0 ms por imagen frente a 96,3. Elegir entre las dos depende de la latencia real que admita el robot, que está por medir.')
+        self.p('De la comparación salen cuatro conclusiones. La arquitectura importa más que la tasa de aprendizaje y que el aumento: las cuatro redes con ResNet-50 quedan a 1,2 puntos entre sí, la tasa mueve el AP@0,5 menos de 0,25 puntos y el perfil robusto_v1 no mejora al aumento base. Los difficult siguen siendo el punto débil de todas, con un AP@0,5 de test entre 0,57 y 0,69, de 27 a 37 puntos por debajo del de los robots normales. Las redes con entrada pequeña (SSD) no sirven para robots lejanos. Y Faster R-CNN sobreajusta pronto con cualquier tasa, por lo que el checkpoint se elige por validación y no por el final del entrenamiento.')
+        self.p('La referencia de los primeros experimentos (Faster R-CNN v1, lr 0,001, resolución 800/1333) queda como línea base. La resolución 1024 se probó solo con Faster R-CNN v1, donde aportó +7,04 puntos de AP small y 15 robots menos perdidos a costa de más falsos positivos y 62 % más de latencia; no se ha probado con Faster R-CNN v2. La selección por AP50 tiene sus consecuencias: en res1024 el máximo AP 0,50:0,95 del historial está en la época 5, no en la 2 elegida, y no se ha reevaluado otro checkpoint.')
+        self.p('Queda por hacer: mejorar los difficult, para lo que el aumento dirigido probado aquí no basta (más imágenes reales con movimiento y oclusión, o combinar resolución mayor con Faster R-CNN v2); repetir con varias semillas para acotar la variabilidad; y llevar el modelo al robot, medir la latencia de toda la cadena (captura, detección y actuación) y decidir entonces entre el modelo final y el rápido. Eso corresponde al Bloque 3; esta fase queda como un avance.')
 
     def resolucion(self):
         self.page();self.h('11.5. Resolución y evolución del entrenamiento',2)
@@ -285,17 +305,69 @@ class Informe:
         self.fig(WEEK/'comparaciones/res1024/secuencias_comparadas.png','Cambio de AP50 frente a lr001 a resolución original; escala en puntos porcentuales.',maxheight=5.5)
         self.p('AP50 mejora en 4 secuencias, baja en 6 y empata en una. GR03_0011 de 2025 gana 4,16 puntos y reduce FN de 28 a 22. GR04_0011 de 2025 reduce FN de 33 a 25, pero FP sube de 28 a 58. GR01_0002 de 2025 pierde 1,20 puntos. GR04_0003 de 2024 sigue perdiendo sus seis difficult. El CSV complementario conserva todas las secuencias.')
 
+    def cadena(self):
+        val=leer_csv(WEEK/'cadena/resumen.csv')
+        test={r['experimento']:r for r in leer_csv(WEEK/'cadena/resumen_test.csv')}
+        umbrales=json.loads((WEEK/'cadena/test_registro.json').read_text(encoding='utf-8'))
+        base=sorted([r for r in val if float(r['lr'])==0.001],key=lambda r:-float(r['ap50_todos']))
+        self.page();self.h('11.7. Comparación de arquitecturas',2)
+        self.p('Se entrenaron las siete arquitecturas del código de partida, todas inicializadas con COCO y con la cabeza sustituida por fondo y robot: Faster R-CNN ResNet-50 FPN en sus versiones v1 y v2 y con MobileNetV3, RetinaNet ResNet-50 FPN (v1 y v2), SSD300 con VGG16 y SSDlite320 con MobileNetV3 [3,4,6,7]. Todas usan el perfil de aumento robusto_v1 (las 796 originales y tres copias por imagen), 12 épocas, SGD con tasa 0,001 y semilla 0, y se conserva el checkpoint con mayor AP@0,5 en validación. Las figuras interactivas de esta comparación, con selectores de medida, modelo y conjunto, están en https://javiersaguar.github.io/PIDS-Proyecto2/bloque2/.')
+        self.table(['Modelo','Época','AP50 todos','AP50 normales','AP50 difficult','AP 0,50:0,95','F1 máx. (umbral)','ms/imagen','Min'],
+                   [[NOMBRES[r['modelo']],r['mejor_epoca'],num(r['ap50_todos']),num(r['ap50_normales']),num(r['ap50_difficult']),num(r['ap_0.5:0.95']),f"{num(r['f1_max'])} ({num(r['umbral_f1'],2)})",num(r['ms_una_a_una'],1),num(r['minutos_train'],0)] for r in base],
+                   widths=[3.5,1.1,1.5,1.7,1.7,1.7,2.2,1.4,1.2],size=8)
+        self.caption('Siete arquitecturas con lr 0,001 en validación (672 imágenes, 1561 robots, 255 difficult). Época del mejor checkpoint; F1 máximo de la rejilla de umbrales de 0,05; milisegundos por imagen de una en una en la RTX 3060 sin captura ni actuación; minutos de entrenamiento.',tipo='Tabla')
+        self.fig(FIG/'curvas_arquitecturas.png','AP@0,5 en validación por época. El punto marca el checkpoint elegido. Faster R-CNN llega a su máximo entre las épocas 3 y 5 y después pierde algo; RetinaNet mejora despacio y SSD300 sigue subiendo en la 12.',maxheight=7.5)
+        self.p('Faster R-CNN v2 es el más preciso, con AP@0,5 de 0,9513, seguido de RetinaNet v2 (0,9447), Faster R-CNN v1 (0,9426) y RetinaNet v1 (0,9396). La v2 supera a la v1 en 0,87 puntos y a RetinaNet v2 en 0,66: son diferencias pequeñas con una sola semilla, aunque la v2 queda por encima de RetinaNet v2 con las tres tasas ensayadas (apartado 11.8). Las cuatro redes con ResNet-50 quedan a 1,2 puntos entre sí: dentro de esa familia, la arquitectura cambia poco el AP@0,5.')
+        self.p('Las redes ligeras pierden precisión. Faster R-CNN con MobileNet baja 2,3 puntos (0,9281), pero tarda 16,0 ms por imagen frente a 99,5 de la v2, unas seis veces menos. SSD300 (0,9008) es más rápida que cualquiera de las de ResNet-50, pero MobileNet le saca 2,7 puntos por 3,5 ms más: no compensa. SSDlite320 (0,6823) no sirve, porque reduce la imagen a 320 × 320 y los robots lejanos casi desaparecen.')
+        self.fig(FIG/'precision_latencia.png','Precisión frente a tiempo por imagen. Faster R-CNN con MobileNet es el mejor compromiso rápido; los círculos pequeños son las variantes de tasa.',maxheight=7.5)
+        self.fig(FIG/'coste_entrenamiento.png','Minutos de entrenamiento de los 13 entrenamientos y época del mejor checkpoint (rombo). Los minutos hasta el mejor checkpoint son una estimación: minutos totales por mejor época entre épocas, suponiendo épocas de igual duración.',maxheight=6.0)
+        self.p('El coste también separa a las arquitecturas. Los 13 entrenamientos suman 1306 minutos, unas 21,8 horas de GPU. Faster R-CNN v2 es la más cara (151 minutos con 12 épocas y 189 con 15, con lote 4 y acumulación 2 para caber en memoria) y Faster R-CNN con MobileNet cuesta 19. RetinaNet v2 es la que más memoria necesita (10.550 MiB, frente a 7462 de Faster R-CNN v2), y SSD300 y SSDlite320 caben en poco más de 1 GiB. Con lr 0,001 el mejor checkpoint llega en las épocas 3 (v2), 5 (v1) y 6 (RetinaNet v2), de modo que entre el 50 % y el 75 % del tiempo posterior no mejora el checkpoint elegido.')
+        self.p('Las curvas muestran dos comportamientos. Faster R-CNN alcanza el máximo en las épocas 3 a 5 y después pierde entre 0,6 y 1 punto mientras su pérdida de entrenamiento sigue bajando: sobreajuste temprano, como en los experimentos anteriores. RetinaNet arranca más despacio (RetinaNet v1 está en 0,48 en la primera época) pero es más estable y llega al máximo en las épocas 6 y 7. SSD300 sigue mejorando en la época 12, por lo que doce épocas pueden ser pocas para ese modelo; no se probó con más.')
+        self.p('Los difficult siguen siendo el punto débil de todas las arquitecturas: su AP@0,5 queda entre 0,60 y 0,65, de 33 a 37 puntos por debajo del de los robots normales. Cambiar de arquitectura no cierra esa brecha; Faster R-CNN v1 (0,6471) y v2 (0,6422) son las que mejor los detectan.')
+        self.h('11.8. Tasa de aprendizaje y perfil de aumento',2)
+        filas=[]
+        for modelo in ['faster_rcnn_v2','retinanet_v2','faster_rcnn_v1']:
+            for r in sorted([r for r in val if r['modelo']==modelo],key=lambda r:float(r['lr'])):
+                filas.append([NOMBRES[modelo],num(r['lr'],4),r['mejor_epoca'],num(r['ap50_todos']),num(r['ap50_difficult']),num(r['ap_0.5:0.95']),num(r['minutos_train'],0)])
+        self.table(['Modelo','lr','Mejor época','AP50 todos','AP50 difficult','AP 0,50:0,95','Min'],filas,widths=[4.1,1.6,2.2,2.2,2.4,2.2,1.3],size=9)
+        self.caption('Variación de la tasa de aprendizaje en los tres modelos con mejor AP@0,5 en validación. Con 0,0005 se entrenaron 15 épocas; con 0,001 y 0,002, 12.',tipo='Tabla')
+        self.p('Con los tres mejores modelos se repitió el entrenamiento con tasas de 0,0005 y 0,002. La tasa casi no cambia el AP@0,5: entre la mejor y la peor variante hay 0,16 puntos en Faster R-CNN v2 (0,9497 a 0,9513), 0,22 en RetinaNet v2 (0,9447 a 0,9469) y 0,14 en Faster R-CNN v1 (0,9420 a 0,9434), lo que cabe esperar de cambiar la semilla. No hay razón para preferir otra tasa que 0,001, que además necesita menos épocas que 0,0005.')
+        self.fig(FIG/'tasa_aprendizaje.png','AP@0,5 en validación por época con tres tasas de aprendizaje. El rombo marca el mejor checkpoint de cada curva; con 0,0005 hay 15 épocas. Las primeras épocas de algunas curvas quedan fuera de escala.',maxheight=5.0)
+        self.p('Lo que sí cambia es la estabilidad. Con 0,002, Faster R-CNN alcanza su máximo en la primera o la segunda época y después pierde entre 1,1 y 1,4 puntos: de 0,9497 a 0,9355 en la v2 y de 0,9432 a 0,9320 en la v1. Con 0,0005 el máximo llega más tarde (época 5 en la v2) y la caída posterior es de 0,5 puntos. RetinaNet v2 es poco sensible a la tasa. Que el mejor checkpoint con lr 0,002 sea el de una sola época indica que apenas se ha entrenado, y recuerda que cada cifra es el máximo de una curva y por tanto algo optimista.')
+        self.p('El perfil robusto_v1 (sombras y llovizna en los exteriores, obstáculos con textura y refuerzo de las imágenes con difficult; apartado 6.1) se comparó con el aumento base repitiendo Faster R-CNN v1 con lr 0,001: AP@0,5 de 0,9426 con robusto_v1 y 0,9433 con el aumento base; 0,6471 y 0,6462 en difficult; 191 y 190 falsos positivos y 84 y 83 robots perdidos con confianza 0,5. No hay diferencia medible, y el mejor checkpoint cae en la época 5 en los dos casos. La comparación no es idéntica (30 épocas con el aumento base y 12 con robusto_v1), pero sí lo es en el checkpoint elegido.')
+        self.p('Que no mejore no prueba que no sirva: la lluvia sintética, las sombras locales y los obstáculos con textura no se han podido medir por separado, y no hay una serie de lluvia real que los contraste. Con estos datos el perfil base es suficiente y robusto_v1 no se adopta como mejora.')
+        self.h('11.9. Evaluación final en test',2)
+        self.p('El criterio se fijó antes de abrir el test y quedó registrado en el repositorio (docs/seleccion_modelo_final.md, 24/10/2026): el modelo final es el de mayor AP@0,5 en validación, el umbral de confianza es el de mejor F1 en validación, y se evalúan en test los siete modelos con lr 0,001, una sola vez cada uno. El test tiene 718 imágenes de 13 secuencias de otros grupos, con 1721 robots (270 difficult). No se ha usado para elegir nada.')
+        filas=[]
+        for r in base:
+            ts=test[r['experimento']]
+            filas.append([NOMBRES[r['modelo']],num(r['ap50_todos']),num(ts['ap50_todos']),num(r['ap50_difficult']),num(ts['ap50_difficult']),num(ts['ap_0.5:0.95']),num(umbrales[r['experimento']]['umbral'],2),num(ts['precision']),num(ts['exhaustividad']),num(f1(ts['precision'],ts['exhaustividad'])),f"{ts['fp']} / {ts['fn']}"])
+        self.table(['Modelo','AP50 val.','AP50 test','Diff. val.','Diff. test','AP 0,5:0,95 test','Umbral','Precis.','Exhaust.','F1','FP / FN'],filas,
+                   widths=[2.9,1.3,1.3,1.3,1.3,1.5,1.2,1.3,1.4,1.3,1.4],size=8)
+        self.caption('Evaluación final en test, una vez por modelo, con el umbral fijado en validación. Precisión, exhaustividad, F1 y recuento de falsos positivos y robots perdidos a ese umbral; AP50 en todos los robots y en difficult.',tipo='Tabla')
+        self.fig(FIG/'validacion_vs_test.png','AP@0,5 en validación y en test. El orden de las arquitecturas se mantiene; las de SSD pierden más al pasar a test.',maxheight=6.3)
+        self.p('El modelo final, Faster R-CNN v2 con lr 0,001, obtiene en test un AP@0,5 de 0,9523 (0,9513 en validación): 0,9658 en robots normales y 0,6921 en difficult. Con el umbral 0,95 detecta 1606 de los 1721 robots (exhaustividad 0,9332, y 0,7259 en difficult), con 94 falsos positivos (precisión 0,9447) y un F1 de 0,9389. El mejor F1 posible en test sería 0,9413, con umbral 0,90: el umbral elegido en validación queda a 0,24 puntos del óptimo.')
+        self.fig(FIG/'errores_test.png','Errores en test con el umbral fijado en validación (izquierda) y curvas de umbral del modelo final (derecha); la línea punteada es el umbral elegido.',maxheight=5.6)
+        self.p('En test, 74 de los 115 robots que pierde el modelo final (64 %) son difficult, que son 270 de 1721 (16 %). Las SSD fallan sobre todo por robots perdidos (307 y 691). Subir el umbral de 0,5 a 0,95 baja los falsos positivos de 226 a 94, pero la exhaustividad en difficult cae de 0,84 a 0,73: el umbral decide cuántos difficult se sacrifican.')
+        self.p('Las cifras de test son coherentes con las de validación. El orden se mantiene salvo el intercambio entre RetinaNet v1 y Faster R-CNN v1, a solo 0,07 puntos (0,9362 y 0,9355). Las redes con ResNet-50 varían entre −0,7 y +0,1 puntos al pasar a test, mientras que las de SSD pierden más (2,1 puntos SSD300 y 4,1 SSDlite320). En difficult, el modelo final sube 5,0 puntos (de 0,6422 a 0,6921) y Faster R-CNN v1 y MobileNet bajan 4,1 y 2,8; con 270 robots, cambios de unos pocos puntos no son concluyentes.')
+        self.p('Por secuencias, 11 de las 13 superan 0,94 de AP@0,5 con el modelo final. Las excepciones son PIDS2025_GR02_0009 (0,8695, con 40 robots perdidos de 204, 33 de ellos difficult) y PIDS2025_GR04_0000 (0,4967), una secuencia de 13 imágenes y 21 robots en la que se pierden 10, y que pesa poco por su tamaño.')
+        self.p('La opción rápida para la demo, Faster R-CNN con MobileNet, obtiene 0,9240 en test (0,5744 en difficult) y un F1 de 0,9143 con el umbral 0,55, a 16,0 ms por imagen frente a 96,3 del modelo final. Los límites son los de siempre: una sola semilla, etiquetas de otros grupos con criterios algo distintos (antenas, robots cortados) y latencias de inferencia en la RTX 3060 sin captura ni actuación. No se ha medido nada en el robot.')
+
     def terminar(self):
         if self.modo=='completo':
             self.page()
             for title in ['13. Módulos del robot','14. El circuito','15. Estrategia de búsqueda y detección','16. Funcionalidades adicionales','17. La demostración final','18. Limitaciones y trabajo futuro']:
                 self.h(title);self.p('Pendiente del Bloque 3. No se han realizado ni medido todavía estas funciones en el circuito definitivo.')
         self.page();self.h('Referencias')
-        for t in ['[1] labelImg. Herramienta de anotación PascalVOC. https://github.com/HumanSignal/labelImg',
+        refs=['[1] labelImg. Herramienta de anotación PascalVOC. https://github.com/HumanSignal/labelImg',
                   '[2] Albumentations 1.4.18. Código de transformaciones. https://github.com/albumentations-team/albumentations/tree/1.4.18',
                   '[3] S. Ren et al. Faster R-CNN Towards Real-Time Object Detection with Region Proposal Networks. 2015. https://arxiv.org/abs/1506.01497',
                   '[4] torchvision 0.19. Faster R-CNN ResNet-50 FPN. https://docs.pytorch.org/vision/0.19/models/generated/torchvision.models.detection.fasterrcnn_resnet50_fpn.html',
-                  '[5] Repositorio del grupo. Datos, criterios, notebooks y resultados. https://github.com/javiersaguar/PIDS-Proyecto2']:
+                  '[5] Repositorio del grupo. Datos, criterios, notebooks y resultados. https://github.com/javiersaguar/PIDS-Proyecto2']
+        if self.modo!='fase1':
+            refs+=['[6] T.-Y. Lin et al. Focal Loss for Dense Object Detection. 2017. https://arxiv.org/abs/1708.02002',
+                   '[7] W. Liu et al. SSD: Single Shot MultiBox Detector. 2016. https://arxiv.org/abs/1512.02325']
+        for t in refs:
             self.p(t)
             self.doc.paragraphs[-1].alignment=WD_ALIGN_PARAGRAPH.LEFT
         self.p('Los originales, XML, exclusiones y manifiestos están en el repositorio. Los HTML del EDA son material complementario; las figuras del cuerpo son exportaciones estáticas. Los experimentos y tablas de esta versión se han medido en validación, salvo las comprobaciones de integridad del aumento.')
