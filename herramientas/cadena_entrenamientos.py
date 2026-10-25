@@ -8,6 +8,7 @@ Desde la raíz del repositorio:
     python herramientas/cadena_entrenamientos.py estado      # qué se ha hecho y qué falta
     python herramientas/cadena_entrenamientos.py empaquetar  # resultados en un zip, sin los pesos
     python herramientas/cadena_entrenamientos.py test --experimentos a,b [--confirmar]   # evaluación final en TEST
+    python herramientas/cadena_entrenamientos.py largo --modelos ssd_v1 --epocas 40      # repite con más épocas (solo validación)
 
 Opciones de preflight y cadena:
 
@@ -17,6 +18,7 @@ Opciones de preflight y cadena:
     --experimentos    (test) nombres de experimento separados por comas, o `fase1` para los siete de lr 0,001
     --confirmar       (test) sin esta opción solo muestra el plan: el test se evalúa UNA vez por modelo
     --forzar          (test) repite una evaluación ya hecha; deja constancia en el registro
+    --epocas N        (largo) número de épocas; el nombre del experimento acaba en _epN
     --desacoplar      (Windows) se relanza sin consola y sigue aunque se cierre la ventana desde la que se lanzó
 
 Pensado para lanzarse con nohup. Se puede relanzar: salta lo que ya tiene su evaluación y
@@ -24,6 +26,8 @@ reanuda el entrenamiento que quedó a medias.
 
 - Fase 1: los siete modelos del script original con el perfil de aumento `robusto_v1` y lr 0,001.
 - Fase 2: los TOP_FASE2 mejores por AP@0,5 en validación, con lr 0,0005 y 0,002.
+- Largo: repite los modelos elegidos con lr 0,001 y más épocas, para comprobar si faltaban. Usa su propio
+  estado (estado_largo.json) y su resumen (resumen_largo.csv), de modo que no mezcla las dos series.
 
 Cada experimento ejecuta train.ipynb y test.ipynb (conjunto `val`) con la configuración en
 PIDS_CONFIG. El test no se toca. Solo usa la biblioteca estándar.
@@ -107,6 +111,11 @@ def nombre(modelo: str, lr: float) -> str:
 
 def epocas(lr: float) -> int:
     return EPOCAS_LR_BAJO if lr < LR_BASE else EPOCAS
+
+
+def sufijo_largo(n: int) -> str:
+    """Marca de los entrenamientos con más épocas que la cadena: _ep40."""
+    return f'_ep{n}'
 
 
 def ahora() -> str:
@@ -303,25 +312,28 @@ def preflight(modelos=None) -> dict:
 
 
 # ------------------------------------------------------------------ experimentos
-def guardar_estado(estado: dict) -> None:
+def guardar_estado(estado: dict, archivo: str = 'estado.json') -> None:
     estado['actualizado'] = ahora()
-    escribir_json(CADENA / 'estado.json', estado)
+    escribir_json(CADENA / archivo, estado)
 
 
-def experimento(modelo: str, lr: float, plan: dict, estado: dict, fase: int) -> None:
-    exp = nombre(modelo, lr)
+def experimento(modelo: str, lr: float, plan: dict, estado: dict, fase: int, num_epochs: int = None,
+                archivo: str = 'estado.json', resumen: str = 'resumen.csv') -> None:
+    marca = sufijo_largo(num_epochs) if num_epochs else ''
+    n_epocas = num_epochs or epocas(lr)
+    exp = nombre(modelo, lr) + marca
     if resultado_val(exp):
         print(f'[{ahora()}] {exp}: ya evaluado, se salta', flush=True)
         return
-    elem = estado['experimentos'].setdefault(exp, {'modelo': modelo, 'lr': lr, 'fase': fase})
+    elem = estado['experimentos'].setdefault(exp, {'modelo': modelo, 'lr': lr, 'fase': fase, 'epocas': n_epocas})
     elem.update(estado='entrenando', inicio=ahora())
-    guardar_estado(estado)
+    guardar_estado(estado, archivo)
     inicio = time.time()
     lote, acum = plan[modelo]['batch_size'], plan[modelo]['acumulacion_gradiente']
     log = CADENA / 'logs' / f'{exp}.log'
     for intento in range(2):
-        cfg = configuracion(modelo, lr, lote, acum)
-        print(f'[{ahora()}] {exp}: entrenando ({epocas(lr)} épocas, lote {lote} x {acum})', flush=True)
+        cfg = configuracion(modelo, lr, lote, acum, num_epochs=n_epocas, sufijo_experimento=sufijo(lr) + marca)
+        print(f'[{ahora()}] {exp}: entrenando ({n_epocas} épocas, lote {lote} x {acum})', flush=True)
         rc = ejecutar(WEEK2 / 'train.ipynb', f'{exp}_train', cfg, log)
         if rc == 0:
             break
@@ -331,11 +343,11 @@ def experimento(modelo: str, lr: float, plan: dict, estado: dict, fase: int) -> 
             elem['reintento'] = f'sin memoria; lote {lote} x {acum}'
             continue
         elem.update(estado='fallo', error=f'train.ipynb código {rc}', fin=ahora())
-        guardar_estado(estado)
+        guardar_estado(estado, archivo)
         print(f'[{ahora()}] {exp}: FALLÓ el entrenamiento (código {rc})', flush=True)
         return
     elem.update(estado='evaluando', batch_size=lote, acumulacion_gradiente=acum)
-    guardar_estado(estado)
+    guardar_estado(estado, archivo)
     rc = ejecutar(WEEK2 / 'test.ipynb', f'{exp}_test', dict(cfg, conjunto='val'), log)
     resumen = resultado_val(exp)
     if rc != 0 or not resumen:
@@ -343,8 +355,8 @@ def experimento(modelo: str, lr: float, plan: dict, estado: dict, fase: int) -> 
     else:
         elem.update(estado='hecho', fin=ahora(), minutos=round((time.time() - inicio) / 60, 1),
                     ap50_todos=ap50(resumen), ap50_difficult=ap50(resumen, 'difficult'))
-    guardar_estado(estado)
-    escribir_resumen_csv(estado)
+    guardar_estado(estado, archivo)
+    escribir_resumen_csv(estado, archivo=resumen)
     print(f'[{ahora()}] {exp}: {elem["estado"]} {elem.get("ap50_todos", "")}', flush=True)
 
 
@@ -361,7 +373,7 @@ def mejor_umbral(exp: str, conjunto: str = 'val') -> dict:
     return {k: (float(v) if k != 'umbral' else float(v)) for k, v in mejor.items()}
 
 
-def escribir_resumen_csv(estado: dict, conjunto: str = 'val') -> None:
+def escribir_resumen_csv(estado: dict, conjunto: str = 'val', archivo: str = None) -> None:
     columnas = ['experimento', 'modelo', 'lr', 'fase', 'epocas', 'lote', 'acumulacion', 'mejor_epoca',
                 'ap50_todos', 'ap50_normales', 'ap50_difficult', 'ap_0.5:0.95', 'fp', 'fn', 'fn_difficult',
                 'precision', 'exhaustividad', 'umbral_f1', 'f1_max', 'precision_f1', 'exhaustividad_f1',
@@ -386,7 +398,8 @@ def escribir_resumen_csv(estado: dict, conjunto: str = 'val') -> None:
             'exhaustividad_difficult_f1': mejor_f1.get('recall_difficult'), 'fp_f1': mejor_f1.get('fp'),
             'fn_f1': mejor_f1.get('fn'), 'ms_una_a_una': r.get('ms_por_imagen_una_a_una'),
             'minutos_train': t.get('tiempo_train_min'), 'mem_pico_mib': t.get('mem_pico_mib')})
-    with open(CADENA / ('resumen.csv' if conjunto == 'val' else f'resumen_{conjunto}.csv'), 'w', newline='', encoding='utf-8') as f:
+    destino = archivo or ('resumen.csv' if conjunto == 'val' else f'resumen_{conjunto}.csv')
+    with open(CADENA / destino, 'w', newline='', encoding='utf-8') as f:
         w = csv.DictWriter(f, fieldnames=columnas)
         w.writeheader()
         w.writerows(filas)
@@ -455,6 +468,44 @@ def cadena(modelos=None, fase2: bool = True) -> None:
     escribir_resumen_csv(estado)
     empaquetar()
     print(f'[{ahora()}] cadena terminada', flush=True)
+
+
+def simular_largo(modelos: list, num_epochs: int) -> None:
+    plan = leer_json(CADENA / 'plan.json', {})
+    print(f'Largo: lr {LR_BASE}, {num_epochs} épocas (la cadena usó {EPOCAS}), perfil {PERFIL}, evaluación en val; el test no se toca')
+    total = 0.0
+    for m in modelos:
+        p = plan.get(m, {})
+        minutos = (p.get('min_por_epoca') or 0) * num_epochs
+        total += minutos
+        coste = f"{minutos / 60:.1f} h (lote {p['batch_size']}x{p['acumulacion_gradiente']})" if p.get('viable') else 'sin preflight todavía'
+        print(f'  {nombre(m, LR_BASE) + sufijo_largo(num_epochs):50s} {coste}')
+    print(f'  Total estimado: {total / 60:.1f} h más la evaluación de cada modelo')
+
+
+def largo(modelos: list, num_epochs: int) -> None:
+    """Repite los modelos con lr 0,001 y más épocas; guarda estado_largo.json y resumen_largo.csv aparte."""
+    if num_epochs <= EPOCAS:
+        raise ValueError(f'--epocas debe ser mayor que las {EPOCAS} de la cadena')
+    CADENA.mkdir(parents=True, exist_ok=True)
+    comprobar_gpu()
+    evitar_suspension()
+    plan = leer_json(CADENA / 'plan.json', {})
+    if any(m not in plan for m in modelos):
+        plan = preflight([m for m in modelos if m not in plan])
+    estado = leer_json(CADENA / 'estado_largo.json') or {'inicio': ahora(), 'perfil': PERFIL, 'experimentos': {}}
+    guardar_estado(estado, 'estado_largo.json')
+    for modelo in modelos:
+        if not plan.get(modelo, {}).get('viable'):
+            print(f'[{ahora()}] {modelo}: no viable en el preflight, se salta', flush=True)
+            continue
+        experimento(modelo, LR_BASE, plan, estado, fase=3, num_epochs=num_epochs,
+                    archivo='estado_largo.json', resumen='resumen_largo.csv')
+    estado['fin'] = ahora()
+    guardar_estado(estado, 'estado_largo.json')
+    escribir_resumen_csv(estado, archivo='resumen_largo.csv')
+    empaquetar('estado_largo.json', 'resultados_largo.zip')
+    print(f'[{ahora()}] largo terminado', flush=True)
 
 
 # ------------------------------------------------------------------ evaluación final en test
@@ -543,29 +594,37 @@ def estado_actual() -> None:
                 print(f"  {m:16s} NO VIABLE: {p.get('error')}")
     if not estado:
         print('Aún no hay estado: la cadena no ha empezado.')
-        return
+    else:
+        imprimir_experimentos(estado)
+    estado_largo = leer_json(CADENA / 'estado_largo.json')
+    if estado_largo:
+        print('\nENTRENAMIENTOS CON MÁS ÉPOCAS (estado_largo.json):')
+        imprimir_experimentos(estado_largo)
+
+
+def imprimir_experimentos(estado: dict) -> None:
     print(f"\nInicio {estado.get('inicio')} · actualizado {estado.get('actualizado')} · fin {estado.get('fin', '—')}")
     if 'fase2' in estado:
         print('Fase 2 con:', estado['fase2']['elegidos'])
     for exp, e in estado['experimentos'].items():
         h = leer_csv(WEEK2 / 'resultados_train' / exp / 'historial.csv')
-        prog = f"época {len(h)}/{epocas(e['lr'])}" if h else ''
+        prog = f"época {len(h)}/{e.get('epocas') or epocas(e['lr'])}" if h else ''
         mejor = max((float(f['valid_map_50']) for f in h), default=float('nan'))
         extra = f"AP@0,5 val {e['ap50_todos']:.4f} (difficult {e['ap50_difficult']:.4f}) {e.get('minutos')} min" if e.get('ap50_todos') else ''
         print(f"  {exp:48s} {e['estado']:10s} {prog:12s} mejor AP@0,5 {mejor:.4f}  {extra}  {e.get('error', '')}")
 
 
-def empaquetar() -> Path:
+def empaquetar(archivo: str = 'estado.json', zip_nombre: str = 'resultados_cadena.zip') -> Path:
     """Zip con los resultados (CSV, JSON, figuras) y el estado, sin los pesos de los modelos."""
-    estado = leer_json(CADENA / 'estado.json') or {'experimentos': {}}
-    destino = CADENA / 'resultados_cadena.zip'
+    estado = leer_json(CADENA / archivo) or {'experimentos': {}}
+    destino = CADENA / zip_nombre
     with zipfile.ZipFile(destino, 'w', zipfile.ZIP_DEFLATED) as z:
         for exp in estado['experimentos']:
             for carpeta in (WEEK2 / 'resultados_train' / exp, WEEK2 / 'resultados_test' / f'{exp}_val'):
                 for f in carpeta.rglob('*') if carpeta.is_dir() else []:
                     if f.is_file():
                         z.write(f, f.relative_to(WEEK2).as_posix())
-        for f in ('estado.json', 'plan.json', 'resumen.csv'):
+        for f in (archivo, 'plan.json', 'resumen_largo.csv' if archivo == 'estado_largo.json' else 'resumen.csv'):
             if (CADENA / f).is_file():
                 z.write(CADENA / f, f'cadena/{f}')
     print('Zip en', destino, f'({destino.stat().st_size / 1e6:.1f} MB)')
@@ -599,13 +658,14 @@ def desacoplar(argv: list) -> int:
 
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description='Cadena de entrenamientos (ver el docstring del módulo).')
-    ap.add_argument('accion', nargs='?', default='estado', choices=['preflight', 'cadena', 'estado', 'empaquetar', 'test'])
+    ap.add_argument('accion', nargs='?', default='estado', choices=['preflight', 'cadena', 'estado', 'empaquetar', 'test', 'largo'])
     ap.add_argument('--modelos', type=validar_modelos, default=None, help='lista separada por comas, en orden de ejecución')
     ap.add_argument('--sin-fase2', action='store_true', help='no varía el lr de los mejores')
     ap.add_argument('--simular', action='store_true', help='solo muestra lo que haría')
     ap.add_argument('--experimentos', default=None, help='(test) experimentos separados por comas, o fase1')
     ap.add_argument('--confirmar', action='store_true', help='(test) ejecuta de verdad; sin esto solo muestra el plan')
     ap.add_argument('--forzar', action='store_true', help='(test) repite una evaluación ya hecha')
+    ap.add_argument('--epocas', type=int, default=None, help='(largo) número de épocas, mayor que las de la cadena')
     ap.add_argument('--desacoplar', action='store_true', help='(Windows) sigue aunque se cierre la ventana que lo lanzó')
     argumentos = list(sys.argv[1:] if argv is None else argv)
     a = ap.parse_args(argv)
@@ -613,14 +673,21 @@ def main(argv=None) -> None:
         desacoplar(argumentos)
         return
     modelos = a.modelos or MODELOS
+    if a.accion == 'largo' and (a.epocas is None or not a.modelos):
+        ap.error('largo necesita --modelos y --epocas')
     if a.simular:
-        if a.accion not in ('preflight', 'cadena'):
-            ap.error('--simular solo vale con preflight o cadena')
-        simular(modelos, fase2=not a.sin_fase2)
+        if a.accion not in ('preflight', 'cadena', 'largo'):
+            ap.error('--simular solo vale con preflight, cadena o largo')
+        if a.accion == 'largo':
+            simular_largo(modelos, a.epocas)
+        else:
+            simular(modelos, fase2=not a.sin_fase2)
     elif a.accion == 'preflight':
         preflight(modelos)
     elif a.accion == 'cadena':
         cadena(modelos, fase2=not a.sin_fase2)
+    elif a.accion == 'largo':
+        largo(modelos, a.epocas)
     elif a.accion == 'test':
         if not a.experimentos:
             ap.error('test necesita --experimentos')

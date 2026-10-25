@@ -120,3 +120,19 @@ El nombre de cada experimento es `<modelo>_aug_robusto_v1_lr<tasa>`, por ejemplo
 - **Una sola semilla** (0). Diferencias de menos de 0,5 puntos de AP@0,5 no son concluyentes.
 - **Las etiquetas de otros grupos** pueden no seguir nuestros criterios (antenas, robots
   cortados), y algunas tienen robots sin anotar: parte de los falsos positivos puede ser eso.
+
+## Entrenamientos con más épocas (`largo`)
+
+Para comprobar si doce épocas se quedaban cortas se pueden repetir modelos concretos con más:
+
+```bash
+python herramientas/cadena_entrenamientos.py largo --modelos ssd_v1 --epocas 40 --simular   # solo muestra el plan
+nohup python herramientas/cadena_entrenamientos.py largo --modelos ssd_v1 --epocas 40 > cadena/largo.log 2>&1 &
+```
+
+- Mismo perfil de aumento, lr 0,001, programador y lote que la cadena; solo cambia el número de épocas.
+- El experimento se llama `<modelo>_aug_robusto_v1_lr001_ep<N>`, así que no pisa los de la cadena.
+- Tiene su propio estado (`cadena/estado_largo.json`) y su resumen (`cadena/resumen_largo.csv`), y `estado` los
+  muestra aparte. No modifica `estado.json` ni `resumen.csv`.
+- Se evalúa solo en validación; el test no se toca.
+- Se puede relanzar: reanuda el entrenamiento que quedó a medias.
