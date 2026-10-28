@@ -1,0 +1,2 @@
+experimento,modelo,lr,fase,epocas,lote,acumulacion,mejor_epoca,ap50_todos,ap50_normales,ap50_difficult,ap_0.5:0.95,fp,fn,fn_difficult,precision,exhaustividad,umbral_f1,f1_max,precision_f1,exhaustividad_f1,exhaustividad_difficult_f1,fp_f1,fn_f1,ms_una_a_una,minutos_train,mem_pico_mib
+ssd_v1_aug_robusto_v1_lr001_ep40,ssd_v1,0.001,3,40,8,1,18,0.9009,0.9397,0.5145,0.536,59,344,144,0.9538,0.7796,0.2,0.8904,0.916,0.8661,0.5765,124.0,209.0,12.6,62.3,1105

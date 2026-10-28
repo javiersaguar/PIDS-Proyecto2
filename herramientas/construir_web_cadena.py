@@ -102,9 +102,22 @@ def cargar():
     return val, test
 
 
-def historial(modelo, lr):
-    filas = leer_csv(WEEK2 / 'resultados_train' / id_exp(modelo, lr) / 'historial.csv')
-    return {k: [float(f[k]) for f in filas] for k in ('epoch', 'train_loss', 'valid_loss', 'valid_map', 'valid_map_50')}
+def historial(modelo, lr, sufijo=''):
+    filas = leer_csv(WEEK2 / 'resultados_train' / (id_exp(modelo, lr) + sufijo) / 'historial.csv')
+    return {k: [float(f[k]) for f in filas] for k in ('epoch', 'train_loss', 'valid_loss', 'valid_map', 'valid_map_50', 'lr')}
+
+
+def cargar_largo():
+    """Entrenamientos repetidos con más épocas (acción `largo` de la cadena), si los hay."""
+    ruta = CADENA / 'resumen_largo.csv'
+    if not ruta.exists():
+        return []
+    filas = []
+    for f in leer_csv(ruta):
+        filas.append({'modelo': f['modelo'], 'lr': float(f['lr']), 'epocas': int(f['epocas']), 'mejor_epoca': int(f['mejor_epoca']),
+                      'sufijo': f'_ep{f["epocas"]}'})
+    return filas
+
 
 
 # --------------------------------------------------------------------------- utilidades de figura
@@ -172,11 +185,18 @@ def fig_tasa(val):
 
 
 def fig_aprendizaje(val):
-    ordenadas = sorted(val, key=lambda f: (MODELOS.index(f['modelo']), f['lr']))
+    ordenadas = [{'modelo': f['modelo'], 'lr': f['lr'], 'mejor_epoca': f['mejor_epoca'], 'sufijo': '', 'etiqueta': nombre_exp(f['modelo'], f['lr'])}
+                 for f in sorted(val, key=lambda f: (MODELOS.index(f['modelo']), f['lr']))]
+    ordenadas += [{**f, 'etiqueta': f"{nombre_exp(f['modelo'], f['lr'])} · {f['epocas']} épocas"} for f in cargar_largo()]
     variantes = {}
     for i, f in enumerate(ordenadas):
-        h = historial(f['modelo'], f['lr'])
+        h = historial(f['modelo'], f['lr'], f['sufijo'])
         mejor = f['mejor_epoca']
+        cortes = [int(h['epoch'][k]) for k in range(1, len(h['lr'])) if h['lr'][k] != h['lr'][k - 1]]
+        formas = [{'type': 'line', 'xref': 'x', 'yref': 'paper', 'x0': c - 0.5, 'x1': c - 0.5, 'y0': 0, 'y1': 1, 'line': {'color': '#DCE3E9', 'width': 1.2}}
+                  for c in cortes]
+        formas.append({'type': 'line', 'xref': 'x', 'yref': 'paper', 'x0': mejor, 'x1': mejor, 'y0': 0, 'y1': 1,
+                       'line': {'color': '#788797', 'width': 1.5, 'dash': 'dot'}})
         variantes[str(i)] = {
             'data': [{'type': 'scatter', 'mode': 'lines+markers', 'name': 'Pérdida de entrenamiento', 'x': h['epoch'], 'y': h['train_loss'],
                       'line': {'color': GRIS, 'width': 2}, 'marker': {'size': 5}, 'hovertemplate': 'Época %{x}<br>Pérdida de entrenamiento: %{y:.4f}<extra></extra>'},
@@ -184,15 +204,14 @@ def fig_aprendizaje(val):
                       'line': {'color': NARANJA, 'width': 2}, 'marker': {'size': 5}, 'hovertemplate': 'Época %{x}<br>Pérdida de validación: %{y:.4f}<extra></extra>'},
                      {'type': 'scatter', 'mode': 'lines+markers', 'name': 'AP@0,5 en validación (eje derecho)', 'x': h['epoch'], 'y': h['valid_map_50'], 'yaxis': 'y2',
                       'line': {'color': AZUL, 'width': 2.5}, 'marker': {'size': 6}, 'hovertemplate': 'Época %{x}<br>AP@0,5: %{y:.4f}<extra></extra>'}],
-            'layout': {'xaxis': eje('Época', dtick=1), 'yaxis': eje('Pérdida'),
+            'layout': {'xaxis': eje('Época', dtick=1 if len(h['epoch']) <= 15 else 5), 'yaxis': eje('Pérdida'),
                        'yaxis2': eje('AP@0,5 en validación', overlaying='y', side='right', showgrid=False),
-                       'shapes': [{'type': 'line', 'xref': 'x', 'yref': 'paper', 'x0': mejor, 'x1': mejor, 'y0': 0, 'y1': 1,
-                                   'line': {'color': '#788797', 'width': 1.5, 'dash': 'dot'}}],
+                       'shapes': formas,
                        'annotations': [{'x': mejor, 'y': 0.98, 'xref': 'x', 'yref': 'paper', 'text': f'mejor checkpoint (época {mejor})',
                                         'showarrow': False, 'xanchor': 'left', 'yanchor': 'top', 'xshift': 6, 'bgcolor': 'rgba(255,255,255,.85)',
                                         'font': {'size': 11, 'color': '#526576'}}]}}
-    final = next(i for i, f in enumerate(ordenadas) if f['modelo'] == 'faster_rcnn_v2' and f['lr'] == 0.001)
-    return figura([{'etiqueta': 'Experimento', 'opciones': [nombre_exp(f['modelo'], f['lr']) for f in ordenadas], 'predeterminado': final}], variantes)
+    final = next(i for i, f in enumerate(ordenadas) if f['modelo'] == 'faster_rcnn_v2' and f['lr'] == 0.001 and not f['sufijo'])
+    return figura([{'etiqueta': 'Experimento', 'opciones': [f['etiqueta'] for f in ordenadas], 'predeterminado': final}], variantes)
 
 
 MEDIDAS_COSTE = [('Minutos de entrenamiento', lambda f: f['minutos_train'], 'min', 1),

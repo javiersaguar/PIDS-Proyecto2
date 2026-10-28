@@ -315,3 +315,15 @@ secuencias y mapa de medidas), con selectores. Las genera
 La memoria añade tres figuras estáticas (coste, tasa y errores de test); la fase 2 queda en
 20 páginas y la completa en 28.
 
+### Actualización del 25/10: ¿faltaban épocas?
+
+T19/T20: se revisó la sospecha de infraajuste con los 17 historiales y con un entrenamiento nuevo de
+SSD300 VGG16 con 40 épocas (acción `largo` de la cadena, 62 min en el laboratorio, evaluado solo en
+validación). Resultado: AP@0,5 de 0,9009 (mejor época, la 18) frente a 0,9008 con 12; ningún modelo
+se beneficia de más épocas. Datos en `ENTREGA 1/WEEK2/cadena/resumen_largo.csv` y
+`resultados_train/ssd_v1_aug_robusto_v1_lr001_ep40/`.
+
+T15–T17: se corrigen en la memoria de la entrega 2 la tabla de hiperparámetros, el párrafo de épocas,
+la frase sobre SSD300 y la de la tasa 0,002, y se regenera el PDF (23 páginas). La web (Bloque 2) añade
+esta serie a la figura «Pérdida y AP en cada entrenamiento».
+

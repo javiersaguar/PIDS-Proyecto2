@@ -168,6 +168,63 @@ class EvaluacionEnTest(unittest.TestCase):
         self.assertEqual(c.seleccionar_experimentos('fase1', estado), [c.nombre(m, c.LR_BASE) for m in c.MODELOS])
 
 
+class EntrenamientosLargos(unittest.TestCase):
+    def test_el_sufijo_distingue_el_numero_de_epocas(self):
+        self.assertEqual(c.sufijo_largo(40), '_ep40')
+        self.assertEqual(c.nombre('ssd_v1', c.LR_BASE) + c.sufijo_largo(40), f'ssd_v1_aug_{c.PERFIL}_lr001_ep40')
+
+    def test_el_nombre_no_choca_con_los_de_la_cadena(self):
+        cadena = {c.nombre(m, lr) for m in c.MODELOS for lr in (c.LR_BASE, *c.LR_FASE2)}
+        self.assertNotIn(c.nombre('ssd_v1', c.LR_BASE) + c.sufijo_largo(40), cadena)
+
+    def test_el_sufijo_es_valido_para_el_notebook(self):
+        nombre = c.sufijo(c.LR_BASE) + c.sufijo_largo(40)
+        self.assertTrue(all(ch.isalnum() or ch in '-_' for ch in nombre))
+
+    def test_largo_exige_modelos_y_epocas(self):
+        for argv in (['largo'], ['largo', '--modelos', 'ssd_v1'], ['largo', '--epocas', '40']):
+            with self.assertRaises(SystemExit):
+                c.main(argv)
+
+    def test_largo_rechaza_menos_epocas_que_la_cadena(self):
+        with self.assertRaises(ValueError):
+            c.largo(['ssd_v1'], c.EPOCAS)
+
+    def test_simular_largo_no_ejecuta_nada(self):
+        import io
+        from contextlib import redirect_stdout
+        salida = io.StringIO()
+        with redirect_stdout(salida):
+            c.main(['largo', '--modelos', 'ssd_v1', '--epocas', '40', '--simular'])
+        self.assertIn('lr001_ep40', salida.getvalue())
+        self.assertIn('el test no se toca', salida.getvalue())
+
+    def test_experimento_largo_escribe_su_propio_resumen(self):
+        """Regresión: el nombre del CSV se pisaba con el resumen de la evaluación y fallaba tras entrenar."""
+        import tempfile
+        llamadas = []
+        originales = (c.CADENA, c.ejecutar, c.resultado_val, c.escribir_resumen_csv)
+        with tempfile.TemporaryDirectory() as tmp:
+            try:
+                c.CADENA = Path(tmp)
+                evaluado = {}
+                c.ejecutar = lambda *a, **k: 0
+                c.resultado_val = lambda exp: evaluado.get('r')
+                c.escribir_resumen_csv = lambda estado, conjunto='val', archivo=None: llamadas.append(archivo)
+                evaluado['r'] = resumen(0.9, 0.5)
+                estado = {'experimentos': {}}
+                plan = {'ssd_v1': {'batch_size': 8, 'acumulacion_gradiente': 1}}
+                # la primera comprobación (ya evaluado) debe fallar para que entrene: se simula que aún no existe
+                c.resultado_val = lambda exp, _n=[0]: (_n.__setitem__(0, _n[0] + 1) or (None if _n[0] == 1 else evaluado['r']))
+                c.experimento('ssd_v1', c.LR_BASE, plan, estado, fase=3, num_epochs=40,
+                              archivo='estado_largo.json', csv_resumen='resumen_largo.csv')
+            finally:
+                c.CADENA, c.ejecutar, c.resultado_val, c.escribir_resumen_csv = originales
+        self.assertEqual(llamadas, ['resumen_largo.csv'])
+        self.assertEqual(estado['experimentos'][f'ssd_v1_aug_{c.PERFIL}_lr001_ep40']['estado'], 'hecho')
+        self.assertEqual(estado['experimentos'][f'ssd_v1_aug_{c.PERFIL}_lr001_ep40']['epocas'], 40)
+
+
 class MejorUmbral(unittest.TestCase):
     def test_elige_la_fila_de_mayor_f1(self):
         import tempfile

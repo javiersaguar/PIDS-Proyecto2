@@ -103,7 +103,7 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 ## Pendiente
 
 - **T01:** cerrar los criterios en grupo. El borde superior del robot (gimbal y antenas) es donde más discrepamos.
-- **Bloque 2:** una mejora dirigida a los `difficult` (0,57–0,69 en test), repetir con varias semillas y decidir con la latencia medida en el robot entre el modelo final (96 ms por imagen) y el rápido `faster_rcnn_v3` (16 ms, 0,9240 en test). El test ya se ha usado una vez por modelo; no debe volver a usarse para elegir.
+- **Bloque 2:** una mejora dirigida a los `difficult` (0,57–0,69 en test), repetir con varias semillas (más épocas no ayudan: comprobado con SSD300 a 40 épocas, el único caso dudoso) y decidir con la latencia medida en el robot entre el modelo final (96 ms por imagen) y el rápido `faster_rcnn_v3` (16 ms, 0,9240 en test). El test ya se ha usado una vez por modelo; no debe volver a usarse para elegir.
 - **Memoria (T15–T17):** versiones Word/PDF sobre la plantilla oficial en
   `docs/informes/`: completa, fase 1 y fase 2. Falta revisión del grupo y confirmar
   fecha de entrega y número administrativo del grupo.
