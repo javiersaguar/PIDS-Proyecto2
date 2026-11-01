@@ -1,12 +1,12 @@
 # Informes sobre la plantilla oficial
 
-Contenido actualizado el **25/10/2026**.
+Contenido actualizado el **01/11/2026**.
 
 | Documento | Contenido |
 |---|---|
-| [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 (redactado a mano) y Bloque 2 completo, sin tabla de respuesta a la revisión (no se recibieron comentarios). El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (23 páginas, 19 de cuerpo; el límite es 20). |
+| [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (30 páginas, 20 de cuerpo, de la 6 a la 25; el límite es 20). |
 | [`informe_fase1.docx`](informe_fase1.docx) | Fuente de la memoria de la entrega 1 (Bloque 1), base de `generar_entrega2.py`. El PDF entregado está en `docs/entregas/PIDS_grupo2_entrega1.pdf` y difiere en algo de redacción. |
-| `figuras/` | Figuras de maquetación del Bloque 2 que no están en `ENTREGA 1/WEEK2/`. |
+| `figuras/` | Figuras de maquetación que no están en `ENTREGA 1/WEEK1/` ni en `WEEK2/`, incluidas las añadidas por la revisión. |
 
 Se conserva Calibri 11, interlineado 1,15, geometría, cabecera y pie de la plantilla
 (`docs/PIDS-template.docx`, que permanece sin modificar). Las figuras van incrustadas.
@@ -25,6 +25,22 @@ numeración de figuras, apartados 5.1–5.5, referencias [6]–[8]) que el scrip
 así que no se debe regenerar.
 
 ## Historial
+
+**01/11/2026** — correcciones de la revisión de la entrega 1 (todas recogidas en la tabla «Respuesta a la
+revisión anterior» del documento):
+- Descripción del RoboMaster EP con figura (`figuras/robot_partes.png`) y referencias [19] DJI y [20] PASCAL VOC.
+- Justificación del intervalo de 24 fotogramas con una tabla de redundancia para intervalos de 6 a 96.
+- Sin nombres de variables, funciones ni experimentos internos en el texto.
+- EDA ampliado: tamaño frente a posición, solapamiento frente a la NMS y comparación con validación y test
+  (4.4 y 4.5), y tabla de consecuencias para el entrenamiento (4.6).
+- Tablas de aumento con rango y probabilidad por separado; justificación del desplazamiento RGB.
+- Anexos: A (enlaces a todas las gráficas interactivas), B (transformaciones descartadas) y C (figuras
+  complementarias). Nuevo apartado 11.5 con SSD300 a 40 épocas.
+
+Figuras y datos nuevos: `herramientas/analisis_revision.py` (intervalo, dominio y perspectiva; necesita los
+vídeos de `DATASET PIDS`), `herramientas/figura_transformaciones.py` (entorno con Albumentations 1.4.18) y
+`herramientas/figura_ssd300_40_epocas.py`. Se ejecutan con la ruta del repositorio y la carpeta (o, en el de SSD300, el PNG) de salida.
+Las tareas del Bloque 2 de Mónica y Daniel en el reparto quedan marcadas para completar.
 
 **25/10/2026** — se comprueba si las doce épocas se quedaban cortas, tras el comentario de que había
 infraajuste. No era así: SSD300 VGG16, la única que seguía mejorando al final, repetida con 40 épocas
