@@ -4,7 +4,7 @@ Contenido actualizado el **01/11/2026**.
 
 | Documento | Contenido |
 |---|---|
-| [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (31 páginas, 20 de cuerpo, de la 4 a la 23; el límite es 20). |
+| [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (32 páginas, 20 de cuerpo, de la 4 a la 23; el límite es 20). |
 | [`informe_fase1.docx`](informe_fase1.docx) | Fuente de la memoria de la entrega 1 (Bloque 1), base de `generar_entrega2.py`. El PDF entregado está en `docs/entregas/PIDS_grupo2_entrega1.pdf` y difiere en algo de redacción. |
 | `figuras/` | Figuras de maquetación que no están en `ENTREGA 1/WEEK1/` ni en `WEEK2/`, incluidas las añadidas por la revisión. |
 
@@ -25,6 +25,15 @@ numeración de figuras, apartados 5.1–5.5, referencias [6]–[8]) que el scrip
 así que no se debe regenerar.
 
 ## Historial
+
+**02/11/2026** — números de test en el apartado de métricas:
+- El apartado 10 da, para el modelo final en test, los TP, FP y FN, la precisión, la exhaustividad, el F1, la AP@0,5,
+  la AP@0,75 y la AP 0,50:0,95. El nuevo Anexo E desglosa esas métricas en robots normales y difficult, añade la AP
+  por tamaño y la AR@100 (Tabla 24) y muestra el efecto del umbral de confianza (Tabla 25). Los datos salen de
+  `ENTREGA 1/WEEK2/resultados_test/faster_rcnn_v2_aug_robusto_v1_lr001_test/`; no se ha vuelto a evaluar nada.
+- La tabla de respuesta a la revisión pasa a ser la Tabla 26.
+- Para seguir en 20 páginas de cuerpo se han reducido las Figuras 14 a 17 y acortado el párrafo de pruebas sin
+  aumento del 11.3 y las cifras del 11.6 que ya están en el apartado 10; el detalle sigue en los Anexos D y E.
 
 **01/11/2026 (segunda tanda)** — lo que el enunciado pedía y faltaba:
 - Pruebas cortas del orden de los experimentos (siete arquitecturas sin aumento), del lote (1, 2, 8, 16 y 32) y de
