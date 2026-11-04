@@ -90,6 +90,9 @@ mientras se hace T13: `train.ipynb` y `test.ipynb` están adaptados a nuestros d
 | T18 | P3 | Separar los datos en entrenamiento, validación y test | T14 | — | Pendiente |
 | T19 | P3 | Primer entrenamiento con `train.ipynb` | T18 | Alejandro Cuevas | Hecha: con y sin aumento (15/10) |
 | T20 | P3 | Evaluación con `test.ipynb` (mAP y resultados cualitativos) | T19 | Alejandro Cuevas | Hecha: validación y test (una vez por modelo, 24/10) |
+| T21 | P3 | Programar la demo del Bloque 3 (`ENTREGA 2/WEEK3/`) | T20 | Javier Saguar | Hecha: probada en simulación (04/11) |
+| T22 | P3 | Medir el circuito, calibrar las paradas y ejecutar la demo en el laboratorio | T21 | — | Pendiente |
+| T23 | P3 | Memoria de la entrega 3: Bloque 3, Bloques 1 y 2 corregidos, conclusiones y respuesta a la revisión | T22 | — | Pendiente |
 
 ## Detalle
 
@@ -327,3 +330,17 @@ T15–T17: se corrigen en la memoria de la entrega 2 la tabla de hiperparámetro
 la frase sobre SSD300 y la de la tasa 0,002, y se regenera el PDF (23 páginas). La web (Bloque 2) añade
 esta serie a la figura «Pérdida y AP en cada entrenamiento».
 
+### Actualización del 04/11: demo del Bloque 3
+
+T21: `ENTREGA 2/WEEK3/` tiene la demo completa. `circuito.py` reúne el modelo
+(`faster_rcnn_v2`, umbral 0,95), la estrategia y las paradas. `demo.py` recorre las
+paradas y barre con el gimbal hasta encontrar los robots esperados. Dispara a todas las
+detecciones nuevas que superan el umbral, tras confirmarlas y corregir la puntería, con
+12 disparos por robot; no dispara si al confirmar el robot no está centrado o ya se atacó. Cada imagen analizada se guarda en `evidencias/` con sus cajas,
+junto a un CSV y un resumen. Usa chasis, gimbal, cámara, blaster, LED y audio, con un
+baile final y parada segura con Ctrl+C. La velocidad nunca pasa de la del SDK.
+
+Comprobado sin robot: `simulacion.py` sustituye al SDK y `tests/test_demo.py` tiene 15
+pruebas, incluida la sintaxis de Python 3.8. Pendiente (T22): las paradas de
+`circuito.py` son un ejemplo y hay que medirlas sobre el circuito real, comprobar el
+sentido del gimbal y calibrar cada parada con `--sin-mover --sin-disparar`.
