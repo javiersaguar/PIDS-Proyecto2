@@ -107,8 +107,11 @@ class PruebasDemo(unittest.TestCase):
                                                     'VELOCIDAD_XY', 'AUDIO_DISPARO', 'AUDIO_FINAL',
                                                     'SEGUIMIENTO', 'SONIDO_CADA_DISPARO', 'LEER_ANGULO_GIMBAL',
                                                     'ANTICIPAR', 'RETARDO_CAMARA', 'BARRIDO_CONTINUO',
-                                                    'ROBOTS_TOTALES', 'TIEMPO_MEMORIA']}
+                                                    'ROBOTS_TOTALES', 'TIEMPO_MEMORIA', 'VIGILANCIA',
+                                                    'ATACAR_EN_RUTA', 'ESPERA_OBSTACULO']}
         C.BAILE_FINAL, C.AUDIO_MOTOR, C.ESPERA_CAMARA = False, None, 0
+        # La vigilancia del recorrido añade imágenes y divide los avances: sus pruebas la activan
+        C.VIGILANCIA = False
         espera = mock.patch('time.sleep')   # sin esperas reales (cámara, disparos, batería)
         espera.start()
         self.addCleanup(espera.stop)
@@ -274,6 +277,91 @@ class PruebasDemo(unittest.TestCase):
         self.assertIsNotNone(m.conocido((2.4, 0.0), 100.0, 2.0, (0, 0)))   # a lo largo de la visual: el mismo
         self.assertIsNone(m.conocido((2.0, 0.4), 100.0, 2.0, (0, 0)))      # de lado: otro robot
 
+    # --- vigilancia durante el recorrido (fase 3) ------------------------------------------
+    def movimientos(self, ep):
+        return [(round(a['x'], 3), round(a['y'], 3), a['z']) for a in ep.acciones if a['tipo'] == 'chasis.move']
+
+    def test_vigilancia_divide_el_avance_y_mira_hacia_donde_va(self):
+        C.VIGILANCIA = True
+        p = [dict(nombre='P1', movimientos=[(1.0, 0, 0), (0, 0, 90), (0, 0.6, 0)], barrido=[0], pitch=0,
+                  objetivos=1)]
+        ep, d, r = self.lanzar([], p)
+        self.assertEqual(self.movimientos(ep), [(0.5, 0, 0), (0.5, 0, 0), (0, 0, 90), (0, 0.3, 0), (0, 0.3, 0)])
+        ruta = [f for f in d.registro.filas if f['fase'] == 'ruta']
+        self.assertTrue(ruta)
+        yaws = sorted({round(f['yaw']) for f in ruta})
+        self.assertEqual(yaws, [0, 90])                     # al frente y, en el avance lateral, a la derecha
+        # Tras girar 90 grados a la izquierda mira hacia +Y, y su derecha es +X
+        np.testing.assert_allclose(r['pose_final'], [1.6, 0.0, 90.0], atol=1e-6)
+
+    def test_analiza_imagenes_con_el_chasis_en_marcha(self):
+        C.VIGILANCIA = True
+        p = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([], p)
+        ruta = [f for f in d.registro.filas if f['fase'] == 'ruta']
+        # Una revisión parado al empezar y unas 5 por tramo en marcha (0,5 m a 0,3 m/s, una cada 0,3 s)
+        self.assertGreaterEqual(len(ruta), 8)
+        self.assertEqual(r['eventos_ruta'], [])
+
+    def test_ataca_a_un_rival_visto_en_el_recorrido(self):
+        C.VIGILANCIA = True
+        p = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
+        ep, d, r = self.lanzar([(1.2, 0.8)], p)
+        self.assertEqual(ep.disparos(), 12)                 # en el recorrido, y en la parada ya no se repite
+        self.assertEqual(r['ataques'][0]['parada'], 'P1-ruta')
+        self.assertEqual([e['tipo'] for e in r['eventos_ruta']], ['ataque'])
+        self.assertEqual(r['paradas'][0]['atacados'], 0)
+
+    def test_revisa_parado_un_rival_que_aparece_con_el_chasis_en_marcha(self):
+        C.VIGILANCIA = True
+        p = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([lambda t: None if t < 0.8 else (1.8, 0.9)], p)
+        self.assertEqual(r['ataques'][0]['parada'], 'P1-ruta')
+        self.assertEqual(ep.disparos(), 12)
+        # El ataque es entre los dos tramos: después del primero y antes del segundo
+        tipos = [a['tipo'] for a in ep.acciones]
+        primero = tipos.index('chasis.move')
+        segundo = tipos.index('chasis.move', primero + 1)
+        self.assertIn('blaster.fire', tipos[primero:segundo])
+
+    def test_espera_a_que_un_robot_deje_libre_el_camino(self):
+        C.VIGILANCIA, C.ATACAR_EN_RUTA = True, False
+        p = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=[0], pitch=0, objetivos=None)]
+        ep, d, r = self.lanzar([lambda t: (0.9, 0.0) if t < 2 else (0.9, 2.0)], p)
+        espera = [e for e in r['eventos_ruta'] if e['tipo'] == 'espera']
+        self.assertEqual(len(espera), 1)
+        self.assertGreaterEqual(espera[0]['segundos'], 1.5)
+        self.assertIn((255, 255, 0), [a.get('rgb') for a in ep.acciones if a['tipo'] == 'led'])
+        self.assertEqual(self.movimientos(ep), [(0.5, 0, 0), (0.5, 0, 0)])
+        tipos = [a['tipo'] for a in ep.acciones]
+        self.assertGreater(tipos.index('chasis.move'), max(i for i, a in enumerate(ep.acciones)
+                                                           if a.get('rgb') == (255, 255, 0)))
+
+    def test_camino_bloqueado_detiene_la_demo_de_forma_segura(self):
+        C.VIGILANCIA, C.ATACAR_EN_RUTA, C.ESPERA_OBSTACULO = True, False, 2
+        C.PARADAS = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=[0], pitch=0, objetivos=None)]
+        ep = demo.connect('wifi')
+        d = demo.Demo(ep, DetectorFalso([(0.7, 0.0)]), Args(self.salida))
+        with self.assertRaisesRegex(RuntimeError, 'bloquea el camino'):
+            d.ejecutar()
+        self.assertEqual(self.movimientos(ep), [])
+        self.assertEqual(ep.acciones[-1]['rgb'], (0, 0, 0))
+        self.assertEqual(ep.gimbal.yaw, 0)
+
+    def test_un_robot_a_un_lado_o_lejos_no_bloquea(self):
+        C.VIGILANCIA, C.ATACAR_EN_RUTA = True, False
+        p = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=[0], pitch=0, objetivos=None)]
+        ep, d, r = self.lanzar([(0.8, 0.6), (3.5, 0.0)], p)
+        self.assertEqual(r['eventos_ruta'], [])
+        self.assertNotIn((255, 255, 0), [a.get('rgb') for a in ep.acciones if a['tipo'] == 'led'])
+        self.assertEqual(len(self.movimientos(ep)), 2)
+
+    def test_sin_mover_no_vigila(self):
+        C.VIGILANCIA = True
+        p = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([(1.2, 0.8)], p, sin_mover=True)
+        self.assertNotIn('ruta', [f['fase'] for f in d.registro.filas])
+
     def test_dispara_solo_con_el_robot_centrado(self):
         p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([lambda t: 5 + 6 * t], p)
@@ -417,7 +505,7 @@ class PruebasDemo(unittest.TestCase):
         self.assertEqual([x['nombre'] for x in r['paradas']], ['P2'])
 
     def test_usa_todos_los_modulos_y_el_baile(self):
-        C.BAILE_FINAL, C.AUDIO_MOTOR = True, 'audio/engine_sound.wav'
+        C.BAILE_FINAL, C.AUDIO_MOTOR, C.VIGILANCIA = True, 'audio/engine_sound.wav', True
         p = [dict(nombre='P1', movimientos=[(0.5, 0, 0)], barrido=[0], pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([0], p)
         tipos = {a['tipo'].split('.')[0] for a in ep.acciones}

@@ -340,6 +340,7 @@ COLORES_LED = {
     'disparando': (255, 0, 0),
     'hecho': (0, 255, 0),
     'nada': (120, 0, 255),
+    'obstaculo': (255, 255, 0),
     'fin': (0, 255, 120),
     'apagado': (0, 0, 0),
 }
@@ -607,18 +608,25 @@ def liberar_cerrojo_sdk(ep_robot, error):
             pass
 
 
-def ejecutar_accion(ep_robot, crear, timeout, que):
+def ejecutar_accion(ep_robot, crear, timeout, que, durante=None):
     """Lanza una acción del SDK y espera a que acabe, como mucho `timeout` segundos.
 
     wait_for_completed() sin tiempo máximo espera para siempre si el robot no
     responde (batería baja, conexión perdida): aquí se convierte en un error que
     detiene la demo de forma segura.
+
+    Con `durante`, mientras la acción no ha acabado se llama a durante() una y otra
+    vez (por ejemplo, para analizar imágenes con el chasis en marcha).
     """
     try:
         accion = crear()
     except Exception as e:
         liberar_cerrojo_sdk(ep_robot, e)
         raise RuntimeError(f'{que}: {e}')
+    if durante is not None:
+        limite = time.monotonic() + timeout
+        while not getattr(accion, 'is_completed', True) and time.monotonic() < limite:
+            durante()
     if not accion.wait_for_completed(timeout=timeout):
         raise RuntimeError(f'{que}: no ha terminado en {timeout:.0f} s (¿batería baja o robot desconectado?)')
 

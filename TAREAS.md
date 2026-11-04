@@ -388,3 +388,23 @@ Comprobado sin robot: 48 pruebas (11 nuevas). Pendiente en el laboratorio: calib
 `ALTURA_ROBOT` con un robot a 1,5 m y comprobar que el detector funciona con la torreta
 girando (si no, `BARRIDO_CONTINUO = False` o bajar `VEL_BARRIDO`). Falta la fase 3
 (vigilancia durante el recorrido).
+
+### Actualización del 04/11: vigilancia durante el recorrido (Bloque 3, fase 3)
+
+T21/T22, en `alejandro-cuevas` (PR #36). Cambios en `ENTREGA 2/WEEK3/`:
+
+- **Vigilancia** (`VIGILANCIA = True`): los avances entre paradas se dividen en tramos de
+  `TRAMO_VIGILANCIA` (0,5 m) con la torreta mirando hacia donde va el robot. Con el chasis en
+  marcha se analiza una imagen cada 0,3 s, y lo visto se revisa parado al acabar el tramo.
+- **Rival en el recorrido:** se le sigue y ataca (`ATACAR_EN_RUTA`), y queda en la memoria.
+- **Robot en el camino:** se espera a que se aparte, con el LED amarillo parpadeando; si
+  sigue pasados `ESPERA_OBSTACULO` s, la demo se detiene de forma segura. Solo se detectan
+  RoboMasters, no los obstáculos fijos.
+- Evidencias de la fase `ruta` y `eventos_ruta` en `resumen.json`. El simulador mueve el
+  chasis con el tiempo, así que se puede probar lo visto con el robot en marcha.
+
+Comprobado sin robot: 56 pruebas (8 nuevas). En simulación, 3 m en línea recta pasan de
+12,6 s a 13,9 s; con el robot real costará algo más por los arranques y frenadas de cada
+tramo. Pendiente en el laboratorio: comprobar que para ante un robot en el camino y que
+`is_completed` del SDK permite analizar imágenes con el chasis en marcha (pasos en el
+`README.md` de WEEK3).

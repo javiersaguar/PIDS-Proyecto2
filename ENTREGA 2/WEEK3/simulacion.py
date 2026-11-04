@@ -40,6 +40,23 @@ class Accion:
         return True
 
 
+class AccionMovimiento(Accion):
+    """Movimiento del chasis: acaba cuando pasa su duración en tiempo simulado."""
+
+    def __init__(self, robot, fin, tipo, **datos):
+        super().__init__(robot, tipo, **datos)
+        self.r, self.fin = robot, fin
+
+    @property
+    def is_completed(self):
+        return self.r.t >= self.fin - 1e-9
+
+    def wait_for_completed(self, timeout=None):
+        if self.r.t < self.fin:
+            self.r.avanzar(self.fin - self.r.t)
+        return True
+
+
 def _comprobar(nombre, valor, maximo):
     if valor is not None and abs(valor) > maximo + 1e-9:
         raise AssertionError(f'{nombre}={valor} supera la velocidad máxima permitida ({maximo})')
@@ -52,12 +69,15 @@ class Chasis:
     def move(self, x=0, y=0, z=0, xy_speed=0.5, z_speed=30):
         _comprobar('xy_speed', xy_speed, MAX_XY)
         _comprobar('z_speed', z_speed, MAX_Z)
-        # Consume el tiempo del movimiento y actualiza la posición (traslación y luego giro)
-        self.r.avanzar((x * x + y * y) ** 0.5 / max(xy_speed, 1e-6) + abs(z) / max(z_speed, 1e-6))
-        px, py, rumbo = self.r.pose
-        r = math.radians(rumbo)
-        self.r.pose = (px + x * math.cos(r) + y * math.sin(r), py + x * math.sin(r) - y * math.cos(r), rumbo + z)
-        return Accion(self.r, 'chasis.move', x=x, y=y, z=z, xy_speed=xy_speed, z_speed=z_speed)
+        # La posición avanza con el tiempo simulado (traslación y luego giro) hasta acabar
+        duracion = (x * x + y * y) ** 0.5 / max(xy_speed, 1e-6) + abs(z) / max(z_speed, 1e-6)
+        inicio = self.r.pose
+        r = math.radians(inicio[2])
+        fin = (inicio[0] + x * math.cos(r) + y * math.sin(r), inicio[1] + x * math.sin(r) - y * math.cos(r),
+               inicio[2] + z)
+        self.r.movimiento = dict(t0=self.r.t, t1=self.r.t + duracion, inicio=inicio, fin=fin)
+        return AccionMovimiento(self.r, self.r.t + duracion, 'chasis.move', x=x, y=y, z=z, xy_speed=xy_speed,
+                                z_speed=z_speed)
 
     def drive_speed(self, x=0, y=0, z=0, timeout=None):
         _comprobar('x', x, MAX_XY)
@@ -190,7 +210,7 @@ class RobotSimulado:
     def __init__(self):
         self.acciones = []
         self.t = 0.0                  # tiempo simulado (s)
-        self.pose = (0.0, 0.0, 0.0)   # X adelante, Y a la izquierda (m) y rumbo a la izquierda (grados)
+        self.movimiento = dict(t0=0.0, t1=0.0, inicio=(0.0, 0.0, 0.0), fin=(0.0, 0.0, 0.0))
         self.reloj = lambda: self.t   # la demo lo usa en lugar de time.monotonic
         self.chassis = Chasis(self)
         self.gimbal = Gimbal(self)
@@ -198,6 +218,15 @@ class RobotSimulado:
         self.blaster = Blaster(self)
         self.led = Led(self)
         self.battery = Bateria(self)
+
+    @property
+    def pose(self):
+        """(X adelante, Y a la izquierda en m, rumbo a la izquierda en grados), interpolada si se mueve."""
+        m = self.movimiento
+        if self.t >= m['t1'] or m['t1'] <= m['t0']:
+            return m['fin']
+        f = (self.t - m['t0']) / (m['t1'] - m['t0'])
+        return tuple(a + f * (b - a) for a, b in zip(m['inicio'], m['fin']))
 
     def avanzar(self, dt):
         """Hace pasar `dt` segundos simulados; el gimbal sigue girando si tiene velocidad."""

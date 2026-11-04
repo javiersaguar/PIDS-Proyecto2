@@ -240,22 +240,153 @@ class Demo:
         self.ataques = []
         self.paradas_hechas = []
         self.pose = (0.0, 0.0, 0.0)   # posición del chasis en el circuito (X, Y en m; rumbo en grados)
+        self.eventos_ruta = []        # ataques y esperas durante el recorrido
+        self._aviso_ruta = False      # algo visto con el chasis en marcha que hay que revisar parado
+        self._analisis_tramo = 0      # imágenes analizadas durante el tramo en curso
+        self._ultimo_analisis = None
         self.memoria = Memoria(radio=C.RADIO_MISMO_ROBOT, error_distancia=C.ERROR_DISTANCIA,
                                tiempo_memoria=C.TIEMPO_MEMORIA, tiempo_descarte=C.TIEMPO_DESCARTE)
         self.audios_avisados = set()
         self.inicio = time.time()
 
     # --- piezas ---------------------------------------------------------------
-    def mover(self, x, y, z):
-        """Mueve el chasis (x adelante, y derecha, z giro a la izquierda) sin pasar de la velocidad del SDK."""
+    def mover(self, x, y, z, durante=None):
+        """Mueve el chasis (x adelante, y derecha, z giro a la izquierda) sin pasar de la velocidad del SDK.
+
+        `durante` se llama una y otra vez mientras el chasis está en marcha (vigilancia).
+        """
         print(f'  chasis: x={x:+.2f} m  y={y:+.2f} m  z={z:+.0f} grados')
         if self.args.sin_mover:
             return
         v_xy, v_z = limitar(C.VELOCIDAD_XY, VEL_XY_MAX), limitar(C.VELOCIDAD_Z, VEL_Z_MAX)
         tiempo = (x * x + y * y) ** 0.5 / v_xy + abs(z) / v_z
         ejecutar_accion(self.ep_robot, lambda: self.ep_robot.chassis.move(x=x, y=y, z=z, xy_speed=v_xy, z_speed=v_z),
-                        timeout=2 * tiempo + 5, que='chasis')
+                        timeout=2 * tiempo + 5, que='chasis', durante=durante)
         self.pose = mover_pose(self.pose, x, y, z)
+
+    # --- vigilancia durante el recorrido -------------------------------------------------
+    def todos_atacados(self):
+        return C.ROBOTS_TOTALES is not None and len(self.memoria.atacados()) >= C.ROBOTS_TOTALES
+
+    def evaluar_ruta(self, image, prediction, yaw_c, rumbo, alcance):
+        """Revisa una imagen del recorrido.
+
+        :param rumbo: dirección del avance respecto al chasis (grados, > 0 a la derecha).
+        :param alcance: metros que quedan por recorrer en el tramo.
+        :return: (bloqueo, nuevos). `bloqueo` es (distancia, yaw) del robot más cercano que hay
+                 en el pasillo (ANCHO_PASILLO) hasta alcance + DISTANCIA_SEGURIDAD, o None.
+                 `nuevos` son los rivales que no están en la memoria: (caja, confianza, yaw, distancia).
+        """
+        ahora = self.reloj()
+        bloqueo, nuevos = None, []
+        # Para el camino basta UMBRAL_SEGUIMIENTO: ante la duda, se espera
+        for caja, score in seleccionar(prediction, min(C.UMBRAL, C.UMBRAL_SEGUIMIENTO)):
+            angulo = yaw_c + C.SIGNO_YAW * auto_aim(image, caja)
+            distancia = distancia_estimada(image, caja, C.ALTURA_ROBOT)
+            if distancia is not None:
+                rel = np.deg2rad(angulo - rumbo)
+                delante, lateral = distancia * np.cos(rel), abs(distancia * np.sin(rel))
+                if (0 < delante <= alcance + C.DISTANCIA_SEGURIDAD and lateral <= C.ANCHO_PASILLO / 2
+                        and (bloqueo is None or distancia < bloqueo[0])):
+                    bloqueo = (distancia, angulo)
+            if score >= C.UMBRAL and not self.es_conocido(angulo, distancia, ahora):
+                nuevos.append((caja, score, angulo, distancia))
+        return bloqueo, nuevos
+
+    def registrar_ruta(self, etiqueta, image, prediction, ms, yaw_c, pitch_c, bloqueo, nuevos):
+        self.registro.imagen(image, prediction, ms, etiqueta, 'ruta', yaw_c, pitch_c,
+                             objetivo=nuevos[0][0] if nuevos else None,
+                             objetivo_yaw=nuevos[0][2] if nuevos else None,
+                             distancia=bloqueo[0] if bloqueo else (nuevos[0][3] if nuevos else None))
+
+    def vigilar(self, etiqueta, rumbo, alcance):
+        """Con el chasis en marcha: analiza una imagen cada INTERVALO_RUTA s y avisa si hay algo que revisar.
+
+        Lee siempre el fotograma más reciente, aunque no toque analizarlo, para no
+        dejar que se acumulen en la cola de la cámara.
+        """
+        image = self.camara.capturar(0)
+        ahora = self.reloj()
+        if self._ultimo_analisis is not None and ahora - self._ultimo_analisis < C.INTERVALO_RUTA:
+            time.sleep(0.02)
+            return
+        self._ultimo_analisis = ahora
+        t_captura = ahora - C.RETARDO_CAMARA
+        prediction, ms = detectar(self.model, image, C.RESIZE)
+        yaw_c, pitch_c = self.torreta.angulo_en(t_captura)
+        bloqueo, nuevos = self.evaluar_ruta(image, prediction, yaw_c, rumbo, alcance)
+        self._analisis_tramo += 1
+        self.registrar_ruta(etiqueta, image, prediction, ms, yaw_c, pitch_c, bloqueo, nuevos)
+        if bloqueo is not None or (nuevos and C.ATACAR_EN_RUTA and not self.todos_atacados()):
+            self._aviso_ruta = True
+
+    def despejar(self, etiqueta, rumbo, alcance):
+        """Con el chasis parado: ataca a los rivales nuevos y espera a que el camino esté libre.
+
+        Si un robot sigue en el pasillo pasados ESPERA_OBSTACULO s, detiene la demo
+        (RuntimeError), que para el chasis y deja la torreta centrada.
+        """
+        inicio, ataques, esperando = self.reloj(), 0, False
+        while True:
+            image, prediction, ms = self.mirar(espera=C.RETARDO_CAMARA)
+            yaw_c, pitch_c = self.torreta.leer()
+            bloqueo, nuevos = self.evaluar_ruta(image, prediction, yaw_c, rumbo, alcance)
+            self.registrar_ruta(etiqueta, image, prediction, ms, yaw_c, pitch_c, bloqueo, nuevos)
+            if nuevos and C.ATACAR_EN_RUTA and ataques < 2 and not self.todos_atacados():
+                for _, score, angulo, distancia in nuevos:
+                    print(f'  rival visto en el recorrido en {angulo:+.0f} grados, a {distancia or 0:.1f} m')
+                    final = self.seguir_y_disparar(etiqueta, angulo, score, (), distancia)
+                    self.eventos_ruta.append(dict(tramo=etiqueta, tipo='ataque', yaw=round(angulo, 1),
+                                                  completo=final is not None,
+                                                  pose=[round(v, 2) for v in self.pose]))
+                    ataques += 1
+                self.torreta.ir(rumbo, C.PITCH_RUTA)
+                self.senales.estado('moviendo')
+                continue
+            if bloqueo is None:
+                if esperando:
+                    self.eventos_ruta.append(dict(tramo=etiqueta, tipo='espera',
+                                                  segundos=round(self.reloj() - inicio, 1),
+                                                  pose=[round(v, 2) for v in self.pose]))
+                    print(f'  camino libre tras {self.reloj() - inicio:.1f} s')
+                    self.senales.estado('moviendo')
+                return
+            if self.reloj() - inicio > C.ESPERA_OBSTACULO:
+                self.eventos_ruta.append(dict(tramo=etiqueta, tipo='bloqueado',
+                                              segundos=round(self.reloj() - inicio, 1),
+                                              pose=[round(v, 2) for v in self.pose]))
+                raise RuntimeError(f'{etiqueta}: un robot bloquea el camino a {bloqueo[0]:.1f} m desde hace '
+                                   f'{C.ESPERA_OBSTACULO} s')
+            if not esperando:
+                print(f'  robot en el camino a {bloqueo[0]:.1f} m ({bloqueo[1]:+.0f} grados): esperando')
+                self.senales.estado('obstaculo', parpadeo=True)
+                esperando = True
+            time.sleep(0.2)
+
+    def recorrer(self, etiqueta, x, y, z):
+        """Movimiento del recorrido entre paradas, vigilando el camino (VIGILANCIA).
+
+        Los avances se dividen en tramos de TRAMO_VIGILANCIA m con la torreta mirando hacia
+        donde va el robot. Antes del primer tramo, y tras cualquier tramo en el que se haya
+        visto algo (o no se haya podido analizar ninguna imagen), el robot revisa parado
+        (despejar). Los giros no se dividen; tras un giro se centra la torreta.
+        """
+        largo = (x * x + y * y) ** 0.5
+        if not C.VIGILANCIA or self.args.sin_mover or largo < 1e-6 or z:
+            self.mover(x, y, z)
+            if C.VIGILANCIA and z and not self.args.sin_mover:
+                self.torreta.centrar()
+            return
+        n = max(1, int(np.ceil(largo / C.TRAMO_VIGILANCIA - 1e-9)))
+        paso = largo / n
+        rumbo = float(np.rad2deg(np.arctan2(y, x)))   # y > 0 es a la derecha, como el yaw
+        self.torreta.ir(rumbo, C.PITCH_RUTA)
+        for i in range(n):
+            if i == 0 or self._aviso_ruta or self._analisis_tramo == 0:
+                self.despejar(etiqueta, rumbo, paso)
+            self._aviso_ruta, self._analisis_tramo, self._ultimo_analisis = False, 0, None
+            self.senales.estado('moviendo')
+            self.mover(x / n, y / n, 0, durante=lambda: self.vigilar(etiqueta, rumbo, paso))
 
     def en_circuito(self, yaw, distancia):
         """Punto del circuito donde está un robot visto con ese yaw del gimbal y a esa distancia."""
@@ -694,7 +825,7 @@ class Demo:
                 print(f'[{p["nombre"]}] desplazamiento')
                 self.senales.estado('moviendo')
                 for x, y, z in p['movimientos']:
-                    self.mover(x, y, z)
+                    self.recorrer(p['nombre'] + '-ruta', x, y, z)
                     recorrido.append((x, y, z))
                 if C.ROBOTS_TOTALES is not None and len(self.memoria.atacados()) >= C.ROBOTS_TOTALES:
                     print(f'[{p["nombre"]}] ya se han atacado los {C.ROBOTS_TOTALES} robots: no se barre')
@@ -741,12 +872,16 @@ class Demo:
                             lectura_gimbal=self.torreta.usar_medida, barrido_continuo=C.BARRIDO_CONTINUO,
                             paso_barrido=C.PASO_BARRIDO, campo_vision=C.CAMPO_VISION,
                             altura_robot=C.ALTURA_ROBOT, radio_mismo_robot=C.RADIO_MISMO_ROBOT,
-                            error_distancia=C.ERROR_DISTANCIA, robots_totales=C.ROBOTS_TOTALES),
+                            error_distancia=C.ERROR_DISTANCIA, robots_totales=C.ROBOTS_TOTALES,
+                            vigilancia=C.VIGILANCIA, tramo_vigilancia=C.TRAMO_VIGILANCIA,
+                            atacar_en_ruta=C.ATACAR_EN_RUTA, ancho_pasillo=C.ANCHO_PASILLO,
+                            distancia_seguridad=C.DISTANCIA_SEGURIDAD),
             imagenes=len(filas),
             ms_inferencia_medio=round(sum(f['ms_inferencia'] for f in filas) / len(filas), 1) if filas else None,
             disparos=sum(a['disparos'] for a in self.ataques),
             paradas=self.paradas_hechas, ataques=self.ataques, circuito=C.PARADAS,
             memoria=self.memoria.entradas, pose_final=[round(v, 2) for v in self.pose],
+            eventos_ruta=self.eventos_ruta,
         )
         self.registro.cerrar(resumen)
         print(f'Evidencias en {self.registro.carpeta}: {len(filas)} imágenes, {resumen["disparos"]} disparos')

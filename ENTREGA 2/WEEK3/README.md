@@ -28,7 +28,8 @@ Para cada parada de `circuito.PARADAS`:
 1. **Desplazamiento.** El chasis hace los movimientos `(x, y, z)` de la parada, uno
    tras otro: `x` adelante, `y` a la derecha y `z` giro a la izquierda en grados.
    La velocidad es la de `circuito.py` (0,3 m/s y 30 º/s), recortada siempre a la
-   del SDK (0,5 m/s y 30 º/s): el enunciado prohíbe aumentarla.
+   del SDK (0,5 m/s y 30 º/s): el enunciado prohíbe aumentarla. Con `VIGILANCIA`, los
+   avances se hacen por tramos vigilando el camino (sección 2.2).
 2. **Barrido continuo** (`BARRIDO_CONTINUO = True`). El gimbal se centra y gira sin
    pararse, a `VEL_BARRIDO` (30 º/s), entre los extremos de `barrido`. Analiza una imagen
    cada `PASO_BARRIDO` grados (10º, unas 3 por segundo), no todas: con un campo de visión
@@ -123,7 +124,7 @@ Al terminar: vuelta al inicio (opcional) y baile final con LED, sonido, gimbal y
 | Gimbal (torreta) | Barrido continuo, seguimiento del objetivo (`drive_speed`), lectura de su ángulo (`sub_angle`), cabeceo tras inutilizar un robot y baile |
 | Cámara | Vídeo abierto toda la demo; se lee siempre el fotograma más reciente, situado con el ángulo de la torreta al tomarlo |
 | Blaster | 12 disparos de infrarrojo por robot, de uno en uno |
-| LED | Color según el estado: azul en marcha, ámbar buscando, naranja apuntando, rojo parpadeando al disparar, verde tras inutilizar un robot, morado sin hallazgos |
+| LED | Color según el estado: azul en marcha, ámbar buscando, naranja apuntando, rojo parpadeando al disparar, verde tras inutilizar un robot, morado sin hallazgos, amarillo parpadeando con un robot en el camino |
 | Audio | Sonidos del SDK al empezar, buscar, detectar, disparar y terminar, y `engine_sound.wav` al arrancar |
 | Batería | Se lee al empezar y se avisa por debajo del 20 % |
 
@@ -160,6 +161,28 @@ python audio/convertir_audio.py ENTRADA audio/propios/superestrella.wav --inicio
 derechos de autor. Si un audio no existe, la demo usa los sonidos del SDK. Hace falta
 `pip install imageio-ffmpeg`, que trae ffmpeg.
 
+### 2.2. Vigilancia durante el recorrido
+
+Los rivales también se mueven por el circuito, así que la demo no va a ciegas entre paradas
+(`VIGILANCIA = True`):
+
+1. **Tramos.** Cada avance se divide en tramos de `TRAMO_VIGILANCIA` (0,5 m) y la torreta
+   mira hacia donde va el robot, también en los avances laterales o hacia atrás. Los
+   giros (`z`) no se dividen; después de cada uno se centra la torreta.
+2. **En marcha.** Mientras el chasis recorre un tramo, se analiza una imagen cada
+   `INTERVALO_RUTA` s (0,3 s). El SDK no permite cortar un `chassis.move` a medias, así
+   que lo visto se revisa al acabar el tramo, con el robot parado.
+3. **Parado** (antes del primer tramo y tras uno en el que se ha visto algo):
+   - un **rival nuevo** (no está en la memoria) se sigue y se ataca (`ATACAR_EN_RUTA`); queda
+     en la memoria y no se repite en la parada siguiente;
+   - un **robot en el camino**, en un pasillo de `ANCHO_PASILLO` (0,6 m) hasta el final del
+     tramo más `DISTANCIA_SEGURIDAD` (0,4 m), hace esperar con el LED amarillo parpadeando.
+     Para esto basta `UMBRAL_SEGUIMIENTO`: ante la duda, se espera. Si pasados
+     `ESPERA_OBSTACULO` s (15 s) sigue ahí, la demo se detiene de forma segura.
+
+Solo se detectan RoboMasters: los obstáculos fijos se evitan con el diseño del recorrido.
+`resumen.json` guarda en `eventos_ruta` los ataques y las esperas del recorrido.
+
 ## 3. Evidencias
 
 Cada ejecución crea `evidencias/<fecha_hora>/` (no se sube a GitHub):
@@ -169,7 +192,8 @@ Cada ejecución crea `evidencias/<fecha_hora>/` (no se sube a GitHub):
   el umbral. El objetivo tiene una cruz roja y el título indica la parada, el yaw, el
   umbral y el tiempo de inferencia. Las fases son `barrido`, `seguimiento` (cada
   fotograma mientras se sigue a un robot; la columna `disparos` acumula los de ese robot),
-  `sin_confirmar` y, sin seguimiento, `confirmado`. Los JPEG se escriben en un hilo aparte
+  `sin_confirmar`, `ruta` (recorrido entre paradas, con la parada `P2-ruta` para el
+  camino hacia P2) y, sin seguimiento, `confirmado`. Los JPEG se escriben en un hilo aparte
   para no frenar el seguimiento.
 - `originales/`: las mismas imágenes sin dibujar, para analizarlas o anotarlas después.
 - `registro.csv`: una fila por imagen con yaw, tiempo de inferencia, confianzas, cajas,
@@ -276,6 +300,12 @@ comprueban lo siguiente:
   atacar a uno que se ha alejado y olvida los descartes;
 - `ROBOTS_TOTALES` salta los barridos restantes sin dejar de hacer el recorrido;
 - la distancia por el alto de la caja y la posición del chasis son correctas;
+- la vigilancia divide los avances en tramos, mira hacia donde va el robot y analiza imágenes con
+  el chasis en marcha;
+- ataca a un rival visto en el recorrido (también si aparece con el chasis en marcha) y no lo
+  repite en la parada;
+- espera a que un robot deje libre el camino y detiene la demo de forma segura si no se aparta;
+  un robot a un lado o lejos no hace esperar;
 - con `DISPARAR_A_TODOS = False` dispara solo a la mejor detección de cada imagen;
 - guarda todas las imágenes;
 - respeta `--sin-disparar`, `--sin-mover` y `--paradas`;
@@ -305,6 +335,10 @@ pasos y 0,1 s de inferencia por imagen (GPU):
 La mejora es de un 5 a un 15 %: el límite es girar la torreta a 30 º/s, que no se puede
 subir. Lo que más ahorra es no repetir ráfagas de unos 4 s contra robots ya atacados.
 
+La vigilancia del recorrido cuesta poco: 3 m en línea recta pasan de 12,6 s a 13,9 s en
+simulación. El simulador no tiene en cuenta que el chasis frena y arranca en cada tramo; con
+el robot real costará algo más (se puede subir `TRAMO_VIGILANCIA`).
+
 ### Ajustar el seguimiento en el laboratorio
 
 Al arrancar, la demo gira la torreta 20º y comprueba que `sub_angle` sigue el giro. Escribe
@@ -321,6 +355,18 @@ Después, con `--sin-mover --sin-disparar --ver` y un compañero moviendo un rob
 
 El retardo real se puede estimar con `registro.csv`: en un giro a velocidad constante, la
 caja de un robot quieto se desplaza en la imagen con el retraso que haya.
+
+### Probar la vigilancia del recorrido
+
+Con `--sin-disparar` y un compañero que pone un robot delante del nuestro en un avance:
+
+- **Debe parar** al final del tramo, con el LED amarillo parpadeando, y seguir cuando se
+  aparta. Si para con robots que no están en el camino, bajar `ANCHO_PASILLO` o
+  `DISTANCIA_SEGURIDAD`; si no para, comprobar `ALTURA_ROBOT` (la distancia estimada).
+- **Un rival a un lado** debe atacarse en el recorrido (`P1-ruta` en las evidencias) y no
+  repetirse en la parada.
+- Si los arranques y frenadas de cada tramo hacen el recorrido lento o impreciso, subir
+  `TRAMO_VIGILANCIA` (por ejemplo, a 1 m) o poner `VIGILANCIA = False`.
 
 ## 6. Notas
 

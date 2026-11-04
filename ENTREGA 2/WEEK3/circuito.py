@@ -67,6 +67,21 @@ TIEMPO_MEMORIA = None    # s tras los que se olvida un robot atacado (None: nunc
 TIEMPO_DESCARTE = 3.0    # s sin volver a intentar fijar una detección que no se pudo confirmar
 ROBOTS_TOTALES = None    # robots rivales en el circuito; al atacarlos todos, el resto de paradas no barre
 
+# --- Vigilancia durante el recorrido ---------------------------------------------------
+# Con VIGILANCIA, cada avance entre paradas se divide en tramos de TRAMO_VIGILANCIA m y la
+# torreta mira hacia donde va el robot. Con el chasis en marcha se analiza una imagen cada
+# INTERVALO_RUTA s. Al acabar un tramo, si se ha visto un rival nuevo, se para y lo ataca
+# (ATACAR_EN_RUTA); si hay un robot en el pasillo del siguiente tramo, espera a que se aparte.
+# Solo se detectan RoboMasters: los obstáculos fijos se evitan con el diseño del recorrido.
+VIGILANCIA = True
+TRAMO_VIGILANCIA = 0.5   # m de cada tramo; los giros (z) no se dividen
+INTERVALO_RUTA = 0.3     # s entre imágenes analizadas con el chasis en marcha
+PITCH_RUTA = 0           # inclinación de la torreta durante el recorrido
+ATACAR_EN_RUTA = True    # parar a atacar a un rival nuevo visto en el recorrido
+ANCHO_PASILLO = 0.6      # m de ancho del camino vigilado (un robot mide unos 0,24 m de ancho)
+DISTANCIA_SEGURIDAD = 0.4  # m libres que se exigen más allá del final del tramo
+ESPERA_OBSTACULO = 15    # s esperando a que se aparte un robot del camino; después la demo se detiene
+
 # Barrido de 360º en pasos de 60º: la cámara ve unos 90º, así que cada imagen
 # solapa con la siguiente. Empieza por delante, que es donde es más probable el rival.
 BARRIDO_360 = [0, 60, 120, 180, -120, -60]
