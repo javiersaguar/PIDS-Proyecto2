@@ -507,7 +507,7 @@ class Registro:
     """
 
     CAMPOS = ['n', 'momento', 'parada', 'fase', 'yaw', 'pitch', 'ms_inferencia', 'n_cajas_0_3',
-              'n_aceptadas', 'confianzas', 'cajas', 'objetivo_yaw', 'disparos', 'imagen']
+              'n_aceptadas', 'confianzas', 'cajas', 'objetivo_yaw', 'distancia_m', 'disparos', 'imagen']
 
     def __init__(self, carpeta='evidencias', umbral=0.5, mostrar=False):
         self.mostrar = mostrar   # ver cada imagen analizada en una ventana
@@ -537,7 +537,8 @@ class Registro:
             except Exception as e:   # una evidencia perdida no detiene la demo
                 print(f'[aviso] no se pudo guardar {ruta}: {e!r}')
 
-    def imagen(self, image, prediction, ms, parada, fase, yaw, pitch, objetivo=None, objetivo_yaw=None, disparos=0):
+    def imagen(self, image, prediction, ms, parada, fase, yaw, pitch, objetivo=None, objetivo_yaw=None, disparos=0,
+               distancia=None):
         """Guarda una imagen analizada y su fila del registro; devuelve el nombre del fichero."""
         self.n += 1
         nombre = f'{self.n:03d}_{parada}_{fase}_yaw{yaw:+.0f}.jpg'
@@ -557,6 +558,7 @@ class Registro:
             'confianzas': ' '.join(f'{s:.3f}' for s in scores[visibles]),
             'cajas': json.dumps([[round(float(v), 1) for v in b] for b in prediction['boxes'][visibles]]),
             'objetivo_yaw': '' if objetivo_yaw is None else round(objetivo_yaw, 1),
+            'distancia_m': '' if distancia is None else round(distancia, 2),
             'disparos': disparos, 'imagen': nombre,
         }
         self.w.writerow(fila)
@@ -714,3 +716,112 @@ def reloj_del_robot(ep_robot):
     except TypeError:
         reloj = None
     return reloj if callable(reloj) else time.monotonic
+
+
+# --- Fase 2: barrido continuo y memoria de robots atacados --------------------------
+
+def distancia_estimada(image, box, altura_robot):
+    """Distancia (m) al robot a partir del alto aparente de su caja y de su altura real.
+
+    Es aproximada: depende de que la caja abarque el robot entero (las antenas y la
+    torreta cuentan) y del modelo de cámara de auto_aim. Se calibra con ALTURA_ROBOT.
+    """
+    _, alto = tamano_angular(image, box)
+    if alto <= 0.1:
+        return None
+    return float(altura_robot / (2 * np.tan(np.deg2rad(alto) / 2)))
+
+
+def mover_pose(pose, x, y, z):
+    """Posición del chasis tras move(x, y, z), a partir de `pose` = (X, Y, rumbo).
+
+    Coordenadas del circuito: X hacia el frente inicial del robot, Y a su izquierda
+    y rumbo en grados hacia la izquierda (como z). El chasis se traslada con el rumbo
+    de partida y después gira; en las paradas conviene no mezclar giro y avance.
+    """
+    px, py, rumbo = pose
+    r = np.deg2rad(rumbo)
+    # y > 0 es a la derecha del robot, es decir, -Y en estas coordenadas
+    px += x * np.cos(r) + y * np.sin(r)
+    py += x * np.sin(r) - y * np.cos(r)
+    return float(px), float(py), float(rumbo + z)
+
+
+def punto_en_circuito(pose, yaw, distancia):
+    """Punto del circuito a `distancia` m en la dirección del yaw del gimbal (> 0 a la derecha)."""
+    px, py, rumbo = pose
+    b = np.deg2rad(rumbo - yaw)
+    return float(px + distancia * np.cos(b)), float(py + distancia * np.sin(b))
+
+
+def ruta_barrido(barrido, campo_vision):
+    """Puntos de giro de un barrido continuo que cubre los mismos ángulos que la lista `barrido`.
+
+    Empieza en barrido[0], va al extremo más cercano (si están igual de lejos, al que
+    aparece antes en la lista) y luego al otro. Si la lista cubre 360º (con el campo de
+    visión útil), los extremos se dejan en ±(360 - campo_vision)/2, que basta para
+    verlo todo sin girar de más.
+    """
+    inicio, bajo, alto = barrido[0], min(barrido), max(barrido)
+    alto_primero = barrido.index(alto) < barrido.index(bajo)
+    if alto - bajo + campo_vision >= 360:
+        bajo, alto = -(360 - campo_vision) / 2, (360 - campo_vision) / 2
+    if abs(abs(alto - inicio) - abs(bajo - inicio)) > 1e-9:
+        alto_primero = abs(alto - inicio) < abs(bajo - inicio)
+    extremos = [alto, bajo] if alto_primero else [bajo, alto]
+    return [inicio] + [e for e in extremos if abs(e - inicio) > 0.5]
+
+
+class Memoria:
+    """Robots ya atacados (y detecciones que no se pudieron fijar), en coordenadas del circuito.
+
+    El ángulo de una detección es preciso, pero su distancia (por el alto de la caja) no.
+    Por eso la tolerancia es una elipse alrededor de la detección: `radio` m de lado y
+    `radio + error_distancia * distancia` m a lo largo de la línea de visión desde el robot.
+    Una detección dentro de la elipse de un robot anotado es ese mismo robot.
+
+    Los rivales se mueven y son todos iguales: un robot atacado que se ha desplazado más
+    del radio se tomará por uno nuevo y se le volverá a atacar. Es preferible a no disparar
+    a un robot nuevo que pase cerca. Los descartes (detecciones que no se pudieron fijar) se
+    olvidan a los `tiempo_descarte` s, para volver a intentarlo.
+    """
+
+    def __init__(self, radio=0.35, error_distancia=0.25, tiempo_memoria=None, tiempo_descarte=3.0):
+        self.radio, self.error_distancia = radio, error_distancia
+        self.tiempo_memoria, self.tiempo_descarte = tiempo_memoria, tiempo_descarte
+        self.entradas = []   # dict(x, y, t, distancia, tipo, parada)
+
+    def anotar(self, punto, t, distancia, tipo='atacado', parada=''):
+        if punto is None:
+            return
+        self.entradas.append(dict(x=round(punto[0], 2), y=round(punto[1], 2), t=round(t, 2),
+                                  distancia=None if distancia is None else round(distancia, 2),
+                                  tipo=tipo, parada=parada))
+
+    def conocido(self, punto, t, distancia=None, origen=None):
+        """La entrada que coincide con `punto` (visto desde `origen`) en el instante `t`, o None."""
+        if punto is None:
+            return None
+        visual = None
+        if origen is not None:
+            v = np.array(punto, dtype=float) - np.array(origen, dtype=float)
+            if np.hypot(*v) > 1e-6:
+                visual = v / np.hypot(*v)
+        for e in self.entradas:
+            limite = self.tiempo_descarte if e['tipo'] == 'descartado' else self.tiempo_memoria
+            if limite is not None and t - e['t'] > limite:
+                continue
+            dif = np.array([e['x'] - punto[0], e['y'] - punto[1]])
+            largo = self.radio + self.error_distancia * max(distancia or 0.0, e['distancia'] or 0.0)
+            if visual is None:
+                dentro = np.hypot(*dif) <= largo
+            else:
+                radial = float(dif @ visual)
+                lateral = float(dif[0] * visual[1] - dif[1] * visual[0])
+                dentro = (radial / largo) ** 2 + (lateral / self.radio) ** 2 <= 1
+            if dentro:
+                return e
+        return None
+
+    def atacados(self):
+        return [e for e in self.entradas if e['tipo'] == 'atacado']

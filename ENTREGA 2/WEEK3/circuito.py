@@ -47,6 +47,26 @@ ALTURA_PUNTERIA = 0.5    # punto de la caja al que se apunta: 0 borde superior, 
 LEER_ANGULO_GIMBAL = True  # usar el ángulo real del gimbal (sub_angle) en lugar de sumar los giros
 SONIDO_CADA_DISPARO = False  # True: AUDIO_DISPARO en cada disparo (más lento: el SDK sube el audio cada vez)
 
+# --- Barrido continuo y memoria de robots atacados -----------------------------------
+# Con BARRIDO_CONTINUO, la torreta gira sin pararse entre los extremos del barrido de la
+# parada y analiza una imagen cada PASO_BARRIDO grados; en cuanto ve un robot nuevo lo
+# sigue y le dispara, y después continúa. False: se para en cada ángulo de `barrido`.
+BARRIDO_CONTINUO = True
+VEL_BARRIDO = 30         # º/s de la torreta al barrer (nunca más de 30, la del SDK)
+PASO_BARRIDO = 10        # grados girados entre dos imágenes analizadas (unas 3 por segundo a 30 º/s)
+CAMPO_VISION = 70        # grados del campo de visión útil (la cámara ve unos 90; los bordes cortan robots)
+# Memoria de robots atacados, en metros sobre el circuito: posición del chasis por sus
+# movimientos y distancia al robot por el alto de su caja. Una detección dentro de la
+# tolerancia de un robot atacado se considera el mismo robot y no se le vuelve a disparar.
+# La tolerancia es RADIO_MISMO_ROBOT de lado y crece con ERROR_DISTANCIA a lo largo de la
+# línea de visión, porque la distancia estimada es aproximada y el ángulo no.
+ALTURA_ROBOT = 0.35      # m que mide la caja de un RoboMaster (calibrar: robot a 1,5 m y ver distancia_m)
+RADIO_MISMO_ROBOT = 0.35 # m: dos RoboMasters no caben más cerca; si el atacado se aleja más, se le repite
+ERROR_DISTANCIA = 0.25   # m de tolerancia extra, a lo largo de la línea de visión, por metro de distancia
+TIEMPO_MEMORIA = None    # s tras los que se olvida un robot atacado (None: nunca)
+TIEMPO_DESCARTE = 3.0    # s sin volver a intentar fijar una detección que no se pudo confirmar
+ROBOTS_TOTALES = None    # robots rivales en el circuito; al atacarlos todos, el resto de paradas no barre
+
 # Barrido de 360º en pasos de 60º: la cámara ve unos 90º, así que cada imagen
 # solapa con la siguiente. Empieza por delante, que es donde es más probable el rival.
 BARRIDO_360 = [0, 60, 120, 180, -120, -60]

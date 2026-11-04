@@ -29,14 +29,23 @@ Para cada parada de `circuito.PARADAS`:
    tras otro: `x` adelante, `y` a la derecha y `z` giro a la izquierda en grados.
    La velocidad es la de `circuito.py` (0,3 m/s y 30 º/s), recortada siempre a la
    del SDK (0,5 m/s y 30 º/s): el enunciado prohíbe aumentarla.
-2. **Barrido.** El gimbal se centra y gira a cada ángulo de `barrido`. En cada
-   ángulo espera medio segundo, captura una imagen y aplica el detector. El barrido
-   de 360º usa pasos de 60º: la cámara ve unos 90º y así cada imagen solapa con la
-   siguiente.
+2. **Barrido continuo** (`BARRIDO_CONTINUO = True`). El gimbal se centra y gira sin
+   pararse, a `VEL_BARRIDO` (30 º/s), entre los extremos de `barrido`. Analiza una imagen
+   cada `PASO_BARRIDO` grados (10º, unas 3 por segundo), no todas: con un campo de visión
+   útil de `CAMPO_VISION` (70º), cada robot sale en varias. Si `barrido` cubre 360º, los
+   extremos son ±145º (0 → +145 → −145), que basta para verlo todo. Va primero al extremo
+   más cercano o, si están igual de lejos, al que aparece antes en la lista. Cada imagen se
+   sitúa con el ángulo que tenía la torreta al tomarla (`RETARDO_CAMARA`). En cuanto
+   aparece un robot nuevo, lo ataca (paso 4) y sigue barriendo desde donde ha quedado.
+   Con `BARRIDO_CONTINUO = False`, se para en cada ángulo de `barrido`, espera
+   `ESPERA_CAMARA` (0,5 s) y analiza una imagen.
 3. **Selección.** Se quedan las detecciones con confianza `>= UMBRAL` y se calcula el
-   ángulo de cada una: el yaw del gimbal más `auto_aim`. Una detección a menos de
-   `TOLERANCIA_YAW` (15º) de otra ya revisada en la parada es el mismo robot visto en
-   dos imágenes y no se repite.
+   ángulo de cada una (el yaw del gimbal más `auto_aim`) y su distancia (por el alto de la
+   caja y `ALTURA_ROBOT`). No se repite:
+   - una detección a menos de `TOLERANCIA_YAW` (15º) de otra ya revisada en la parada (el
+     mismo robot en dos imágenes);
+   - un robot de la **memoria del circuito** (sección 2.1): ya atacado en esta parada o en
+     otra, o que no se pudo fijar hace menos de `TIEMPO_DESCARTE` s.
 4. **Seguimiento y disparo** (`SEGUIMIENTO = True`, para rivales que se mueven). Para cada
    robot nuevo, el gimbal gira hacia él y a partir de ahí analiza cada fotograma en cuanto
    llega, sin esperas (unas 10 imágenes por segundo con GPU):
@@ -60,7 +69,35 @@ Para cada parada de `circuito.PARADAS`:
    se usa la versión anterior: confirma una vez (`CONFIRMAR`), corrige y dispara la ráfaga sin
    volver a mirar. Solo sirve para robots quietos.
 5. **Fin de la parada.** Si se han atacado los `objetivos` esperados en la parada, se
-   deja de barrer (salvo `BARRIDO_COMPLETO = True`). El gimbal vuelve al centro.
+   deja de barrer (salvo `BARRIDO_COMPLETO = True`). El gimbal vuelve al centro. Si se fija
+   `ROBOTS_TOTALES` y ya se han atacado todos, el resto de paradas se recorre sin barrer.
+
+### 2.1. Memoria de robots atacados
+
+Los rivales son todos iguales y se mueven, así que la demo lleva una memoria aproximada de
+los robots atacados, en metros sobre el circuito:
+
+- **Posición del chasis** (X adelante desde la salida, Y a la izquierda, rumbo): se calcula
+  con los movimientos `(x, y, z)` ya hechos. El chasis se traslada y después gira, así que
+  conviene no mezclar giro y avance en un mismo movimiento.
+- **Posición del robot:** la dirección del gimbal y la distancia estimada por el alto de la
+  caja: `distancia = ALTURA_ROBOT / (2 · tan(alto / 2))`.
+- **Mismo robot:** una detección está dentro de la tolerancia de uno atacado.
+  - **De lado** (el ángulo es preciso): `RADIO_MISMO_ROBOT` (0,35 m), lo mínimo entre dos
+    RoboMasters.
+  - **A lo largo de la línea de visión** (la distancia es aproximada): ese radio más
+    `ERROR_DISTANCIA` (0,25 m) por cada metro de distancia.
+
+Un robot atacado que se ha alejado más de la tolerancia se toma por uno nuevo y se le vuelve
+a atacar (unos 4 s). Se prefiere así a dejar sin disparar a un robot nuevo que pase cerca. Lo
+que no se pudo fijar (falsos positivos del barrido) se anota como descarte y se vuelve a
+intentar pasados `TIEMPO_DESCARTE` s. `TIEMPO_MEMORIA` hace que se olviden los atacados
+(por defecto, nunca).
+
+**Calibrar `ALTURA_ROBOT`:** colocar un robot a 1,5 m medidos, lanzar
+`--sin-mover --sin-disparar` y comparar con la columna `distancia_m` de `registro.csv`:
+`ALTURA_ROBOT` nueva = actual × 1,5 / distancia medida. Depende de cómo se anotaron las
+cajas (con o sin antenas).
 
 Al terminar: vuelta al inicio (opcional) y baile final con LED, sonido, gimbal y chasis.
 
@@ -83,8 +120,8 @@ Al terminar: vuelta al inicio (opcional) y baile final con LED, sonido, gimbal y
 | Módulo | Uso |
 |---|---|
 | Chasis | Recorrido entre paradas y baile |
-| Gimbal (torreta) | Barrido, puntería, cabeceo tras inutilizar un robot y baile |
-| Cámara | Vídeo abierto toda la demo; se lee el fotograma más reciente con el gimbal quieto |
+| Gimbal (torreta) | Barrido continuo, seguimiento del objetivo (`drive_speed`), lectura de su ángulo (`sub_angle`), cabeceo tras inutilizar un robot y baile |
+| Cámara | Vídeo abierto toda la demo; se lee siempre el fotograma más reciente, situado con el ángulo de la torreta al tomarlo |
 | Blaster | 12 disparos de infrarrojo por robot, de uno en uno |
 | LED | Color según el estado: azul en marcha, ámbar buscando, naranja apuntando, rojo parpadeando al disparar, verde tras inutilizar un robot, morado sin hallazgos |
 | Audio | Sonidos del SDK al empezar, buscar, detectar, disparar y terminar, y `engine_sound.wav` al arrancar |
@@ -136,10 +173,13 @@ Cada ejecución crea `evidencias/<fecha_hora>/` (no se sube a GitHub):
   para no frenar el seguimiento.
 - `originales/`: las mismas imágenes sin dibujar, para analizarlas o anotarlas después.
 - `registro.csv`: una fila por imagen con yaw, tiempo de inferencia, confianzas, cajas,
-  ángulo del objetivo y disparos.
+  ángulo y distancia estimada del objetivo (`distancia_m`, para analizar el efecto de la
+  distancia) y disparos.
 - `resumen.json`: configuración, robots atacados por parada, disparos totales, tiempo
   medio de inferencia y duración. Cada ataque indica si se completó, cuántas imágenes y
-  segundos llevó y la velocidad angular estimada del robot.
+  segundos llevó, la velocidad angular estimada del robot, su distancia y su punto en el
+  circuito. También guarda la memoria de robots atacados, el tiempo de cada parada y la
+  posición del chasis.
 
 Es el material de la memoria del Bloque 3: aciertos, falsos positivos, robots no
 vistos y tiempos.
@@ -230,6 +270,12 @@ comprueban lo siguiente:
 - lee el ángulo del gimbal aunque la lectura vaya al revés, y lo estima si no hay lectura;
 - Ctrl+C durante el seguimiento deja la torreta parada;
 - el audio de disparo suena una vez por ráfaga (o en cada disparo con `SONIDO_CADA_DISPARO`);
+- el barrido continuo cubre 360º con una imagen cada `PASO_BARRIDO`, tarda menos que por pasos
+  y deja de girar en cuanto ataca a los robots esperados;
+- la memoria no repite un robot visto desde otra parada, distingue dos robots juntos, vuelve a
+  atacar a uno que se ha alejado y olvida los descartes;
+- `ROBOTS_TOTALES` salta los barridos restantes sin dejar de hacer el recorrido;
+- la distancia por el alto de la caja y la posición del chasis son correctas;
 - con `DISPARAR_A_TODOS = False` dispara solo a la mejor detección de cada imagen;
 - guarda todas las imágenes;
 - respeta `--sin-disparar`, `--sin-mover` y `--paradas`;
@@ -240,7 +286,24 @@ comprueban lo siguiente:
 
 El simulador falla si alguna orden supera la velocidad máxima. Lleva un reloj simulado:
 cada lectura de la cámara avanza 0,1 s (unas 10 imágenes por segundo, como con GPU), los
-giros del gimbal consumen su tiempo y `drive_speed` lo hace girar mientras pasa el tiempo.
+giros del gimbal y los movimientos del chasis consumen su tiempo, `drive_speed` hace girar
+el gimbal mientras pasa el tiempo y el chasis lleva su posición. Los robots falsos pueden
+darse por su ángulo o por su posición en el circuito (en metros), y entonces su caja
+crece o mengua con la distancia.
+
+Tiempo de una parada medido en simulación, contando la espera de 0,5 s del barrido por
+pasos y 0,1 s de inferencia por imagen (GPU):
+
+| Parada | Por pasos | Continuo |
+|---|---:|---:|
+| 360º, sin robots | 24,2 s | 20,8 s |
+| 360º, robot en +100º | 15,4 s | 14,6 s |
+| 360º, robot en −100º | 28,8 s | 24,8 s |
+| 360º, robots en +30º y −120º | 34,0 s | 31,4 s |
+| Frontal, sin robots | 8,1 s | 7,3 s |
+
+La mejora es de un 5 a un 15 %: el límite es girar la torreta a 30 º/s, que no se puede
+subir. Lo que más ahorra es no repetir ráfagas de unos 4 s contra robots ya atacados.
 
 ### Ajustar el seguimiento en el laboratorio
 

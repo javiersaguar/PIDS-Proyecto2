@@ -12,6 +12,7 @@ Solo sirve para probar la lógica: no simula la geometría del circuito.
 """
 
 import glob
+import math
 import os
 import sys
 import time
@@ -51,6 +52,11 @@ class Chasis:
     def move(self, x=0, y=0, z=0, xy_speed=0.5, z_speed=30):
         _comprobar('xy_speed', xy_speed, MAX_XY)
         _comprobar('z_speed', z_speed, MAX_Z)
+        # Consume el tiempo del movimiento y actualiza la posición (traslación y luego giro)
+        self.r.avanzar((x * x + y * y) ** 0.5 / max(xy_speed, 1e-6) + abs(z) / max(z_speed, 1e-6))
+        px, py, rumbo = self.r.pose
+        r = math.radians(rumbo)
+        self.r.pose = (px + x * math.cos(r) + y * math.sin(r), py + x * math.sin(r) - y * math.cos(r), rumbo + z)
         return Accion(self.r, 'chasis.move', x=x, y=y, z=z, xy_speed=xy_speed, z_speed=z_speed)
 
     def drive_speed(self, x=0, y=0, z=0, timeout=None):
@@ -184,6 +190,7 @@ class RobotSimulado:
     def __init__(self):
         self.acciones = []
         self.t = 0.0                  # tiempo simulado (s)
+        self.pose = (0.0, 0.0, 0.0)   # X adelante, Y a la izquierda (m) y rumbo a la izquierda (grados)
         self.reloj = lambda: self.t   # la demo lo usa en lugar de time.monotonic
         self.chassis = Chasis(self)
         self.gimbal = Gimbal(self)

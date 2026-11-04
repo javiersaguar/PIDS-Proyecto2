@@ -42,6 +42,13 @@ def pixel_de(alpha, ancho=1280):
     return ancho / 2 + focal * np.tan(np.deg2rad(alpha * 120 / 90))
 
 
+def semialto_px(distancia, alto=720, ancho=1280):
+    """Mitad del alto (píxeles) de la caja de un robot de ALTURA_ROBOT m a esa distancia."""
+    focal = ancho / (2 * np.tan(np.pi / 3))
+    alto_grados = 2 * np.rad2deg(np.arctan(C.ALTURA_ROBOT / (2 * distancia)))
+    return focal * np.tan(np.deg2rad(alto_grados / 2 * 120 / 90))
+
+
 class DetectorFalso(torch.nn.Module):
     def __init__(self, robots, confianza=0.99, retardo=0.0):
         super().__init__()
@@ -69,10 +76,17 @@ class DetectorFalso(torch.nn.Module):
                 angulo = angulo(max(0.0, t_visto - self.t0))
                 if angulo is None:
                     continue
-            rel = angulo - yaw
+            if isinstance(angulo, tuple):   # robot situado en el circuito (X, Y en m)
+                px, py, rumbo = robot.pose
+                distancia = np.hypot(angulo[0] - px, angulo[1] - py)
+                rumbo_robot = np.rad2deg(np.arctan2(angulo[1] - py, angulo[0] - px))
+                rel = (rumbo - yaw - rumbo_robot + 180) % 360 - 180
+                medio = semialto_px(distancia)
+            else:
+                rel, medio = angulo - yaw, 60
             if abs(rel) < 40:         # dentro del campo de visión
                 cx = pixel_de(rel)
-                cajas.append([cx - 60, 300, cx + 60, 420])
+                cajas.append([cx - medio, 360 - medio, cx + medio, 360 + medio])
         n = len(cajas)
         return [dict(boxes=torch.tensor(cajas, dtype=torch.float32).reshape(n, 4),
                      scores=torch.full((n,), self.confianza), labels=torch.ones(n, dtype=torch.int64))]
@@ -92,7 +106,8 @@ class PruebasDemo(unittest.TestCase):
                                                     'DISPARAR_A_TODOS', 'BARRIDO_COMPLETO', 'CONFIRMAR',
                                                     'VELOCIDAD_XY', 'AUDIO_DISPARO', 'AUDIO_FINAL',
                                                     'SEGUIMIENTO', 'SONIDO_CADA_DISPARO', 'LEER_ANGULO_GIMBAL',
-                                                    'ANTICIPAR', 'RETARDO_CAMARA']}
+                                                    'ANTICIPAR', 'RETARDO_CAMARA', 'BARRIDO_CONTINUO',
+                                                    'ROBOTS_TOTALES', 'TIEMPO_MEMORIA']}
         C.BAILE_FINAL, C.AUDIO_MOTOR, C.ESPERA_CAMARA = False, None, 0
         espera = mock.patch('time.sleep')   # sin esperas reales (cámara, disparos, batería)
         espera.start()
@@ -112,6 +127,7 @@ class PruebasDemo(unittest.TestCase):
         return ep_robot, d, resumen
 
     def test_ataca_al_robot_y_para_el_barrido(self):
+        C.BARRIDO_CONTINUO = False
         p = [dict(nombre='P1', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([70], p)
         self.assertEqual(ep.disparos(), 12)
@@ -162,6 +178,101 @@ class PruebasDemo(unittest.TestCase):
         self.assertEqual(len(errores), 12)
         self.assertLess(max(errores), 7)
         self.assertLess(np.mean(errores), 3)
+
+    # --- barrido continuo y memoria (fase 2) ---------------------------------------------
+    def test_ruta_del_barrido_continuo(self):
+        self.assertEqual(demo.ruta_barrido(C.BARRIDO_360, 70), [0, 145, -145])
+        self.assertEqual(demo.ruta_barrido(C.BARRIDO_FRONTAL, 70), [0, -45, 45])
+        self.assertEqual(demo.ruta_barrido([30, -60, 90], 70), [30, 90, -60])
+
+    def test_barrido_continuo_sin_detecciones_lo_recorre_entero(self):
+        p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_360, pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([], p)
+        yaws = [f['yaw'] for f in d.registro.filas]
+        self.assertLessEqual(min(yaws), -140)
+        self.assertGreaterEqual(max(yaws), 140)
+        saltos = np.abs(np.diff(yaws))
+        self.assertTrue(all(s >= C.PASO_BARRIDO - 0.5 for s in saltos))   # una imagen cada PASO_BARRIDO
+        self.assertEqual(ep.gimbal.yaw, 0)
+        giros = [a for a in ep.acciones if a['tipo'] == 'gimbal.drive_speed']
+        self.assertEqual((giros[-1]['yaw_speed'], giros[-1]['pitch_speed']), (0, 0))
+
+    def test_barrido_continuo_tarda_menos_que_por_pasos(self):
+        p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_360, pitch=0, objetivos=1)]
+        tiempos = {}
+        for continuo in (True, False):
+            C.BARRIDO_CONTINUO = continuo
+            ep, d, r = self.lanzar([], p)
+            tiempos[continuo] = r['paradas'][0]['segundos']
+        self.assertLess(tiempos[True], tiempos[False])
+
+    def test_barrido_continuo_ataca_en_cuanto_lo_ve_y_para(self):
+        p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_360, pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([100], p)
+        self.assertEqual(ep.disparos(), 12)
+        self.assertAlmostEqual(r['ataques'][0]['yaw'], 100, delta=1)
+        barrido = [f for f in d.registro.filas if f['fase'] == 'barrido']
+        self.assertLess(max(f['yaw'] for f in barrido), 100)       # no sigue girando hasta 145
+        self.assertGreaterEqual(min(f['yaw'] for f in barrido), 0)  # ni barre el otro lado
+
+    def test_memoria_no_repite_un_robot_desde_otra_parada(self):
+        p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_FRONTAL, pitch=0, objetivos=None),
+             dict(nombre='P2', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
+        ep, d, r = self.lanzar([(2.0, 0.3)], p)
+        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual([x['atacados'] for x in r['paradas']], [1, 0])
+        self.assertAlmostEqual(r['memoria'][0]['x'], 2.0, delta=0.2)
+        self.assertAlmostEqual(r['memoria'][0]['y'], 0.3, delta=0.2)
+        self.assertEqual(r['pose_final'][:2], [0.5, 0.0])
+
+    def test_sin_memoria_se_repite_el_ataque(self):
+        C.TIEMPO_MEMORIA = 0
+        p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_FRONTAL, pitch=0, objetivos=None),
+             dict(nombre='P2', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
+        ep, d, r = self.lanzar([(2.0, 0.3)], p)
+        self.assertEqual(ep.disparos(), 24)
+
+    def test_memoria_distingue_robots_juntos_en_angulo(self):
+        # A 2 m y separados 0,6 m (unos 17 grados): son dos robots
+        p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_FRONTAL, pitch=0, objetivos=None)]
+        ep, d, r = self.lanzar([(2.0, 0.3), (2.0, -0.3)], p)
+        self.assertEqual(ep.disparos(), 24)
+
+    def test_robot_atacado_que_se_aleja_se_vuelve_a_atacar(self):
+        # Atacado en P1; cuando el robot llega a P2, se ha ido 1,5 m a un lado
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1),
+             dict(nombre='P2', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
+        ep, d, r = self.lanzar([lambda t: (2.0, 0.0) if t < 6 else (2.0, 1.5)], p)
+        self.assertEqual(ep.disparos(), 24)
+
+    def test_robots_totales_salta_los_barridos_restantes(self):
+        C.ROBOTS_TOTALES = 1
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=None),
+             dict(nombre='P2', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
+        ep, d, r = self.lanzar([0], p)
+        self.assertEqual([x['nombre'] for x in r['paradas']], ['P1'])
+        self.assertEqual([a['x'] for a in ep.acciones if a['tipo'] == 'chasis.move'], [0.5])   # el recorrido sigue
+
+    def test_distancia_y_posicion_en_el_circuito(self):
+        imagen = np.zeros((720, 1280, 3), np.uint8)
+        for distancia in (1.0, 2.5):
+            m = semialto_px(distancia)
+            caja = [640 - m, 360 - m, 640 + m, 360 + m]
+            self.assertAlmostEqual(demo.distancia_estimada(imagen, caja, C.ALTURA_ROBOT), distancia, delta=0.01)
+        pose = demo.mover_pose((0, 0, 0), 1.0, 0, 90)           # avanza 1 m y gira 90 grados a la izquierda
+        np.testing.assert_allclose(pose, (1.0, 0.0, 90.0), atol=1e-9)
+        pose = demo.mover_pose(pose, 1.0, 0.5, 0)                # ahora adelante es +Y y derecha es +X
+        np.testing.assert_allclose(pose, (1.5, 1.0, 90.0), atol=1e-9)
+        np.testing.assert_allclose(demo.punto_en_circuito((0, 0, 0), 90, 2.0), (0.0, -2.0), atol=1e-9)
+
+    def test_memoria_olvida_los_descartes(self):
+        m = demo.Memoria(tiempo_descarte=3.0)
+        m.anotar((2.0, 0.0), 0.0, 2.0, 'descartado')
+        self.assertIsNotNone(m.conocido((2.0, 0.1), 2.0, 2.0, (0, 0)))
+        self.assertIsNone(m.conocido((2.0, 0.1), 4.0, 2.0, (0, 0)))
+        m.anotar((2.0, 0.0), 0.0, 2.0, 'atacado')
+        self.assertIsNotNone(m.conocido((2.4, 0.0), 100.0, 2.0, (0, 0)))   # a lo largo de la visual: el mismo
+        self.assertIsNone(m.conocido((2.0, 0.4), 100.0, 2.0, (0, 0)))      # de lado: otro robot
 
     def test_dispara_solo_con_el_robot_centrado(self):
         p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
@@ -264,9 +375,11 @@ class PruebasDemo(unittest.TestCase):
 
     def test_dispara_a_todos_los_robots_de_la_parada(self):
         p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
-        ep, d, r = self.lanzar([-100, 10, 30, 175], p)
-        self.assertEqual(ep.disparos(), 48)
-        self.assertEqual(sorted(round(a['yaw']) for a in r['ataques']), [-100, 10, 30, 175])
+        for continuo in (True, False):
+            C.BARRIDO_CONTINUO = continuo
+            ep, d, r = self.lanzar([-100, 10, 30, 175], p)
+            self.assertEqual(ep.disparos(), 48, f'continuo={continuo}')
+            self.assertEqual(sorted(round(a['yaw']) for a in r['ataques']), [-100, 10, 30, 175])
 
     def test_solo_la_mejor_si_no_se_dispara_a_todos(self):
         C.DISPARAR_A_TODOS = False
@@ -275,6 +388,7 @@ class PruebasDemo(unittest.TestCase):
         self.assertEqual(ep.disparos(), 12)
 
     def test_sin_detecciones_no_dispara_y_guarda_todo(self):
+        C.BARRIDO_CONTINUO = False
         p = [dict(nombre='P1', movimientos=[(1, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=1),
              dict(nombre='P2', movimientos=[(0, 0, 90)], barrido=C.BARRIDO_FRONTAL, pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([], p)

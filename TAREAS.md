@@ -366,3 +366,25 @@ retardo de cámara. Pendiente en el laboratorio: confirmar la lectura del gimbal
 `RETARDO_CAMARA` y ajustar `GANANCIA_SEGUIMIENTO` (pasos en el `README.md` de WEEK3).
 La `guia_pruebas.pdf` aún cita 15 pruebas y la ráfaga anterior. Las fases 2 (barrido más
 ágil) y 3 (vigilancia durante el recorrido) quedan por hacer.
+
+### Actualización del 04/11: barrido continuo y memoria de robots atacados (Bloque 3, fase 2)
+
+T21/T22, en `alejandro-cuevas` (PR #36). Cambios en `ENTREGA 2/WEEK3/`:
+
+- **Barrido continuo** (`BARRIDO_CONTINUO = True`): la torreta gira sin pararse entre los
+  extremos del barrido (±145º para 360º) y analiza una imagen cada `PASO_BARRIDO` grados.
+  En cuanto ve un robot nuevo lo sigue y le dispara. En simulación, cada parada tarda entre
+  un 5 y un 15 % menos; el límite es girar a 30 º/s.
+- **Memoria de robots atacados** en metros sobre el circuito: posición del chasis por sus
+  movimientos y distancia al robot por el alto de su caja (`ALTURA_ROBOT`). No se repiten
+  los 12 disparos contra un robot ya atacado, tampoco desde otra parada. La tolerancia es
+  estrecha de lado y amplia a lo largo de la línea de visión. Un robot que se ha alejado
+  se vuelve a atacar.
+- `ROBOTS_TOTALES` opcional: atacados todos, el resto de paradas no barre.
+- Distancia estimada en `registro.csv` (`distancia_m`); memoria, tiempos por parada y
+  posición del chasis en `resumen.json`.
+
+Comprobado sin robot: 48 pruebas (11 nuevas). Pendiente en el laboratorio: calibrar
+`ALTURA_ROBOT` con un robot a 1,5 m y comprobar que el detector funciona con la torreta
+girando (si no, `BARRIDO_CONTINUO = False` o bajar `VEL_BARRIDO`). Falta la fase 3
+(vigilancia durante el recorrido).
