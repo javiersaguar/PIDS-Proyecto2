@@ -361,7 +361,7 @@ ejecutará con GPU, así que la ráfaga a ciegas no basta. Cambios en `ENTREGA 2
 - Ráfaga rápida: un sonido por ráfaga en lugar de subir el audio en cada disparo.
 - Evidencias escritas en un hilo aparte, para no frenar el seguimiento.
 
-Comprobado sin robot: 37 pruebas (antes 15), con robots simulados que se mueven y con
+Comprobado sin robot: 37 pruebas (antes 24; 13 nuevas), con robots simulados que se mueven y con
 retardo de cámara. Pendiente en el laboratorio: confirmar la lectura del gimbal, medir
 `RETARDO_CAMARA` y ajustar `GANANCIA_SEGUIMIENTO` (pasos en el `README.md` de WEEK3).
 La `guia_pruebas.pdf` aún cita 15 pruebas y la ráfaga anterior. Las fases 2 (barrido más
