@@ -60,3 +60,4 @@ SONIDOS = {
     'hecho': 0x101,        # ataque completado
 }
 BATERIA_MINIMA = 20      # % por debajo del cual se avisa antes de arrancar
+BATERIA_CRITICA = 10     # % por debajo del cual la demo no arranca (el robot deja de responder)

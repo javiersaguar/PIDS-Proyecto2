@@ -210,6 +210,55 @@ class PruebasDemo(unittest.TestCase):
         self.assertEqual(ep.disparos(), 12)
         self.assertAlmostEqual(ep.gimbal.yaw, 8, delta=0.5)
 
+    def test_no_arranca_con_la_bateria_critica(self):
+        simulacion.BATERIA = 5
+        try:
+            p = [dict(nombre='P1', movimientos=[(1, 0, 0)], barrido=[0], pitch=0, objetivos=1)]
+            with self.assertRaises(RuntimeError):
+                self.lanzar([0], p)
+            tipos = [a['tipo'] for a in simulacion.ULTIMO.acciones]
+            self.assertNotIn('chasis.move', tipos)
+            self.assertNotIn('blaster.fire', tipos)
+        finally:
+            simulacion.BATERIA = 87
+
+    def test_un_movimiento_sin_respuesta_detiene_la_demo(self):
+        class SinRespuesta:
+            def wait_for_completed(self, timeout=None):
+                return False   # el robot no confirma el movimiento a tiempo
+        C.PARADAS = [dict(nombre='P1', movimientos=[(1, 0, 0)], barrido=[0], pitch=0, objetivos=1)]
+        ep = demo.connect('wifi')
+        ep.chassis.move = lambda **kw: SinRespuesta()
+        d = demo.Demo(ep, DetectorFalso([]), Args(self.salida))
+        with self.assertRaises(RuntimeError):
+            d.ejecutar()
+        self.assertEqual(ep.acciones[-1]['rgb'], (0, 0, 0))   # se cerró de forma segura
+
+    def test_los_sonidos_no_se_solapan(self):
+        class Sonando:
+            is_completed = False
+        enviados = []
+
+        class Robot:
+            def play_sound(self, sound_id, times=1):
+                enviados.append(sound_id)
+                return Sonando()
+        senales = demo.Senales(Robot(), {'a': 1, 'b': 2})
+        senales.sonido('a')
+        senales.sonido('b')   # el primero sigue sonando: no se envía
+        self.assertEqual(enviados, [1])
+
+    def test_libera_el_cerrojo_que_deja_el_sdk(self):
+        import threading
+        cerrojo = threading.Lock()
+        ep = mock.Mock()
+        ep._action_dispatcher._in_progress_mutex = cerrojo
+        cerrojo.acquire()
+        demo.liberar_cerrojo_sdk(ep, Exception('otro error'))
+        self.assertTrue(cerrojo.locked())
+        demo.liberar_cerrojo_sdk(ep, Exception('Robot is already performing 1 action(s)'))
+        self.assertFalse(cerrojo.locked())
+
     def test_detect_and_shoot_de_la_plantilla(self):
         ep = demo.connect('wifi')
         image, prediction = demo.detect_and_shoot(ep, DetectorFalso([10]), score_threshold=0.5)

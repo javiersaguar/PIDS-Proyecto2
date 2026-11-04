@@ -33,6 +33,7 @@ def argumentos(argv=None):
                    metavar='CARPETA', help='usar un robot simulado que ve las imágenes de CARPETA')
     p.add_argument('--modelo', default=None, help='ruta del checkpoint (por defecto, la de circuito.py)')
     p.add_argument('--arquitectura', default=None, help='arquitectura del checkpoint (por defecto, la de circuito.py)')
+    p.add_argument('--ver', action='store_true', help='mostrar en una ventana cada imagen analizada')
     p.add_argument('--umbral', type=float, default=None, help='umbral de confianza (por defecto, el de circuito.py)')
     p.add_argument('--evidencias', default=os.path.join(AQUI, 'evidencias'), help='carpeta de salida')
     return p.parse_args(argv)
@@ -66,7 +67,7 @@ def detect_and_shoot(ep_robot, model, score_threshold=0.5, resize_shape=None):
 
     # --- STEP 3: aim the gimbal at the target ---------------------------------
     alpha = auto_aim(image, best_box)
-    ep_robot.gimbal.move(pitch=0, yaw=alpha, pitch_speed=VEL_GIMBAL_MAX, yaw_speed=VEL_GIMBAL_MAX).wait_for_completed()
+    ep_robot.gimbal.move(pitch=0, yaw=alpha, pitch_speed=VEL_GIMBAL_MAX, yaw_speed=VEL_GIMBAL_MAX).wait_for_completed(timeout=10)
 
     # --- STEP 4: shoot --------------------------------------------------------
     ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1)
@@ -84,12 +85,15 @@ class Torreta:
     YAW_MAX = 240  # el gimbal admite unos ±250º
 
     def __init__(self, ep_robot):
+        self.ep_robot = ep_robot
         self.gimbal = ep_robot.gimbal
         self.yaw = 0.0
         self.pitch = 0.0
 
     def centrar(self):
-        self.gimbal.recenter(pitch_speed=VEL_GIMBAL_MAX, yaw_speed=VEL_GIMBAL_MAX).wait_for_completed()
+        ejecutar_accion(self.ep_robot, lambda: self.gimbal.recenter(pitch_speed=VEL_GIMBAL_MAX,
+                                                                    yaw_speed=VEL_GIMBAL_MAX),
+                        timeout=20, que='gimbal (centrar)')
         self.yaw = self.pitch = 0.0
 
     def ir(self, yaw, pitch=None):
@@ -97,8 +101,10 @@ class Torreta:
         pitch = self.pitch if pitch is None else pitch
         d_yaw, d_pitch = yaw - self.yaw, pitch - self.pitch
         if abs(d_yaw) > 0.5 or abs(d_pitch) > 0.5:
-            self.gimbal.move(pitch=d_pitch, yaw=d_yaw, pitch_speed=VEL_GIMBAL_MAX,
-                             yaw_speed=VEL_GIMBAL_MAX).wait_for_completed()
+            tiempo = max(abs(d_yaw), abs(d_pitch)) / VEL_GIMBAL_MAX
+            ejecutar_accion(self.ep_robot, lambda: self.gimbal.move(pitch=d_pitch, yaw=d_yaw, pitch_speed=VEL_GIMBAL_MAX,
+                                                                    yaw_speed=VEL_GIMBAL_MAX),
+                            timeout=2 * tiempo + 5, que='gimbal')
         self.yaw, self.pitch = yaw, pitch
 
 
@@ -109,7 +115,7 @@ class Demo:
         self.args = args
         self.torreta = Torreta(ep_robot)
         self.senales = Senales(ep_robot, C.SONIDOS)
-        self.registro = Registro(args.evidencias, umbral=C.UMBRAL)
+        self.registro = Registro(args.evidencias, umbral=C.UMBRAL, mostrar=getattr(args, 'ver', False))
         self.camara = None
         self.ataques = []
         self.paradas_hechas = []
@@ -121,8 +127,10 @@ class Demo:
         print(f'  chasis: x={x:+.2f} m  y={y:+.2f} m  z={z:+.0f} grados')
         if self.args.sin_mover:
             return
-        self.ep_robot.chassis.move(x=x, y=y, z=z, xy_speed=limitar(C.VELOCIDAD_XY, VEL_XY_MAX),
-                                   z_speed=limitar(C.VELOCIDAD_Z, VEL_Z_MAX)).wait_for_completed()
+        v_xy, v_z = limitar(C.VELOCIDAD_XY, VEL_XY_MAX), limitar(C.VELOCIDAD_Z, VEL_Z_MAX)
+        tiempo = (x * x + y * y) ** 0.5 / v_xy + abs(z) / v_z
+        ejecutar_accion(self.ep_robot, lambda: self.ep_robot.chassis.move(x=x, y=y, z=z, xy_speed=v_xy, z_speed=v_z),
+                        timeout=2 * tiempo + 5, que='chasis')
 
     def mirar(self):
         """Captura con el gimbal quieto y aplica el detector: (imagen, predicción, ms)."""
@@ -232,7 +240,7 @@ class Demo:
         self.torreta.ir(0, 0)
         if not self.args.sin_mover:
             for z in (20, -40, 20):
-                self.ep_robot.chassis.move(x=0, y=0, z=z, z_speed=limitar(C.VELOCIDAD_Z, VEL_Z_MAX)).wait_for_completed()
+                self.mover(0, 0, z)
         self.senales.estado('fin')
 
     # --- demo completa ----------------------------------------------------------
@@ -250,12 +258,16 @@ class Demo:
                 print(f'[aviso] modo del robot: {e}')
             bateria = nivel_bateria(self.ep_robot)
             print(f'Batería: {bateria}%')
+            if bateria is not None and bateria < C.BATERIA_CRITICA:
+                raise RuntimeError(f'batería al {bateria}%: con menos del {C.BATERIA_CRITICA}% el robot no '
+                                   'responde. Cárguela antes de seguir')
             if bateria is not None and bateria < C.BATERIA_MINIMA:
                 print(f'[aviso] batería por debajo del {C.BATERIA_MINIMA}%: cárguela antes de la demo')
             self.camara = Camara(self.ep_robot, espera=C.ESPERA_CAMARA)
             self.torreta.centrar()
             self.senales.estado('moviendo', parpadeo=True)
             self.senales.sonido('inicio')
+            self.senales.esperar_sonido(8)  # el SDK no admite dos sonidos a la vez
             if C.AUDIO_MOTOR:
                 self.senales.audio(os.path.join(AQUI, C.AUDIO_MOTOR))
 
@@ -326,6 +338,8 @@ def main(argv=None):
         demo.ejecutar()
     except KeyboardInterrupt:
         print('Demo detenida con Ctrl+C: robot parado y gimbal centrado')
+    except RuntimeError as e:
+        print(f'[error] demo detenida: {e}')
     finally:
         ep_robot.close()
     return demo

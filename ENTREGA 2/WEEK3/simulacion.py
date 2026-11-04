@@ -24,9 +24,12 @@ MAX_XY, MAX_Z, MAX_GIMBAL = 0.5, 30, 30
 
 CARPETA_IMAGENES = None   # se fija con instalar()
 RETARDO = 0.0             # segundos de espera simulada por acción
+BATERIA = 87              # % que devuelve la batería simulada
 
 
 class Accion:
+    is_completed = True
+
     def __init__(self, robot, tipo, **datos):
         robot.acciones.append(dict(tipo=tipo, **datos))
 
@@ -137,7 +140,7 @@ class Bateria:
         self.r = r
 
     def sub_battery_info(self, freq, callback, *args):
-        callback(87, *args)
+        callback(BATERIA, *args)
 
     def unsub_battery_info(self):
         pass
