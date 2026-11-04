@@ -16,6 +16,7 @@ Ctrl+C detiene el chasis, centra el gimbal, apaga los LED y cierra la conexión.
 """
 
 import argparse
+import collections
 import os
 import sys
 import threading
@@ -78,36 +79,146 @@ def detect_and_shoot(ep_robot, model, score_threshold=0.5, resize_shape=None):
 
 
 class Torreta:
-    """Gimbal con su ángulo llevado por software.
+    """Gimbal con su ángulo respecto al chasis (yaw > 0 a la derecha, pitch > 0 arriba).
 
-    Al llegar a cada parada se centra (queda alineado con el chasis) y desde
-    ahí se mueve con giros relativos, así el yaw de cada imagen es conocido.
+    Al llegar a cada parada se centra (queda alineado con el chasis). Se mueve de
+    dos formas: con giros hasta un ángulo (`ir`), para barrer, y con velocidad
+    (`velocidad`), para seguir a un robot que se mueve.
+
+    El ángulo se lee del propio gimbal (sub_angle) si `comprobar_lectura` ha
+    verificado que la lectura sigue a los giros; si no, se estima por software
+    sumando los giros y la velocidad mandada por el tiempo transcurrido.
     """
 
-    YAW_MAX = 240  # el gimbal admite unos ±250º
+    YAW_MAX = 240                     # el gimbal admite unos ±250º
+    PITCH_MIN, PITCH_MAX = -20, 30    # el gimbal admite unos -20º/+35º
 
-    def __init__(self, ep_robot):
+    def __init__(self, ep_robot, reloj=time.monotonic):
         self.ep_robot = ep_robot
         self.gimbal = ep_robot.gimbal
-        self.yaw = 0.0
+        self.reloj = reloj
+        self.yaw = 0.0                # estimación por software
         self.pitch = 0.0
+        self.medida = None            # último (pitch, yaw) leído con sub_angle
+        self.usar_medida = False
+        self.signos = (1, 1)          # (pitch, yaw): sentido de la lectura respecto a los giros
+        self.suscrito = False
+        self._v = (0.0, 0.0)          # (yaw, pitch) º/s mandados con drive_speed
+        self._t_v = None
+        self.historial = collections.deque(maxlen=200)   # (t, yaw, pitch) de cada lectura
+
+    def angulo_en(self, t):
+        """(yaw, pitch) que tenía la torreta en el instante `t`, interpolando el historial.
+
+        El fotograma que llega de la cámara es de hace RETARDO_CAMARA s: para saber
+        hacia dónde está un robot hay que sumar su desvío en la imagen al ángulo de
+        entonces, no al de ahora.
+        """
+        self.leer()
+        h = self.historial
+        if t >= h[-1][0]:
+            return h[-1][1], h[-1][2]
+        if t <= h[0][0]:
+            return h[0][1], h[0][2]
+        for (t0, y0, p0), (t1, y1, p1) in zip(reversed(list(h)[:-1]), reversed(list(h)[1:])):
+            if t0 <= t <= t1:
+                f = (t - t0) / (t1 - t0) if t1 > t0 else 1.0
+                return y0 + f * (y1 - y0), p0 + f * (p1 - p0)
+        return h[-1][1], h[-1][2]
+
+    # --- lectura del ángulo -------------------------------------------------------
+    def _al_medir(self, info):
+        self.medida = (float(info[0]), float(info[1]))
+
+    def comprobar_lectura(self, giro=20, cabeceo=10):
+        """Gira la torreta y comprueba que sub_angle la sigue; si es así, se usa a partir de ahora.
+
+        Fija también el sentido de la lectura, que puede ir al revés que los giros.
+        :return: texto con el resultado, para mostrarlo en la consola.
+        """
+        self.usar_medida = False
+        try:
+            self.gimbal.sub_angle(freq=20, callback=self._al_medir)
+            self.suscrito = True
+        except Exception as e:
+            return f'sin lectura del ángulo ({e}): se estima por software'
+        self.centrar()
+        fin = time.time() + 2
+        while self.medida is None and time.time() < fin:
+            time.sleep(0.05)
+        if self.medida is None:
+            return 'el gimbal no envía su ángulo: se estima por software'
+        p0, y0 = self.medida
+        self.ir(giro, cabeceo)
+        time.sleep(0.3)
+        p1, y1 = self.medida
+        self.centrar()
+        d_pitch, d_yaw = p1 - p0, y1 - y0
+        if abs(abs(d_yaw) - giro) > 0.3 * giro or abs(abs(d_pitch) - cabeceo) > 0.5 * cabeceo:
+            return (f'la lectura no sigue al giro (yaw {d_yaw:+.1f} de {giro}, pitch {d_pitch:+.1f} de {cabeceo}): '
+                    'se estima por software')
+        self.signos = (1 if d_pitch > 0 else -1, 1 if d_yaw > 0 else -1)
+        self.usar_medida = True
+        return f'lectura del ángulo comprobada (signos pitch {self.signos[0]:+d}, yaw {self.signos[1]:+d})'
+
+    def cancelar_lectura(self):
+        if self.suscrito:
+            self.gimbal.unsub_angle()
+            self.suscrito = False
+
+    def leer(self):
+        """(yaw, pitch) actuales respecto al chasis."""
+        if self._t_v is not None:     # integra la velocidad mandada desde la última lectura
+            ahora = self.reloj()
+            dt = ahora - self._t_v
+            self.yaw += self._v[0] * dt
+            self.pitch += self._v[1] * dt
+            self._t_v = ahora
+        if self.usar_medida and self.medida is not None:
+            self.pitch, self.yaw = self.signos[0] * self.medida[0], self.signos[1] * self.medida[1]
+        self.historial.append((self.reloj(), self.yaw, self.pitch))
+        return self.yaw, self.pitch
+
+    # --- movimiento ---------------------------------------------------------------------
+    def velocidad(self, yaw_speed, pitch_speed=0.0):
+        """Gira a velocidad constante (º/s, nunca más de la del SDK) hasta la siguiente orden."""
+        yaw, pitch = self.leer()
+        yaw_speed, pitch_speed = limitar(yaw_speed, VEL_GIMBAL_MAX), limitar(pitch_speed, VEL_GIMBAL_MAX)
+        if (yaw >= self.YAW_MAX and yaw_speed > 0) or (yaw <= -self.YAW_MAX and yaw_speed < 0):
+            yaw_speed = 0.0
+        if (pitch >= self.PITCH_MAX and pitch_speed > 0) or (pitch <= self.PITCH_MIN and pitch_speed < 0):
+            pitch_speed = 0.0
+        self.gimbal.drive_speed(pitch_speed=pitch_speed, yaw_speed=yaw_speed)
+        self._v = (yaw_speed, pitch_speed)
+        self._t_v = self.reloj() if (yaw_speed or pitch_speed) else None
+
+    def parar(self):
+        if self._v != (0.0, 0.0):
+            self.leer()
+            self.gimbal.drive_speed(pitch_speed=0, yaw_speed=0)
+            self._v, self._t_v = (0.0, 0.0), None
 
     def centrar(self):
+        self.parar()
         ejecutar_accion(self.ep_robot, lambda: self.gimbal.recenter(pitch_speed=VEL_GIMBAL_MAX,
                                                                     yaw_speed=VEL_GIMBAL_MAX),
                         timeout=20, que='gimbal (centrar)')
         self.yaw = self.pitch = 0.0
 
     def ir(self, yaw, pitch=None):
+        self.parar()
+        actual_yaw, actual_pitch = self.leer()
         yaw = max(-self.YAW_MAX, min(self.YAW_MAX, yaw))
-        pitch = self.pitch if pitch is None else pitch
-        d_yaw, d_pitch = yaw - self.yaw, pitch - self.pitch
+        pitch = actual_pitch if pitch is None else max(self.PITCH_MIN, min(self.PITCH_MAX, pitch))
+        d_yaw, d_pitch = yaw - actual_yaw, pitch - actual_pitch
         if abs(d_yaw) > 0.5 or abs(d_pitch) > 0.5:
             tiempo = max(abs(d_yaw), abs(d_pitch)) / VEL_GIMBAL_MAX
             ejecutar_accion(self.ep_robot, lambda: self.gimbal.move(pitch=d_pitch, yaw=d_yaw, pitch_speed=VEL_GIMBAL_MAX,
                                                                     yaw_speed=VEL_GIMBAL_MAX),
                             timeout=2 * tiempo + 5, que='gimbal')
         self.yaw, self.pitch = yaw, pitch
+        self.historial.clear()        # tras un giro hasta un ángulo, el pasado ya no sirve
+        self.leer()
 
 
 class Demo:
@@ -115,7 +226,8 @@ class Demo:
         self.ep_robot = ep_robot
         self.model = model
         self.args = args
-        self.torreta = Torreta(ep_robot)
+        self.reloj = reloj_del_robot(ep_robot)
+        self.torreta = Torreta(ep_robot, self.reloj)
         self.senales = Senales(ep_robot, C.SONIDOS)
         self.registro = Registro(args.evidencias, umbral=C.UMBRAL, mostrar=getattr(args, 'ver', False))
         self.camara = None
@@ -135,11 +247,132 @@ class Demo:
         ejecutar_accion(self.ep_robot, lambda: self.ep_robot.chassis.move(x=x, y=y, z=z, xy_speed=v_xy, z_speed=v_z),
                         timeout=2 * tiempo + 5, que='chasis')
 
-    def mirar(self):
-        """Captura con el gimbal quieto y aplica el detector: (imagen, predicción, ms)."""
-        image = self.camara.capturar()
+    def mirar(self, espera=None):
+        """Captura y aplica el detector: (imagen, predicción, ms).
+
+        Por defecto espera ESPERA_CAMARA para que la imagen salga quieta; al seguir
+        a un robot se pasa espera=0 y se toma el fotograma más reciente.
+        """
+        image = self.camara.capturar(espera)
         prediction, ms = detectar(self.model, image, C.RESIZE)
         return image, prediction, ms
+
+    def sonar_disparo(self, ya_sonado):
+        """Sonido de la ráfaga: AUDIO_DISPARO (o el del SDK) una vez, o en cada disparo con SONIDO_CADA_DISPARO.
+
+        Nunca espera: si hay otro sonido en curso, se omite y se reintenta en el disparo siguiente.
+        :return: True si ya ha sonado en esta ráfaga.
+        """
+        if ya_sonado and not C.SONIDO_CADA_DISPARO:
+            return True
+        audio = self.ruta_audio(C.AUDIO_DISPARO)
+        if audio is not None:
+            return self.senales.audio(audio) or ya_sonado
+        if ya_sonado:
+            return True
+        if self.senales.ocupado():
+            return False
+        self.senales.sonido('disparo')
+        return True
+
+    def seguir_y_disparar(self, parada, angulo, confianza, ya_atacados=()):
+        """Fija el robot visto en `angulo`, lo sigue con la torreta y le dispara solo cuando está centrado.
+
+        Cada imagen se analiza en cuanto llega (sin esperas). Se elige la detección más
+        cercana a donde se espera el robot, contando con lo que se ha movido, y se gira la
+        torreta a una velocidad proporcional al error más la velocidad estimada del robot.
+        Se dispara cuando el error es menor que la tolerancia (que crece con el tamaño de
+        la caja) y han pasado INTERVALO_DISPARO s desde el anterior, hasta DISPAROS_POR_ROBOT.
+
+        Para fijarlo hace falta confianza >= UMBRAL, que no sea un robot ya atacado en la
+        parada y que esté a menos de SALTO_MAX de donde se vio; después basta con
+        UMBRAL_SEGUIMIENTO. Si no se ve en PERDIDAS_MAX imágenes seguidas, se da por perdido.
+        :return: ángulo final del robot si se ha completado la ráfaga (o, con --sin-disparar,
+                 si se habría completado); None si no se ha fijado o se ha perdido antes.
+        """
+        self.senales.estado('apuntando')
+        self.senales.sonido('detectado')
+        self.torreta.ir(angulo)
+        inicio = self.reloj()
+        objetivo, t_objetivo = angulo, None   # último ángulo visto del robot (respecto al chasis) y cuándo
+        velocidad = 0.0                       # velocidad angular estimada del robot (º/s)
+        fijado, centrados, disparos, perdidas, imagenes = False, 0, 0, 0, 0
+        ultimo_disparo, sonado, motivo = None, False, 'completado'
+        try:
+            while centrados < C.DISPAROS_POR_ROBOT:
+                if self.reloj() - inicio > C.TIEMPO_MAX_OBJETIVO:
+                    motivo = 'tiempo agotado'
+                    break
+                image = self.camara.capturar(0)
+                t_captura = self.reloj() - C.RETARDO_CAMARA
+                prediction, ms = detectar(self.model, image, C.RESIZE)
+                ahora = self.reloj()
+                yaw, pitch = self.torreta.leer()
+                yaw_c, pitch_c = self.torreta.angulo_en(t_captura)   # hacia dónde miraba al tomar la imagen
+                imagenes += 1
+                prevision = objetivo + (velocidad * (t_captura - t_objetivo) if t_objetivo is not None else 0.0)
+                candidatos = []
+                for caja, score in seleccionar(prediction, C.UMBRAL_SEGUIMIENTO if fijado else C.UMBRAL):
+                    a = yaw_c + C.SIGNO_YAW * auto_aim(image, caja)
+                    if abs(a - prevision) <= C.SALTO_MAX and (fijado or es_nuevo(a, ya_atacados, C.TOLERANCIA_YAW)):
+                        candidatos.append((abs(a - prevision), a, caja, score))
+                if not candidatos:
+                    perdidas += 1
+                    self.torreta.parar()
+                    self.registro.imagen(image, prediction, ms, parada, 'seguimiento' if fijado else 'sin_confirmar',
+                                         yaw, pitch, disparos=disparos)
+                    if perdidas >= C.PERDIDAS_MAX:
+                        motivo = 'perdido' if fijado else 'no confirmado'
+                        break
+                    continue
+                _, a, caja, confianza = min(candidatos, key=lambda c: c[0])
+                if t_objetivo is not None and t_captura > t_objetivo:
+                    v = (a - objetivo) / (t_captura - t_objetivo)
+                    velocidad = limitar(0.5 * velocidad + 0.5 * v, VEL_GIMBAL_MAX)
+                objetivo, t_objetivo, fijado, perdidas = a, t_captura, True, 0
+
+                # Error de puntería ahora (el robot ha seguido moviéndose desde la imagen) y
+                # tolerancia según su tamaño aparente
+                err_yaw = a + (velocidad * (ahora - t_captura) if C.ANTICIPAR else 0.0) - yaw
+                err_pitch = (pitch_c + auto_pitch(image, caja, C.ALTURA_PUNTERIA) - pitch) if C.CORREGIR_PITCH else 0.0
+                ancho, alto = tamano_angular(image, caja)
+                centrado = (abs(err_yaw) <= max(C.TOLERANCIA_DISPARO, 0.4 * ancho)
+                            and abs(err_pitch) <= max(C.TOLERANCIA_DISPARO, 0.4 * alto))
+                if centrado and (ultimo_disparo is None or ahora - ultimo_disparo >= C.INTERVALO_DISPARO):
+                    if not self.args.sin_disparar:
+                        if disparos == 0:
+                            self.senales.estado('disparando', parpadeo=True)
+                        if not self.ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1):
+                            self.registro.imagen(image, prediction, ms, parada, 'seguimiento', yaw, pitch,
+                                                 objetivo=caja, objetivo_yaw=a, disparos=disparos)
+                            self.ataques.append(dict(parada=parada, yaw=round(a, 1), confianza=round(confianza, 3),
+                                                     confirmado=True, disparos=disparos, completo=False,
+                                                     imagenes=imagenes))
+                            raise RuntimeError(f'{parada}: el blaster no confirmó el disparo {disparos + 1} '
+                                               f'de {C.DISPAROS_POR_ROBOT} ({disparos} confirmados por el SDK)')
+                        disparos += 1
+                        sonado = self.sonar_disparo(sonado)
+                    centrados += 1
+                    ultimo_disparo = ahora
+                self.registro.imagen(image, prediction, ms, parada, 'seguimiento', yaw, pitch, objetivo=caja,
+                                     objetivo_yaw=a, disparos=disparos)
+                if centrados < C.DISPAROS_POR_ROBOT:
+                    giro = (velocidad if C.ANTICIPAR else 0.0) + C.GANANCIA_SEGUIMIENTO * err_yaw
+                    self.torreta.velocidad(giro, C.GANANCIA_SEGUIMIENTO * err_pitch)
+        finally:
+            self.torreta.parar()
+        completo = centrados >= C.DISPAROS_POR_ROBOT
+        duracion = self.reloj() - inicio
+        self.ataques.append(dict(parada=parada, yaw=round(objetivo, 1), confianza=round(confianza, 3),
+                                 confirmado=fijado, disparos=disparos, completo=completo, imagenes=imagenes,
+                                 segundos=round(duracion, 1), velocidad_robot=round(velocidad, 1)))
+        if not completo:
+            print(f'  objetivo en {angulo:+.1f} grados {motivo} tras {disparos} disparos ({imagenes} imágenes)')
+            return None
+        print(f'  objetivo seguido hasta {objetivo:+.1f} grados (confianza {confianza:.3f}): {disparos} disparos '
+              f'en {duracion:.1f} s, {imagenes} imágenes')
+        self.celebrar()
+        return objetivo
 
     def apuntar_y_disparar(self, parada, angulo, confianza, ya_atacados=()):
         """Gira hacia un objetivo, confirma que sigue ahí, corrige la puntería y dispara.
@@ -211,20 +444,26 @@ class Demo:
             self.senales.estado('buscando')
             self.torreta.ir(yaw, p.get('pitch', 0))
             image, prediction, ms = self.mirar()
+            yaw_captura, pitch_captura = self.torreta.leer()
             nuevos = []
             for caja, score in seleccionar(prediction, C.UMBRAL):
-                angulo = self.torreta.yaw + C.SIGNO_YAW * auto_aim(image, caja)
+                angulo = yaw_captura + C.SIGNO_YAW * auto_aim(image, caja)
                 if es_nuevo(angulo, revisados + [a for _, _, a in nuevos], C.TOLERANCIA_YAW):
                     nuevos.append((caja, score, angulo))
             if not C.DISPARAR_A_TODOS:
                 nuevos = nuevos[:1]
-            self.registro.imagen(image, prediction, ms, nombre, 'barrido', self.torreta.yaw, self.torreta.pitch,
+            self.registro.imagen(image, prediction, ms, nombre, 'barrido', yaw_captura, pitch_captura,
                                  objetivo=nuevos[0][0] if nuevos else None,
                                  objetivo_yaw=nuevos[0][2] if nuevos else None)
             print(f'  yaw {yaw:+4.0f}: {len(nuevos)} objetivo(s) nuevo(s), {ms:.0f} ms')
             for _, score, angulo in nuevos:
                 revisados.append(angulo)
-                if self.apuntar_y_disparar(nombre, angulo, score, atacados):
+                if C.SEGUIMIENTO:
+                    final = self.seguir_y_disparar(nombre, angulo, score, atacados)
+                    if final is not None:
+                        atacados.append(final)
+                        revisados.append(final)
+                elif self.apuntar_y_disparar(nombre, angulo, score, atacados):
                     atacados.append(angulo)
         if not atacados:
             self.senales.estado('nada')
@@ -246,21 +485,26 @@ class Demo:
         return None
 
     def rafaga(self):
-        """Devuelve cuántas órdenes de disparo confirmó el SDK."""
+        """Ráfaga sin seguimiento (SEGUIMIENTO = False). Devuelve cuántas órdenes de disparo confirmó el SDK.
+
+        Por defecto suena una vez y dispara cada INTERVALO_DISPARO s. Con SONIDO_CADA_DISPARO
+        espera al audio de cada disparo, como en la primera versión (más lento).
+        """
         audio = self.ruta_audio(C.AUDIO_DISPARO)
-        if audio is None:
-            self.senales.sonido('disparo')
-        else:
+        por_disparo = audio is not None and C.SONIDO_CADA_DISPARO
+        if por_disparo:
             self.senales.esperar_sonido(8)  # deja acabar el motor o el aviso de detección
+        sonado = False
         for confirmados in range(C.DISPAROS_POR_ROBOT):
             if not self.ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1):
                 return confirmados
-            if audio is not None and self.senales.audio(audio):
+            if por_disparo and self.senales.audio(audio):
                 inicio = time.monotonic()
                 self.senales.esperar_sonido(C.ESPERA_AUDIO_DISPARO)
-                time.sleep(max(0.0, 0.3 - (time.monotonic() - inicio)))
+                time.sleep(max(0.0, C.INTERVALO_DISPARO - (time.monotonic() - inicio)))
             else:
-                time.sleep(0.3)
+                sonado = self.sonar_disparo(sonado)
+                time.sleep(C.INTERVALO_DISPARO)
         return C.DISPAROS_POR_ROBOT
 
     def luces_fiesta(self, parar):
@@ -325,6 +569,8 @@ class Demo:
             if bateria is not None and bateria < C.BATERIA_MINIMA:
                 print(f'[aviso] batería por debajo del {C.BATERIA_MINIMA}%: cárguela antes de la demo')
             self.camara = Camara(self.ep_robot, espera=C.ESPERA_CAMARA)
+            if C.LEER_ANGULO_GIMBAL:
+                print(f'Torreta: {self.torreta.comprobar_lectura()}')
             self.torreta.centrar()
             self.senales.estado('moviendo', parpadeo=True)
             self.senales.sonido('inicio')
@@ -356,6 +602,7 @@ class Demo:
         pasos = [
             ('chasis', lambda: self.ep_robot.chassis.drive_speed(x=0, y=0, z=0)),
             ('gimbal', self.torreta.centrar),
+            ('lectura del gimbal', self.torreta.cancelar_lectura),
             ('camara', lambda: self.camara and self.camara.cerrar()),
             ('led', lambda: self.senales.estado('apagado')),
         ]
@@ -372,7 +619,12 @@ class Demo:
                           paradas=self.args.paradas, simulacion=self.args.simulacion),
             estrategia=dict(disparar_a_todos=C.DISPARAR_A_TODOS, barrido_completo=C.BARRIDO_COMPLETO,
                             confirmar=C.CONFIRMAR, disparos_por_robot=C.DISPAROS_POR_ROBOT,
-                            tolerancia_yaw=C.TOLERANCIA_YAW),
+                            tolerancia_yaw=C.TOLERANCIA_YAW, seguimiento=C.SEGUIMIENTO,
+                            umbral_seguimiento=C.UMBRAL_SEGUIMIENTO, salto_max=C.SALTO_MAX,
+                            tolerancia_disparo=C.TOLERANCIA_DISPARO, intervalo_disparo=C.INTERVALO_DISPARO,
+                            ganancia=C.GANANCIA_SEGUIMIENTO, anticipar=C.ANTICIPAR,
+                            corregir_pitch=C.CORREGIR_PITCH,
+                            lectura_gimbal=self.torreta.usar_medida),
             imagenes=len(filas),
             ms_inferencia_medio=round(sum(f['ms_inferencia'] for f in filas) / len(filas), 1) if filas else None,
             disparos=sum(a['disparos'] for a in self.ataques),

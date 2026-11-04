@@ -2,8 +2,10 @@ import csv
 import json
 import os
 import pickle
+import queue
 import random
 import socket
+import threading
 import time
 import types
 import warnings
@@ -270,6 +272,26 @@ def auto_aim(image, box) -> float:
     return alpha
 
 
+def auto_pitch(image, box, altura=0.5) -> float:
+    """Pitch (grados) desde el centro de la imagen hasta un punto de la caja; > 0 si está por encima.
+
+    Misma geometría que auto_aim, en vertical. `altura` elige el punto de la caja al que
+    se apunta: 0 el borde superior, 0,5 el centro y 1 el borde inferior.
+    """
+    height, width = image.shape[:2]
+    y = box[1] + altura * (box[3] - box[1])
+    offset = height / 2 - y
+    focal = width / (2 * np.tan(np.pi / 3))
+    return float(np.rad2deg(np.arctan(offset / focal)) * 90 / 120)
+
+
+def tamano_angular(image, box) -> Tuple[float, float]:
+    """Ancho y alto de la caja en grados, con la misma geometría que auto_aim."""
+    ancho = auto_aim(image, [box[2], 0, box[2], 0]) - auto_aim(image, [box[0], 0, box[0], 0])
+    alto = auto_pitch(image, box, 0.0) - auto_pitch(image, box, 1.0)
+    return float(abs(ancho)), float(abs(alto))
+
+
 def plot_predictions(image, prediction, target_id, score_threshold=0.5, path='predictions'):
     """Draw the predicted boxes (above score_threshold) on the image and save it.
 
@@ -404,8 +426,11 @@ class Camara:
         self.ep_camera.start_video_stream(display=False, resolution=camera.STREAM_720P)
         time.sleep(1.0)
 
-    def capturar(self):
-        time.sleep(self.espera)
+    def capturar(self, espera=None):
+        """Fotograma más reciente en RGB. `espera` (s) deja quieta la imagen; 0 al seguir a un robot."""
+        espera = self.espera if espera is None else espera
+        if espera > 0:
+            time.sleep(espera)
         try:
             image = self.ep_camera.read_cv2_image(timeout=3, strategy='newest')
         except TypeError:
@@ -440,12 +465,13 @@ def disparar(ep_robot, veces, pausa=0.3):
         time.sleep(pausa)
 
 
-def dibujar_evidencia(image, prediction, umbral, ruta, titulo, min_score=0.3, objetivo=None):
+def dibujar_evidencia(image, prediction, umbral, ruta, titulo, min_score=0.3, objetivo=None, guardar=True):
     """Guarda la imagen con las cajas predichas y su confianza dibujadas encima.
 
     Verde: confianza >= umbral (se acepta). Naranja: entre min_score y el umbral
     (se descarta, pero se dibuja para poder analizarlo en la memoria). La caja
     `objetivo`, si se da, es aquella a la que se dispara y se marca con una cruz.
+    Con guardar=False solo se dibuja y se devuelve (Registro la escribe en otro hilo).
     """
     salida = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     for (x0, y0, x1, y1), score in zip(prediction['boxes'], prediction['scores']):
@@ -465,8 +491,9 @@ def dibujar_evidencia(image, prediction, umbral, ruta, titulo, min_score=0.3, ob
     cv2.line(salida, (ancho // 2, 34), (ancho // 2, alto), (200, 200, 200), 1)
     cv2.rectangle(salida, (0, 0), (ancho, 34), (0, 0, 0), -1)
     cv2.putText(salida, titulo, (8, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-    os.makedirs(os.path.dirname(ruta) or '.', exist_ok=True)
-    cv2.imwrite(ruta, salida)
+    if guardar:
+        os.makedirs(os.path.dirname(ruta) or '.', exist_ok=True)
+        cv2.imwrite(ruta, salida)
     return salida
 
 
@@ -474,7 +501,9 @@ class Registro:
     """Carpeta de evidencias de una ejecución: imágenes, registro.csv y resumen.json.
 
     Cada imagen a la que se aplica el detector se guarda dos veces: tal cual
-    (para analizarla o anotarla después) y con las cajas dibujadas.
+    (para analizarla o anotarla después) y con las cajas dibujadas. Los JPEG se
+    escriben en un hilo aparte para no frenar el seguimiento de un robot, que
+    analiza varias imágenes por segundo; cerrar() espera a que estén todos escritos.
     """
 
     CAMPOS = ['n', 'momento', 'parada', 'fase', 'yaw', 'pitch', 'ms_inferencia', 'n_cajas_0_3',
@@ -493,15 +522,30 @@ class Registro:
         self.f = open(os.path.join(self.carpeta, 'registro.csv'), 'w', newline='', encoding='utf-8')
         self.w = csv.DictWriter(self.f, fieldnames=self.CAMPOS)
         self.w.writeheader()
+        self._cola = queue.Queue()
+        self._escritor = threading.Thread(target=self._escribir, daemon=True)
+        self._escritor.start()
+
+    def _escribir(self):
+        while True:
+            tarea = self._cola.get()
+            if tarea is None:
+                return
+            ruta, imagen_bgr = tarea
+            try:
+                cv2.imwrite(ruta, imagen_bgr)
+            except Exception as e:   # una evidencia perdida no detiene la demo
+                print(f'[aviso] no se pudo guardar {ruta}: {e!r}')
 
     def imagen(self, image, prediction, ms, parada, fase, yaw, pitch, objetivo=None, objetivo_yaw=None, disparos=0):
         """Guarda una imagen analizada y su fila del registro; devuelve el nombre del fichero."""
         self.n += 1
         nombre = f'{self.n:03d}_{parada}_{fase}_yaw{yaw:+.0f}.jpg'
-        cv2.imwrite(os.path.join(self.carpeta, 'originales', nombre), cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+        self._cola.put((os.path.join(self.carpeta, 'originales', nombre), cv2.cvtColor(image, cv2.COLOR_RGB2BGR)))
         titulo = f'{self.n:03d} {parada} {fase} yaw {yaw:+.1f} | umbral {self.umbral:.2f} | {ms:.0f} ms'
-        dibujada = dibujar_evidencia(image, prediction, self.umbral, os.path.join(self.carpeta, nombre), titulo,
-                                     objetivo=objetivo)
+        ruta = os.path.join(self.carpeta, nombre)
+        dibujada = dibujar_evidencia(image, prediction, self.umbral, ruta, titulo, objetivo=objetivo, guardar=False)
+        self._cola.put((ruta, dibujada))
         if self.mostrar:
             self.ver(dibujada)
         scores = prediction['scores']
@@ -531,6 +575,8 @@ class Registro:
             self.mostrar = False
 
     def cerrar(self, resumen):
+        self._cola.put(None)
+        self._escritor.join(timeout=120)
         self.f.close()
         if self.mostrar:
             try:
@@ -659,3 +705,12 @@ def nivel_bateria(ep_robot, espera=3.0):
     except Exception as e:
         print(f'[aviso] batería, al cancelar la lectura: {e!r}')
     return lectura.get('pct')
+
+
+def reloj_del_robot(ep_robot):
+    """Reloj (s) para medir tiempos: el robot simulado lleva el suyo, con tiempo simulado."""
+    try:
+        reloj = vars(ep_robot).get('reloj')
+    except TypeError:
+        reloj = None
+    return reloj if callable(reloj) else time.monotonic

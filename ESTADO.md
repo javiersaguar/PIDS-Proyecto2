@@ -35,6 +35,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
   los datos actuales y los nuevos escriben en destinos separados. Pendiente medir
   su efecto en validación; no se ha lanzado otro entrenamiento. PR #17.
 - Bloque 3 (04/11): demo completa en `ENTREGA 2/WEEK3/` (`demo.py`, `circuito.py`). Recorre las paradas, barre con el gimbal, confirma la puntería, dispara 12 veces por robot, guarda cada imagen analizada con sus cajas y usa los seis módulos. Probada con un robot simulado y 15 pruebas. Pasos del laboratorio en su `README.md`.
+- Bloque 3 (04/11, `alejandro-cuevas`): seguimiento de rivales en movimiento. La torreta sigue al robot fijado fotograma a fotograma y solo dispara cuando está centrado, compensando el retardo del vídeo; ángulo real del gimbal con `sub_angle` y ráfaga sin esperas de audio. 37 pruebas en simulación; falta ajustarlo en el laboratorio.
 - T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
 ## Datos de los vídeos

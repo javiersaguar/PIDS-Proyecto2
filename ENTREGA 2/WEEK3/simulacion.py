@@ -24,6 +24,7 @@ MAX_XY, MAX_Z, MAX_GIMBAL = 0.5, 30, 30
 
 CARPETA_IMAGENES = None   # se fija con instalar()
 RETARDO = 0.0             # segundos de espera simulada por acción
+PASO_IMAGEN = 0.1         # segundos simulados que pasan en cada lectura de la cámara
 BATERIA = 87              # % que devuelve la batería simulada
 
 
@@ -60,34 +61,66 @@ class Chasis:
 
 
 class Gimbal:
+    """Gimbal con su ángulo. Con drive_speed gira a velocidad constante mientras pasa el
+    tiempo simulado; move, moveto y recenter cortan esa velocidad y consumen el tiempo del giro."""
+
     def __init__(self, r):
         self.r = r
         self.yaw = 0.0
         self.pitch = 0.0
+        self.v_yaw = self.v_pitch = 0.0
+        self._callback = None
+
+    def _avisar(self):
+        if self._callback is not None:
+            self._callback((self.pitch, self.yaw, self.pitch, self.yaw))
+
+    def avanzar(self, dt):
+        if self.v_yaw or self.v_pitch:
+            self.yaw += self.v_yaw * dt
+            self.pitch = max(-20.0, min(35.0, self.pitch + self.v_pitch * dt))
+            self._avisar()
+
+    def _girar(self, d_yaw, d_pitch, velocidad):
+        self.v_yaw = self.v_pitch = 0.0
+        self.r.avanzar(max(abs(d_yaw), abs(d_pitch)) / max(velocidad, 1e-6))
+        self.yaw += d_yaw
+        self.pitch += d_pitch
+        self._avisar()
 
     def move(self, pitch=0, yaw=0, pitch_speed=30, yaw_speed=30):
         _comprobar('pitch_speed', pitch_speed, MAX_GIMBAL)
         _comprobar('yaw_speed', yaw_speed, MAX_GIMBAL)
-        self.yaw += yaw
-        self.pitch += pitch
+        self._girar(yaw, pitch, min(pitch_speed, yaw_speed))
         return Accion(self.r, 'gimbal.move', pitch=pitch, yaw=yaw)
 
     def moveto(self, pitch=0, yaw=0, pitch_speed=30, yaw_speed=30):
         _comprobar('pitch_speed', pitch_speed, MAX_GIMBAL)
         _comprobar('yaw_speed', yaw_speed, MAX_GIMBAL)
-        self.yaw, self.pitch = yaw, pitch
+        self._girar(yaw - self.yaw, pitch - self.pitch, min(pitch_speed, yaw_speed))
         return Accion(self.r, 'gimbal.moveto', pitch=pitch, yaw=yaw)
 
     def recenter(self, pitch_speed=30, yaw_speed=30):
         _comprobar('pitch_speed', pitch_speed, MAX_GIMBAL)
         _comprobar('yaw_speed', yaw_speed, MAX_GIMBAL)
+        self._girar(-self.yaw, -self.pitch, min(pitch_speed, yaw_speed))
         self.yaw = self.pitch = 0.0
         return Accion(self.r, 'gimbal.recenter')
 
     def drive_speed(self, pitch_speed=0, yaw_speed=0):
         _comprobar('pitch_speed', pitch_speed, MAX_GIMBAL)
         _comprobar('yaw_speed', yaw_speed, MAX_GIMBAL)
+        self.v_yaw, self.v_pitch = yaw_speed, pitch_speed
         return Accion(self.r, 'gimbal.drive_speed', pitch_speed=pitch_speed, yaw_speed=yaw_speed)
+
+    def sub_angle(self, freq=5, callback=None, *args):
+        self._callback = callback
+        self._avisar()
+        return True
+
+    def unsub_angle(self):
+        self._callback = None
+        return True
 
 
 class Camara:
@@ -109,6 +142,7 @@ class Camara:
 
     def read_cv2_image(self, timeout=3, strategy='pipeline'):
         assert self.abierta, 'Se lee la cámara sin haber abierto el vídeo'
+        self.r.avanzar(PASO_IMAGEN)   # cada lectura es un fotograma más (unas 10 por segundo con GPU)
         fichero = self.ficheros[self.i % len(self.ficheros)]
         self.i += 1
         Accion(self.r, 'camara.leer', fichero=os.path.basename(fichero))
@@ -149,12 +183,19 @@ class Bateria:
 class RobotSimulado:
     def __init__(self):
         self.acciones = []
+        self.t = 0.0                  # tiempo simulado (s)
+        self.reloj = lambda: self.t   # la demo lo usa en lugar de time.monotonic
         self.chassis = Chasis(self)
         self.gimbal = Gimbal(self)
         self.camera = Camara(self)
         self.blaster = Blaster(self)
         self.led = Led(self)
         self.battery = Bateria(self)
+
+    def avanzar(self, dt):
+        """Hace pasar `dt` segundos simulados; el gimbal sigue girando si tiene velocidad."""
+        self.gimbal.avanzar(dt)
+        self.t += dt
 
     def initialize(self, conn_type='sta', sn=None):
         return True

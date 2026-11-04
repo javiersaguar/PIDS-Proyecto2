@@ -344,3 +344,25 @@ Comprobado sin robot: `simulacion.py` sustituye al SDK y `tests/test_demo.py` ti
 pruebas, incluida la sintaxis de Python 3.8. Pendiente (T22): las paradas de
 `circuito.py` son un ejemplo y hay que medirlas sobre el circuito real, comprobar el
 sentido del gimbal y calibrar cada parada con `--sin-mover --sin-disparar`.
+
+### Actualización del 04/11: seguimiento de rivales en movimiento (Bloque 3, fase 1)
+
+T21/T22, en `alejandro-cuevas`. Los rivales también exploran y se mueven, y la demo se
+ejecutará con GPU, así que la ráfaga a ciegas no basta. Cambios en `ENTREGA 2/WEEK3/`:
+
+- **Seguimiento** (`SEGUIMIENTO = True`): al fijar un robot, la torreta lo sigue fotograma a
+  fotograma con `gimbal.drive_speed`, en yaw y en pitch, y solo dispara cuando está centrado,
+  hasta 12. Anticipa la velocidad del robot y compensa el retardo del vídeo con el historial
+  de ángulos de la torreta.
+- Al confirmar, fija al robot aunque se haya movido desde el barrido (hasta `SALTO_MAX`), en
+  lugar de no disparar.
+- Ángulo real del gimbal con `sub_angle`, comprobado al arrancar (con su sentido); si no,
+  se estima por software.
+- Ráfaga rápida: un sonido por ráfaga en lugar de subir el audio en cada disparo.
+- Evidencias escritas en un hilo aparte, para no frenar el seguimiento.
+
+Comprobado sin robot: 37 pruebas (antes 15), con robots simulados que se mueven y con
+retardo de cámara. Pendiente en el laboratorio: confirmar la lectura del gimbal, medir
+`RETARDO_CAMARA` y ajustar `GANANCIA_SEGUIMIENTO` (pasos en el `README.md` de WEEK3).
+La `guia_pruebas.pdf` aún cita 15 pruebas y la ráfaga anterior. Las fases 2 (barrido más
+ágil) y 3 (vigilancia durante el recorrido) quedan por hacer.

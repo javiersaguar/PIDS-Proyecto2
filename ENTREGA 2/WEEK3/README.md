@@ -37,11 +37,28 @@ Para cada parada de `circuito.PARADAS`:
    ángulo de cada una: el yaw del gimbal más `auto_aim`. Una detección a menos de
    `TOLERANCIA_YAW` (15º) de otra ya revisada en la parada es el mismo robot visto en
    dos imágenes y no se repite.
-4. **Puntería y disparo.** Para cada robot nuevo, el gimbal gira hacia él y vuelve a
-   detectar ya apuntado (`CONFIRMAR`). Si la caja más centrada está a menos de
-   `TOLERANCIA_YAW` del centro y no es un robot ya atacado, corrige el error y dispara
-   12 veces. Si no, no dispara: era un falso positivo, el robot se ha movido o se iba a
-   disparar dos veces al mismo. Tras disparar, el gimbal cabecea y el LED se pone verde.
+4. **Seguimiento y disparo** (`SEGUIMIENTO = True`, para rivales que se mueven). Para cada
+   robot nuevo, el gimbal gira hacia él y a partir de ahí analiza cada fotograma en cuanto
+   llega, sin esperas (unas 10 imágenes por segundo con GPU):
+   - **Fija el objetivo:** toma la detección más cercana a donde se espera el robot, contando
+     con lo que se ha movido. Para fijarlo hace falta confianza `>= UMBRAL`, que no sea un
+     robot ya atacado y que esté a menos de `SALTO_MAX` (25º) de donde se vio. Ya fijado,
+     basta `UMBRAL_SEGUIMIENTO` (0,8) para no perderlo con el desenfoque del movimiento.
+   - **Lo sigue:** gira la torreta con `gimbal.drive_speed` a una velocidad proporcional al
+     error (`GANANCIA_SEGUIMIENTO`) más la velocidad estimada del robot (`ANTICIPAR`), en
+     yaw y en pitch (`CORREGIR_PITCH`), siempre con el tope de 30 º/s.
+   - **Dispara solo con el robot centrado:** error menor que `TOLERANCIA_DISPARO` (3º) o que
+     el 40 % del tamaño de la caja, si es mayor, y al menos `INTERVALO_DISPARO` (0,25 s)
+     desde el disparo anterior, hasta llegar a 12.
+   - **Compensa el retardo del vídeo:** la imagen llega `RETARDO_CAMARA` s tarde (unos
+     0,25 s por wifi). El ángulo del robot se calcula con el que tenía la torreta al tomar la
+     imagen, que se guarda en un historial, y no con el de ahora.
+   - **Lo da por perdido** si no lo ve en `PERDIDAS_MAX` imágenes seguidas o pasan
+     `TIEMPO_MAX_OBJETIVO` s. No cuenta como atacado y el barrido sigue.
+
+   Tras los 12 disparos, el gimbal cabecea y el LED se pone verde. Con `SEGUIMIENTO = False`
+   se usa la versión anterior: confirma una vez (`CONFIRMAR`), corrige y dispara la ráfaga sin
+   volver a mirar. Solo sirve para robots quietos.
 5. **Fin de la parada.** Si se han atacado los `objetivos` esperados en la parada, se
    deja de barrer (salvo `BARRIDO_COMPLETO = True`). El gimbal vuelve al centro.
 
@@ -53,8 +70,13 @@ Al terminar: vuelta al inicio (opcional) y baile final con LED, sonido, gimbal y
   (`DISPARAR_A_TODOS`), porque hay que inutilizar a todos los robots.
 - Se barre **hasta encontrar los robots esperados** en esa parada, no siempre 360º. Si
   no se sabe cuántos hay (`objetivos=None`), se completa el barrido.
-- Se confirma antes de disparar. Cuesta una inferencia más, pero evita gastar los 12
-  disparos en un falso positivo y corrige la puntería.
+- Se sigue al robot mientras se le dispara, porque los rivales también exploran y se
+  mueven. Una ráfaga a ciegas falla en cuanto el robot sale de la línea de tiro, y con GPU
+  analizar cada fotograma durante la ráfaga cuesta poco. Así se cumple «mirar donde y cuando
+  conviene»: se detecta sin parar solo mientras se ataca a un robot.
+- El sonido de disparo suena una vez por ráfaga (`SONIDO_CADA_DISPARO = False`). El SDK sube
+  el audio al robot en cada llamada y no admite dos sonidos a la vez: con un sonido por
+  disparo, la ráfaga pasaba de unos 3 s a más de 20.
 
 **Módulos usados**, como pide el enunciado:
 
@@ -94,7 +116,7 @@ python audio/convertir_audio.py ENTRADA audio/propios/superestrella.wav --inicio
 | Audio (`circuito.py`) | Cuándo suena |
 |---|---|
 | `AUDIO_MOTOR` (`audio/engine_sound_corto.wav`) | Al arrancar: los 6 primeros segundos de `engine_sound.wav`, para que no tape los demás sonidos |
-| `AUDIO_DISPARO` (`audio/propios/scar.wav`) | Con cada uno de los 12 disparos. Se espera a que acabe antes del siguiente, porque el SDK no admite dos sonidos a la vez |
+| `AUDIO_DISPARO` (`audio/propios/scar.wav`) | Al empezar cada ráfaga, sin esperar a que acabe. Con `SONIDO_CADA_DISPARO = True`, en cada disparo: si hay otro sonido en curso se omite (con seguimiento) o se espera (sin seguimiento), porque el SDK no admite dos sonidos a la vez |
 | `AUDIO_FINAL` (`audio/propios/superestrella.wav`) | En el baile final. Los LED cambian de color `LED_FIESTA_HZ` veces por segundo mientras suena |
 
 `audio/propios/` no se sube a GitHub, porque las canciones y los sonidos de juegos tienen
@@ -108,13 +130,16 @@ Cada ejecución crea `evidencias/<fecha_hora>/` (no se sube a GitHub):
 - Una imagen por cada inferencia, con nombre `NNN_parada_fase_yawXX.jpg`. Lleva las
   cajas y la confianza dibujadas: verde si se acepta, naranja si se queda entre 0,3 y
   el umbral. El objetivo tiene una cruz roja y el título indica la parada, el yaw, el
-  umbral y el tiempo de inferencia. Las fases son `barrido`, `confirmado` y
-  `sin_confirmar`.
+  umbral y el tiempo de inferencia. Las fases son `barrido`, `seguimiento` (cada
+  fotograma mientras se sigue a un robot; la columna `disparos` acumula los de ese robot),
+  `sin_confirmar` y, sin seguimiento, `confirmado`. Los JPEG se escriben en un hilo aparte
+  para no frenar el seguimiento.
 - `originales/`: las mismas imágenes sin dibujar, para analizarlas o anotarlas después.
 - `registro.csv`: una fila por imagen con yaw, tiempo de inferencia, confianzas, cajas,
   ángulo del objetivo y disparos.
 - `resumen.json`: configuración, robots atacados por parada, disparos totales, tiempo
-  medio de inferencia y duración.
+  medio de inferencia y duración. Cada ataque indica si se completó, cuántas imágenes y
+  segundos llevó y la velocidad angular estimada del robot.
 
 Es el material de la memoria del Bloque 3: aciertos, falsos positivos, robots no
 vistos y tiempos.
@@ -198,6 +223,13 @@ comprueban lo siguiente:
   apuntando a su ángulo;
 - deja de barrer al encontrar los robots esperados;
 - no dispara si al confirmar el robot no está centrado o es uno ya atacado, y corrige la puntería si lo está;
+- sigue a un robot que se mueve y le dispara 12 veces, solo cuando está centrado;
+- lo fija aunque se haya movido desde el barrido, pero no si aparece a más de `SALTO_MAX`;
+- con la imagen 0,3 s retrasada y el robot a 12 º/s, todos los disparos caen sobre él;
+- da por perdido a un robot que desaparece y no lo cuenta como atacado;
+- lee el ángulo del gimbal aunque la lectura vaya al revés, y lo estima si no hay lectura;
+- Ctrl+C durante el seguimiento deja la torreta parada;
+- el audio de disparo suena una vez por ráfaga (o en cada disparo con `SONIDO_CADA_DISPARO`);
 - con `DISPARAR_A_TODOS = False` dispara solo a la mejor detección de cada imagen;
 - guarda todas las imágenes;
 - respeta `--sin-disparar`, `--sin-mover` y `--paradas`;
@@ -206,7 +238,26 @@ comprueban lo siguiente:
 - Ctrl+C deja el robot parado y con el LED apagado;
 - el código es válido en Python 3.8.
 
-El simulador falla si alguna orden supera la velocidad máxima.
+El simulador falla si alguna orden supera la velocidad máxima. Lleva un reloj simulado:
+cada lectura de la cámara avanza 0,1 s (unas 10 imágenes por segundo, como con GPU), los
+giros del gimbal consumen su tiempo y `drive_speed` lo hace girar mientras pasa el tiempo.
+
+### Ajustar el seguimiento en el laboratorio
+
+Al arrancar, la demo gira la torreta 20º y comprueba que `sub_angle` sigue el giro. Escribe
+`Torreta: lectura del ángulo comprobada` o, si no, que estima el ángulo por software.
+Después, con `--sin-mover --sin-disparar --ver` y un compañero moviendo un robot delante:
+
+- **Oscila** (va y viene alrededor del robot): bajar `GANANCIA_SEGUIMIENTO` (por ejemplo,
+  a 1,5) o subir `RETARDO_CAMARA`.
+- **Va siempre detrás** de un robot que se mueve: comprobar `ANTICIPAR = True` y bajar
+  `RETARDO_CAMARA` si está muy por encima del real.
+- **Lo pierde** con el movimiento: bajar `UMBRAL_SEGUIMIENTO` o subir `PERDIDAS_MAX`.
+- **Apunta alto o bajo:** ajustar `ALTURA_PUNTERIA` según dónde lleve el robot rival el
+  receptor de infrarrojos.
+
+El retardo real se puede estimar con `registro.csv`: en un giro a velocidad constante, la
+caja de un robot quieto se desplaza en la imagen con el retraso que haya.
 
 ## 6. Notas
 

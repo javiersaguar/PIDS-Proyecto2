@@ -28,6 +28,25 @@ TOLERANCIA_YAW = 15      # grados: dos detecciones más cercanas se tratan como 
 SIGNO_YAW = 1            # poner -1 si en la prueba el gimbal gira hacia el lado contrario del robot
 ESPERA_CAMARA = 0.5      # s de espera tras mover el gimbal antes de capturar (imagen sin movimiento)
 
+# --- Seguimiento del objetivo (los rivales se mueven) ------------------------------
+# Con SEGUIMIENTO, al fijar un robot la torreta lo sigue imagen a imagen (gimbal.drive_speed)
+# y solo dispara cuando está centrado, hasta DISPAROS_POR_ROBOT. Con GPU se analizan unas
+# 10 imágenes por segundo. False vuelve a la confirmación única y la ráfaga sin mirar.
+SEGUIMIENTO = True
+UMBRAL_SEGUIMIENTO = 0.8 # ya fijado el robot, confianza mínima para no perderlo (para fijarlo hace falta UMBRAL)
+SALTO_MAX = 25           # grados: una detección más lejos de donde se espera el robot es otro robot
+TOLERANCIA_DISPARO = 3   # grados de error mínimos admitidos para disparar (crece con el tamaño de la caja)
+INTERVALO_DISPARO = 0.25 # s mínimos entre dos disparos
+GANANCIA_SEGUIMIENTO = 2.0  # º/s de giro por grado de error; más alto reacciona antes, pero puede oscilar
+ANTICIPAR = True         # sumar al giro la velocidad estimada del robot, para no ir siempre detrás de él
+RETARDO_CAMARA = 0.25    # s entre que la cámara ve algo y la imagen llega al ordenador (wifi); medir en el laboratorio
+PERDIDAS_MAX = 5         # imágenes seguidas sin ver al robot antes de darlo por perdido
+TIEMPO_MAX_OBJETIVO = 20 # s máximos persiguiendo a un mismo robot
+CORREGIR_PITCH = True    # apuntar también en vertical
+ALTURA_PUNTERIA = 0.5    # punto de la caja al que se apunta: 0 borde superior, 0.5 centro, 1 borde inferior
+LEER_ANGULO_GIMBAL = True  # usar el ángulo real del gimbal (sub_angle) en lugar de sumar los giros
+SONIDO_CADA_DISPARO = False  # True: AUDIO_DISPARO en cada disparo (más lento: el SDK sube el audio cada vez)
+
 # Barrido de 360º en pasos de 60º: la cámara ve unos 90º, así que cada imagen
 # solapa con la siguiente. Empieza por delante, que es donde es más probable el rival.
 BARRIDO_360 = [0, 60, 120, 180, -120, -60]
@@ -53,9 +72,9 @@ BAILE_FINAL = True
 AUDIO_MOTOR = 'audio/engine_sound_corto.wav'  # 6 s al arrancar; None para no usarlo
 # Audios propios (WAV mono 48 kHz, ver audio/convertir_audio.py). Van en audio/propios/,
 # que no se sube a GitHub por los derechos de autor. Si no existen, se usan los sonidos del SDK.
-AUDIO_DISPARO = 'audio/propios/scar.wav'          # suena con cada uno de los disparos
+AUDIO_DISPARO = 'audio/propios/scar.wav'          # suena al empezar cada ráfaga (o en cada disparo, ver SONIDO_CADA_DISPARO)
 AUDIO_FINAL = 'audio/propios/superestrella.wav'   # canción del baile final
-ESPERA_AUDIO_DISPARO = 2.0   # s máximos que se espera a que acabe el audio de cada disparo
+ESPERA_AUDIO_DISPARO = 2.0   # s máximos que se espera al audio de cada disparo (solo sin SEGUIMIENTO y con SONIDO_CADA_DISPARO)
 LED_FIESTA_HZ = 10           # cambios de color por segundo en el baile final
 DURACION_FIESTA_MAX = 40     # s máximos de luces tras el baile mientras suena la canción
 # Sonidos predefinidos del SDK (robot.SOUND_ID_*); se pueden escuchar con audio/predefined_sounds.py
