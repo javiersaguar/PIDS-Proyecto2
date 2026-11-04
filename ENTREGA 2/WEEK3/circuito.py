@@ -50,7 +50,14 @@ VELOCIDAD_Z = 30         # º/s
 
 # --- Extras -------------------------------------------------------------------------
 BAILE_FINAL = True
-AUDIO_MOTOR = 'audio/engine_sound.wav'  # se reproduce al arrancar; None para no usarlo
+AUDIO_MOTOR = 'audio/engine_sound_corto.wav'  # 6 s al arrancar; None para no usarlo
+# Audios propios (WAV mono 48 kHz, ver audio/convertir_audio.py). Van en audio/propios/,
+# que no se sube a GitHub por los derechos de autor. Si no existen, se usan los sonidos del SDK.
+AUDIO_DISPARO = 'audio/propios/scar.wav'          # suena con cada uno de los disparos
+AUDIO_FINAL = 'audio/propios/superestrella.wav'   # canción del baile final
+ESPERA_AUDIO_DISPARO = 2.0   # s máximos que se espera a que acabe el audio de cada disparo
+LED_FIESTA_HZ = 10           # cambios de color por segundo en el baile final
+DURACION_FIESTA_MAX = 40     # s máximos de luces tras el baile mientras suena la canción
 # Sonidos predefinidos del SDK (robot.SOUND_ID_*); se pueden escuchar con audio/predefined_sounds.py
 SONIDOS = {
     'inicio': 0x106,       # cuenta atrás
@@ -60,3 +67,4 @@ SONIDOS = {
     'hecho': 0x101,        # ataque completado
 }
 BATERIA_MINIMA = 20      # % por debajo del cual se avisa antes de arrancar
+BATERIA_CRITICA = 10     # % por debajo del cual la demo no arranca (el robot deja de responder)

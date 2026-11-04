@@ -74,7 +74,7 @@ class PruebasDemo(unittest.TestCase):
         self.salida = tempfile.mkdtemp(prefix='evid_')
         self.original = {k: getattr(C, k) for k in ['PARADAS', 'BAILE_FINAL', 'AUDIO_MOTOR', 'ESPERA_CAMARA',
                                                     'DISPARAR_A_TODOS', 'BARRIDO_COMPLETO', 'CONFIRMAR',
-                                                    'VELOCIDAD_XY']}
+                                                    'VELOCIDAD_XY', 'AUDIO_DISPARO', 'AUDIO_FINAL']}
         C.BAILE_FINAL, C.AUDIO_MOTOR, C.ESPERA_CAMARA = False, None, 0
         espera = mock.patch('time.sleep')   # sin esperas reales (cámara, disparos, batería)
         espera.start()
@@ -109,6 +109,20 @@ class PruebasDemo(unittest.TestCase):
         ep, d, r = self.lanzar([20], p)
         self.assertEqual(ep.disparos(), 12)
         self.assertEqual(len(r['ataques']), 1)
+
+    def test_blaster_sin_respuesta_detiene_la_demo_y_registra_la_rafaga_parcial(self):
+        C.PARADAS = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep = demo.connect('wifi')
+        d = demo.Demo(ep, DetectorFalso([0]), Args(self.salida))
+        with mock.patch.object(ep.blaster, 'fire', side_effect=[True, True, False]) as fire:
+            with self.assertRaisesRegex(RuntimeError, 'no confirmó el disparo 3'):
+                d.ejecutar()
+
+        self.assertEqual(fire.call_count, 3)
+        self.assertEqual(d.registro.filas[-1]['disparos'], 2)
+        with open(os.path.join(d.registro.carpeta, 'resumen.json'), encoding='utf-8') as f:
+            self.assertEqual(json.load(f)['disparos'], 2)
+        self.assertEqual(ep.acciones[-1]['rgb'], (0, 0, 0))
 
     def test_dispara_a_todos_los_robots_de_la_parada(self):
         p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
@@ -209,6 +223,92 @@ class PruebasDemo(unittest.TestCase):
         self.assertTrue(atacado)
         self.assertEqual(ep.disparos(), 12)
         self.assertAlmostEqual(ep.gimbal.yaw, 8, delta=0.5)
+
+    def test_no_arranca_con_la_bateria_critica(self):
+        simulacion.BATERIA = 5
+        try:
+            p = [dict(nombre='P1', movimientos=[(1, 0, 0)], barrido=[0], pitch=0, objetivos=1)]
+            with self.assertRaises(RuntimeError):
+                self.lanzar([0], p)
+            tipos = [a['tipo'] for a in simulacion.ULTIMO.acciones]
+            self.assertNotIn('chasis.move', tipos)
+            self.assertNotIn('blaster.fire', tipos)
+        finally:
+            simulacion.BATERIA = 87
+
+    def test_un_movimiento_sin_respuesta_detiene_la_demo(self):
+        class SinRespuesta:
+            def wait_for_completed(self, timeout=None):
+                return False   # el robot no confirma el movimiento a tiempo
+        C.PARADAS = [dict(nombre='P1', movimientos=[(1, 0, 0)], barrido=[0], pitch=0, objetivos=1)]
+        ep = demo.connect('wifi')
+        ep.chassis.move = lambda **kw: SinRespuesta()
+        d = demo.Demo(ep, DetectorFalso([]), Args(self.salida))
+        with self.assertRaises(RuntimeError):
+            d.ejecutar()
+        self.assertEqual(ep.acciones[-1]['rgb'], (0, 0, 0))   # se cerró de forma segura
+
+    def test_los_sonidos_no_se_solapan(self):
+        class Sonando:
+            is_completed = False
+        enviados = []
+
+        class Robot:
+            def play_sound(self, sound_id, times=1):
+                enviados.append(sound_id)
+                return Sonando()
+        senales = demo.Senales(Robot(), {'a': 1, 'b': 2})
+        senales.sonido('a')
+        senales.sonido('b')   # el primero sigue sonando: no se envía
+        self.assertEqual(enviados, [1])
+
+    def test_libera_el_cerrojo_que_deja_el_sdk(self):
+        import threading
+        cerrojo = threading.Lock()
+        ep = mock.Mock()
+        ep._action_dispatcher._in_progress_mutex = cerrojo
+        cerrojo.acquire()
+        demo.liberar_cerrojo_sdk(ep, Exception('otro error'))
+        self.assertTrue(cerrojo.locked())
+        demo.liberar_cerrojo_sdk(ep, Exception('Robot is already performing 1 action(s)'))
+        self.assertFalse(cerrojo.locked())
+
+    def test_bateria_sin_lectura_no_detiene_la_demo(self):
+        class Bateria:
+            def sub_battery_info(self, freq, callback, *args):
+                return True            # la lectura no llega nunca
+
+            def unsub_battery_info(self):
+                raise AttributeError("'NoneType' object has no attribute 'done'")   # fallo del SDK
+        ep = mock.Mock()
+        ep.battery = Bateria()
+        with mock.patch('time.time', side_effect=[0, 0, 10]):
+            self.assertIsNone(demo.nivel_bateria(ep))
+
+    def test_cada_disparo_suena_con_su_audio(self):
+        C.AUDIO_DISPARO = os.path.join(CARPETA, 'scar.wav')
+        open(C.AUDIO_DISPARO, 'wb').close()
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([0], p)
+        audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
+        self.assertEqual(audios.count('scar.wav'), 12)
+        self.assertEqual(ep.disparos(), 12)
+
+    def test_baile_con_cancion_y_luces(self):
+        C.BAILE_FINAL = True
+        C.AUDIO_FINAL = os.path.join(CARPETA, 'cancion.wav')
+        open(C.AUDIO_FINAL, 'wb').close()
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([], p)
+        self.assertIn('cancion.wav', [a.get('fichero') for a in ep.acciones if a['tipo'] == 'audio'])
+        self.assertEqual(ep.acciones[-1]['rgb'], (0, 0, 0))   # al cerrar, LED apagados
+
+    def test_sin_audios_propios_usa_los_del_sdk(self):
+        C.AUDIO_DISPARO, C.AUDIO_FINAL = 'audio/propios/no_existe.wav', None
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([0], p)
+        self.assertEqual(ep.disparos(), 12)
+        self.assertIn(C.SONIDOS['disparo'], [a.get('id') for a in ep.acciones if a['tipo'] == 'sonido'])
 
     def test_detect_and_shoot_de_la_plantilla(self):
         ep = demo.connect('wifi')

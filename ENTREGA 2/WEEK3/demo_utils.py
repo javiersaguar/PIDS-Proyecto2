@@ -3,8 +3,10 @@ import json
 import os
 import pickle
 import random
+import socket
 import time
 import types
+import warnings
 
 import cv2
 import numpy as np
@@ -15,6 +17,9 @@ import torchvision.transforms.v2 as transforms
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from typing import Tuple, Union, Any
+
+# torchvision avisa de que ToTensor() está obsoleto; el resultado es el mismo
+warnings.filterwarnings('ignore', message=r'The transform `ToTensor\(\)` is deprecated')
 
 
 def connect(connection='networking'):
@@ -43,10 +48,37 @@ def connect(connection='networking'):
         with open(ruta, 'r') as f:
             serial_number = f.read().strip()
 
+    # En wifi directo el robot es 192.168.2.1: el portátil tiene que estar en su red.
+    # Se comprueba antes de conectar (solo con el SDK real, no con el simulado).
+    if connection == 'wifi' and hasattr(robot, '__file__'):
+        ip = ip_hacia('192.168.2.1')
+        if ip is not None and not ip.startswith('192.168.2.'):
+            raise ConnectionError(f'el portátil no está en la wifi del robot (su IP es {ip}). Conéctese a la '
+                                  'red RMEP-... del robot y vuelva a lanzar el script')
+
     # Start the connection
     ep_robot = robot.Robot()
-    ep_robot.initialize(conn_type=conn_types[connection], sn=serial_number)
+    try:
+        ep_robot.initialize(conn_type=conn_types[connection], sn=serial_number)
+    except Exception as e:
+        # El SDK falla con errores poco claros (incluso un TypeError) si no encuentra el robot
+        raise ConnectionError(f'no se puede conectar con el robot en modo {connection} ({e!r}). Compruebe que '
+                              'está encendido, con la pestaña de conexión en ese modo, y que el portátil está '
+                              'en su red') from None
     return ep_robot
+
+
+def ip_hacia(destino):
+    """IP local que usaría el portátil para llegar a `destino` (no envía nada), o None."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            s.connect((destino, 20020))
+            return s.getsockname()[0]
+        finally:
+            s.close()
+    except OSError:
+        return None
 
 
 def new_history() -> dict:
@@ -435,6 +467,7 @@ def dibujar_evidencia(image, prediction, umbral, ruta, titulo, min_score=0.3, ob
     cv2.putText(salida, titulo, (8, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
     os.makedirs(os.path.dirname(ruta) or '.', exist_ok=True)
     cv2.imwrite(ruta, salida)
+    return salida
 
 
 class Registro:
@@ -447,7 +480,8 @@ class Registro:
     CAMPOS = ['n', 'momento', 'parada', 'fase', 'yaw', 'pitch', 'ms_inferencia', 'n_cajas_0_3',
               'n_aceptadas', 'confianzas', 'cajas', 'objetivo_yaw', 'disparos', 'imagen']
 
-    def __init__(self, carpeta='evidencias', umbral=0.5):
+    def __init__(self, carpeta='evidencias', umbral=0.5, mostrar=False):
+        self.mostrar = mostrar   # ver cada imagen analizada en una ventana
         base = os.path.join(carpeta, time.strftime('%Y%m%d_%H%M%S'))
         self.carpeta, i = base, 2
         while os.path.exists(self.carpeta):   # dos ejecuciones en el mismo segundo
@@ -466,8 +500,10 @@ class Registro:
         nombre = f'{self.n:03d}_{parada}_{fase}_yaw{yaw:+.0f}.jpg'
         cv2.imwrite(os.path.join(self.carpeta, 'originales', nombre), cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
         titulo = f'{self.n:03d} {parada} {fase} yaw {yaw:+.1f} | umbral {self.umbral:.2f} | {ms:.0f} ms'
-        dibujar_evidencia(image, prediction, self.umbral, os.path.join(self.carpeta, nombre), titulo,
-                          objetivo=objetivo)
+        dibujada = dibujar_evidencia(image, prediction, self.umbral, os.path.join(self.carpeta, nombre), titulo,
+                                     objetivo=objetivo)
+        if self.mostrar:
+            self.ver(dibujada)
         scores = prediction['scores']
         visibles = scores >= 0.3
         fila = {
@@ -484,19 +520,94 @@ class Registro:
         self.filas.append(fila)
         return nombre
 
+    def ver(self, imagen_bgr, ancho=960):
+        """Muestra la imagen con sus cajas en una ventana, sin parar la demo."""
+        try:
+            alto = int(imagen_bgr.shape[0] * ancho / imagen_bgr.shape[1])
+            cv2.imshow('PIDS - detecciones', cv2.resize(imagen_bgr, (ancho, alto)))
+            cv2.waitKey(1)
+        except cv2.error as e:
+            print(f'[aviso] no se puede abrir la ventana de imágenes: {e}')
+            self.mostrar = False
+
     def cerrar(self, resumen):
         self.f.close()
+        if self.mostrar:
+            try:
+                cv2.destroyAllWindows()
+            except cv2.error:
+                pass
         with open(os.path.join(self.carpeta, 'resumen.json'), 'w', encoding='utf-8') as f:
             json.dump(resumen, f, ensure_ascii=False, indent=1)
 
 
+def liberar_cerrojo_sdk(ep_robot, error):
+    """Arregla un fallo del SDK tras rechazar una acción.
+
+    En robomaster/action.py, send_action lanza «Robot is already performing ...»
+    sin soltar su cerrojo (threading.Lock). La siguiente orden y el aviso de fin
+    de la acción en curso se quedan esperándolo para siempre y el robot deja de
+    responder. Solo se suelta justo después de ese error.
+    """
+    if 'already performing' not in str(error):
+        return
+    cerrojo = getattr(getattr(ep_robot, '_action_dispatcher', None), '_in_progress_mutex', None)
+    if cerrojo is not None and cerrojo.locked():
+        try:
+            cerrojo.release()
+        except RuntimeError:
+            pass
+
+
+def ejecutar_accion(ep_robot, crear, timeout, que):
+    """Lanza una acción del SDK y espera a que acabe, como mucho `timeout` segundos.
+
+    wait_for_completed() sin tiempo máximo espera para siempre si el robot no
+    responde (batería baja, conexión perdida): aquí se convierte en un error que
+    detiene la demo de forma segura.
+    """
+    try:
+        accion = crear()
+    except Exception as e:
+        liberar_cerrojo_sdk(ep_robot, e)
+        raise RuntimeError(f'{que}: {e}')
+    if not accion.wait_for_completed(timeout=timeout):
+        raise RuntimeError(f'{que}: no ha terminado en {timeout:.0f} s (¿batería baja o robot desconectado?)')
+
+
 class Senales:
-    """LED y sonido según el estado de la demo. Un fallo aquí nunca detiene la demo."""
+    """LED y sonido según el estado de la demo. Un fallo aquí nunca detiene la demo.
+
+    El SDK solo admite un sonido a la vez: si el anterior sigue sonando, el
+    nuevo se omite en lugar de enviarlo (ver liberar_cerrojo_sdk).
+    """
 
     def __init__(self, ep_robot, sonidos=None, activo=True):
         self.ep_robot = ep_robot
         self.sonidos = sonidos or {}
         self.activo = activo
+        self._accion = None   # último sonido o audio enviado
+
+    def ocupado(self):
+        return self._accion is not None and not getattr(self._accion, 'is_completed', True)
+
+    def esperar_sonido(self, maximo):
+        """Espera, como mucho `maximo` segundos, a que termine el sonido en curso."""
+        fin = time.time() + maximo
+        while self.ocupado() and time.time() < fin:
+            time.sleep(0.1)
+
+    def _reproducir(self, lanzar, que):
+        """Envía el sonido si no hay otro sonando. Devuelve True si se ha enviado."""
+        if self.ocupado():
+            return False
+        try:
+            self._accion = lanzar()
+            return self._accion is not None
+        except Exception as e:
+            liberar_cerrojo_sdk(self.ep_robot, e)
+            print(f'[aviso] {que}: {e}')
+            return False
 
     def estado(self, nombre, parpadeo=False):
         if not self.activo:
@@ -511,29 +622,40 @@ class Senales:
     def sonido(self, nombre):
         if not self.activo or self.sonidos.get(nombre) is None:
             return
-        try:
-            self.ep_robot.play_sound(self.sonidos[nombre], 1)
-        except Exception as e:
-            print(f'[aviso] sonido: {e}')
+        self._reproducir(lambda: self.ep_robot.play_sound(self.sonidos[nombre], 1), 'sonido')
 
     def audio(self, fichero):
-        """Reproduce un .wav en el altavoz del robot sin esperar a que termine."""
+        """Reproduce un .wav (mono, 48 kHz) en el altavoz del robot sin esperar a que termine.
+
+        El SDK sube el fichero al robot en cada llamada. Devuelve True si se ha enviado.
+        """
         if not self.activo or not fichero or not os.path.isfile(fichero):
-            return
-        try:
-            self.ep_robot.play_audio(fichero)
-        except Exception as e:
-            print(f'[aviso] audio: {e}')
+            return False
+        return self._reproducir(lambda: self.ep_robot.play_audio(fichero), 'audio')
 
 
-def nivel_bateria(ep_robot, espera=1.0):
-    """Lee una vez el porcentaje de batería (None si no llega a tiempo)."""
+def nivel_bateria(ep_robot, espera=3.0):
+    """Lee una vez el porcentaje de batería (None si no llega en `espera` segundos).
+
+    Espera a la primera lectura antes de cancelar la suscripción: si se cancela
+    antes, el SDK falla (dds.py, del_subject_info: AttributeError en `_task`).
+    Un fallo al cancelar nunca detiene la demo.
+    """
     lectura = {}
 
-    def guardar(percent):
+    def guardar(percent, *args):
         lectura['pct'] = percent
 
-    ep_robot.battery.sub_battery_info(1, guardar)
-    time.sleep(espera)
-    ep_robot.battery.unsub_battery_info()
+    try:
+        ep_robot.battery.sub_battery_info(5, guardar)
+    except Exception as e:
+        print(f'[aviso] batería: {e}')
+        return None
+    fin = time.time() + espera
+    while 'pct' not in lectura and time.time() < fin:
+        time.sleep(0.1)
+    try:
+        ep_robot.battery.unsub_battery_info()
+    except Exception as e:
+        print(f'[aviso] batería, al cancelar la lectura: {e!r}')
     return lectura.get('pct')

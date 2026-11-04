@@ -71,6 +71,36 @@ Al terminar: vuelta al inicio (opcional) y baile final con LED, sonido, gimbal y
 **Seguridad.** Ctrl+C, un error o el final de la demo detienen el chasis, centran el
 gimbal, cierran la cámara, apagan los LED, guardan el resumen y cierran la conexión.
 
+- **Batería:** la demo no arranca por debajo del 10 % (`BATERIA_CRITICA`), porque el robot
+  deja de responder, y avisa por debajo del 20 %.
+- **Tiempo máximo:** cada movimiento del chasis y del gimbal tiene uno, calculado con la
+  distancia y la velocidad. Si el robot no lo confirma a tiempo, la demo se detiene en
+  lugar de quedarse esperando.
+- **Sonidos:** nunca se solapan. El SDK rechaza un sonido si hay otro sonando y, al
+  hacerlo, deja bloqueado un cerrojo interno (`robomaster/action.py`, `send_action`).
+  Con ese cerrojo bloqueado, la siguiente orden se queda esperando para siempre y el
+  robot no se mueve. `liberar_cerrojo_sdk` lo suelta si ocurre.
+
+### Audios propios
+
+El robot solo reproduce WAV mono de 16 bits a 48 kHz. `audio/convertir_audio.py` convierte
+cualquier audio (mp3, m4a, wav…), lo recorta y normaliza el volumen:
+
+```
+python audio/convertir_audio.py ENTRADA audio/propios/scar.wav --duracion 1
+python audio/convertir_audio.py ENTRADA audio/propios/superestrella.wav --inicio 50 --duracion 25
+```
+
+| Audio (`circuito.py`) | Cuándo suena |
+|---|---|
+| `AUDIO_MOTOR` (`audio/engine_sound_corto.wav`) | Al arrancar: los 6 primeros segundos de `engine_sound.wav`, para que no tape los demás sonidos |
+| `AUDIO_DISPARO` (`audio/propios/scar.wav`) | Con cada uno de los 12 disparos. Se espera a que acabe antes del siguiente, porque el SDK no admite dos sonidos a la vez |
+| `AUDIO_FINAL` (`audio/propios/superestrella.wav`) | En el baile final. Los LED cambian de color `LED_FIESTA_HZ` veces por segundo mientras suena |
+
+`audio/propios/` no se sube a GitHub, porque las canciones y los sonidos de juegos tienen
+derechos de autor. Si un audio no existe, la demo usa los sonidos del SDK. Hace falta
+`pip install imageio-ffmpeg`, que trae ffmpeg.
+
 ## 3. Evidencias
 
 Cada ejecución crea `evidencias/<fecha_hora>/` (no se sube a GitHub):
@@ -149,6 +179,7 @@ Opciones de `demo.py`:
 | `--sin-disparar` | No usa el blaster |
 | `--sin-mover` | No mueve el chasis |
 | `--paradas P1,P3` | Solo detecta en esas paradas. Hace los movimientos hasta la última elegida, salvo con `--sin-mover` |
+| `--ver` | Muestra en una ventana cada imagen analizada, con sus cajas, mientras la demo sigue |
 | `--umbral 0.9` | Cambia el umbral sin editar `circuito.py` |
 | `--modelo RUTA`, `--arquitectura NOMBRE` | Usa otro checkpoint, por ejemplo `faster_rcnn_v3` si la inferencia es lenta |
 | `--simulacion [CARPETA]` | Robot simulado que ve las imágenes de `CARPETA` (por defecto, el test de la asignatura) |
