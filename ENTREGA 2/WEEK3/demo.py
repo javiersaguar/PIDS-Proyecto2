@@ -331,7 +331,11 @@ def main(argv=None):
     model, device, _ = cargar_modelo(C.MODELO, C.RUTA_MODELO, use_gpu=C.USAR_GPU)
     print(f'Modelo {C.MODELO} en {device}; primera inferencia: {calentar(model, C.RESIZE):.0f} ms')
     # El robot simulado no necesita serial_number.txt
-    ep_robot = connect('wifi' if args.simulacion else 'networking')
+    try:
+        ep_robot = connect('wifi' if args.simulacion else 'networking')
+    except ConnectionError as e:
+        print(f'[error] {e}')
+        return None
     demo = None
     try:
         demo = Demo(ep_robot, model, args)

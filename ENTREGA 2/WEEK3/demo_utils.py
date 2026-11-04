@@ -3,6 +3,7 @@ import json
 import os
 import pickle
 import random
+import socket
 import time
 import types
 import warnings
@@ -18,7 +19,7 @@ from matplotlib.patches import Rectangle
 from typing import Tuple, Union, Any
 
 # torchvision avisa de que ToTensor() está obsoleto; el resultado es el mismo
-warnings.filterwarnings('ignore', message='The transform `ToTensor()` is deprecated')
+warnings.filterwarnings('ignore', message=r'The transform `ToTensor\(\)` is deprecated')
 
 
 def connect(connection='networking'):
@@ -47,10 +48,37 @@ def connect(connection='networking'):
         with open(ruta, 'r') as f:
             serial_number = f.read().strip()
 
+    # En wifi directo el robot es 192.168.2.1: el portátil tiene que estar en su red.
+    # Se comprueba antes de conectar (solo con el SDK real, no con el simulado).
+    if connection == 'wifi' and hasattr(robot, '__file__'):
+        ip = ip_hacia('192.168.2.1')
+        if ip is not None and not ip.startswith('192.168.2.'):
+            raise ConnectionError(f'el portátil no está en la wifi del robot (su IP es {ip}). Conéctese a la '
+                                  'red RMEP-... del robot y vuelva a lanzar el script')
+
     # Start the connection
     ep_robot = robot.Robot()
-    ep_robot.initialize(conn_type=conn_types[connection], sn=serial_number)
+    try:
+        ep_robot.initialize(conn_type=conn_types[connection], sn=serial_number)
+    except Exception as e:
+        # El SDK falla con errores poco claros (incluso un TypeError) si no encuentra el robot
+        raise ConnectionError(f'no se puede conectar con el robot en modo {connection} ({e!r}). Compruebe que '
+                              'está encendido, con la pestaña de conexión en ese modo, y que el portátil está '
+                              'en su red') from None
     return ep_robot
+
+
+def ip_hacia(destino):
+    """IP local que usaría el portátil para llegar a `destino` (no envía nada), o None."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            s.connect((destino, 20020))
+            return s.getsockname()[0]
+        finally:
+            s.close()
+    except OSError:
+        return None
 
 
 def new_history() -> dict:
