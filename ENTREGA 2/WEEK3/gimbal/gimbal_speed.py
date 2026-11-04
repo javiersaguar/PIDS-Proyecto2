@@ -1,3 +1,4 @@
+import os
 import time
 from robomaster import robot
 
@@ -11,6 +12,10 @@ def connect(connection='networking'):
     :param connection: 'networking' (router), 'wifi' (direct Wi-Fi) or 'usb'.
     :return: ep_robot, a connected RoboMaster object.
     """
+    # Sin serial_number.txt (no se ha usado connect.py) se conecta por wifi directo al robot
+    if connection == 'networking' and not os.path.isfile('serial_number.txt'):
+        connection = 'wifi'
+    print(f'Conexion: {connection}')
     conn_types = {'networking': 'sta', 'wifi': 'ap', 'usb': 'rndis'}
 
     # In networking mode the robot is identified by its serial number
@@ -28,13 +33,13 @@ def connect(connection='networking'):
 if __name__ == '__main__':
     
     # Connect the robot
-    ep_robot = connect()
+    ep_robot = connect("wifi")
 
     # Gimbal module
     ep_gimbal = ep_robot.gimbal
 
     # Move gimbal to initial position: pitch=0, yaw=0
-    ep_gimbal.moveto(pitch=0, yaw=0, pitch_speed=100, yaw_speed=100).wait_for_completed()
+    ep_gimbal.moveto(pitch=0, yaw=0, pitch_speed=30, yaw_speed=30).wait_for_completed()
 
     # Move the gimbal to the right during 3 seconds at a speed of 30º/s
     slp = 3
@@ -54,7 +59,7 @@ if __name__ == '__main__':
     time.sleep(slp)
 
     # Move gimbal to initial position: pitch=0, yaw=0
-    ep_gimbal.moveto(pitch=0, yaw=0, pitch_speed=100, yaw_speed=100).wait_for_completed()
+    ep_gimbal.moveto(pitch=0, yaw=0, pitch_speed=30, yaw_speed=30).wait_for_completed()
 
     # End connection
     ep_robot.close()

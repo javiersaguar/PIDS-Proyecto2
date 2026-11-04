@@ -4,7 +4,7 @@ Contenido actualizado el **01/11/2026**.
 
 | Documento | Contenido |
 |---|---|
-| [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (32 páginas, 20 de cuerpo, de la 4 a la 23; el límite es 20). |
+| [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (34 páginas, 20 de cuerpo, de la 4 a la 23; el límite es 20). |
 | [`informe_fase1.docx`](informe_fase1.docx) | Fuente de la memoria de la entrega 1 (Bloque 1), base de `generar_entrega2.py`. El PDF entregado está en `docs/entregas/PIDS_grupo2_entrega1.pdf` y difiere en algo de redacción. |
 | `figuras/` | Figuras de maquetación que no están en `ENTREGA 1/WEEK1/` ni en `WEEK2/`, incluidas las añadidas por la revisión. |
 
@@ -25,6 +25,17 @@ numeración de figuras, apartados 5.1–5.5, referencias [6]–[8]) que el scrip
 así que no se debe regenerar.
 
 ## Historial
+
+**03/11/2026** — métricas de test de todos los modelos y fecha de entrega:
+- El Anexo E (ahora «Métricas de test») añade las Tablas 26 y 27 con los siete modelos y, para cada uno, todos,
+  normales y difficult: AP 0,50:0,95, AP@0,5, AP@0,75, AP por tamaño, AR@100, TP, FP, FN, TN, precisión,
+  exhaustividad, F1 y exactitud. TN = 0 porque en detección el fondo no se cuenta y el test no tiene imágenes sin
+  robots; la exactitud queda en TP/(TP+FP+FN). FP, precisión, F1 y exactitud solo se dan para todos los robots.
+- Los datos están en `ENTREGA 1/WEEK2/cadena/metricas_test_modelos.csv`. Los de cinco modelos se copiaron de
+  `~/pids_main/ENTREGA 1/WEEK2/resultados_test/<experimento>_test/` en el laboratorio y se comprobaron con la
+  huella sha256 de cada `map.csv` y de la fila `Total` de `errores_por_video.csv`; no se ha vuelto a evaluar nada.
+- La tabla de respuesta a la revisión pasa a ser la Tabla 28.
+- Fecha de entrega de la portada: 03/11/2026.
 
 **02/11/2026** — números de test en el apartado de métricas:
 - El apartado 10 da, para el modelo final en test, los TP, FP y FN, la precisión, la exhaustividad, el F1, la AP@0,5,

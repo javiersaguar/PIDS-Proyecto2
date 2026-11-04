@@ -1,10 +1,15 @@
+import csv
+import json
 import os
+import pickle
 import random
+import time
+import types
 
 import cv2
 import numpy as np
 import torch
-from robomaster import robot, blaster
+from robomaster import robot, blaster, camera, led
 from torchvision.models import detection
 import torchvision.transforms.v2 as transforms
 import matplotlib.pyplot as plt
@@ -23,11 +28,20 @@ def connect(connection='networking'):
     """
     conn_types = {'networking': 'sta', 'wifi': 'ap', 'usb': 'rndis'}
 
+    # serial_number.txt se busca en la carpeta actual y junto a este fichero
+    ruta = 'serial_number.txt'
+    if not os.path.isfile(ruta):
+        ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'serial_number.txt')
+    # Sin serial_number.txt (no se ha usado connect.py) se conecta por wifi directo al robot
+    if connection == 'networking' and not os.path.isfile(ruta):
+        connection = 'wifi'
+    print(f'Conexion: {connection}')
+
     # In networking mode the robot is identified by its serial number
     serial_number = None
     if connection == 'networking':
-        with open('serial_number.txt', 'r') as f:
-            serial_number = f.read()
+        with open(ruta, 'r') as f:
+            serial_number = f.read().strip()
 
     # Start the connection
     ep_robot = robot.Robot()
@@ -40,9 +54,28 @@ def new_history() -> dict:
     return {'train_loss': [], 'valid_loss': [], 'lr': [], 'best_value': np.inf, 'current_epoch': 0}
 
 
+class _UnpicklerNumpy1(pickle.Unpickler):
+    """Lee con numpy 1.x objetos guardados con numpy 2.x, que movió numpy.core a numpy._core."""
+
+    def find_class(self, module, name):
+        if module == 'numpy._core' or module.startswith('numpy._core.'):
+            module = 'numpy.core' + module[len('numpy._core'):]
+        return super().find_class(module, name)
+
+
+_PICKLE_NUMPY1 = types.SimpleNamespace(__name__='pickle', Unpickler=_UnpicklerNumpy1, load=pickle.load)
+
+
 def torch_load_cpu(path: str) -> Any:
     """Load a checkpoint onto the CPU (works even if it was saved on a GPU)."""
-    return torch.load(path, map_location='cpu')
+    # El checkpoint guarda también el estado de numpy y random: desde PyTorch 2.6 hace falta weights_only=False
+    try:
+        return torch.load(path, map_location='cpu', weights_only=False)
+    except ModuleNotFoundError as e:
+        # Guardado en JupyterHub con numpy 2 y leído en el laboratorio (Python 3.8, numpy 1.x)
+        if 'numpy._core' not in str(e):
+            raise
+        return torch.load(path, map_location='cpu', weights_only=False, pickle_module=_PICKLE_NUMPY1)
 
 
 def load_checkpoint(path: str, model: Any, device: torch.device, optimizer: torch.optim = None) -> Tuple[Any, Any, dict]:
@@ -234,3 +267,273 @@ def plot_predictions(image, prediction, target_id, score_threshold=0.5, path='pr
     os.makedirs(path, exist_ok=True)
     fig.savefig(os.path.join(path, f'{target_id}.png'), bbox_inches='tight')
     plt.close(fig)
+
+
+# =============================================================================
+# Añadidos del grupo 2 para la demo del Bloque 3
+# =============================================================================
+
+# El enunciado prohíbe subir la velocidad del robot: estos son los valores por
+# defecto del SDK y se usan como máximo en todos los movimientos.
+VEL_XY_MAX = 0.5        # m/s, chasis
+VEL_Z_MAX = 30          # º/s, giro del chasis
+VEL_GIMBAL_MAX = 30     # º/s, gimbal (pitch y yaw)
+
+COLORES_LED = {
+    'moviendo': (0, 0, 255),
+    'buscando': (255, 160, 0),
+    'apuntando': (255, 60, 0),
+    'disparando': (255, 0, 0),
+    'hecho': (0, 255, 0),
+    'nada': (120, 0, 255),
+    'fin': (0, 255, 120),
+    'apagado': (0, 0, 0),
+}
+
+
+def limitar(valor, maximo):
+    """Recorta una velocidad a [-maximo, maximo] conservando el signo."""
+    return max(-maximo, min(maximo, valor))
+
+
+def buscar_modelo(ruta):
+    """Devuelve la primera ruta existente del checkpoint entre las candidatas habituales.
+
+    En el laboratorio el script se lanza desde /home/PIDS/robomaster; en el
+    repositorio, desde esta carpeta o desde la raíz. Se prueba la ruta tal cual,
+    relativa a esta carpeta y relativa a la raíz del repositorio.
+    """
+    aqui = os.path.dirname(os.path.abspath(__file__))
+    candidatas = [ruta, os.path.join(aqui, ruta), os.path.join(aqui, '..', '..', ruta)]
+    for c in candidatas:
+        if os.path.isfile(c):
+            return os.path.abspath(c)
+    raise FileNotFoundError(f'No se encuentra el modelo en ninguna de estas rutas: {candidatas}')
+
+
+def cargar_modelo(model_name, ruta, use_gpu=True):
+    """Carga el detector entrenado y comprueba que los pesos se han leído de verdad.
+
+    load_checkpoint() ignora en silencio un checkpoint sin la clave 'model', y
+    entonces la cabeza quedaría con pesos aleatorios: aquí se comprueba.
+    """
+    ruta = buscar_modelo(ruta)
+    checkpoint = torch_load_cpu(ruta)
+    assert 'model' in checkpoint, f"El checkpoint {ruta} no tiene la clave 'model'"
+    faltan = set(torchvision_model(model_name, False, 2).state_dict()) - set(checkpoint['model'])
+    assert not faltan, f'Al checkpoint le faltan {len(faltan)} pesos de {model_name}, por ejemplo {sorted(faltan)[:3]}'
+    del checkpoint
+    model, _, history, device = get_model(model_name=model_name, model_path=ruta, num_classes=2,
+                                          lr_data=None, pretrained=False, use_gpu=use_gpu)
+    model.eval()
+    if device.type == 'cpu':
+        torch.set_num_threads(os.cpu_count() or 1)
+    return model, device, history
+
+
+def detectar(model, image, resize_shape=None):
+    """Aplica el detector a una imagen RGB ya capturada.
+
+    Es la segunda mitad de predict(): separada para poder capturar con la
+    cámara abierta todo el recorrido y para medir el tiempo de inferencia.
+    :return: (prediction, ms) con las mismas claves que predict().
+    """
+    device = next(model.parameters()).device
+    transform = get_transform(resize_shape)
+    inicio = time.perf_counter()
+    with torch.no_grad():
+        output = model([transform(image).to(device)])[0]
+    if device.type == 'cuda':
+        torch.cuda.synchronize()
+    ms = (time.perf_counter() - inicio) * 1000
+    prediction = {key: value.detach().cpu().numpy() for key, value in output.items()}
+    if resize_shape is not None:
+        prediction['boxes'] = resize_boxes(prediction['boxes'], image.shape[:2], resize_shape)
+    return prediction, ms
+
+
+def calentar(model, resize_shape=None, forma=(720, 1280, 3)):
+    """Primera inferencia en vacío: la primera llamada es mucho más lenta que las siguientes."""
+    _, ms = detectar(model, np.zeros(forma, dtype=np.uint8), resize_shape)
+    return ms
+
+
+class Camara:
+    """Cámara del robot con el vídeo abierto durante toda la demo.
+
+    predict() abre y cierra el vídeo en cada captura, lo que tarda y puede
+    devolver un fotograma antiguo. Aquí se abre una vez y se lee siempre el
+    fotograma más reciente, tras esperar a que el gimbal se quede quieto.
+    """
+
+    def __init__(self, ep_robot, espera=0.5):
+        self.ep_camera = ep_robot.camera
+        self.espera = espera
+        self.ep_camera.start_video_stream(display=False, resolution=camera.STREAM_720P)
+        time.sleep(1.0)
+
+    def capturar(self):
+        time.sleep(self.espera)
+        try:
+            image = self.ep_camera.read_cv2_image(timeout=3, strategy='newest')
+        except TypeError:
+            image = self.ep_camera.read_cv2_image(timeout=3)
+        return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    def cerrar(self):
+        self.ep_camera.stop_video_stream()
+
+
+def seleccionar(prediction, umbral):
+    """Detecciones con confianza >= umbral, de mayor a menor confianza: lista de (caja, confianza)."""
+    orden = np.argsort(-prediction['scores'])
+    return [(prediction['boxes'][i], float(prediction['scores'][i])) for i in orden
+            if prediction['scores'][i] >= umbral]
+
+
+def mas_centrada(image, objetivos):
+    """De una lista de (caja, confianza), la que está más cerca del centro horizontal."""
+    return min(objetivos, key=lambda o: abs(auto_aim(image, o[0])))
+
+
+def es_nuevo(angulo, ya_atacados, tolerancia):
+    """True si ningún objetivo ya atacado en esta parada está a menos de `tolerancia` grados."""
+    return all(abs(angulo - a) > tolerancia for a in ya_atacados)
+
+
+def disparar(ep_robot, veces, pausa=0.3):
+    """Dispara `veces` tiros de infrarrojo, de uno en uno para no saturar el blaster."""
+    for _ in range(veces):
+        ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1)
+        time.sleep(pausa)
+
+
+def dibujar_evidencia(image, prediction, umbral, ruta, titulo, min_score=0.3, objetivo=None):
+    """Guarda la imagen con las cajas predichas y su confianza dibujadas encima.
+
+    Verde: confianza >= umbral (se acepta). Naranja: entre min_score y el umbral
+    (se descarta, pero se dibuja para poder analizarlo en la memoria). La caja
+    `objetivo`, si se da, es aquella a la que se dispara y se marca con una cruz.
+    """
+    salida = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    for (x0, y0, x1, y1), score in zip(prediction['boxes'], prediction['scores']):
+        if score < min_score:
+            continue
+        color = (0, 200, 0) if score >= umbral else (0, 140, 255)
+        cv2.rectangle(salida, (int(x0), int(y0)), (int(x1), int(y1)), color, 3)
+        etiqueta = f'robot {score:.2f}'
+        (w, h), _ = cv2.getTextSize(etiqueta, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
+        y_txt = max(int(y0) - 6, h + 40)
+        cv2.rectangle(salida, (int(x0), y_txt - h - 6), (int(x0) + w + 6, y_txt + 4), color, -1)
+        cv2.putText(salida, etiqueta, (int(x0) + 3, y_txt), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+    if objetivo is not None:
+        cx, cy = int((objetivo[0] + objetivo[2]) / 2), int((objetivo[1] + objetivo[3]) / 2)
+        cv2.drawMarker(salida, (cx, cy), (0, 0, 255), cv2.MARKER_CROSS, 40, 3)
+    alto, ancho = salida.shape[:2]
+    cv2.line(salida, (ancho // 2, 34), (ancho // 2, alto), (200, 200, 200), 1)
+    cv2.rectangle(salida, (0, 0), (ancho, 34), (0, 0, 0), -1)
+    cv2.putText(salida, titulo, (8, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+    os.makedirs(os.path.dirname(ruta) or '.', exist_ok=True)
+    cv2.imwrite(ruta, salida)
+
+
+class Registro:
+    """Carpeta de evidencias de una ejecución: imágenes, registro.csv y resumen.json.
+
+    Cada imagen a la que se aplica el detector se guarda dos veces: tal cual
+    (para analizarla o anotarla después) y con las cajas dibujadas.
+    """
+
+    CAMPOS = ['n', 'momento', 'parada', 'fase', 'yaw', 'pitch', 'ms_inferencia', 'n_cajas_0_3',
+              'n_aceptadas', 'confianzas', 'cajas', 'objetivo_yaw', 'disparos', 'imagen']
+
+    def __init__(self, carpeta='evidencias', umbral=0.5):
+        base = os.path.join(carpeta, time.strftime('%Y%m%d_%H%M%S'))
+        self.carpeta, i = base, 2
+        while os.path.exists(self.carpeta):   # dos ejecuciones en el mismo segundo
+            self.carpeta, i = f'{base}_{i}', i + 1
+        os.makedirs(os.path.join(self.carpeta, 'originales'), exist_ok=True)
+        self.umbral = umbral
+        self.n = 0
+        self.filas = []
+        self.f = open(os.path.join(self.carpeta, 'registro.csv'), 'w', newline='', encoding='utf-8')
+        self.w = csv.DictWriter(self.f, fieldnames=self.CAMPOS)
+        self.w.writeheader()
+
+    def imagen(self, image, prediction, ms, parada, fase, yaw, pitch, objetivo=None, objetivo_yaw=None, disparos=0):
+        """Guarda una imagen analizada y su fila del registro; devuelve el nombre del fichero."""
+        self.n += 1
+        nombre = f'{self.n:03d}_{parada}_{fase}_yaw{yaw:+.0f}.jpg'
+        cv2.imwrite(os.path.join(self.carpeta, 'originales', nombre), cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+        titulo = f'{self.n:03d} {parada} {fase} yaw {yaw:+.1f} | umbral {self.umbral:.2f} | {ms:.0f} ms'
+        dibujar_evidencia(image, prediction, self.umbral, os.path.join(self.carpeta, nombre), titulo,
+                          objetivo=objetivo)
+        scores = prediction['scores']
+        visibles = scores >= 0.3
+        fila = {
+            'n': self.n, 'momento': time.strftime('%H:%M:%S'), 'parada': parada, 'fase': fase,
+            'yaw': round(yaw, 1), 'pitch': round(pitch, 1), 'ms_inferencia': round(ms, 1),
+            'n_cajas_0_3': int(visibles.sum()), 'n_aceptadas': int((scores >= self.umbral).sum()),
+            'confianzas': ' '.join(f'{s:.3f}' for s in scores[visibles]),
+            'cajas': json.dumps([[round(float(v), 1) for v in b] for b in prediction['boxes'][visibles]]),
+            'objetivo_yaw': '' if objetivo_yaw is None else round(objetivo_yaw, 1),
+            'disparos': disparos, 'imagen': nombre,
+        }
+        self.w.writerow(fila)
+        self.f.flush()
+        self.filas.append(fila)
+        return nombre
+
+    def cerrar(self, resumen):
+        self.f.close()
+        with open(os.path.join(self.carpeta, 'resumen.json'), 'w', encoding='utf-8') as f:
+            json.dump(resumen, f, ensure_ascii=False, indent=1)
+
+
+class Senales:
+    """LED y sonido según el estado de la demo. Un fallo aquí nunca detiene la demo."""
+
+    def __init__(self, ep_robot, sonidos=None, activo=True):
+        self.ep_robot = ep_robot
+        self.sonidos = sonidos or {}
+        self.activo = activo
+
+    def estado(self, nombre, parpadeo=False):
+        if not self.activo:
+            return
+        r, g, b = COLORES_LED[nombre]
+        efecto = led.EFFECT_FLASH if parpadeo else led.EFFECT_ON
+        try:
+            self.ep_robot.led.set_led(comp=led.COMP_ALL, r=r, g=g, b=b, effect=efecto)
+        except Exception as e:
+            print(f'[aviso] LED: {e}')
+
+    def sonido(self, nombre):
+        if not self.activo or self.sonidos.get(nombre) is None:
+            return
+        try:
+            self.ep_robot.play_sound(self.sonidos[nombre], 1)
+        except Exception as e:
+            print(f'[aviso] sonido: {e}')
+
+    def audio(self, fichero):
+        """Reproduce un .wav en el altavoz del robot sin esperar a que termine."""
+        if not self.activo or not fichero or not os.path.isfile(fichero):
+            return
+        try:
+            self.ep_robot.play_audio(fichero)
+        except Exception as e:
+            print(f'[aviso] audio: {e}')
+
+
+def nivel_bateria(ep_robot, espera=1.0):
+    """Lee una vez el porcentaje de batería (None si no llega a tiempo)."""
+    lectura = {}
+
+    def guardar(percent):
+        lectura['pct'] = percent
+
+    ep_robot.battery.sub_battery_info(1, guardar)
+    time.sleep(espera)
+    ep_robot.battery.unsub_battery_info()
+    return lectura.get('pct')

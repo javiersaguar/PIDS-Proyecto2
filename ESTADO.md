@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 15/10/2026, desde la rama `javier-saguar`.
+Última actualización: 04/11/2026, desde la rama `javier-saguar`.
 
 **Fase actual:** Bloque 1 (recolección, anotación, análisis y depuración de datos), de cara a la **primera entrega** de la memoria. **Bloque 1 terminado salvo los acuerdos de grupo (T01, T18)**: 808 imágenes anotadas y revisadas, 796 tras la depuración, con EDA y aumento hechos. Los datos están listos para entrenar en JupyterHub.
 
@@ -12,7 +12,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 |---|---|---|
 | 1. Datos | 808 imágenes anotadas y revisadas, 796 tras la depuración; falta cerrar T01 en grupo | Dataset de ~800 imágenes anotadas |
 | 2. Entrenamiento | Siete arquitecturas comparadas y test evaluado una vez. Modelo final `faster_rcnn_v2`: AP@0,5 de 0,9523 en test (0,6921 en `difficult`). Falta mejorar los `difficult` | Modelo que detecta RoboMasters |
-| 3. Integración en el robot | Sin empezar | *Demo* en circuito |
+| 3. Integración en el robot | Demo programada y probada en simulación; falta medir el circuito y ejecutarla en el laboratorio | *Demo* en circuito |
 
 ## Hecho
 
@@ -34,7 +34,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
   Código y ejemplos en la sección 9 de `data_aug.ipynb`; el perfil `base` conserva
   los datos actuales y los nuevos escriben en destinos separados. Pendiente medir
   su efecto en validación; no se ha lanzado otro entrenamiento. PR #17.
-- Bloque 3: material de la semana 3 en `ENTREGA 2/WEEK3/` (SDK del robot y demo por completar).
+- Bloque 3 (04/11): demo completa en `ENTREGA 2/WEEK3/` (`demo.py`, `circuito.py`). Recorre las paradas, barre con el gimbal, confirma la puntería, dispara 12 veces por robot, guarda cada imagen analizada con sus cajas y usa los seis módulos. Probada con un robot simulado y 15 pruebas. Pasos del laboratorio en su `README.md`.
 - T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
 ## Datos de los vídeos

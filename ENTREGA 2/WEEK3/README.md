@@ -1,74 +1,197 @@
 # Semana 3 · Integración del detector en el robot (Bloque 3)
 
-Material de la asignatura para el Bloque 3 (`WEEK3.1`, subido por Alejandro el
-14/10/2026). Los ficheros están tal como los da la asignatura; lo que hay que hacer
-está en la [sección 3](#3-qué-hay-que-hacer).
+El RoboMaster recorre el circuito, se para en puntos elegidos, busca a los robots
+rivales con el detector del Bloque 2 y les dispara 12 veces con el infrarrojo.
 
-**Objetivo del bloque:** que el RoboMaster recorra el circuito, detecte a los robots
-rivales con nuestro modelo, apunte el gimbal hacia ellos y dispare.
+El material de la asignatura (`connect.py`, los ejemplos de `audio/`, `camera/`,
+`chassis/`, `gimbal/`, `others/` y la plantilla de `demo.py` y `demo_utils.py`) se
+completó el 04/11/2026 con nuestra demo.
 
 ## 1. Contenido
 
 | Fichero | Qué hace |
 |---|---|
-| `pyproject.toml`, `pixi.lock` | Entorno de la asignatura (pixi, Python 3.8): SDK `robomaster`, PyTorch, albumentations, torchmetrics, pycocotools |
-| `connect.py` | Une el robot a la wifi: genera un QR que el robot escanea y guarda su número de serie en `serial_number.txt` |
-| `demo_utils.py` | Funciones listas para usar: `connect`, `get_model` (carga el modelo entrenado), `predict` (captura un fotograma y detecta), `auto_aim` (ángulo de giro hacia una caja) y `plot_predictions` (guarda lo detectado) |
-| **`demo.py`** | **La demo: es lo que hay que completar** |
-| `camera/stream.py`, `camera/record.py` | Ver la cámara en directo y grabar 200 fotogramas en `recording.mp4` |
-| `chassis/chassis_distance.py`, `chassis/chassis_speed.py` | Mover el chasis una distancia o a una velocidad |
-| `gimbal/gimbal_degrees.py`, `gimbal/gimbal_speed.py` | Mover el gimbal a un ángulo o a una velocidad |
-| `others/blaster.py`, `others/led.py`, `others/battery.py` | Disparar (agua o infrarrojo), cambiar los LED y leer la batería |
+| **`circuito.py`** | **Configuración: modelo, umbral, estrategia y paradas del circuito. Es lo que se ajusta en el laboratorio** |
+| **`demo.py`** | La demo: recorrido, barrido, puntería, disparo, evidencias, LED, sonido y baile. También `detect_and_shoot` completado según la plantilla |
+| `demo_utils.py` | Funciones de la asignatura y las nuestras (sección «Añadidos del grupo 2»): carga comprobada del modelo, cámara abierta toda la demo, evidencias, LED y sonido |
+| `simulacion.py` | Robot simulado para probar la demo sin el RoboMaster |
+| **`guia_pruebas.pdf`** | **Guía paso a paso de las pruebas con el robot antes de la demo final** |
+| `tests/test_demo.py` | Pruebas con el robot simulado y un detector falso, y comprobación de sintaxis de Python 3.8 |
+| `connect.py` | Une el robot a la wifi del laboratorio con un QR y guarda su número de serie en `serial_number.txt` |
+| `audio/`, `camera/`, `chassis/`, `gimbal/`, `others/` | Ejemplos de cada módulo del SDK |
+| `pyproject.toml`, `pixi.lock` | Entorno de la asignatura (pixi, Python 3.8) |
 
-Los ejemplos de `camera/`, `chassis/`, `gimbal/` y `others/` son independientes: cada
-uno se conecta, hace una cosa y se desconecta. Sirven para aprender el SDK antes de
-tocar la demo.
+## 2. Cómo funciona la demo
 
-## 2. Puesta en marcha
+Para cada parada de `circuito.PARADAS`:
 
-1. **Entorno.** El SDK `robomaster` solo funciona con Python 3.6–3.8, así que se usa
-   el entorno de la asignatura: `pixi install` en esta carpeta y `pixi shell` para
-   activarlo. Se ejecuta en un portátil conectado a la misma wifi que el robot, no en
-   JupyterHub.
-2. **Conectar el robot**, una sola vez por red:
-   - En `connect.py`, rellenar `WIFI_SSID`, `WIFI_PASSWD` y `SERIAL_NUMBER` **solo en
-     local**. **No hacer commit de esos valores.**
-   - `python connect.py` y enseñar el QR a la cámara del robot.
-   - Se crean `serial_number.txt` y `qrcode.png`. El QR contiene la contraseña del
-     wifi; los dos ficheros están en el `.gitignore` de esta carpeta.
-3. **Probar el SDK** con los ejemplos, por ejemplo `python camera/stream.py` y
-   `python gimbal/gimbal_degrees.py`.
-4. **Copiar el modelo entrenado.** `demo.py` lo busca en
-   `../models/faster_rcnn_v1/model_best.pt`, pero `train.ipynb` lo guarda en
-   `models/<experimento>/model_best.pt`, en la raíz del repositorio. Por ejemplo,
-   `models/faster_rcnn_v1_aug/model_best.pt`. Hay que descargarlo de JupyterHub y
-   ajustar `model_path` en `demo.py`. El modelo no se sube a GitHub (pesa unos 160 MB).
+1. **Desplazamiento.** El chasis hace los movimientos `(x, y, z)` de la parada, uno
+   tras otro: `x` adelante, `y` a la derecha y `z` giro a la izquierda en grados.
+   La velocidad es la de `circuito.py` (0,3 m/s y 30 º/s), recortada siempre a la
+   del SDK (0,5 m/s y 30 º/s): el enunciado prohíbe aumentarla.
+2. **Barrido.** El gimbal se centra y gira a cada ángulo de `barrido`. En cada
+   ángulo espera medio segundo, captura una imagen y aplica el detector. El barrido
+   de 360º usa pasos de 60º: la cámara ve unos 90º y así cada imagen solapa con la
+   siguiente.
+3. **Selección.** Se quedan las detecciones con confianza `>= UMBRAL` y se calcula el
+   ángulo de cada una: el yaw del gimbal más `auto_aim`. Una detección a menos de
+   `TOLERANCIA_YAW` (15º) de otra ya revisada en la parada es el mismo robot visto en
+   dos imágenes y no se repite.
+4. **Puntería y disparo.** Para cada robot nuevo, el gimbal gira hacia él y vuelve a
+   detectar ya apuntado (`CONFIRMAR`). Si la caja más centrada está a menos de
+   `TOLERANCIA_YAW` del centro y no es un robot ya atacado, corrige el error y dispara
+   12 veces. Si no, no dispara: era un falso positivo, el robot se ha movido o se iba a
+   disparar dos veces al mismo. Tras disparar, el gimbal cabecea y el LED se pone verde.
+5. **Fin de la parada.** Si se han atacado los `objetivos` esperados en la parada, se
+   deja de barrer (salvo `BARRIDO_COMPLETO = True`). El gimbal vuelve al centro.
 
-## 3. Qué hay que hacer
+Al terminar: vuelta al inicio (opcional) y baile final con LED, sonido, gimbal y chasis.
 
-En `demo.py`:
+**Estrategia elegida** (se puede cambiar en `circuito.py`):
 
-1. **`detect_and_shoot`**, pasos 2 a 4:
-   - quedarse con las detecciones con `score >= score_threshold`; si no hay ninguna,
-     devolver la imagen y la predicción sin disparar;
-   - elegir la caja con mayor confianza;
-   - girar el gimbal el ángulo que devuelve `auto_aim(image, best_box)`;
-   - disparar con `blaster.INFRARED_FIRE`.
-2. **El recorrido**, en el `__main__`: para cada objetivo, mover el chasis hasta su
-   posición, orientar el gimbal hacia él, llamar a `detect_and_shoot` y guardar la
-   imagen con `plot_predictions`. Después, repetirlo para los demás objetivos.
+- Se dispara a **todas** las detecciones nuevas que superan el umbral
+  (`DISPARAR_A_TODOS`), porque hay que inutilizar a todos los robots.
+- Se barre **hasta encontrar los robots esperados** en esa parada, no siempre 360º. Si
+  no se sabe cuántos hay (`objetivos=None`), se completa el barrido.
+- Se confirma antes de disparar. Cuesta una inferencia más, pero evita gastar los 12
+  disparos en un falso positivo y corrige la puntería.
 
-## 4. Antes de la demo
+**Módulos usados**, como pide el enunciado:
 
-- **Umbral de confianza.** `score_threshold = 0.5` es el valor por defecto. Conviene
-  usar el umbral que mejor resultado dé en `test.ipynb` (la curva de precisión y
-  exhaustividad según el umbral).
-- **Tiempo de inferencia.** `test.ipynb` mide cuánto tarda el modelo por imagen.
-  En el portátil, sin GPU, será bastante más lento que en JupyterHub; si no es
-  suficiente, se puede probar `resize_shape` o un modelo más ligero
-  (`faster_rcnn_v3`, `ssd_v2`).
-- **Versión de PyTorch.** `demo_utils.torch_load_cpu` usa `torch.load` sin
-  `weights_only=False`. Con PyTorch 2.6 o posterior fallaría al cargar nuestro
-  checkpoint; con el entorno de la asignatura (PyTorch 2.4) funciona.
-- **Grabar el circuito real.** `camera/record.py` permite grabar el circuito y sus
-  obstáculos para anotarlos y reentrenar si el modelo falla allí, como dejó previsto T02.
+| Módulo | Uso |
+|---|---|
+| Chasis | Recorrido entre paradas y baile |
+| Gimbal (torreta) | Barrido, puntería, cabeceo tras inutilizar un robot y baile |
+| Cámara | Vídeo abierto toda la demo; se lee el fotograma más reciente con el gimbal quieto |
+| Blaster | 12 disparos de infrarrojo por robot, de uno en uno |
+| LED | Color según el estado: azul en marcha, ámbar buscando, naranja apuntando, rojo parpadeando al disparar, verde tras inutilizar un robot, morado sin hallazgos |
+| Audio | Sonidos del SDK al empezar, buscar, detectar, disparar y terminar, y `engine_sound.wav` al arrancar |
+| Batería | Se lee al empezar y se avisa por debajo del 20 % |
+
+**Seguridad.** Ctrl+C, un error o el final de la demo detienen el chasis, centran el
+gimbal, cierran la cámara, apagan los LED, guardan el resumen y cierran la conexión.
+
+## 3. Evidencias
+
+Cada ejecución crea `evidencias/<fecha_hora>/` (no se sube a GitHub):
+
+- Una imagen por cada inferencia, con nombre `NNN_parada_fase_yawXX.jpg`. Lleva las
+  cajas y la confianza dibujadas: verde si se acepta, naranja si se queda entre 0,3 y
+  el umbral. El objetivo tiene una cruz roja y el título indica la parada, el yaw, el
+  umbral y el tiempo de inferencia. Las fases son `barrido`, `confirmado` y
+  `sin_confirmar`.
+- `originales/`: las mismas imágenes sin dibujar, para analizarlas o anotarlas después.
+- `registro.csv`: una fila por imagen con yaw, tiempo de inferencia, confianzas, cajas,
+  ángulo del objetivo y disparos.
+- `resumen.json`: configuración, robots atacados por parada, disparos totales, tiempo
+  medio de inferencia y duración.
+
+Es el material de la memoria del Bloque 3: aciertos, falsos positivos, robots no
+vistos y tiempos.
+
+## 4. En el laboratorio
+
+1. **Proyecto y entorno.** El SDK `robomaster` solo funciona con Python 3.6–3.8.
+   - En los ordenadores del laboratorio: abrir en VSCode `/home/PIDS/robomaster`, copiar
+     allí estos ficheros y elegir el intérprete `/home/PIDS/robomaster/.pixi/venv/bin/python`.
+   - En un portátil con Windows: crear un entorno de Python 3.8 en esta carpeta, por
+     ejemplo con `uv`:
+     `uv venv --python 3.8 .venv` y luego
+     `uv pip install --python .venv\Scripts\python.exe --index https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match "robomaster>=0.1.1.68,<0.2" torch==2.4.1 torchvision==0.19.1 "numpy<2" "matplotlib<3.8"`.
+     Abrir esta carpeta en VSCode y elegir `.venv\Scripts\python.exe` como intérprete.
+     `.venv/` está ignorado.
+   - Ejecutar sin depurador (Ctrl+F5 o «Run Python File»): al relanzar con el depurador,
+     VSCode da a veces `ConnectionRefusedError` sin llegar a ejecutar el script.
+2. **Modelo.** Basta con los pesos de `model_best.pt`, que pesa 346 MB porque guarda
+   también el optimizador. En un terminal de JupyterHub se exporta `model_demo.pt`
+   (173 MB, solo `{'model': state_dict}`):
+   ```
+   python -c "import os,torch;d=os.path.expanduser('~/pids_main/models/faster_rcnn_v2_aug_robusto_v1_lr001/');c=torch.load(d+'model_best.pt',map_location='cpu',weights_only=False);torch.save({'model':c['model']},d+'model_demo.pt')"
+   ```
+   Se descarga y se deja en `models/faster_rcnn_v2_aug_robusto_v1_lr001/model_demo.pt`,
+   junto a `demo.py`; es la ruta de `RUTA_MODELO`. El de la demo tiene SHA-256
+   `f46a49d7c8cb2ced6061738b01a99a1c9f476a4aea9c83a6967e7909d5b63141`. El modelo no se
+   sube a GitHub. `demo.py` comprueba que el checkpoint trae los 404 tensores de la
+   arquitectura.
+3. **Conectar.** Hay dos modos:
+   - **Wifi directo** (portátil con wifi): la pestaña de conexión del robot en el icono
+     de wifi directo y el portátil conectado a la red `RMEP-…` del robot (contraseña en
+     su pegatina). No se usa `connect.py`.
+   - **Networking** (ordenadores del laboratorio, sin wifi): rellenar en `connect.py`
+     la SSID, la contraseña y el número de serie **solo en local** (no se hace commit de
+     esos valores; `git update-index --skip-worktree connect.py` evita subirlos por
+     error). Poner el robot en modo *networking*, lanzar `python connect.py` y enseñarle
+     el QR.
+
+   Todos los scripts eligen el modo solos: con `serial_number.txt`, networking; sin él,
+   wifi directo. Al conectar muestran `Conexion: wifi` o `Conexion: networking`.
+4. **Probar sin robot**, en el ordenador del laboratorio:
+   `python demo.py --simulacion CARPETA`, con una carpeta de imágenes; dentro del
+   repositorio basta `--simulacion`, que usa `ENTREGA 1/WEEK2/DATOS_ASIGNATURA/data_test`.
+   Comprueba que el modelo carga y mide la inferencia en ese equipo.
+5. **Medir el circuito** y escribir las paradas en `circuito.PARADAS`: movimientos,
+   ángulos de barrido y robots esperados. Comprobar el sentido del gimbal: si apunta al
+   lado contrario del robot, poner `SIGNO_YAW = -1`.
+6. **Calibrar cada parada sin moverse ni disparar:**
+   `python demo.py --sin-mover --sin-disparar --paradas P1`. Revisar en `evidencias/`
+   que detecta a los robots y que el umbral 0,95 (fijado en validación) no es demasiado
+   estricto con la luz del laboratorio. Si hay que cambiarlo, probar con `--umbral` y
+   anotar el motivo para la memoria.
+7. **Recorrido sin disparar:** `python demo.py --sin-disparar`, con un compañero junto
+   al robot y Ctrl+C a mano. Dejar espacio en todas direcciones y no confundir x e y.
+8. **Demo completa:** `python demo.py`. Agarrar el robot siempre por la base, nunca por
+   la cabeza, y no apuntar a nadie con el blaster.
+
+Opciones de `demo.py`:
+
+| Opción | Efecto |
+|---|---|
+| `--sin-disparar` | No usa el blaster |
+| `--sin-mover` | No mueve el chasis |
+| `--paradas P1,P3` | Solo detecta en esas paradas. Hace los movimientos hasta la última elegida, salvo con `--sin-mover` |
+| `--umbral 0.9` | Cambia el umbral sin editar `circuito.py` |
+| `--modelo RUTA`, `--arquitectura NOMBRE` | Usa otro checkpoint, por ejemplo `faster_rcnn_v3` si la inferencia es lenta |
+| `--simulacion [CARPETA]` | Robot simulado que ve las imágenes de `CARPETA` (por defecto, el test de la asignatura) |
+| `--evidencias CARPETA` | Carpeta de salida |
+
+## 5. Pruebas
+
+```
+python -m unittest discover -s tests
+```
+
+Con el robot simulado y un detector falso que «ve» robots en ángulos conocidos,
+comprueban lo siguiente:
+
+- ataca a cada robot una sola vez, aunque salga en dos imágenes, con 12 disparos y
+  apuntando a su ángulo;
+- deja de barrer al encontrar los robots esperados;
+- no dispara si al confirmar el robot no está centrado o es uno ya atacado, y corrige la puntería si lo está;
+- con `DISPARAR_A_TODOS = False` dispara solo a la mejor detección de cada imagen;
+- guarda todas las imágenes;
+- respeta `--sin-disparar`, `--sin-mover` y `--paradas`;
+- usa los seis módulos;
+- nunca pasa de la velocidad del SDK;
+- Ctrl+C deja el robot parado y con el LED apagado;
+- el código es válido en Python 3.8.
+
+El simulador falla si alguna orden supera la velocidad máxima.
+
+## 6. Notas
+
+- **Tiempo de inferencia.** Medido en CPU con Python 3.8 y PyTorch 2.4.1 (32 hilos,
+  imagen de 1280×720): Faster R-CNN v2 tarda unos 1,1 s por imagen y Faster R-CNN v3 unos
+  0,3 s. Un ordenador del laboratorio con menos núcleos tardará más. Como el robot se para
+  a mirar, solo alarga cada parada. `resumen.json` da la media real. Si es excesivo, se
+  puede usar `RESIZE` o `--arquitectura faster_rcnn_v3` (AP@0,5 de 0,9240 en test).
+- **Checkpoints de numpy 2.** El checkpoint guarda el estado de numpy. Si se guardó en
+  JupyterHub con numpy 2, no se puede leer con numpy 1.x, que es el único disponible en
+  Python 3.8. `torch_load_cpu` lo detecta y lo vuelve a cargar traduciendo
+  `numpy._core` a `numpy.core`. Está comprobado con Python 3.8.20, PyTorch 2.4.1 y
+  numpy 1.24.
+- **`torch_load_cpu`** usa `weights_only=False` porque el checkpoint guarda también el
+  estado de numpy y de `random`. Con PyTorch 2.6 o posterior fallaría sin ello; en el
+  entorno de la asignatura (PyTorch 2.4) funciona igual.
+- **Grabar el circuito.** `camera/record.py` graba el circuito y sus obstáculos, y las
+  imágenes de `evidencias/*/originales/` sirven para anotar los fallos y reentrenar,
+  como dejó previsto T02.
