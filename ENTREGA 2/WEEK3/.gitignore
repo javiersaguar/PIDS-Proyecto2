@@ -10,3 +10,5 @@ models/
 *.pt
 __pycache__/
 .venv/
+# Audios propios con derechos de autor (canciones, sonidos de juegos): solo en local
+audio/propios/

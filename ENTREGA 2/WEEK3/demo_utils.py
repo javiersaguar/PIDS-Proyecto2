@@ -598,13 +598,16 @@ class Senales:
             time.sleep(0.1)
 
     def _reproducir(self, lanzar, que):
+        """Envía el sonido si no hay otro sonando. Devuelve True si se ha enviado."""
         if self.ocupado():
-            return
+            return False
         try:
             self._accion = lanzar()
+            return self._accion is not None
         except Exception as e:
             liberar_cerrojo_sdk(self.ep_robot, e)
             print(f'[aviso] {que}: {e}')
+            return False
 
     def estado(self, nombre, parpadeo=False):
         if not self.activo:
@@ -622,10 +625,13 @@ class Senales:
         self._reproducir(lambda: self.ep_robot.play_sound(self.sonidos[nombre], 1), 'sonido')
 
     def audio(self, fichero):
-        """Reproduce un .wav en el altavoz del robot sin esperar a que termine."""
+        """Reproduce un .wav (mono, 48 kHz) en el altavoz del robot sin esperar a que termine.
+
+        El SDK sube el fichero al robot en cada llamada. Devuelve True si se ha enviado.
+        """
         if not self.activo or not fichero or not os.path.isfile(fichero):
-            return
-        self._reproducir(lambda: self.ep_robot.play_audio(fichero), 'audio')
+            return False
+        return self._reproducir(lambda: self.ep_robot.play_audio(fichero), 'audio')
 
 
 def nivel_bateria(ep_robot, espera=3.0):

@@ -18,6 +18,7 @@ Ctrl+C detiene el chasis, centra el gimbal, apaga los LED y cierra la conexión.
 import argparse
 import os
 import sys
+import threading
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 if AQUI not in sys.path:
@@ -119,6 +120,7 @@ class Demo:
         self.camara = None
         self.ataques = []
         self.paradas_hechas = []
+        self.audios_avisados = set()
         self.inicio = time.time()
 
     # --- piezas ---------------------------------------------------------------
@@ -173,9 +175,7 @@ class Demo:
         disparos = 0
         if not self.args.sin_disparar:
             self.senales.estado('disparando', parpadeo=True)
-            self.senales.sonido('disparo')
-            disparar(self.ep_robot, C.DISPAROS_POR_ROBOT)
-            disparos = C.DISPAROS_POR_ROBOT
+            disparos = self.rafaga()
         if C.CONFIRMAR:
             self.registro.imagen(image, prediction, ms, parada, 'confirmado', yaw_captura, self.torreta.pitch,
                                  objetivo=caja, objetivo_yaw=self.torreta.yaw, disparos=disparos)
@@ -229,18 +229,70 @@ class Demo:
                                         yaw_atacados=[round(a, 1) for a in atacados],
                                         imagenes=sum(f['parada'] == nombre for f in self.registro.filas)))
 
+    def ruta_audio(self, relativa):
+        """Ruta absoluta de un audio de circuito.py, o None si no está configurado o no existe."""
+        if not relativa:
+            return None
+        ruta = os.path.join(AQUI, relativa)
+        if os.path.isfile(ruta):
+            return ruta
+        if relativa not in self.audios_avisados:
+            self.audios_avisados.add(relativa)
+            print(f'[aviso] no existe {relativa}: se usan los sonidos del SDK (ver audio/convertir_audio.py)')
+        return None
+
+    def rafaga(self):
+        """Dispara DISPAROS_POR_ROBOT veces; con AUDIO_DISPARO, cada disparo suena con ese audio."""
+        audio = self.ruta_audio(C.AUDIO_DISPARO)
+        if audio is None:
+            self.senales.sonido('disparo')
+        for _ in range(C.DISPAROS_POR_ROBOT):
+            self.ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1)
+            if audio is not None and self.senales.audio(audio):
+                self.senales.esperar_sonido(C.ESPERA_AUDIO_DISPARO)
+            else:
+                time.sleep(0.3)
+        return C.DISPAROS_POR_ROBOT
+
+    def luces_fiesta(self, parar):
+        """Cambia el color de los LED LED_FIESTA_HZ veces por segundo hasta que se active `parar`."""
+        colores = [(255, 0, 0), (255, 128, 0), (255, 255, 0), (0, 255, 0), (0, 255, 255), (0, 0, 255),
+                   (255, 0, 255)]
+        i = 0
+        while not parar.is_set():
+            r, g, b = colores[i % len(colores)]
+            try:
+                self.ep_robot.led.set_led(comp=led.COMP_ALL, r=r, g=g, b=b, effect=led.EFFECT_ON)
+            except Exception:
+                pass
+            i += 1
+            parar.wait(1.0 / C.LED_FIESTA_HZ)
+
     def baile(self):
-        """Baile final: LED de colores, sonido, vaivén del chasis y de la torreta."""
+        """Baile final con la canción de AUDIO_FINAL y los LED cambiando de color muy rápido."""
         print('Baile final')
-        self.senales.sonido('hecho')
-        for color in ['disparando', 'moviendo', 'hecho', 'nada']:
-            self.senales.estado(color, parpadeo=True)
-            self.torreta.ir(20, 10)
-            self.torreta.ir(-20, -5)
-        self.torreta.ir(0, 0)
-        if not self.args.sin_mover:
-            for z in (20, -40, 20):
-                self.mover(0, 0, z)
+        self.senales.esperar_sonido(5)
+        cancion = self.ruta_audio(C.AUDIO_FINAL)
+        if cancion is None or not self.senales.audio(cancion):
+            self.senales.sonido('hecho')
+        parar = threading.Event()
+        luces = threading.Thread(target=self.luces_fiesta, args=(parar,), daemon=True)
+        luces.start()
+        try:
+            for _ in range(4):
+                self.torreta.ir(20, 10)
+                self.torreta.ir(-20, -5)
+            self.torreta.ir(0, 0)
+            if not self.args.sin_mover:
+                for z in (20, -40, 20):
+                    self.mover(0, 0, z)
+            # Las luces siguen mientras suena la canción
+            fin = time.time() + C.DURACION_FIESTA_MAX
+            while self.senales.ocupado() and time.time() < fin:
+                parar.wait(0.1)
+        finally:
+            parar.set()
+            luces.join(timeout=1)
         self.senales.estado('fin')
 
     # --- demo completa ----------------------------------------------------------

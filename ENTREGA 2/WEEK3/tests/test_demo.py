@@ -74,7 +74,7 @@ class PruebasDemo(unittest.TestCase):
         self.salida = tempfile.mkdtemp(prefix='evid_')
         self.original = {k: getattr(C, k) for k in ['PARADAS', 'BAILE_FINAL', 'AUDIO_MOTOR', 'ESPERA_CAMARA',
                                                     'DISPARAR_A_TODOS', 'BARRIDO_COMPLETO', 'CONFIRMAR',
-                                                    'VELOCIDAD_XY']}
+                                                    'VELOCIDAD_XY', 'AUDIO_DISPARO', 'AUDIO_FINAL']}
         C.BAILE_FINAL, C.AUDIO_MOTOR, C.ESPERA_CAMARA = False, None, 0
         espera = mock.patch('time.sleep')   # sin esperas reales (cámara, disparos, batería)
         espera.start()
@@ -270,6 +270,31 @@ class PruebasDemo(unittest.TestCase):
         ep.battery = Bateria()
         with mock.patch('time.time', side_effect=[0, 0, 10]):
             self.assertIsNone(demo.nivel_bateria(ep))
+
+    def test_cada_disparo_suena_con_su_audio(self):
+        C.AUDIO_DISPARO = os.path.join(CARPETA, 'scar.wav')
+        open(C.AUDIO_DISPARO, 'wb').close()
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([0], p)
+        audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
+        self.assertEqual(audios.count('scar.wav'), 12)
+        self.assertEqual(ep.disparos(), 12)
+
+    def test_baile_con_cancion_y_luces(self):
+        C.BAILE_FINAL = True
+        C.AUDIO_FINAL = os.path.join(CARPETA, 'cancion.wav')
+        open(C.AUDIO_FINAL, 'wb').close()
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([], p)
+        self.assertIn('cancion.wav', [a.get('fichero') for a in ep.acciones if a['tipo'] == 'audio'])
+        self.assertEqual(ep.acciones[-1]['rgb'], (0, 0, 0))   # al cerrar, LED apagados
+
+    def test_sin_audios_propios_usa_los_del_sdk(self):
+        C.AUDIO_DISPARO, C.AUDIO_FINAL = 'audio/propios/no_existe.wav', None
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([0], p)
+        self.assertEqual(ep.disparos(), 12)
+        self.assertIn(C.SONIDOS['disparo'], [a.get('id') for a in ep.acciones if a['tipo'] == 'sonido'])
 
     def test_detect_and_shoot_de_la_plantilla(self):
         ep = demo.connect('wifi')
