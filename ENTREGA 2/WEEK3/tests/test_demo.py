@@ -110,6 +110,20 @@ class PruebasDemo(unittest.TestCase):
         self.assertEqual(ep.disparos(), 12)
         self.assertEqual(len(r['ataques']), 1)
 
+    def test_blaster_sin_respuesta_detiene_la_demo_y_registra_la_rafaga_parcial(self):
+        C.PARADAS = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep = demo.connect('wifi')
+        d = demo.Demo(ep, DetectorFalso([0]), Args(self.salida))
+        with mock.patch.object(ep.blaster, 'fire', side_effect=[True, True, False]) as fire:
+            with self.assertRaisesRegex(RuntimeError, 'no confirmó el disparo 3'):
+                d.ejecutar()
+
+        self.assertEqual(fire.call_count, 3)
+        self.assertEqual(d.registro.filas[-1]['disparos'], 2)
+        with open(os.path.join(d.registro.carpeta, 'resumen.json'), encoding='utf-8') as f:
+            self.assertEqual(json.load(f)['disparos'], 2)
+        self.assertEqual(ep.acciones[-1]['rgb'], (0, 0, 0))
+
     def test_dispara_a_todos_los_robots_de_la_parada(self):
         p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
         ep, d, r = self.lanzar([-100, 10, 30, 175], p)

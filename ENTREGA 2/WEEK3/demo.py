@@ -71,7 +71,8 @@ def detect_and_shoot(ep_robot, model, score_threshold=0.5, resize_shape=None):
     ep_robot.gimbal.move(pitch=0, yaw=alpha, pitch_speed=VEL_GIMBAL_MAX, yaw_speed=VEL_GIMBAL_MAX).wait_for_completed(timeout=10)
 
     # --- STEP 4: shoot --------------------------------------------------------
-    ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1)
+    if not ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1):
+        raise RuntimeError('El blaster no confirmó el disparo infrarrojo')
 
     return image, prediction
 
@@ -179,9 +180,12 @@ class Demo:
         if C.CONFIRMAR:
             self.registro.imagen(image, prediction, ms, parada, 'confirmado', yaw_captura, self.torreta.pitch,
                                  objetivo=caja, objetivo_yaw=self.torreta.yaw, disparos=disparos)
-        print(f'  objetivo en {self.torreta.yaw:+.1f} grados (confianza {confianza:.3f}): {disparos} disparos')
         self.ataques.append(dict(parada=parada, yaw=round(self.torreta.yaw, 1), confianza=round(confianza, 3),
                                  confirmado=C.CONFIRMAR, disparos=disparos))
+        if not self.args.sin_disparar and disparos < C.DISPAROS_POR_ROBOT:
+            raise RuntimeError(f'{parada}: el blaster no confirmó el disparo {disparos + 1} '
+                               f'de {C.DISPAROS_POR_ROBOT} ({disparos} confirmados por el SDK)')
+        print(f'  objetivo en {self.torreta.yaw:+.1f} grados (confianza {confianza:.3f}): {disparos} disparos')
         self.celebrar()
         return True
 
@@ -242,14 +246,19 @@ class Demo:
         return None
 
     def rafaga(self):
-        """Dispara DISPAROS_POR_ROBOT veces; con AUDIO_DISPARO, cada disparo suena con ese audio."""
+        """Devuelve cuántas órdenes de disparo confirmó el SDK."""
         audio = self.ruta_audio(C.AUDIO_DISPARO)
         if audio is None:
             self.senales.sonido('disparo')
-        for _ in range(C.DISPAROS_POR_ROBOT):
-            self.ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1)
+        else:
+            self.senales.esperar_sonido(8)  # deja acabar el motor o el aviso de detección
+        for confirmados in range(C.DISPAROS_POR_ROBOT):
+            if not self.ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1):
+                return confirmados
             if audio is not None and self.senales.audio(audio):
+                inicio = time.monotonic()
                 self.senales.esperar_sonido(C.ESPERA_AUDIO_DISPARO)
+                time.sleep(max(0.0, 0.3 - (time.monotonic() - inicio)))
             else:
                 time.sleep(0.3)
         return C.DISPAROS_POR_ROBOT
