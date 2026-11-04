@@ -628,14 +628,28 @@ class Senales:
         self._reproducir(lambda: self.ep_robot.play_audio(fichero), 'audio')
 
 
-def nivel_bateria(ep_robot, espera=1.0):
-    """Lee una vez el porcentaje de batería (None si no llega a tiempo)."""
+def nivel_bateria(ep_robot, espera=3.0):
+    """Lee una vez el porcentaje de batería (None si no llega en `espera` segundos).
+
+    Espera a la primera lectura antes de cancelar la suscripción: si se cancela
+    antes, el SDK falla (dds.py, del_subject_info: AttributeError en `_task`).
+    Un fallo al cancelar nunca detiene la demo.
+    """
     lectura = {}
 
-    def guardar(percent):
+    def guardar(percent, *args):
         lectura['pct'] = percent
 
-    ep_robot.battery.sub_battery_info(1, guardar)
-    time.sleep(espera)
-    ep_robot.battery.unsub_battery_info()
+    try:
+        ep_robot.battery.sub_battery_info(5, guardar)
+    except Exception as e:
+        print(f'[aviso] batería: {e}')
+        return None
+    fin = time.time() + espera
+    while 'pct' not in lectura and time.time() < fin:
+        time.sleep(0.1)
+    try:
+        ep_robot.battery.unsub_battery_info()
+    except Exception as e:
+        print(f'[aviso] batería, al cancelar la lectura: {e!r}')
     return lectura.get('pct')

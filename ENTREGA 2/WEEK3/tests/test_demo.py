@@ -259,6 +259,18 @@ class PruebasDemo(unittest.TestCase):
         demo.liberar_cerrojo_sdk(ep, Exception('Robot is already performing 1 action(s)'))
         self.assertFalse(cerrojo.locked())
 
+    def test_bateria_sin_lectura_no_detiene_la_demo(self):
+        class Bateria:
+            def sub_battery_info(self, freq, callback, *args):
+                return True            # la lectura no llega nunca
+
+            def unsub_battery_info(self):
+                raise AttributeError("'NoneType' object has no attribute 'done'")   # fallo del SDK
+        ep = mock.Mock()
+        ep.battery = Bateria()
+        with mock.patch('time.time', side_effect=[0, 0, 10]):
+            self.assertIsNone(demo.nivel_bateria(ep))
+
     def test_detect_and_shoot_de_la_plantilla(self):
         ep = demo.connect('wifi')
         image, prediction = demo.detect_and_shoot(ep, DetectorFalso([10]), score_threshold=0.5)
