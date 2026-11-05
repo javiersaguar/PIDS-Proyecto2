@@ -121,7 +121,9 @@ GIRAR_EN_RUTA = True     # True: gira hacia cada punto y avanza; False: va en di
 PLANO = [
     # nombre, punto donde se para, puntos intermedios (por), rumbo al llegar (mirar),
     # rivales (puntos donde se espera un robot: el barrido mira hacia ellos)
-    dict(nombre='P1', punto=(2.85, 0.0)),   # paso 1: 2,85 m en línea recta (medido el 05/11)
+    # paso 1: 2,85 m en línea recta (medido el 05/11). Paso 2: la torreta gira a la derecha
+    # unos 90º (si no lo ve, prueba a 60º y 120º), detecta al rival y le dispara
+    dict(nombre='P1', punto=(2.85, 0.0), barrido=[90, 60, 120], pitch=0, objetivos=1),
 ]
 PARADAS = paradas_desde_plano(RUMBO_INICIAL, PLANO, girar=GIRAR_EN_RUTA, abanico=30, barrido_sin_rivales=BARRIDO_360)
 # También se pueden escribir a mano, como antes: movimientos (x, y, z) relativos (x
