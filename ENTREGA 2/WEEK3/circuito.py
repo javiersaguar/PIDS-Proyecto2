@@ -11,6 +11,8 @@ y probarlos primero con `python demo.py --sin-disparar`, con un compañero al
 lado del robot y Ctrl+C a mano.
 """
 
+from recorrido import paradas_desde_plano
+
 # --- Modelo -------------------------------------------------------------------
 # Modelo final del Bloque 2 (Faster R-CNN v2, umbral fijado en validación).
 MODELO = 'faster_rcnn_v2'
@@ -105,15 +107,28 @@ BARRIDO_360 = [0, 60, 120, 180, -120, -60]
 BARRIDO_FRONTAL = [0, -45, 45]
 
 # --- Recorrido --------------------------------------------------------------------
-# nombre: aparece en las evidencias. movimientos: lista de (x, y, z) que se
-# ejecutan en orden para llegar a la parada. barrido: yaw del gimbal (grados,
-# respecto al frente del chasis) donde se captura. pitch: inclinación del gimbal.
-# objetivos: robots que se espera ver desde ahí (None = desconocido, barrido entero).
-PARADAS = [
-    dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=BARRIDO_FRONTAL, pitch=0, objetivos=1),
-    dict(nombre='P2', movimientos=[(0, 0, 90), (1.0, 0, 0)], barrido=BARRIDO_360, pitch=0, objetivos=1),
-    dict(nombre='P3', movimientos=[(0, 0, -90), (0.8, 0, 0)], barrido=BARRIDO_360, pitch=0, objetivos=None),
+# Las paradas se miden sobre el plano del circuito (ver recorrido.py): origen en la
+# salida de nuestro robot (esquina de arriba a la izquierda del boceto), x en metros
+# hacia la derecha, y en metros hacia abajo. Rumbos: 0 derecha, 90 abajo, 180
+# izquierda, -90 arriba. Antes de probar, revisar lo calculado con
+#     python recorrido.py
+#
+# BOCETO: los valores de abajo son provisionales, solo para dar forma al recorrido.
+# Hay que sustituirlos por las medidas del circuito real.
+RUMBO_INICIAL = 0        # hacia dónde mira nuestro robot en la salida (0 = derecha del boceto)
+GIRAR_EN_RUTA = True     # True: gira hacia cada punto y avanza; False: va en diagonal sin girar (mecanum)
+PLANO = [
+    # nombre, punto donde se para, puntos intermedios (por), rumbo al llegar (mirar),
+    # rivales (puntos donde se espera un robot: el barrido mira hacia ellos)
+    dict(nombre='P1', punto=(1.0, 0.0), rivales=[(2.5, 0.5)]),
+    dict(nombre='P2', punto=(1.0, 1.5), mirar=0, rivales=[(2.5, 2.0)]),
+    dict(nombre='P3', punto=(2.0, 2.5), por=[(1.0, 2.5)], rivales=None, objetivos=None),
 ]
+PARADAS = paradas_desde_plano(RUMBO_INICIAL, PLANO, girar=GIRAR_EN_RUTA, abanico=30, barrido_sin_rivales=BARRIDO_360)
+# También se pueden escribir a mano, como antes: movimientos (x, y, z) relativos (x
+# adelante, y derecha, z giro a la izquierda), barrido (yaws respecto al chasis), pitch
+# y objetivos (robots que se espera ver; None = desconocido, barrido entero). Ejemplo:
+#   PARADAS = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=BARRIDO_FRONTAL, pitch=0, objetivos=1)]
 VOLVER_AL_INICIO = False # deshacer el recorrido al terminar (en orden inverso)
 # Velocidades del chasis. Se pueden bajar, nunca subir: demo.py las recorta a las del SDK (0,5 m/s y 30 º/s).
 VELOCIDAD_XY = 0.3       # m/s
@@ -124,9 +139,13 @@ BAILE_FINAL = True
 AUDIO_MOTOR = 'audio/engine_sound_corto.wav'  # 6 s al arrancar; None para no usarlo
 # Audios propios (WAV mono 48 kHz, ver audio/convertir_audio.py). Van en audio/propios/,
 # que no se sube a GitHub por los derechos de autor. Si no existen, se usan los sonidos del SDK.
-AUDIO_DISPARO = 'audio/propios/scar.wav'          # suena al empezar cada ráfaga (o en cada disparo, ver SONIDO_CADA_DISPARO)
+# El SDK no sube el volumen del altavoz: se sube en el audio con audio/preparar_disparo.py, que
+# crea scar_fuerte.wav (un disparo) y scar_rafaga.wav (los 12, cada INTERVALO_DISPARO s).
+AUDIO_RAFAGA = 'audio/propios/scar_rafaga.wav'    # sin SEGUIMIENTO: suena una vez y se dispara a su ritmo
+AUDIO_DISPARO = 'audio/propios/scar_fuerte.wav'   # un disparo: con SEGUIMIENTO, o si no hay AUDIO_RAFAGA
+SILENCIO_AUDIO_DISPARO = 0.3 # s de silencio al principio de esos audios (--silencio de preparar_disparo.py)
 AUDIO_FINAL = 'audio/propios/superestrella.wav'   # canción del baile final
-ESPERA_AUDIO_DISPARO = 2.0   # s máximos que se espera al audio de cada disparo (solo sin SEGUIMIENTO y con SONIDO_CADA_DISPARO)
+ESPERA_AUDIO_DISPARO = 2.0   # s máximos que se espera al audio de cada disparo (sin SEGUIMIENTO ni AUDIO_RAFAGA)
 LED_FIESTA_HZ = 10           # cambios de color por segundo en el baile final
 DURACION_FIESTA_MAX = 40     # s máximos de luces tras el baile mientras suena la canción
 # Sonidos predefinidos del SDK (robot.SOUND_ID_*); se pueden escuchar con audio/predefined_sounds.py
