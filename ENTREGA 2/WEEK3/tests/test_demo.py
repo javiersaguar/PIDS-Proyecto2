@@ -757,6 +757,46 @@ class PruebasDemo(unittest.TestCase):
         self.assertAlmostEqual(ep.gimbal.yaw, 10, delta=0.5)
 
 
+class PruebaConexion(unittest.TestCase):
+    """Con serial_number.txt, la demo usa networking salvo si el portátil está en la wifi del robot."""
+
+    def conectar(self, ip, *args, **kw):
+        du = sys.modules['demo_utils']
+        carpeta = tempfile.mkdtemp(prefix='conexion_')
+        self.addCleanup(shutil.rmtree, carpeta, True)
+        with open(os.path.join(carpeta, 'serial_number.txt'), 'w') as f:
+            f.write('NUMERO_FALSO\n')
+        pedido = {}
+
+        class RobotFalso:
+            def initialize(self, conn_type=None, sn=None):
+                pedido.update(conn_type=conn_type, sn=sn)
+
+        anterior = os.getcwd()
+        os.chdir(carpeta)
+        try:
+            with mock.patch.object(du.robot, '__file__', 'robot.py', create=True), \
+                    mock.patch.object(du.robot, 'Robot', RobotFalso), \
+                    mock.patch.object(du, 'ip_hacia', return_value=ip):
+                du.connect(*args, **kw)
+        finally:
+            os.chdir(anterior)
+        return pedido
+
+    def test_en_la_wifi_del_robot_usa_wifi_directo(self):
+        self.assertEqual(self.conectar('192.168.2.23', 'networking'), dict(conn_type='ap', sn=None))
+
+    def test_en_otra_red_usa_networking_con_el_numero_de_serie(self):
+        self.assertEqual(self.conectar('10.0.0.5', 'networking'), dict(conn_type='sta', sn='NUMERO_FALSO'))
+
+    def test_networking_forzado(self):
+        self.assertEqual(self.conectar('192.168.2.23', 'networking', auto=False)['conn_type'], 'sta')
+
+    def test_opcion_conexion(self):
+        self.assertEqual(demo.argumentos([]).conexion, 'auto')
+        self.assertEqual(demo.argumentos(['--conexion', 'wifi']).conexion, 'wifi')
+
+
 class PruebaPython38(unittest.TestCase):
     """El entorno del laboratorio es Python 3.8: no usar sintaxis más moderna."""
 

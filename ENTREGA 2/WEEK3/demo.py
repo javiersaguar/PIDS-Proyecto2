@@ -38,6 +38,8 @@ def argumentos(argv=None):
     p.add_argument('--ver', action='store_true', help='mostrar en una ventana cada imagen analizada')
     p.add_argument('--umbral', type=float, default=None, help='umbral de confianza (por defecto, el de circuito.py)')
     p.add_argument('--evidencias', default=os.path.join(AQUI, 'evidencias'), help='carpeta de salida')
+    p.add_argument('--conexion', choices=['auto', 'wifi', 'networking'], default='auto',
+                   help='modo de conexión; auto: networking con serial_number.txt, salvo en la wifi del robot')
     return p.parse_args(argv)
 
 
@@ -935,7 +937,12 @@ def main(argv=None):
     print(f'Modelo {C.MODELO} en {device}; primera inferencia: {calentar(model, C.RESIZE):.0f} ms')
     # El robot simulado no necesita serial_number.txt
     try:
-        ep_robot = connect('wifi' if args.simulacion else 'networking')
+        if args.simulacion:
+            ep_robot = connect('wifi')
+        elif args.conexion == 'auto':
+            ep_robot = connect('networking')
+        else:
+            ep_robot = connect(args.conexion, auto=False)
     except ConnectionError as e:
         print(f'[error] {e}')
         return None

@@ -275,8 +275,11 @@ vistos y tiempos.
      error). Poner el robot en modo *networking*, lanzar `python connect.py` y enseñarle
      el QR.
 
-   Todos los scripts eligen el modo solos: con `serial_number.txt`, networking; sin él,
-   wifi directo. Al conectar muestran `Conexion: wifi` o `Conexion: networking`.
+   `demo.py` elige el modo solo: networking si existe `serial_number.txt`, y wifi directo si
+   no existe o si el portátil está en la wifi del robot (IP `192.168.2.x`), aunque se haya
+   lanzado `connect.py` antes. `--conexion wifi` o `--conexion networking` fuerzan el modo.
+   Los scripts de prueba usan wifi directo. Al conectar se muestra `Conexion: wifi` o
+   `Conexion: networking`.
 4. **Probar sin robot**, en el ordenador del laboratorio:
    `python demo.py --simulacion CARPETA`, con una carpeta de imágenes; dentro del
    repositorio basta `--simulacion`, que usa `ENTREGA 1/WEEK2/DATOS_ASIGNATURA/data_test`.
@@ -324,6 +327,7 @@ Opciones de `demo.py`:
 | `--modelo RUTA`, `--arquitectura NOMBRE` | Usa otro checkpoint, por ejemplo `faster_rcnn_v3` si la inferencia es lenta |
 | `--simulacion [CARPETA]` | Robot simulado que ve las imágenes de `CARPETA` (por defecto, el test de la asignatura) |
 | `--evidencias CARPETA` | Carpeta de salida |
+| `--conexion wifi` / `--conexion networking` | Fuerza el modo de conexión (por defecto, `auto`) |
 
 ## 5. Pruebas
 

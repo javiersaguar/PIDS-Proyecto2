@@ -24,13 +24,15 @@ from typing import Tuple, Union, Any
 warnings.filterwarnings('ignore', message=r'The transform `ToTensor\(\)` is deprecated')
 
 
-def connect(connection='networking'):
+def connect(connection='networking', auto=True):
     """Connect to the RoboMaster and return the robot object.
 
     Run connect.py once and scan the QR code so the robot joins your network.
     In 'networking' mode the robot is found by the serial number saved in
     'serial_number.txt' (created by connect.py).
     :param connection: 'networking' (router), 'wifi' (direct Wi-Fi) or 'usb'.
+    :param auto: con 'networking', pasar a wifi directo si falta serial_number.txt o el
+                 portátil está en la wifi del robot. False respeta el modo pedido.
     :return: ep_robot, a connected RoboMaster object.
     """
     conn_types = {'networking': 'sta', 'wifi': 'ap', 'usb': 'rndis'}
@@ -39,9 +41,17 @@ def connect(connection='networking'):
     ruta = 'serial_number.txt'
     if not os.path.isfile(ruta):
         ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'serial_number.txt')
-    # Sin serial_number.txt (no se ha usado connect.py) se conecta por wifi directo al robot
-    if connection == 'networking' and not os.path.isfile(ruta):
-        connection = 'wifi'
+    # Sin serial_number.txt (no se ha usado connect.py) se conecta por wifi directo al robot.
+    # Con él, si el portátil está en la wifi del propio robot (IP 192.168.2.x), también: en esa
+    # red no hay router y el modo networking no lo encuentra.
+    if connection == 'networking' and auto:
+        if not os.path.isfile(ruta):
+            connection = 'wifi'
+        elif hasattr(robot, '__file__'):
+            ip = ip_hacia('192.168.2.1')
+            if ip is not None and ip.startswith('192.168.2.'):
+                print(f'El portátil está en la wifi del robot ({ip}): se usa wifi directo y no serial_number.txt')
+                connection = 'wifi'
     print(f'Conexion: {connection}')
 
     # In networking mode the robot is identified by its serial number
