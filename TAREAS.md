@@ -344,3 +344,91 @@ Comprobado sin robot: `simulacion.py` sustituye al SDK y `tests/test_demo.py` ti
 pruebas, incluida la sintaxis de Python 3.8. Pendiente (T22): las paradas de
 `circuito.py` son un ejemplo y hay que medirlas sobre el circuito real, comprobar el
 sentido del gimbal y calibrar cada parada con `--sin-mover --sin-disparar`.
+
+### Actualización del 04/11: seguimiento de rivales en movimiento (Bloque 3, fase 1)
+
+T21/T22, en `alejandro-cuevas`. Los rivales también exploran y se mueven, y la demo se
+ejecutará con GPU, así que la ráfaga a ciegas no basta. Cambios en `ENTREGA 2/WEEK3/`:
+
+- **Seguimiento** (`SEGUIMIENTO = True`): al fijar un robot, la torreta lo sigue fotograma a
+  fotograma con `gimbal.drive_speed`, en yaw y en pitch, y solo dispara cuando está centrado,
+  hasta 12. Anticipa la velocidad del robot y compensa el retardo del vídeo con el historial
+  de ángulos de la torreta.
+- Al confirmar, fija al robot aunque se haya movido desde el barrido (hasta `SALTO_MAX`), en
+  lugar de no disparar.
+- Ángulo real del gimbal con `sub_angle`, comprobado al arrancar (con su sentido); si no,
+  se estima por software.
+- Ráfaga rápida: un sonido por ráfaga en lugar de subir el audio en cada disparo.
+- Evidencias escritas en un hilo aparte, para no frenar el seguimiento.
+
+Comprobado sin robot: 37 pruebas (antes 24; 13 nuevas), con robots simulados que se mueven y con
+retardo de cámara. Pendiente en el laboratorio: confirmar la lectura del gimbal, medir
+`RETARDO_CAMARA` y ajustar `GANANCIA_SEGUIMIENTO` (pasos en el `README.md` de WEEK3).
+La `guia_pruebas.pdf` aún cita 15 pruebas y la ráfaga anterior. Las fases 2 (barrido más
+ágil) y 3 (vigilancia durante el recorrido) quedan por hacer.
+
+### Actualización del 04/11: barrido continuo y memoria de robots atacados (Bloque 3, fase 2)
+
+T21/T22, en `alejandro-cuevas` (PR #36). Cambios en `ENTREGA 2/WEEK3/`:
+
+- **Barrido continuo** (`BARRIDO_CONTINUO = True`): la torreta gira sin pararse entre los
+  extremos del barrido (±145º para 360º) y analiza una imagen cada `PASO_BARRIDO` grados.
+  En cuanto ve un robot nuevo lo sigue y le dispara. En simulación, cada parada tarda entre
+  un 5 y un 15 % menos; el límite es girar a 30 º/s.
+- **Memoria de robots atacados** en metros sobre el circuito: posición del chasis por sus
+  movimientos y distancia al robot por el alto de su caja (`ALTURA_ROBOT`). No se repiten
+  los 12 disparos contra un robot ya atacado, tampoco desde otra parada. La tolerancia es
+  estrecha de lado y amplia a lo largo de la línea de visión. Un robot que se ha alejado
+  se vuelve a atacar.
+- `ROBOTS_TOTALES` opcional: atacados todos, el resto de paradas no barre.
+- Distancia estimada en `registro.csv` (`distancia_m`); memoria, tiempos por parada y
+  posición del chasis en `resumen.json`.
+
+Comprobado sin robot: 48 pruebas (11 nuevas). Pendiente en el laboratorio: calibrar
+`ALTURA_ROBOT` con un robot a 1,5 m y comprobar que el detector funciona con la torreta
+girando (si no, `BARRIDO_CONTINUO = False` o bajar `VEL_BARRIDO`). Falta la fase 3
+(vigilancia durante el recorrido).
+
+### Actualización del 04/11: vigilancia durante el recorrido (Bloque 3, fase 3)
+
+T21/T22, en `alejandro-cuevas` (PR #36). Cambios en `ENTREGA 2/WEEK3/`:
+
+- **Vigilancia** (`VIGILANCIA = True`): los avances entre paradas se dividen en tramos de
+  `TRAMO_VIGILANCIA` (0,5 m) con la torreta mirando hacia donde va el robot. Con el chasis en
+  marcha se analiza una imagen cada 0,3 s, y lo visto se revisa parado al acabar el tramo.
+- **Rival en el recorrido:** se le sigue y ataca (`ATACAR_EN_RUTA`), y queda en la memoria.
+- **Robot en el camino:** se espera a que se aparte, con el LED amarillo parpadeando; si
+  sigue pasados `ESPERA_OBSTACULO` s, la demo se detiene de forma segura. Solo se detectan
+  RoboMasters, no los obstáculos fijos.
+- Evidencias de la fase `ruta` y `eventos_ruta` en `resumen.json`. El simulador mueve el
+  chasis con el tiempo, así que se puede probar lo visto con el robot en marcha.
+
+Comprobado sin robot: 56 pruebas (8 nuevas). En simulación, 3 m en línea recta pasan de
+12,6 s a 13,9 s; con el robot real costará algo más por los arranques y frenadas de cada
+tramo. Pendiente en el laboratorio: comprobar que para ante un robot en el camino y que
+`is_completed` del SDK permite analizar imágenes con el chasis en marcha (pasos en el
+`README.md` de WEEK3).
+
+### Actualización del 05/11: respuesta a la revisión de la PR #36
+
+T21/T22, en `alejandro-cuevas` (PR #36). Cambios tras la revisión de Javier:
+
+- **Todo desactivado por defecto.** `SEGUIMIENTO`, `BARRIDO_CONTINUO`, `LEER_ANGULO_GIMBAL`,
+  `VIGILANCIA` y la nueva `MEMORIA` vienen a `False`, y `SONIDO_CADA_DISPARO` a `True`: la
+  demo hace lo mismo que la de `main`, con la SCAR en cada disparo y 0,3 s entre disparos.
+  Las mejoras se activan una a una en el laboratorio (sección 4.1 del `README.md` de WEEK3).
+- **Seguimiento con CPU.** La ganancia se limita a `CORRECCION_POR_IMAGEN / s por imagen`
+  (0,8 / tiempo medido), porque la torreta sigue girando mientras se analiza la imagen
+  siguiente. En simulación, con 1,1 s por imagen, un robot a 3, 6 o 10 º/s pasa de 2–4/12
+  disparos a 12/12 en 14–17 s. No dispara hasta ver al robot en dos imágenes, y el tiempo
+  máximo por robot crece si cada imagen tarda mucho.
+- **Vigilancia.** Si un robot sigue en el camino pasados `ESPERA_OBSTACULO` s, la demo lo
+  anota y sigue el recorrido, en lugar de terminar con error (`DETENER_SI_BLOQUEADO`
+  recupera la parada segura).
+- **Simulador.** El detector falso tomaba el ángulo del gimbal de la imagen anterior, no de
+  hace `RETARDO_CAMARA` s; con imágenes lentas eso falseaba el retardo. Ahora el gimbal
+  simulado guarda su historial y se interpola.
+
+Comprobado sin robot: 61 pruebas (5 nuevas). Pendiente: decidir en el grupo si los rivales se
+moverán en la demo (si van a estar quietos, el seguimiento aporta poco) y probar primero en
+el robot la demo con los valores por defecto.
