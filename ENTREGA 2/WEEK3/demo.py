@@ -1046,7 +1046,9 @@ class Demo:
             self.senales.sonido('inicio')
             self.senales.esperar_sonido(8)  # el SDK no admite dos sonidos a la vez
             if C.AUDIO_MOTOR:
-                self.senales.audio(os.path.join(AQUI, C.AUDIO_MOTOR))
+                # play_audio sube el fichero y después manda reproducirlo: suena con la primera recta
+                motor = self.ruta_audio(C.AUDIO_MOTOR) or self.ruta_audio(getattr(C, 'AUDIO_MOTOR_RESERVA', None))
+                self.senales.audio(motor)
 
             for p in C.PARADAS[:ultima + 1]:
                 print(f'[{p["nombre"]}] desplazamiento')

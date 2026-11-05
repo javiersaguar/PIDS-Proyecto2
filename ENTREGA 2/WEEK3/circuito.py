@@ -141,6 +141,14 @@ PLANO = [
         dict(x=-1.25, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=-90),  # atrás 1,25 m atacando a la izquierda
         dict(y=1.0),                                                      # derecha 1 m
     ], barrido=[]),
+    # paso 4 (supuesto, sin probar): la torreta ya vuelve al centro al acabar el ataque.
+    # Recta de 2,5 m, 0,7 m a la izquierda y 2 m hacia delante despacio con la torreta
+    # girada 180º, disparando al rival que queda detrás. Después, el baile con Super Estrella.
+    dict(nombre='R2', movimientos=[
+        dict(x=2.5),                                                      # adelante 2,5 m y se para
+        dict(y=-0.7),                                                     # izquierda 0,7 m
+        dict(x=2.0, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=180),    # adelante 2 m atacando hacia atrás
+    ], barrido=[]),
 ]
 PARADAS = paradas_desde_plano(RUMBO_INICIAL, PLANO, girar=GIRAR_EN_RUTA, abanico=30, barrido_sin_rivales=BARRIDO_360)
 # También se pueden escribir a mano, como antes: movimientos (x, y, z) relativos (x
@@ -157,7 +165,10 @@ VELOCIDAD_Z = 30         # º/s
 
 # --- Extras -------------------------------------------------------------------------
 BAILE_FINAL = True
-AUDIO_MOTOR = 'audio/engine_sound_corto.wav'  # 6 s al arrancar; None para no usarlo
+# Suena al empezar la primera recta. f1_recta.wav dura lo mismo que esa recta (6,4 s): se crea
+# con audio/preparar_motor.py. Si no existe, se usa AUDIO_MOTOR_RESERVA. None para no usarlo.
+AUDIO_MOTOR = 'audio/propios/f1_recta.wav'
+AUDIO_MOTOR_RESERVA = 'audio/engine_sound_corto.wav'
 # Audios propios (WAV mono 48 kHz, ver audio/convertir_audio.py). Van en audio/propios/,
 # que no se sube a GitHub por los derechos de autor. Si no existen, se usan los sonidos del SDK.
 # El SDK no sube el volumen del altavoz: se sube en el audio con audio/preparar_disparo.py, que
