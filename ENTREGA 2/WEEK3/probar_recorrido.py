@@ -23,6 +23,7 @@ sys.path.insert(0, AQUI)
 
 import circuito as C  # noqa: E402
 from demo_utils import VEL_XY_MAX, VEL_Z_MAX, connect, limitar, mover_chasis, nivel_bateria  # noqa: E402
+from recorrido import movimiento  # noqa: E402
 
 CSV = os.path.join(AQUI, 'evidencias', 'recorrido.csv')
 CAMPOS = ['momento', 'paso', 'parada', 'x', 'y', 'z', 'odometria_x', 'odometria_y', 'segundos', 'medida_real',
@@ -30,8 +31,21 @@ CAMPOS = ['momento', 'paso', 'parada', 'x', 'y', 'z', 'odometria_x', 'odometria_
 
 
 def movimientos():
-    """Lista numerada (desde 1) de (parada, x, y, z) de circuito.PARADAS."""
-    return [(p['nombre'], x, y, z) for p in C.PARADAS for x, y, z in p['movimientos']]
+    """Lista numerada (desde 1) de (parada, x, y, z, opciones) de circuito.PARADAS.
+
+    `opciones` puede llevar la velocidad del movimiento y atacar= (yaw de la torreta en
+    un ataque en marcha). Aquí los ataques solo se desplazan: sin torreta ni disparos.
+    """
+    return [(p['nombre'],) + movimiento(m) for p in C.PARADAS for m in p['movimientos']]
+
+
+def describir(x, y, z, opciones):
+    texto = f'x={x:+.2f} m  y={y:+.2f} m  z={z:+.0f} grados'
+    if opciones.get('velocidad') is not None:
+        texto += f'  a {opciones["velocidad"]:.2f} m/s'
+    if opciones.get('atacar') is not None:
+        texto += f'  (en la demo, ataca con la torreta a {opciones["atacar"]:+.0f} grados)'
+    return texto
 
 
 def rango(texto, total):
@@ -44,16 +58,20 @@ def rango(texto, total):
     return range(a, b + 1)
 
 
-def ejecutar(ep_robot, n, parada, x, y, z, confirmar=True):
-    v_xy, v_z = limitar(C.VELOCIDAD_XY, VEL_XY_MAX), limitar(C.VELOCIDAD_Z, VEL_Z_MAX)
+def ejecutar(ep_robot, n, parada, x, y, z, opciones=None, confirmar=True):
+    opciones = opciones or {}
+    velocidad = opciones.get('velocidad')
+    if velocidad is None:
+        velocidad = C.VELOCIDAD_ATAQUE_EN_MARCHA if opciones.get('atacar') is not None else C.VELOCIDAD_XY
+    v_xy, v_z = limitar(velocidad, VEL_XY_MAX), limitar(C.VELOCIDAD_Z, VEL_Z_MAX)
     estimado = (x * x + y * y) ** 0.5 / v_xy + abs(z) / v_z
-    print(f'Paso {n} ({parada}): x={x:+.2f} m  y={y:+.2f} m  z={z:+.0f} grados  '
+    print(f'Paso {n} ({parada}): {describir(x, y, z, opciones)}  '
           f'(unos {estimado:.1f} s a {v_xy:.2f} m/s y {v_z:.0f} grados/s)')
     if confirmar:
         input('  Enter para moverse (Ctrl+C para cancelar)... ')
     inicio, medido, error = time.time(), None, ''
     try:
-        medido = mover_chasis(ep_robot, x, y, z, C.VELOCIDAD_XY, C.VELOCIDAD_Z, que=f'chasis (paso {n})',
+        medido = mover_chasis(ep_robot, x, y, z, v_xy, C.VELOCIDAD_Z, que=f'chasis (paso {n})',
                               odometria=getattr(C, 'AVANCE_CON_ODOMETRIA', True))
     except RuntimeError as e:
         error = str(e)
@@ -93,8 +111,8 @@ def main(argv=None):
 
     lista = movimientos()
     print('Movimientos de circuito.PLANO (relativos: x adelante, y derecha, z giro a la izquierda):')
-    for n, (parada, x, y, z) in enumerate(lista, 1):
-        print(f'  {n}. {parada}: x={x:+.2f} m  y={y:+.2f} m  z={z:+.0f} grados')
+    for n, (parada, x, y, z, opciones) in enumerate(lista, 1):
+        print(f'  {n}. {parada}: {describir(x, y, z, opciones)}')
     if args.paso is None:
         print('\nPara ejecutar uno: python probar_recorrido.py --paso 1')
         return
@@ -107,8 +125,8 @@ def main(argv=None):
         if bateria is not None and bateria < C.BATERIA_CRITICA:
             raise SystemExit(f'Batería por debajo del {C.BATERIA_CRITICA}%: cárguela antes de probar')
         for n in pasos:
-            parada, x, y, z = lista[n - 1]
-            fila = ejecutar(ep_robot, n, parada, x, y, z, confirmar=not args.sin_confirmar)
+            parada, x, y, z, opciones = lista[n - 1]
+            fila = ejecutar(ep_robot, n, parada, x, y, z, opciones, confirmar=not args.sin_confirmar)
             guardar(fila)
             if fila['nota'].startswith('chasis'):
                 break   # error del chasis: no seguir con los siguientes pasos

@@ -119,6 +119,12 @@ BARRIDO_FRONTAL = [0, -45, 45]
 # (python probar_recorrido.py --paso N). Hasta conocer la orientación del boceto,
 # x es la dirección en la que mira el robot en la salida (RUMBO_INICIAL = 0).
 RUMBO_INICIAL = 0        # hacia dónde mira nuestro robot en la salida (0 = derecha del boceto)
+# Ataque en marcha (movimientos con atacar=yaw): la torreta busca al rival mientras el
+# chasis avanza, lo sigue y dispara la ráfaga sin parar. Con CPU cada imagen tarda ~2 s y
+# la ráfaga 6 s: a 0,1 m/s, 1,25 m dan unos 12 s, lo justo para girar, verlo y disparar.
+VELOCIDAD_ATAQUE_EN_MARCHA = 0.1  # m/s del chasis mientras ataca
+IMAGENES_TRAS_PARAR = 3           # si al acabar el avance aún no lo ha visto, imágenes que sigue buscando parado
+TIEMPO_MAX_ATAQUE_EN_MARCHA = 40  # s como mucho buscando y disparando en un mismo avance
 GIRAR_EN_RUTA = True     # True: gira hacia cada punto y avanza; False: va en diagonal sin girar (mecanum)
 PLANO = [
     # nombre, punto donde se para, puntos intermedios (por), rumbo al llegar (mirar),
@@ -126,6 +132,15 @@ PLANO = [
     # paso 1: 2,85 m en línea recta (medido el 05/11). Paso 2: la torreta gira a la derecha
     # unos 90º (si no lo ve, prueba a 60º y 120º), detecta al rival y le dispara
     dict(nombre='P1', punto=(2.85, 0.0), barrido=[90, 60, 120], pitch=0, objetivos=1),
+    # paso 3: la rotonda, con movimientos relativos del chasis sin girarlo (x adelante,
+    # y derecha). Al retroceder, la torreta mira 90º a la izquierda y dispara al rival
+    # que vea, sin parar. Al acabar no se barre (barrido=[]).
+    dict(nombre='R1', movimientos=[
+        dict(x=1.9, velocidad=0.4),                                       # adelante 1,9 m a 0,4 m/s
+        dict(y=-1.0),                                                     # izquierda 1 m
+        dict(x=-1.25, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=-90),  # atrás 1,25 m atacando a la izquierda
+        dict(y=1.0),                                                      # derecha 1 m
+    ], barrido=[]),
 ]
 PARADAS = paradas_desde_plano(RUMBO_INICIAL, PLANO, girar=GIRAR_EN_RUTA, abanico=30, barrido_sin_rivales=BARRIDO_360)
 # También se pueden escribir a mano, como antes: movimientos (x, y, z) relativos (x

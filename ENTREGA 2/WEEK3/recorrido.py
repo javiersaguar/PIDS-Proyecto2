@@ -15,6 +15,27 @@ Coordenadas del plano (como el boceto, visto desde arriba):
 import math
 
 
+def movimiento(m):
+    """(x, y, z, opciones) de un movimiento de PARADAS: una tupla (x, y, z) o un dict.
+
+    El dict admite x, y, z y opciones: velocidad (m/s de ese avance) y atacar (yaw de la
+    torreta, en grados, hacia el que se busca un rival y se le dispara durante el avance).
+    """
+    if isinstance(m, dict):
+        opciones = {k: v for k, v in m.items() if k not in ('x', 'y', 'z')}
+        return float(m.get('x', 0)), float(m.get('y', 0)), float(m.get('z', 0)), opciones
+    x, y, z = m
+    return x, y, z, {}
+
+
+def aplicar(punto, rumbo, x, y, z):
+    """Punto del plano y rumbo tras un movimiento relativo del chasis (x adelante, y derecha, z izquierda)."""
+    r = math.radians(rumbo)
+    px = punto[0] + x * math.cos(r) + y * math.cos(r + math.pi / 2)
+    py = punto[1] + x * math.sin(r) + y * math.sin(r + math.pi / 2)
+    return (round(px, 3), round(py, 3)), rumbo - z
+
+
 def normalizar(angulo):
     """Ángulo equivalente en (-180, 180]."""
     a = (angulo + 180.0) % 360.0 - 180.0
@@ -76,20 +97,27 @@ def paradas_desde_plano(rumbo_inicial, paradas, girar=True, abanico=30, barrido_
 
     Cada parada es un dict con:
     - nombre;
-    - punto: (x, y) donde se para el robot;
+    - punto: (x, y) donde se para el robot; o en su lugar
+    - movimientos: lista de movimientos relativos del chasis, tuplas (x, y, z) o dicts
+      con velocidad y atacar (ver movimiento()), para tramos que se describen así;
     - por: puntos intermedios opcionales, para rodear obstáculos;
     - mirar: rumbo del chasis al llegar (opcional; si no, el del último tramo);
     - rivales: puntos opcionales donde se espera un rival; el barrido mira hacia ellos;
     - barrido, pitch, objetivos: opcionales. Sin barrido ni rivales se usa
-      `barrido_sin_rivales`. objetivos es por defecto el número de rivales (None si no
-      se conocen, y entonces se barre entero).
+      `barrido_sin_rivales`; barrido=[] no barre al llegar. objetivos es por defecto el
+      número de rivales (None si no se conocen, y entonces se barre entero).
     """
     if barrido_sin_rivales is None:
         barrido_sin_rivales = [0, 60, 120, 180, -120, -60]
     actual, rumbo, salida = (0.0, 0.0), float(rumbo_inicial), []
     for p in paradas:
         movimientos = []
-        for punto in list(p.get('por', [])) + [p['punto']]:
+        for m in p.get('movimientos', []):
+            x, y, z, _ = movimiento(m)
+            actual, rumbo = aplicar(actual, rumbo, x, y, z)
+            movimientos.append(m)
+        puntos = list(p.get('por', [])) + ([p['punto']] if 'punto' in p else [])
+        for punto in puntos:
             nuevos, rumbo = tramo(actual, punto, rumbo, girar)
             movimientos += nuevos
             actual = punto
@@ -97,8 +125,10 @@ def paradas_desde_plano(rumbo_inicial, paradas, girar=True, abanico=30, barrido_
             nuevos, rumbo = girar_hacia(rumbo, p['mirar'])
             movimientos += nuevos
         rivales = p.get('rivales') or []
-        barrido = p.get('barrido') or (barrido_hacia(actual, rumbo, rivales, abanico) if rivales
-                                       else list(barrido_sin_rivales))
+        if 'barrido' in p:
+            barrido = list(p['barrido'])
+        else:
+            barrido = barrido_hacia(actual, rumbo, rivales, abanico) if rivales else list(barrido_sin_rivales)
         objetivos = p.get('objetivos', len(rivales) if rivales else None)
         salida.append(dict(nombre=p['nombre'], movimientos=movimientos, barrido=barrido,
                            pitch=p.get('pitch', 0), objetivos=objetivos,
@@ -111,8 +141,10 @@ def describir(paradas):
     lineas = []
     for p in paradas:
         lineas.append(f"{p['nombre']}: punto {p.get('punto')} rumbo {p.get('rumbo')}  objetivos {p['objetivos']}")
-        for x, y, z in p['movimientos']:
-            lineas.append(f'    x={x:+.2f} m  y={y:+.2f} m  z={z:+.0f} grados')
+        for m in p['movimientos']:
+            x, y, z, opciones = movimiento(m)
+            extra = ''.join(f'  {k}={v}' for k, v in opciones.items())
+            lineas.append(f'    x={x:+.2f} m  y={y:+.2f} m  z={z:+.0f} grados{extra}')
         lineas.append(f"    barrido {p['barrido']}")
     return '\n'.join(lineas)
 

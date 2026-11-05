@@ -426,36 +426,67 @@ def calentar(model, resize_shape=None, forma=(720, 1280, 3)):
 class Camara:
     """Cámara del robot con el vídeo abierto durante toda la demo.
 
-    predict() abre y cierra el vídeo en cada captura, lo que tarda y puede
-    devolver un fotograma antiguo. Aquí se abre una vez y se lee siempre el
-    fotograma más reciente, tras esperar a que el gimbal se quede quieto.
+    El SDK decodifica el vídeo en un hilo y deja los fotogramas en una cola de 64
+    (unos 2 s). Si nadie la vacía mientras se analiza una imagen o gira la torreta,
+    se llena, el decodificador se bloquea, el robot pierde datos y luego llegan
+    fotogramas viejos o corruptos (franjas verticales). Por eso un hilo propio vacía
+    la cola sin parar y guarda solo el último fotograma y cuándo llegó: capturar()
+    devuelve uno llegado después de la espera, es decir, con la torreta ya quieta.
     """
 
     def __init__(self, ep_robot, espera=0.5):
         self.ep_camera = ep_robot.camera
         self.espera = espera
         self.ep_camera.start_video_stream(display=False, resolution=camera.STREAM_720P)
+        # El hilo solo con el SDK real: la cámara simulada avanza su reloj en cada lectura
+        self._en_hilo = hasattr(camera, '__file__')
+        self._ultimo, self._t_ultimo = None, 0.0
+        self._cond = threading.Condition()
+        self._activa = True
+        if self._en_hilo:
+            self._hilo = threading.Thread(target=self._recibir, daemon=True)
+            self._hilo.start()
         time.sleep(1.0)
 
+    def _leer(self, timeout=3):
+        try:
+            return self.ep_camera.read_cv2_image(timeout=timeout, strategy='newest')
+        except TypeError:
+            return self.ep_camera.read_cv2_image(timeout=timeout)
+
+    def _recibir(self):
+        while self._activa:
+            try:
+                frame = self._leer(timeout=1)
+            except Exception:   # cola vacía (queue.Empty) u otro fallo pasajero
+                continue
+            if frame is None:
+                continue
+            with self._cond:
+                self._ultimo, self._t_ultimo = frame, time.monotonic()
+                self._cond.notify_all()
+
     def capturar(self, espera=None):
-        """Fotograma más reciente en RGB. `espera` (s) deja quieta la imagen; 0 al seguir a un robot."""
+        """Fotograma en RGB llegado después de `espera` s (0: el siguiente que llegue, al seguir a un robot)."""
         espera = self.espera if espera is None else espera
         if espera > 0:
             time.sleep(espera)
-            # El vídeo llega por wifi con retraso: se descarta el fotograma que hubiera en cola
-            # (puede ser de cuando la torreta aún giraba) y se toma el siguiente
-            self._leer()
-            time.sleep(0.2)
-        image = self._leer()
+        if not self._en_hilo:
+            return cv2.cvtColor(self._leer(), cv2.COLOR_BGR2RGB)
+        desde = time.monotonic()
+        with self._cond:
+            fin = desde + 3
+            while self._t_ultimo <= desde and time.monotonic() < fin:
+                self._cond.wait(0.05)
+            if self._ultimo is None:
+                raise RuntimeError('la cámara no envía imágenes')
+            image = self._ultimo
         return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    def _leer(self):
-        try:
-            return self.ep_camera.read_cv2_image(timeout=3, strategy='newest')
-        except TypeError:
-            return self.ep_camera.read_cv2_image(timeout=3)
-
     def cerrar(self):
+        self._activa = False
+        if self._en_hilo:
+            self._hilo.join(timeout=2)
         self.ep_camera.stop_video_stream()
 
 
