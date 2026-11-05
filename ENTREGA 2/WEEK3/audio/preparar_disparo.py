@@ -67,7 +67,7 @@ def rms_db(x):
     return 20 * np.log10(np.sqrt(np.mean(x ** 2)) + 1e-12)
 
 
-def preparar(entrada, salida, disparos=12, cada=0.3, silencio=0.3, ganancia_db=8.0):
+def preparar(entrada, salida, disparos=20, cada=0.3, silencio=0.3, ganancia_db=8.0):
     disparo = subir_volumen(recortar_silencio(leer(entrada)), ganancia_db)
     hueco = np.zeros(int(silencio * FRECUENCIA))
     fuerte = np.concatenate([hueco, disparo])
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description='Disparo fuerte y ráfaga para el altavoz del robot')
     p.add_argument('entrada', help='audio de un disparo')
     p.add_argument('salida', help='prefijo de salida, p. ej. audio/propios/scar')
-    p.add_argument('--disparos', type=int, default=12, help='disparos de la ráfaga (DISPAROS_POR_ROBOT)')
+    p.add_argument('--disparos', type=int, default=20, help='disparos de la ráfaga (DISPAROS_POR_ROBOT)')
     p.add_argument('--cada', type=float, default=0.3, help='s entre disparos (INTERVALO_DISPARO)')
     p.add_argument('--silencio', type=float, default=0.3, help='s de silencio inicial (SILENCIO_AUDIO_DISPARO)')
     p.add_argument('--ganancia', type=float, default=8.0, help='dB extra con saturación suave; más, más fuerte')

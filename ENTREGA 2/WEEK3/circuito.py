@@ -22,13 +22,15 @@ RESIZE = None            # (alto, ancho) si la inferencia en el portátil es dem
 USAR_GPU = True          # si no hay GPU se usa la CPU
 
 # --- Estrategia de detección ----------------------------------------------------
-DISPAROS_POR_ROBOT = 12  # el enunciado pide 12 impactos para inutilizar un robot
+DISPAROS_POR_ROBOT = 20  # el enunciado pide 12 impactos; 20 por si el rival no registra alguno
 DISPARAR_A_TODOS = True  # True: a todas las detecciones nuevas >= UMBRAL; False: solo a la mejor de cada imagen
 BARRIDO_COMPLETO = False # False: se deja de girar en cuanto se han atacado los `objetivos` de la parada
 CONFIRMAR = True         # volver a detectar ya apuntado antes de disparar y corregir el error de puntería
 TOLERANCIA_YAW = 15      # grados: dos detecciones más cercanas se tratan como el mismo robot
 SIGNO_YAW = 1            # poner -1 si en la prueba el gimbal gira hacia el lado contrario del robot
-ESPERA_CAMARA = 0.5      # s de espera tras mover el gimbal antes de capturar (imagen sin movimiento)
+ESPERA_CAMARA = 1.0      # s de espera tras mover el gimbal antes de capturar (el vídeo llega con retraso por wifi)
+CORRECCIONES_PUNTERIA = 4  # giros de corrección como mucho hasta centrar el robot antes de disparar
+TOLERANCIA_PUNTERIA = 3  # grados: centrado si el error es menor (o menor que el 30 % del ancho del robot)
 
 # --- Mejoras de la PR 36: todas desactivadas por defecto ------------------------------
 # Con SEGUIMIENTO, BARRIDO_CONTINUO, MEMORIA, VIGILANCIA y LEER_ANGULO_GIMBAL a False la demo

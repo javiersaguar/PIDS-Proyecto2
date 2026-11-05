@@ -93,6 +93,7 @@ class Torreta:
     """
 
     YAW_MAX = 240                     # el gimbal admite unos ±250º
+    GIRO_MAX = 45                     # º como mucho por cada orden gimbal.move
     PITCH_MIN, PITCH_MAX = -20, 30    # el gimbal admite unos -20º/+35º
 
     def __init__(self, ep_robot, reloj=time.monotonic):
@@ -220,10 +221,15 @@ class Torreta:
         pitch = actual_pitch if pitch is None else max(self.PITCH_MIN, min(self.PITCH_MAX, pitch))
         d_yaw, d_pitch = yaw - actual_yaw, pitch - actual_pitch
         if abs(d_yaw) > 0.5 or abs(d_pitch) > 0.5:
-            tiempo = max(abs(d_yaw), abs(d_pitch)) / VEL_GIMBAL_MAX
-            ejecutar_accion(self.ep_robot, lambda: self.gimbal.move(pitch=d_pitch, yaw=d_yaw, pitch_speed=VEL_GIMBAL_MAX,
-                                                                    yaw_speed=VEL_GIMBAL_MAX),
-                            timeout=2 * tiempo + 5, que='gimbal')
+            # El SDK documenta gimbal.move solo hasta ±55º por orden: los giros mayores van en tramos
+            tramos = max(1, int(np.ceil(max(abs(d_yaw), abs(d_pitch)) / self.GIRO_MAX - 1e-9)))
+            p_yaw, p_pitch = d_yaw / tramos, d_pitch / tramos
+            tiempo = max(abs(p_yaw), abs(p_pitch)) / VEL_GIMBAL_MAX
+            for _ in range(tramos):
+                ejecutar_accion(self.ep_robot, lambda: self.gimbal.move(pitch=p_pitch, yaw=p_yaw,
+                                                                        pitch_speed=VEL_GIMBAL_MAX,
+                                                                        yaw_speed=VEL_GIMBAL_MAX),
+                                timeout=2 * tiempo + 5, que='gimbal')
         self.yaw, self.pitch = yaw, pitch
         self.historial.clear()        # tras un giro hasta un ángulo, el pasado ya no sirve
         self.leer()
@@ -587,16 +593,31 @@ class Demo:
         self.torreta.ir(angulo)
         caja = None
         if C.CONFIRMAR:
-            image, prediction, ms = self.mirar()
-            yaw_captura = self.torreta.yaw
-            objetivos = seleccionar(prediction, C.UMBRAL)
+            # Puntería por pasos: con cada imagen se gira lo que falta para centrar el robot,
+            # hasta que queda centrado o se acaban las correcciones. Solo cuentan giros
+            # relativos, así que no importa si el ángulo de la torreta se ha desviado.
             residuo = None
-            if objetivos:
+            for intento in range(C.CORRECCIONES_PUNTERIA + 1):
+                image, prediction, ms = self.mirar()
+                yaw_captura = self.torreta.yaw
+                objetivos = seleccionar(prediction, C.UMBRAL)
+                if not objetivos:
+                    residuo = None
+                    break
                 caja, confianza_conf = mas_centrada(image, objetivos)
                 residuo = C.SIGNO_YAW * auto_aim(image, caja)
-                if abs(residuo) > C.TOLERANCIA_YAW or not es_nuevo(yaw_captura + residuo, ya_atacados,
-                                                                   C.TOLERANCIA_YAW):
+                if not es_nuevo(yaw_captura + residuo, ya_atacados, C.TOLERANCIA_YAW):
                     residuo = None
+                    break
+                tolerancia = max(C.TOLERANCIA_PUNTERIA, 0.3 * tamano_angular(image, caja)[0])
+                if abs(residuo) <= tolerancia:
+                    break
+                if intento == C.CORRECCIONES_PUNTERIA:
+                    break   # sin más correcciones: se gira lo que falta y se dispara
+                self.registro.imagen(image, prediction, ms, parada, 'corrigiendo', yaw_captura, self.torreta.pitch,
+                                     objetivo=caja, objetivo_yaw=yaw_captura + residuo)
+                print(f'  corrigiendo la puntería {residuo:+.1f} grados (confianza {confianza_conf:.3f})')
+                self.torreta.ir(yaw_captura + residuo)
             if residuo is None:
                 self.registro.imagen(image, prediction, ms, parada, 'sin_confirmar', yaw_captura, self.torreta.pitch)
                 print(f'  objetivo en {angulo:+.1f} grados no confirmado: no se dispara')
@@ -832,17 +853,20 @@ class Demo:
         luces = threading.Thread(target=self.luces_fiesta, args=(parar,), daemon=True)
         luces.start()
         try:
-            for _ in range(4):
+            # Torreta y chasis bailan, alternando, mientras suena la canción (como las luces).
+            # El giro del chasis (+20, -40, +20) se hace entero para que acabe mirando igual.
+            fin = time.time() + C.DURACION_FIESTA_MAX
+            vueltas = 0
+            while vueltas < 1 or (self.senales.ocupado() and time.time() < fin):
                 self.torreta.ir(20, 10)
                 self.torreta.ir(-20, -5)
+                if not (self.senales.ocupado() and time.time() < fin):
+                    break
+                if not self.args.sin_mover:
+                    for z in (20, -40, 20):
+                        self.mover(0, 0, z)
+                vueltas += 1
             self.torreta.ir(0, 0)
-            if not self.args.sin_mover:
-                for z in (20, -40, 20):
-                    self.mover(0, 0, z)
-            # Las luces siguen mientras suena la canción
-            fin = time.time() + C.DURACION_FIESTA_MAX
-            while self.senales.ocupado() and time.time() < fin:
-                parar.wait(0.1)
         finally:
             parar.set()
             luces.join(timeout=1)

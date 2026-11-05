@@ -442,11 +442,18 @@ class Camara:
         espera = self.espera if espera is None else espera
         if espera > 0:
             time.sleep(espera)
-        try:
-            image = self.ep_camera.read_cv2_image(timeout=3, strategy='newest')
-        except TypeError:
-            image = self.ep_camera.read_cv2_image(timeout=3)
+            # El vídeo llega por wifi con retraso: se descarta el fotograma que hubiera en cola
+            # (puede ser de cuando la torreta aún giraba) y se toma el siguiente
+            self._leer()
+            time.sleep(0.2)
+        image = self._leer()
         return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    def _leer(self):
+        try:
+            return self.ep_camera.read_cv2_image(timeout=3, strategy='newest')
+        except TypeError:
+            return self.ep_camera.read_cv2_image(timeout=3)
 
     def cerrar(self):
         self.ep_camera.stop_video_stream()
