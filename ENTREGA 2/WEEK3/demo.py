@@ -770,10 +770,15 @@ class Demo:
         Con SONIDO_CADA_DISPARO (por defecto, como en main) espera al audio de cada disparo;
         sin él suena una vez y dispara cada INTERVALO_DISPARO s.
         """
+        rafaga = self.ruta_audio(getattr(C, 'AUDIO_RAFAGA', None))
+        if rafaga is not None:
+            self.senales.esperar_sonido(8)  # deja acabar el motor o el aviso de detección
+            if self.senales.audio(rafaga):
+                return self.disparar_al_ritmo()
         audio = self.ruta_audio(C.AUDIO_DISPARO)
         por_disparo = audio is not None and C.SONIDO_CADA_DISPARO
         if por_disparo:
-            self.senales.esperar_sonido(8)  # deja acabar el motor o el aviso de detección
+            self.senales.esperar_sonido(8)
         sonado = False
         for confirmados in range(C.DISPAROS_POR_ROBOT):
             if not self.ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1):
@@ -785,6 +790,21 @@ class Demo:
             else:
                 sonado = self.sonar_disparo(sonado)
                 time.sleep(C.INTERVALO_DISPARO)
+        return C.DISPAROS_POR_ROBOT
+
+    def disparar_al_ritmo(self):
+        """Dispara DISPAROS_POR_ROBOT veces al ritmo de AUDIO_RAFAGA, que ya está sonando.
+
+        Cada disparo va en su instante (silencio inicial + i * INTERVALO_DISPARO desde que
+        empieza el audio), así el tiempo que tarda fire() no retrasa los siguientes.
+        :return: órdenes de disparo confirmadas por el SDK.
+        """
+        inicio = time.monotonic() + C.SILENCIO_AUDIO_DISPARO
+        for confirmados in range(C.DISPAROS_POR_ROBOT):
+            time.sleep(max(0.0, inicio + confirmados * C.INTERVALO_DISPARO - time.monotonic()))
+            if not self.ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1):
+                return confirmados
+        self.senales.esperar_sonido(2)   # deja acabar el último disparo del audio
         return C.DISPAROS_POR_ROBOT
 
     def luces_fiesta(self, parar):

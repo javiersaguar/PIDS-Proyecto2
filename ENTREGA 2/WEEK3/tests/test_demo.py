@@ -109,9 +109,10 @@ class PruebasDemo(unittest.TestCase):
                                                     'ANTICIPAR', 'RETARDO_CAMARA', 'BARRIDO_CONTINUO',
                                                     'ROBOTS_TOTALES', 'TIEMPO_MEMORIA', 'VIGILANCIA',
                                                     'ATACAR_EN_RUTA', 'ESPERA_OBSTACULO', 'MEMORIA',
-                                                    'DETENER_SI_BLOQUEADO']}
+                                                    'DETENER_SI_BLOQUEADO', 'AUDIO_RAFAGA']}
         self.paso_imagen = simulacion.PASO_IMAGEN
         C.BAILE_FINAL, C.AUDIO_MOTOR, C.ESPERA_CAMARA = False, None, 0
+        C.AUDIO_RAFAGA = None   # audio/propios/ puede tenerla en local: sus pruebas la activan
         # En circuito.py las mejoras vienen desactivadas (la demo de main). Estas pruebas son de
         # las mejoras, así que las activan; las que prueban la demo de main las desactivan.
         C.SEGUIMIENTO, C.BARRIDO_CONTINUO, C.LEER_ANGULO_GIMBAL, C.MEMORIA = True, True, True, True
@@ -733,6 +734,29 @@ class PruebasDemo(unittest.TestCase):
             audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
             self.assertEqual(audios.count('scar.wav'), 12)
             self.assertEqual(ep.disparos(), 12)
+
+    def test_rafaga_suena_una_vez_y_dispara_a_su_ritmo(self):
+        C.SEGUIMIENTO = False
+        C.AUDIO_RAFAGA = os.path.join(CARPETA, 'rafaga.wav')
+        C.AUDIO_DISPARO = os.path.join(CARPETA, 'scar.wav')
+        for f in (C.AUDIO_RAFAGA, C.AUDIO_DISPARO):
+            open(f, 'wb').close()
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([0], p)
+        audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
+        self.assertEqual(audios.count('rafaga.wav'), 1)
+        self.assertNotIn('scar.wav', audios)
+        self.assertEqual(ep.disparos(), 12)
+
+    def test_sin_audio_de_rafaga_suena_cada_disparo(self):
+        C.SEGUIMIENTO, C.SONIDO_CADA_DISPARO = False, True
+        C.AUDIO_RAFAGA = 'audio/propios/no_existe.wav'
+        C.AUDIO_DISPARO = os.path.join(CARPETA, 'scar.wav')
+        open(C.AUDIO_DISPARO, 'wb').close()
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([0], p)
+        audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
+        self.assertEqual(audios.count('scar.wav'), 12)
 
     def test_baile_con_cancion_y_luces(self):
         C.BAILE_FINAL = True
