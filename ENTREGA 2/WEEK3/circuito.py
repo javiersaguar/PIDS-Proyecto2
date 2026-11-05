@@ -125,6 +125,10 @@ RUMBO_INICIAL = 0        # hacia dónde mira nuestro robot en la salida (0 = der
 VELOCIDAD_ATAQUE_EN_MARCHA = 0.1  # m/s del chasis mientras ataca
 IMAGENES_TRAS_PARAR = 3           # si al acabar el avance aún no lo ha visto, imágenes que sigue buscando parado
 TIEMPO_MAX_ATAQUE_EN_MARCHA = 40  # s como mucho buscando y disparando en un mismo avance
+# Pitch inicial para buscar un rival en alto. La cámara ve unos ±30º en vertical, así que
+# basta con acercarse: luego se corrige con la caja. Un robot 30 cm más alto que el cañón
+# queda a unos 17º a 1 m y a unos 9º a 2 m. El gimbal sube como mucho 30º (Torreta.PITCH_MAX).
+PITCH_RIVAL_ALTO = 10
 GIRAR_EN_RUTA = True     # True: gira hacia cada punto y avanza; False: va en diagonal sin girar (mecanum)
 PLANO = [
     # nombre, punto donde se para, puntos intermedios (por), rumbo al llegar (mirar),
@@ -144,10 +148,13 @@ PLANO = [
     # paso 4 (supuesto, sin probar): la torreta ya vuelve al centro al acabar el ataque.
     # Recta de 2,5 m, 0,7 m a la izquierda y 2 m hacia delante despacio con la torreta
     # girada 180º, disparando al rival que queda detrás. Después, el baile con Super Estrella.
+    # Ese rival está en alto (una plataforma de 20-40 cm): la torreta lo busca inclinada
+    # PITCH_RIVAL_ALTO grados y, al verlo, corrige el pitch con la caja (CORREGIR_PITCH).
     dict(nombre='R2', movimientos=[
         dict(x=2.5),                                                      # adelante 2,5 m y se para
         dict(y=-0.7),                                                     # izquierda 0,7 m
-        dict(x=2.0, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=180),    # adelante 2 m atacando hacia atrás
+        dict(x=2.0, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=180,     # adelante 2 m atacando hacia atrás,
+             pitch=PITCH_RIVAL_ALTO),                                     # con la torreta inclinada hacia arriba
     ], barrido=[]),
 ]
 PARADAS = paradas_desde_plano(RUMBO_INICIAL, PLANO, girar=GIRAR_EN_RUTA, abanico=30, barrido_sin_rivales=BARRIDO_360)
@@ -177,6 +184,8 @@ AUDIO_RAFAGA = 'audio/propios/scar_rafaga.wav'    # sin SEGUIMIENTO: suena una v
 AUDIO_DISPARO = 'audio/propios/scar_fuerte.wav'   # un disparo: con SEGUIMIENTO, o si no hay AUDIO_RAFAGA
 SILENCIO_AUDIO_DISPARO = 0.3 # s de silencio al principio de esos audios (--silencio de preparar_disparo.py)
 AUDIO_FINAL = 'audio/propios/superestrella.wav'   # canción del baile final
+# Voz al detectar un rival, antes de cada ráfaga (audio/preparar_voz.py). Si no existe, el sonido del SDK
+AUDIO_DETECTADO = 'audio/propios/enemy_spotted.wav'
 ESPERA_AUDIO_DISPARO = 2.0   # s máximos que se espera al audio de cada disparo (sin SEGUIMIENTO ni AUDIO_RAFAGA)
 LED_FIESTA_HZ = 10           # cambios de color por segundo en el baile final
 DURACION_FIESTA_MAX = 40     # s máximos de luces tras el baile mientras suena la canción

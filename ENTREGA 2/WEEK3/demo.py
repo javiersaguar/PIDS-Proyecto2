@@ -449,6 +449,16 @@ class Demo:
         self.senales.sonido('disparo')
         return True
 
+    def avisar_detectado(self):
+        """Aviso de rival detectado: la voz de AUDIO_DETECTADO o, si no existe, el sonido del SDK.
+
+        La ráfaga espera a que acabe (esperar_sonido), así que suena siempre antes de los disparos.
+        """
+        self.senales.esperar_sonido(3)   # p. ej. el final del motor: el SDK no admite dos sonidos a la vez
+        voz = self.ruta_audio(getattr(C, 'AUDIO_DETECTADO', None))
+        if voz is None or not self.senales.audio(voz):
+            self.senales.sonido('detectado')
+
     def seguir_y_disparar(self, parada, angulo, confianza, ya_atacados=(), distancia=None):
         """Fija el robot visto en `angulo`, lo sigue con la torreta y le dispara solo cuando está centrado.
 
@@ -473,7 +483,7 @@ class Demo:
                  si se habría completado); None si no se ha fijado o se ha perdido antes.
         """
         self.senales.estado('apuntando')
-        self.senales.sonido('detectado')
+        self.avisar_detectado()
         self.torreta.ir(angulo)
         inicio = self.reloj()
         objetivo, t_objetivo = angulo, None   # último ángulo visto del robot (respecto al chasis) y cuándo
@@ -591,7 +601,7 @@ class Demo:
         :return: True si se ha atacado (o, con --sin-disparar, si se habría atacado).
         """
         self.senales.estado('apuntando')
-        self.senales.sonido('detectado')
+        self.avisar_detectado()
         self.torreta.ir(angulo)
         caja = None
         if C.CONFIRMAR:
@@ -645,16 +655,19 @@ class Demo:
         return True
 
     # --- ataque en marcha ------------------------------------------------------------
-    def mover_atacando(self, nombre, x, y, yaw, velocidad):
+    def mover_atacando(self, nombre, x, y, yaw, velocidad, pitch=None):
         """Se desplaza (x, y) sin girar el chasis mientras la torreta mira hacia `yaw`, busca un rival y le dispara.
 
         Es un movimiento con atacar= en circuito.py. El chasis va en otro hilo (avanzar,
         con drive_speed y la odometría) y este gira la torreta y analiza imágenes
-        (disparar_en_marcha). Al acabar, la torreta vuelve al centro.
+        (disparar_en_marcha). `pitch` (opcional) inclina la torreta para buscar un rival
+        en alto; al verlo, el pitch se corrige con la caja (CORREGIR_PITCH). Al acabar,
+        la torreta vuelve al centro.
         """
         etiqueta = f'{nombre}-marcha'
         distancia = (x * x + y * y) ** 0.5
-        print(f'  chasis: x={x:+.2f} m  y={y:+.2f} m a {velocidad:.2f} m/s, atacando hacia {yaw:+.0f} grados')
+        hacia = f'{yaw:+.0f} grados' + ('' if pitch is None else f', pitch {pitch:+.0f}')
+        print(f'  chasis: x={x:+.2f} m  y={y:+.2f} m a {velocidad:.2f} m/s, atacando hacia {hacia}')
         resultado, hilo = {}, None
         if not self.args.sin_mover:
             def moverse():
@@ -666,7 +679,7 @@ class Demo:
             hilo.start()
         try:
             self.senales.estado('buscando')
-            self.torreta.ir(yaw)
+            self.torreta.ir(yaw, pitch)
             self.disparar_en_marcha(etiqueta, hilo)
         finally:
             self.torreta.parar()
@@ -750,13 +763,17 @@ class Demo:
                 v = (a - objetivo[1]) / (t_cap - objetivo[0])
                 velocidad = limitar(0.5 * velocidad + 0.5 * v, VEL_GIMBAL_MAX)
             objetivo = (t_cap, a)
-            yaw_ahora, _ = self.torreta.leer()
+            yaw_ahora, pitch_ahora = self.torreta.leer()
             prevision = a + velocidad * (time.monotonic() - t_cap)
+            # En vertical se apunta al punto ALTURA_PUNTERIA de la caja (p. ej. un rival en alto)
+            p = pitch_c + auto_pitch(image, caja, C.ALTURA_PUNTERIA) if C.CORREGIR_PITCH else None
             if rafaga is None:
                 self.registro.imagen(image, prediction, ms, etiqueta, 'fijado', yaw_c, pitch_c,
                                      objetivo=caja, objetivo_yaw=a)
-                print(f'  rival visto en marcha a {a:+.1f} grados (confianza {confianza:.3f})')
-                self.torreta.ir(prevision)
+                print(f'  rival visto en marcha a {a:+.1f} grados'
+                      + ('' if p is None else f', pitch {p:+.1f}') + f' (confianza {confianza:.3f})')
+                self.avisar_detectado()
+                self.torreta.ir(prevision, p)
                 if self.args.sin_disparar:
                     self.ataques.append(dict(parada=etiqueta, yaw=round(a, 1), confianza=round(confianza, 3),
                                              confirmado=True, disparos=0, en_marcha=True))
@@ -769,7 +786,8 @@ class Demo:
                                      objetivo=caja, objetivo_yaw=a)
                 ganancia = (C.GANANCIA_SEGUIMIENTO if not periodo else
                             min(C.GANANCIA_SEGUIMIENTO, C.CORRECCION_POR_IMAGEN / periodo))
-                self.torreta.velocidad(velocidad + ganancia * (prevision - yaw_ahora))
+                self.torreta.velocidad(velocidad + ganancia * (prevision - yaw_ahora),
+                                       0.0 if p is None else ganancia * (p - pitch_ahora))
         self.torreta.parar()
         if rafaga is None:
             print('  no se ha visto ningún rival durante el avance')
@@ -1057,7 +1075,8 @@ class Demo:
                     x, y, z, opciones = movimiento(m)
                     if opciones.get('atacar') is not None and not z:
                         self.mover_atacando(p['nombre'], x, y, opciones['atacar'],
-                                            opciones.get('velocidad', C.VELOCIDAD_ATAQUE_EN_MARCHA))
+                                            opciones.get('velocidad', C.VELOCIDAD_ATAQUE_EN_MARCHA),
+                                            pitch=opciones.get('pitch'))
                     else:
                         self.recorrer(p['nombre'] + '-ruta', x, y, z, velocidad=opciones.get('velocidad'))
                     recorrido.append((x, y, z))
