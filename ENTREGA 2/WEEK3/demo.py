@@ -260,10 +260,10 @@ class Demo:
         print(f'  chasis: x={x:+.2f} m  y={y:+.2f} m  z={z:+.0f} grados')
         if self.args.sin_mover:
             return
-        v_xy, v_z = limitar(C.VELOCIDAD_XY, VEL_XY_MAX), limitar(C.VELOCIDAD_Z, VEL_Z_MAX)
-        tiempo = (x * x + y * y) ** 0.5 / v_xy + abs(z) / v_z
-        ejecutar_accion(self.ep_robot, lambda: self.ep_robot.chassis.move(x=x, y=y, z=z, xy_speed=v_xy, z_speed=v_z),
-                        timeout=2 * tiempo + 5, que='chasis', durante=durante)
+        medido = mover_chasis(self.ep_robot, x, y, z, C.VELOCIDAD_XY, C.VELOCIDAD_Z, que='chasis', durante=durante,
+                              odometria=getattr(C, 'AVANCE_CON_ODOMETRIA', True))
+        if medido is not None:
+            print(f'    odometría: x={medido[0]:+.2f} m  y={medido[1]:+.2f} m')
         self.pose = mover_pose(self.pose, x, y, z)
 
     # --- vigilancia durante el recorrido -------------------------------------------------

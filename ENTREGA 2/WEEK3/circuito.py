@@ -113,16 +113,15 @@ BARRIDO_FRONTAL = [0, -45, 45]
 # izquierda, -90 arriba. Antes de probar, revisar lo calculado con
 #     python recorrido.py
 #
-# BOCETO: los valores de abajo son provisionales, solo para dar forma al recorrido.
-# Hay que sustituirlos por las medidas del circuito real.
+# Se rellena movimiento a movimiento con las pruebas en el circuito real
+# (python probar_recorrido.py --paso N). Hasta conocer la orientación del boceto,
+# x es la dirección en la que mira el robot en la salida (RUMBO_INICIAL = 0).
 RUMBO_INICIAL = 0        # hacia dónde mira nuestro robot en la salida (0 = derecha del boceto)
 GIRAR_EN_RUTA = True     # True: gira hacia cada punto y avanza; False: va en diagonal sin girar (mecanum)
 PLANO = [
     # nombre, punto donde se para, puntos intermedios (por), rumbo al llegar (mirar),
     # rivales (puntos donde se espera un robot: el barrido mira hacia ellos)
-    dict(nombre='P1', punto=(1.0, 0.0), rivales=[(2.5, 0.5)]),
-    dict(nombre='P2', punto=(1.0, 1.5), mirar=0, rivales=[(2.5, 2.0)]),
-    dict(nombre='P3', punto=(2.0, 2.5), por=[(1.0, 2.5)], rivales=None, objetivos=None),
+    dict(nombre='P1', punto=(2.85, 0.0)),   # paso 1: 2,85 m en línea recta (medido el 05/11)
 ]
 PARADAS = paradas_desde_plano(RUMBO_INICIAL, PLANO, girar=GIRAR_EN_RUTA, abanico=30, barrido_sin_rivales=BARRIDO_360)
 # También se pueden escribir a mano, como antes: movimientos (x, y, z) relativos (x
@@ -131,7 +130,10 @@ PARADAS = paradas_desde_plano(RUMBO_INICIAL, PLANO, girar=GIRAR_EN_RUTA, abanico
 #   PARADAS = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=BARRIDO_FRONTAL, pitch=0, objetivos=1)]
 VOLVER_AL_INICIO = False # deshacer el recorrido al terminar (en orden inverso)
 # Velocidades del chasis. Se pueden bajar, nunca subir: demo.py las recorta a las del SDK (0,5 m/s y 30 º/s).
-VELOCIDAD_XY = 0.3       # m/s
+# Los avances van con drive_speed y la odometría, a VELOCIDAD_XY m/s reales. Con chassis.move
+# el robot iba a unos 0,06 m/s: el SDK no convierte xy_speed a m/s reales.
+VELOCIDAD_XY = 0.5       # m/s reales en los avances (máximo 0,5): 2,85 m en unos 6 s
+AVANCE_CON_ODOMETRIA = True  # False: avances con chassis.move (mucho más lentos)
 VELOCIDAD_Z = 30         # º/s
 
 # --- Extras -------------------------------------------------------------------------

@@ -641,6 +641,111 @@ def ejecutar_accion(ep_robot, crear, timeout, que, durante=None):
         raise RuntimeError(f'{que}: no ha terminado en {timeout:.0f} s (¿batería baja o robot desconectado?)')
 
 
+class Odometria:
+    """Posición del chasis (x adelante, y derecha, en m) respecto a donde estaba al crearla.
+
+    Usa chassis.sub_position(cs=0). Si el SDK no la da, `activa` es False.
+    """
+
+    def __init__(self, chassis, freq=20):
+        self.chassis, self.ultima = chassis, None
+        try:
+            self.activa = chassis.sub_position(cs=0, freq=freq, callback=self._leer) is not False
+        except Exception as e:
+            print(f'[aviso] sin odometría del chasis: {e!r}')
+            self.activa = False
+
+    def _leer(self, info):
+        self.ultima = tuple(float(v) for v in info[:3])
+
+    def esperar(self, maximo=2.0, dormir=time.sleep, reloj=time.monotonic):
+        """Primera lectura (o None si no llega en `maximo` s)."""
+        fin = reloj() + maximo
+        while self.activa and self.ultima is None and reloj() < fin:
+            dormir(0.05)
+        return self.ultima
+
+    def cerrar(self):
+        if self.activa:
+            try:
+                self.chassis.unsub_position()
+            except Exception:   # el SDK falla si no ha llegado ninguna lectura
+                pass
+            self.activa = False
+
+
+def avanzar(ep_robot, x, y, velocidad, que='chasis', dormir=time.sleep, reloj=time.monotonic):
+    """Avanza (x, y) metros sin girar con drive_speed, a `velocidad` m/s reales, midiendo con la odometría.
+
+    chassis.move no sirve para ir rápido: el SDK no acepta menos de 0,5 y no convierte
+    la velocidad a m/s reales (en el laboratorio, 0,5 dio unos 0,06 m/s). drive_speed sí
+    va en m/s. Se frena en los últimos centímetros y se para a 1 cm del destino. drive_speed lleva
+    un tiempo máximo de 0,5 s: si el programa deja de mandar órdenes, el robot se para solo.
+
+    :return: (x, y) recorridos según la odometría, o None si no hay odometría (entonces
+             no se mueve y hay que usar chassis.move).
+    """
+    distancia = (x * x + y * y) ** 0.5
+    velocidad = limitar(velocidad, VEL_XY_MAX)
+    odometria = Odometria(ep_robot.chassis)
+    if odometria.esperar(dormir=dormir, reloj=reloj) is None:
+        odometria.cerrar()
+        return None
+    x0, y0 = odometria.ultima[:2]
+    ux, uy = x / distancia, y / distancia
+    maximo = 2 * distancia / max(velocidad, 0.05) + 5
+    limite = reloj() + maximo
+    try:
+        while True:
+            px, py = odometria.ultima[0] - x0, odometria.ultima[1] - y0
+            falta = (x - px) * ux + (y - py) * uy        # lo que queda a lo largo de la dirección pedida
+            if falta <= 0.01:
+                break
+            if reloj() > limite:
+                raise RuntimeError(f'{que}: no ha llegado en {maximo:.0f} s (lleva {distancia - falta:.2f} de '
+                                   f'{distancia:.2f} m; ¿batería baja u obstáculo?)')
+            # rampa de frenada: 3 m/s por metro que falta (a 0,5 m/s empieza a frenar a 17 cm), sin bajar de 0,08
+            v = min(velocidad, max(0.08, 3.0 * falta))
+            # corrige la deriva lateral respecto a la línea recta
+            lateral = -(px * uy - py * ux)
+            vx, vy = v * ux + 1.5 * lateral * uy, v * uy - 1.5 * lateral * ux
+            norma = (vx * vx + vy * vy) ** 0.5
+            if norma > VEL_XY_MAX:                         # nunca más de la velocidad máxima
+                vx, vy = vx * VEL_XY_MAX / norma, vy * VEL_XY_MAX / norma
+            ep_robot.chassis.drive_speed(x=vx, y=vy, z=0, timeout=0.5)
+            dormir(0.05)
+    finally:
+        try:
+            ep_robot.chassis.drive_speed(x=0, y=0, z=0)
+        except Exception:
+            pass
+        dormir(0.3)   # última lectura con el robot ya parado
+        final = odometria.ultima
+        odometria.cerrar()
+    return final[0] - x0, final[1] - y0
+
+
+def mover_chasis(ep_robot, x, y, z, v_xy, v_z, que='chasis', durante=None, odometria=True):
+    """Mueve el chasis (x adelante, y derecha, z giro a la izquierda) sin pasar de las velocidades máximas.
+
+    Los avances sin giro van con avanzar() (velocidad real en m/s); los giros, los
+    movimientos que mezclan avance y giro, los que llevan `durante` (vigilancia) o si no
+    hay odometría, con chassis.move.
+    :return: (x, y) medidos por la odometría en los avances, o None.
+    """
+    v_xy, v_z = limitar(v_xy, VEL_XY_MAX), limitar(v_z, VEL_Z_MAX)
+    if odometria and (x or y) and not z and durante is None:
+        medido = avanzar(ep_robot, x, y, v_xy, que)
+        if medido is not None:
+            return medido
+        print('[aviso] sin odometría: el avance va con chassis.move, mucho más lento')
+    # chassis.move: el SDK sube a 0,5 cualquier xy_speed menor, pero no son m/s reales
+    tiempo = (x * x + y * y) ** 0.5 / 0.06 + abs(z) / v_z if (x or y) else abs(z) / v_z
+    ejecutar_accion(ep_robot, lambda: ep_robot.chassis.move(x=x, y=y, z=z, xy_speed=v_xy, z_speed=v_z),
+                    timeout=2 * tiempo + 5, que=que, durante=durante)
+    return None
+
+
 class Senales:
     """LED y sonido según el estado de la demo. Un fallo aquí nunca detiene la demo.
 
