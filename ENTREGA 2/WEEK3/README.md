@@ -245,17 +245,26 @@ vistos y tiempos.
      `.venv/` está ignorado.
    - Ejecutar sin depurador (Ctrl+F5 o «Run Python File»): al relanzar con el depurador,
      VSCode da a veces `ConnectionRefusedError` sin llegar a ejecutar el script.
-2. **Modelo.** Basta con los pesos de `model_best.pt`, que pesa 346 MB porque guarda
-   también el optimizador. En un terminal de JupyterHub se exporta `model_demo.pt`
-   (173 MB, solo `{'model': state_dict}`):
+2. **Modelo.** `model_demo.pt` (173 MB, solo `{'model': state_dict}`) está en la release
+   [`modelo-demo-v1`](https://github.com/javiersaguar/PIDS-Proyecto2/releases/tag/modelo-demo-v1).
+   Desde esta carpeta se descarga con:
+   ```
+   gh release download modelo-demo-v1 --repo javiersaguar/PIDS-Proyecto2 -p model_demo.pt -D models/faster_rcnn_v2_aug_robusto_v1_lr001
+   ```
+   Sin `gh`, se descarga desde la página de la release. Tiene que quedar en
+   `models/faster_rcnn_v2_aug_robusto_v1_lr001/model_demo.pt`, junto a `demo.py`; es la
+   ruta de `RUTA_MODELO`. Su SHA-256 es
+   `f46a49d7c8cb2ced6061738b01a99a1c9f476a4aea9c83a6967e7909d5b63141`, que se comprueba con
+   `certutil -hashfile <fichero> SHA256` en Windows o `sha256sum <fichero>` en Linux.
+   Ocupa más de los 100 MB que admite git en GitHub, así que no se versiona: `models/`
+   está ignorado. `demo.py` comprueba que el checkpoint trae los 404 tensores de la
+   arquitectura.
+
+   Para exportarlo de nuevo desde `model_best.pt` (346 MB, porque guarda también el
+   optimizador), en un terminal de JupyterHub:
    ```
    python -c "import os,torch;d=os.path.expanduser('~/pids_main/models/faster_rcnn_v2_aug_robusto_v1_lr001/');c=torch.load(d+'model_best.pt',map_location='cpu',weights_only=False);torch.save({'model':c['model']},d+'model_demo.pt')"
    ```
-   Se descarga y se deja en `models/faster_rcnn_v2_aug_robusto_v1_lr001/model_demo.pt`,
-   junto a `demo.py`; es la ruta de `RUTA_MODELO`. El de la demo tiene SHA-256
-   `f46a49d7c8cb2ced6061738b01a99a1c9f476a4aea9c83a6967e7909d5b63141`. El modelo no se
-   sube a GitHub. `demo.py` comprueba que el checkpoint trae los 404 tensores de la
-   arquitectura.
 3. **Conectar.** Hay dos modos:
    - **Wifi directo** (portátil con wifi): la pestaña de conexión del robot en el icono
      de wifi directo y el portátil conectado a la red `RMEP-…` del robot (contraseña en
