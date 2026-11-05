@@ -4,7 +4,7 @@ Contenido actualizado el **06/11/2026**.
 
 | Documento | Contenido |
 |---|---|
-| [`informe_entrega3.docx`](informe_entrega3.docx) | **Borrador de la memoria de la entrega 3**: la de la entrega 2 más el Bloque 3 (apartados 13 a 17), creada con `herramientas/generar_entrega3.py` a partir de [`../informe_bloque3_borrador.md`](../informe_bloque3_borrador.md). Lo marcado en amarillo como [PENDIENTE] falta por medir o decidir. Ahora tiene 40 páginas, 25 de cuerpo: habrá que recortar para volver a 20. |
+| [`informe_entrega3.docx`](informe_entrega3.docx) | **Borrador de la memoria de la entrega 3**: la de la entrega 2 más el Bloque 3 (apartados 13 a 17), creada con `herramientas/generar_entrega3.py` a partir de [`../informe_bloque3_borrador.md`](../informe_bloque3_borrador.md). Lo marcado en amarillo como [PENDIENTE] falta por medir o decidir. Ahora tiene 40 páginas, 25 de cuerpo; el límite de la entrega 3 es 30 (Bloques 1 a 3, sin portada, índice, respuesta a la revisión, reparto, referencias ni anexos). Se entrega como `PIDS_grupo2_entrega3.pdf`. |
 | [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (34 páginas, 20 de cuerpo, de la 4 a la 23; el límite es 20). |
 | [`informe_fase1.docx`](informe_fase1.docx) | Fuente de la memoria de la entrega 1 (Bloque 1), base de `generar_entrega2.py`. El PDF entregado está en `docs/entregas/PIDS_grupo2_entrega1.pdf` y difiere en algo de redacción. |
 | `figuras/` | Figuras de maquetación que no están en `ENTREGA 1/WEEK1/` ni en `WEEK2/`, incluidas las añadidas por la revisión. |
