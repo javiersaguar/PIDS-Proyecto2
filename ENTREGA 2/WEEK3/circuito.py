@@ -134,8 +134,10 @@ PLANO = [
     # nombre, punto donde se para, puntos intermedios (por), rumbo al llegar (mirar),
     # rivales (puntos donde se espera un robot: el barrido mira hacia ellos)
     # paso 1: 2,85 m en línea recta (medido el 05/11). Paso 2: la torreta gira a la derecha
-    # unos 90º (si no lo ve, prueba a 60º y 120º), detecta al rival y le dispara
-    dict(nombre='P1', punto=(2.85, 0.0), barrido=[90, 60, 120], pitch=0, objetivos=1),
+    # unos 90º, detecta al rival y le dispara; después gira a la izquierda (-90º) y elimina
+    # al robot camuflado (docs/senuelo_aliado.md). Si no ve a alguno, prueba a ±60º y ±120º.
+    # Con objetivos=2, deja de barrer en cuanto ha atacado a los dos.
+    dict(nombre='P1', punto=(2.85, 0.0), barrido=[90, -90, 60, -60, 120, -120], pitch=0, objetivos=2),
     # paso 3: la rotonda, con movimientos relativos del chasis sin girarlo (x adelante,
     # y derecha). Al retroceder, la torreta mira 90º a la izquierda y dispara al rival
     # que vea, sin parar. Al acabar no se barre (barrido=[]).
