@@ -28,30 +28,42 @@ TOLERANCIA_YAW = 15      # grados: dos detecciones más cercanas se tratan como 
 SIGNO_YAW = 1            # poner -1 si en la prueba el gimbal gira hacia el lado contrario del robot
 ESPERA_CAMARA = 0.5      # s de espera tras mover el gimbal antes de capturar (imagen sin movimiento)
 
+# --- Mejoras de la PR 36: todas desactivadas por defecto ------------------------------
+# Con SEGUIMIENTO, BARRIDO_CONTINUO, MEMORIA, VIGILANCIA y LEER_ANGULO_GIMBAL a False la demo
+# hace lo mismo que la de main (confirmación única y ráfaga de 12 con la SCAR en cada disparo).
+# Se activan en el laboratorio de una en una, en este orden, comprobando cada una con el
+# robot (pasos en el README): LEER_ANGULO_GIMBAL, SEGUIMIENTO, BARRIDO_CONTINUO,
+# MEMORIA (tras calibrar ALTURA_ROBOT) y VIGILANCIA.
+
 # --- Seguimiento del objetivo (los rivales se mueven) ------------------------------
 # Con SEGUIMIENTO, al fijar un robot la torreta lo sigue imagen a imagen (gimbal.drive_speed)
-# y solo dispara cuando está centrado, hasta DISPAROS_POR_ROBOT. Con GPU se analizan unas
-# 10 imágenes por segundo. False vuelve a la confirmación única y la ráfaga sin mirar.
-SEGUIMIENTO = True
+# y solo dispara cuando está centrado, hasta DISPAROS_POR_ROBOT. La ganancia se adapta al
+# tiempo medido por imagen (CORRECCION_POR_IMAGEN), así que funciona con CPU (~1,1 s por
+# imagen, 12 disparos en unos 15 s) y con GPU (~0,1 s, unos 4 s).
+# False: confirmación única y ráfaga sin mirar (como en main).
+SEGUIMIENTO = False
 UMBRAL_SEGUIMIENTO = 0.8 # ya fijado el robot, confianza mínima para no perderlo (para fijarlo hace falta UMBRAL)
 SALTO_MAX = 25           # grados: una detección más lejos de donde se espera el robot es otro robot
 TOLERANCIA_DISPARO = 3   # grados de error mínimos admitidos para disparar (crece con el tamaño de la caja)
-INTERVALO_DISPARO = 0.25 # s mínimos entre dos disparos
+INTERVALO_DISPARO = 0.3  # s mínimos entre dos disparos (los mismos que en main)
 GANANCIA_SEGUIMIENTO = 2.0  # º/s de giro por grado de error; más alto reacciona antes, pero puede oscilar
+CORRECCION_POR_IMAGEN = 0.8 # la ganancia se limita a esto / (s por imagen medidos): con CPU (~1,1 s) queda en ~0,7
 ANTICIPAR = True         # sumar al giro la velocidad estimada del robot, para no ir siempre detrás de él
 RETARDO_CAMARA = 0.25    # s entre que la cámara ve algo y la imagen llega al ordenador (wifi); medir en el laboratorio
 PERDIDAS_MAX = 5         # imágenes seguidas sin ver al robot antes de darlo por perdido
-TIEMPO_MAX_OBJETIVO = 20 # s máximos persiguiendo a un mismo robot
+TIEMPO_MAX_OBJETIVO = 20 # s máximos persiguiendo a un mismo robot (crece si cada imagen tarda más de 0,8 s)
 CORREGIR_PITCH = True    # apuntar también en vertical
 ALTURA_PUNTERIA = 0.5    # punto de la caja al que se apunta: 0 borde superior, 0.5 centro, 1 borde inferior
-LEER_ANGULO_GIMBAL = True  # usar el ángulo real del gimbal (sub_angle) en lugar de sumar los giros
-SONIDO_CADA_DISPARO = False  # True: AUDIO_DISPARO en cada disparo (más lento: el SDK sube el audio cada vez)
+LEER_ANGULO_GIMBAL = False # usar el ángulo real del gimbal (sub_angle), comprobado al arrancar, en lugar de sumar los giros
+SONIDO_CADA_DISPARO = True  # AUDIO_DISPARO en cada disparo, como en main. False: solo al empezar la ráfaga
+                            # (con SEGUIMIENTO es más rápido: el SDK sube el audio al robot en cada disparo)
 
 # --- Barrido continuo y memoria de robots atacados -----------------------------------
 # Con BARRIDO_CONTINUO, la torreta gira sin pararse entre los extremos del barrido de la
 # parada y analiza una imagen cada PASO_BARRIDO grados; en cuanto ve un robot nuevo lo
 # sigue y le dispara, y después continúa. False: se para en cada ángulo de `barrido`.
-BARRIDO_CONTINUO = True
+# Solo actúa con SEGUIMIENTO.
+BARRIDO_CONTINUO = False
 VEL_BARRIDO = 30         # º/s de la torreta al barrer (nunca más de 30, la del SDK)
 PASO_BARRIDO = 10        # grados girados entre dos imágenes analizadas (unas 3 por segundo a 30 º/s)
 CAMPO_VISION = 70        # grados del campo de visión útil (la cámara ve unos 90; los bordes cortan robots)
@@ -60,6 +72,9 @@ CAMPO_VISION = 70        # grados del campo de visión útil (la cámara ve unos
 # tolerancia de un robot atacado se considera el mismo robot y no se le vuelve a disparar.
 # La tolerancia es RADIO_MISMO_ROBOT de lado y crece con ERROR_DISTANCIA a lo largo de la
 # línea de visión, porque la distancia estimada es aproximada y el ángulo no.
+# Sin MEMORIA los atacados se anotan en resumen.json, pero no se usan para dejar de disparar
+# (como en main, cada parada empieza de cero). Activarla tras calibrar ALTURA_ROBOT.
+MEMORIA = False
 ALTURA_ROBOT = 0.35      # m que mide la caja de un RoboMaster (calibrar: robot a 1,5 m y ver distancia_m)
 RADIO_MISMO_ROBOT = 0.35 # m: dos RoboMasters no caben más cerca; si el atacado se aleja más, se le repite
 ERROR_DISTANCIA = 0.25   # m de tolerancia extra, a lo largo de la línea de visión, por metro de distancia
@@ -73,14 +88,16 @@ ROBOTS_TOTALES = None    # robots rivales en el circuito; al atacarlos todos, el
 # INTERVALO_RUTA s. Al acabar un tramo, si se ha visto un rival nuevo, se para y lo ataca
 # (ATACAR_EN_RUTA); si hay un robot en el pasillo del siguiente tramo, espera a que se aparte.
 # Solo se detectan RoboMasters: los obstáculos fijos se evitan con el diseño del recorrido.
-VIGILANCIA = True
+# La distancia sale de ALTURA_ROBOT: calibrarla antes de activar la vigilancia.
+VIGILANCIA = False
 TRAMO_VIGILANCIA = 0.5   # m de cada tramo; los giros (z) no se dividen
 INTERVALO_RUTA = 0.3     # s entre imágenes analizadas con el chasis en marcha
 PITCH_RUTA = 0           # inclinación de la torreta durante el recorrido
 ATACAR_EN_RUTA = True    # parar a atacar a un rival nuevo visto en el recorrido
 ANCHO_PASILLO = 0.6      # m de ancho del camino vigilado (un robot mide unos 0,24 m de ancho)
 DISTANCIA_SEGURIDAD = 0.4  # m libres que se exigen más allá del final del tramo
-ESPERA_OBSTACULO = 15    # s esperando a que se aparte un robot del camino; después la demo se detiene
+ESPERA_OBSTACULO = 15    # s esperando a que se aparte un robot del camino; después se sigue el recorrido
+DETENER_SI_BLOQUEADO = False  # True: pasado ESPERA_OBSTACULO, detener la demo en lugar de seguir
 
 # Barrido de 360º en pasos de 60º: la cámara ve unos 90º, así que cada imagen
 # solapa con la siguiente. Empieza por delante, que es donde es más probable el rival.

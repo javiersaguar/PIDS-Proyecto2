@@ -23,6 +23,12 @@ completó el 04/11/2026 con nuestra demo.
 
 ## 2. Cómo funciona la demo
 
+**Opciones por defecto.** Las mejoras para rivales que se mueven (`SEGUIMIENTO`,
+`BARRIDO_CONTINUO`, `MEMORIA`, `VIGILANCIA` y `LEER_ANGULO_GIMBAL`) vienen a `False` en
+`circuito.py`. Así, la demo hace lo mismo que la de `main`: barrido por pasos, confirmación
+única y ráfaga de 12 disparos con la SCAR en cada uno. Se activan en el laboratorio de una en
+una (sección 4.1). Lo que sigue describe cada paso con la mejora activada y sin ella.
+
 Para cada parada de `circuito.PARADAS`:
 
 1. **Desplazamiento.** El chasis hace los movimientos `(x, y, z)` de la parada, uno
@@ -30,7 +36,7 @@ Para cada parada de `circuito.PARADAS`:
    La velocidad es la de `circuito.py` (0,3 m/s y 30 º/s), recortada siempre a la
    del SDK (0,5 m/s y 30 º/s): el enunciado prohíbe aumentarla. Con `VIGILANCIA`, los
    avances se hacen por tramos vigilando el camino (sección 2.2).
-2. **Barrido continuo** (`BARRIDO_CONTINUO = True`). El gimbal se centra y gira sin
+2. **Barrido continuo** (`BARRIDO_CONTINUO = True`, solo con `SEGUIMIENTO`). El gimbal se centra y gira sin
    pararse, a `VEL_BARRIDO` (30 º/s), entre los extremos de `barrido`. Analiza una imagen
    cada `PASO_BARRIDO` grados (10º, unas 3 por segundo), no todas: con un campo de visión
    útil de `CAMPO_VISION` (70º), cada robot sale en varias. Si `barrido` cubre 360º, los
@@ -38,37 +44,46 @@ Para cada parada de `circuito.PARADAS`:
    más cercano o, si están igual de lejos, al que aparece antes en la lista. Cada imagen se
    sitúa con el ángulo que tenía la torreta al tomarla (`RETARDO_CAMARA`). En cuanto
    aparece un robot nuevo, lo ataca (paso 4) y sigue barriendo desde donde ha quedado.
-   Con `BARRIDO_CONTINUO = False`, se para en cada ángulo de `barrido`, espera
+   Con `BARRIDO_CONTINUO = False` (por defecto), se para en cada ángulo de `barrido`, espera
    `ESPERA_CAMARA` (0,5 s) y analiza una imagen.
 3. **Selección.** Se quedan las detecciones con confianza `>= UMBRAL` y se calcula el
    ángulo de cada una (el yaw del gimbal más `auto_aim`) y su distancia (por el alto de la
    caja y `ALTURA_ROBOT`). No se repite:
    - una detección a menos de `TOLERANCIA_YAW` (15º) de otra ya revisada en la parada (el
      mismo robot en dos imágenes);
-   - un robot de la **memoria del circuito** (sección 2.1): ya atacado en esta parada o en
-     otra, o que no se pudo fijar hace menos de `TIEMPO_DESCARTE` s.
+   - con `MEMORIA`, un robot de la **memoria del circuito** (sección 2.1) ya atacado en esta
+     parada o en otra;
+   - con `SEGUIMIENTO`, una detección que no se pudo fijar hace menos de `TIEMPO_DESCARTE` s.
 4. **Seguimiento y disparo** (`SEGUIMIENTO = True`, para rivales que se mueven). Para cada
    robot nuevo, el gimbal gira hacia él y a partir de ahí analiza cada fotograma en cuanto
-   llega, sin esperas (unas 10 imágenes por segundo con GPU):
+   llega, sin esperas (unas 10 imágenes por segundo con GPU y una cada 1,1 s con CPU):
    - **Fija el objetivo:** toma la detección más cercana a donde se espera el robot, contando
      con lo que se ha movido. Para fijarlo hace falta confianza `>= UMBRAL`, que no sea un
      robot ya atacado y que esté a menos de `SALTO_MAX` (25º) de donde se vio. Ya fijado,
      basta `UMBRAL_SEGUIMIENTO` (0,8) para no perderlo con el desenfoque del movimiento.
    - **Lo sigue:** gira la torreta con `gimbal.drive_speed` a una velocidad proporcional al
-     error (`GANANCIA_SEGUIMIENTO`) más la velocidad estimada del robot (`ANTICIPAR`), en
-     yaw y en pitch (`CORREGIR_PITCH`), siempre con el tope de 30 º/s.
+     error más la velocidad estimada del robot (`ANTICIPAR`), en yaw y en pitch
+     (`CORREGIR_PITCH`), siempre con el tope de 30 º/s.
+   - **Ganancia según el tiempo por imagen.** La torreta sigue girando mientras se analiza
+     la imagen siguiente. Por eso la ganancia es
+     `min(GANANCIA_SEGUIMIENTO, CORRECCION_POR_IMAGEN / s por imagen)`, con el tiempo por
+     imagen medido durante el seguimiento: en cada imagen se corrige como mucho el 80 % del
+     error. Con GPU (0,1 s) queda en 2 y con CPU (1,1 s) en unos 0,7. Con la ganancia fija
+     de 2, con CPU la torreta se pasaba de largo y oscilaba.
    - **Dispara solo con el robot centrado:** error menor que `TOLERANCIA_DISPARO` (3º) o que
-     el 40 % del tamaño de la caja, si es mayor, y al menos `INTERVALO_DISPARO` (0,25 s)
-     desde el disparo anterior, hasta llegar a 12.
+     el 40 % del tamaño de la caja, si es mayor, y al menos `INTERVALO_DISPARO` (0,3 s)
+     desde el disparo anterior, hasta llegar a 12. Con `ANTICIPAR` espera a haberlo visto en
+     dos imágenes, para conocer ya su velocidad.
    - **Compensa el retardo del vídeo:** la imagen llega `RETARDO_CAMARA` s tarde (unos
      0,25 s por wifi). El ángulo del robot se calcula con el que tenía la torreta al tomar la
      imagen, que se guarda en un historial, y no con el de ahora.
    - **Lo da por perdido** si no lo ve en `PERDIDAS_MAX` imágenes seguidas o pasan
-     `TIEMPO_MAX_OBJETIVO` s. No cuenta como atacado y el barrido sigue.
+     `TIEMPO_MAX_OBJETIVO` s (20 s, o lo que duren 24 imágenes si es más). No cuenta como
+     atacado y el barrido sigue.
 
    Tras los 12 disparos, el gimbal cabecea y el LED se pone verde. Con `SEGUIMIENTO = False`
-   se usa la versión anterior: confirma una vez (`CONFIRMAR`), corrige y dispara la ráfaga sin
-   volver a mirar. Solo sirve para robots quietos.
+   (por defecto) se usa la versión de `main`: confirma una vez (`CONFIRMAR`), corrige y dispara
+   la ráfaga sin volver a mirar. Solo sirve para robots quietos.
 5. **Fin de la parada.** Si se han atacado los `objetivos` esperados en la parada, se
    deja de barrer (salvo `BARRIDO_COMPLETO = True`). El gimbal vuelve al centro. Si se fija
    `ROBOTS_TOTALES` y ya se han atacado todos, el resto de paradas se recorre sin barrer.
@@ -76,7 +91,10 @@ Para cada parada de `circuito.PARADAS`:
 ### 2.1. Memoria de robots atacados
 
 Los rivales son todos iguales y se mueven, así que la demo lleva una memoria aproximada de
-los robots atacados, en metros sobre el circuito:
+los robots atacados, en metros sobre el circuito. Siempre se anota en `resumen.json`, pero
+solo se usa para no repetir ataques con `MEMORIA = True`. Sin ella (por defecto), como en
+`main`, cada parada empieza de cero. Depende de `ALTURA_ROBOT`, así que se activa después de
+calibrarla.
 
 - **Posición del chasis** (X adelante desde la salida, Y a la izquierda, rumbo): se calcula
   con los movimientos `(x, y, z)` ya hechos. El chasis se traslada y después gira, así que
@@ -108,13 +126,16 @@ Al terminar: vuelta al inicio (opcional) y baile final con LED, sonido, gimbal y
   (`DISPARAR_A_TODOS`), porque hay que inutilizar a todos los robots.
 - Se barre **hasta encontrar los robots esperados** en esa parada, no siempre 360º. Si
   no se sabe cuántos hay (`objetivos=None`), se completa el barrido.
-- Se sigue al robot mientras se le dispara, porque los rivales también exploran y se
-  mueven. Una ráfaga a ciegas falla en cuanto el robot sale de la línea de tiro, y con GPU
-  analizar cada fotograma durante la ráfaga cuesta poco. Así se cumple «mirar donde y cuando
-  conviene»: se detecta sin parar solo mientras se ataca a un robot.
-- El sonido de disparo suena una vez por ráfaga (`SONIDO_CADA_DISPARO = False`). El SDK sube
-  el audio al robot en cada llamada y no admite dos sonidos a la vez: con un sonido por
-  disparo, la ráfaga pasaba de unos 3 s a más de 20.
+- Con `SEGUIMIENTO`, se sigue al robot mientras se le dispara, porque los rivales también
+  exploran y se mueven. Una ráfaga a ciegas falla en cuanto el robot sale de la línea de tiro.
+  Con GPU la ráfaga dura unos 4 s; con CPU, unos 15 s, porque se dispara como mucho una vez
+  por imagen analizada. Así se cumple «mirar donde y cuando conviene»: se detecta sin parar
+  solo mientras se ataca a un robot. Si los rivales van a estar quietos en la demo, la
+  ventaja desaparece y basta la ráfaga de `main`.
+- La SCAR suena en cada disparo (`SONIDO_CADA_DISPARO = True`), como en `main`. El SDK sube
+  el audio al robot en cada llamada y no admite dos sonidos a la vez. Con `SEGUIMIENTO`,
+  `SONIDO_CADA_DISPARO = False` hace que suene solo al empezar la ráfaga, que es más rápido
+  (sin seguimiento, con un sonido por disparo la ráfaga pasa de unos 3 s a más de 20).
 
 **Módulos usados**, como pide el enunciado:
 
@@ -154,7 +175,7 @@ python audio/convertir_audio.py ENTRADA audio/propios/superestrella.wav --inicio
 | Audio (`circuito.py`) | Cuándo suena |
 |---|---|
 | `AUDIO_MOTOR` (`audio/engine_sound_corto.wav`) | Al arrancar: los 6 primeros segundos de `engine_sound.wav`, para que no tape los demás sonidos |
-| `AUDIO_DISPARO` (`audio/propios/scar.wav`) | Al empezar cada ráfaga, sin esperar a que acabe. Con `SONIDO_CADA_DISPARO = True`, en cada disparo: si hay otro sonido en curso se omite (con seguimiento) o se espera (sin seguimiento), porque el SDK no admite dos sonidos a la vez |
+| `AUDIO_DISPARO` (`audio/propios/scar.wav`) | En cada disparo (`SONIDO_CADA_DISPARO = True`, por defecto): si hay otro sonido en curso se omite (con seguimiento) o se espera (sin seguimiento), porque el SDK no admite dos sonidos a la vez. Con `SONIDO_CADA_DISPARO = False`, solo al empezar cada ráfaga, sin esperar a que acabe |
 | `AUDIO_FINAL` (`audio/propios/superestrella.wav`) | En el baile final. Los LED cambian de color `LED_FIESTA_HZ` veces por segundo mientras suena |
 
 `audio/propios/` no se sube a GitHub, porque las canciones y los sonidos de juegos tienen
@@ -163,8 +184,9 @@ derechos de autor. Si un audio no existe, la demo usa los sonidos del SDK. Hace 
 
 ### 2.2. Vigilancia durante el recorrido
 
-Los rivales también se mueven por el circuito, así que la demo no va a ciegas entre paradas
-(`VIGILANCIA = True`):
+Los rivales también se mueven por el circuito, así que con `VIGILANCIA = True` la demo no va
+a ciegas entre paradas. Viene desactivada: es la última mejora que se activa, después de
+calibrar `ALTURA_ROBOT`, porque la distancia a un robot en el camino sale de ella.
 
 1. **Tramos.** Cada avance se divide en tramos de `TRAMO_VIGILANCIA` (0,5 m) y la torreta
    mira hacia donde va el robot, también en los avances laterales o hacia atrás. Los
@@ -178,7 +200,9 @@ Los rivales también se mueven por el circuito, así que la demo no va a ciegas 
    - un **robot en el camino**, en un pasillo de `ANCHO_PASILLO` (0,6 m) hasta el final del
      tramo más `DISTANCIA_SEGURIDAD` (0,4 m), hace esperar con el LED amarillo parpadeando.
      Para esto basta `UMBRAL_SEGUIMIENTO`: ante la duda, se espera. Si pasados
-     `ESPERA_OBSTACULO` s (15 s) sigue ahí, la demo se detiene de forma segura.
+     `ESPERA_OBSTACULO` s (15 s) sigue ahí, lo anota en `eventos_ruta` y sigue el recorrido:
+     puede ser un rival ya inutilizado, que no se va a apartar, o una distancia mal estimada.
+     Con `DETENER_SI_BLOQUEADO = True`, en cambio, la demo se detiene de forma segura.
 
 Solo se detectan RoboMasters: los obstáculos fijos se evitan con el diseño del recorrido.
 `resumen.json` guarda en `eventos_ruta` los ataques y las esperas del recorrido.
@@ -201,8 +225,8 @@ Cada ejecución crea `evidencias/<fecha_hora>/` (no se sube a GitHub):
   distancia) y disparos.
 - `resumen.json`: configuración, robots atacados por parada, disparos totales, tiempo
   medio de inferencia y duración. Cada ataque indica si se completó, cuántas imágenes y
-  segundos llevó, la velocidad angular estimada del robot, su distancia y su punto en el
-  circuito. También guarda la memoria de robots atacados, el tiempo de cada parada y la
+  segundos llevó, el tiempo medido por imagen (`s_por_imagen`), la velocidad angular estimada
+  del robot, su distancia y su punto en el circuito. También guarda la memoria de robots atacados, el tiempo de cada parada y la
   posición del chasis.
 
 Es el material de la memoria del Bloque 3: aciertos, falsos positivos, robots no
@@ -261,6 +285,24 @@ vistos y tiempos.
 8. **Demo completa:** `python demo.py`. Agarrar el robot siempre por la base, nunca por
    la cabeza, y no apuntar a nadie con el blaster.
 
+### 4.1. Activar las mejoras de una en una
+
+Primero se prueba la demo con los valores por defecto (la de `main`). Después, cada mejora se
+activa en `circuito.py` y se prueba con `--sin-mover --sin-disparar` antes de la demo completa.
+Si una falla, se vuelve a poner a `False` y la demo sigue funcionando sin ella.
+
+1. **`LEER_ANGULO_GIMBAL = True`.** No cambia la estrategia. Al arrancar debe aparecer
+   `Torreta: lectura del ángulo comprobada`. Si no, la demo estima el ángulo como antes.
+2. **`SEGUIMIENTO = True`.** Con un compañero moviendo un robot delante, la torreta debe
+   seguirlo y disparar 12 veces. Revisar `s_por_imagen` en `resumen.json` y ajustar como
+   se indica en «Ajustar el seguimiento en el laboratorio». Con `SONIDO_CADA_DISPARO = False`
+   la ráfaga es más rápida.
+3. **`BARRIDO_CONTINUO = True`.** Comprobar en `evidencias/` que el detector ve los robots con
+   la torreta girando. Si no, bajar `VEL_BARRIDO` o volver a `False`.
+4. **`MEMORIA = True`**, después de calibrar `ALTURA_ROBOT` (sección 2.1). Un robot visto desde
+   dos paradas no debe atacarse dos veces.
+5. **`VIGILANCIA = True`**, la última («Probar la vigilancia del recorrido»).
+
 Opciones de `demo.py`:
 
 | Opción | Efecto |
@@ -287,7 +329,12 @@ comprueban lo siguiente:
   apuntando a su ángulo;
 - deja de barrer al encontrar los robots esperados;
 - no dispara si al confirmar el robot no está centrado o es uno ya atacado, y corrige la puntería si lo está;
-- sigue a un robot que se mueve y le dispara 12 veces, solo cuando está centrado;
+- por defecto hace lo mismo que la demo de `main`: sin seguimiento, barrido continuo, tramos ni
+  lectura del gimbal, con la SCAR en cada disparo;
+- sigue a un robot que se mueve y le dispara 12 veces, solo cuando está centrado y tras verlo
+  en dos imágenes;
+- con 1,1 s por imagen (CPU) y robots a 0, 3, 6 y 10 º/s completa la ráfaga en menos de 20 s
+  y todos los disparos caen sobre el robot;
 - lo fija aunque se haya movido desde el barrido, pero no si aparece a más de `SALTO_MAX`;
 - con la imagen 0,3 s retrasada y el robot a 12 º/s, todos los disparos caen sobre él;
 - da por perdido a un robot que desaparece y no lo cuenta como atacado;
@@ -297,15 +344,17 @@ comprueban lo siguiente:
 - el barrido continuo cubre 360º con una imagen cada `PASO_BARRIDO`, tarda menos que por pasos
   y deja de girar en cuanto ataca a los robots esperados;
 - la memoria no repite un robot visto desde otra parada, distingue dos robots juntos, vuelve a
-  atacar a uno que se ha alejado y olvida los descartes;
+  atacar a uno que se ha alejado y olvida los descartes; sin `MEMORIA`, cada parada empieza de
+  cero;
 - `ROBOTS_TOTALES` salta los barridos restantes sin dejar de hacer el recorrido;
 - la distancia por el alto de la caja y la posición del chasis son correctas;
 - la vigilancia divide los avances en tramos, mira hacia donde va el robot y analiza imágenes con
   el chasis en marcha;
 - ataca a un rival visto en el recorrido (también si aparece con el chasis en marcha) y no lo
   repite en la parada;
-- espera a que un robot deje libre el camino y detiene la demo de forma segura si no se aparta;
-  un robot a un lado o lejos no hace esperar;
+- espera a que un robot deje libre el camino; si no se aparta, sigue el recorrido o, con
+  `DETENER_SI_BLOQUEADO`, detiene la demo de forma segura; un robot a un lado o lejos no hace
+  esperar;
 - con `DISPARAR_A_TODOS = False` dispara solo a la mejor detección de cada imagen;
 - guarda todas las imágenes;
 - respeta `--sin-disparar`, `--sin-mover` y `--paradas`;
@@ -315,11 +364,29 @@ comprueban lo siguiente:
 - el código es válido en Python 3.8.
 
 El simulador falla si alguna orden supera la velocidad máxima. Lleva un reloj simulado:
-cada lectura de la cámara avanza 0,1 s (unas 10 imágenes por segundo, como con GPU), los
+cada lectura de la cámara avanza `PASO_IMAGEN` s (0,1 s, unas 10 imágenes por segundo, como
+con GPU; 1,1 s para simular la CPU), los
 giros del gimbal y los movimientos del chasis consumen su tiempo, `drive_speed` hace girar
 el gimbal mientras pasa el tiempo y el chasis lleva su posición. Los robots falsos pueden
 darse por su ángulo o por su posición en el circuito (en metros), y entonces su caja
-crece o mengua con la distancia.
+crece o mengua con la distancia. El gimbal simulado guarda su historial de ángulos, así que
+el detector falso ve el mundo con el retardo de cámara que se le pida, también con imágenes
+lentas.
+
+Seguimiento de un robot medido en simulación, sin retardo de cámara (12 disparos como máximo):
+
+| s por imagen | Robot | Ganancia fija de 2 (antes) | Ganancia adaptada (ahora) |
+|---:|---|---:|---:|
+| 0,1 (GPU) | quieto a 10 º/s | 12/12 en 3,4 s | 12/12 en 3,5 s |
+| 1,1 (CPU) | quieto | 12/12 en 13,2 s | 12/12 en 14,3 s |
+| 1,1 (CPU) | 3 º/s | 2/12; se rinde a los 20 s | 12/12 en 14,3 s |
+| 1,1 (CPU) | 6 º/s | 4/12; se rinde a los 20 s | 12/12 en 15,4 s |
+| 1,1 (CPU) | 10 º/s | 4/12; se rinde a los 20 s | 12/12 en 16,5 s |
+| 1,5 | 10 º/s | — | 12/12 en 24 s |
+
+Ahora, con 0,3 s de retardo de cámara, el error por disparo es de 0º a 1º de media y
+como mucho 5,4º en todos los casos de la tabla; la caja del robot de las pruebas mide unos
+14º, así que todos los disparos caen sobre él.
 
 Tiempo de una parada medido en simulación, contando la espera de 0,5 s del barrido por
 pasos y 0,1 s de inferencia por imagen (GPU):
@@ -345,8 +412,9 @@ Al arrancar, la demo gira la torreta 20º y comprueba que `sub_angle` sigue el g
 `Torreta: lectura del ángulo comprobada` o, si no, que estima el ángulo por software.
 Después, con `--sin-mover --sin-disparar --ver` y un compañero moviendo un robot delante:
 
-- **Oscila** (va y viene alrededor del robot): bajar `GANANCIA_SEGUIMIENTO` (por ejemplo,
-  a 1,5) o subir `RETARDO_CAMARA`.
+- **Oscila** (va y viene alrededor del robot): con CPU, bajar `CORRECCION_POR_IMAGEN` (por
+  ejemplo, a 0,6); con GPU, bajar `GANANCIA_SEGUIMIENTO` (por ejemplo, a 1,5). También puede
+  hacer falta subir `RETARDO_CAMARA`.
 - **Va siempre detrás** de un robot que se mueve: comprobar `ANTICIPAR = True` y bajar
   `RETARDO_CAMARA` si está muy por encima del real.
 - **Lo pierde** con el movimiento: bajar `UMBRAL_SEGUIMIENTO` o subir `PERDIDAS_MAX`.

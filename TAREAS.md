@@ -408,3 +408,27 @@ Comprobado sin robot: 56 pruebas (8 nuevas). En simulación, 3 m en línea recta
 tramo. Pendiente en el laboratorio: comprobar que para ante un robot en el camino y que
 `is_completed` del SDK permite analizar imágenes con el chasis en marcha (pasos en el
 `README.md` de WEEK3).
+
+### Actualización del 05/11: respuesta a la revisión de la PR #36
+
+T21/T22, en `alejandro-cuevas` (PR #36). Cambios tras la revisión de Javier:
+
+- **Todo desactivado por defecto.** `SEGUIMIENTO`, `BARRIDO_CONTINUO`, `LEER_ANGULO_GIMBAL`,
+  `VIGILANCIA` y la nueva `MEMORIA` vienen a `False`, y `SONIDO_CADA_DISPARO` a `True`: la
+  demo hace lo mismo que la de `main`, con la SCAR en cada disparo y 0,3 s entre disparos.
+  Las mejoras se activan una a una en el laboratorio (sección 4.1 del `README.md` de WEEK3).
+- **Seguimiento con CPU.** La ganancia se limita a `CORRECCION_POR_IMAGEN / s por imagen`
+  (0,8 / tiempo medido), porque la torreta sigue girando mientras se analiza la imagen
+  siguiente. En simulación, con 1,1 s por imagen, un robot a 3, 6 o 10 º/s pasa de 2–4/12
+  disparos a 12/12 en 14–17 s. No dispara hasta ver al robot en dos imágenes, y el tiempo
+  máximo por robot crece si cada imagen tarda mucho.
+- **Vigilancia.** Si un robot sigue en el camino pasados `ESPERA_OBSTACULO` s, la demo lo
+  anota y sigue el recorrido, en lugar de terminar con error (`DETENER_SI_BLOQUEADO`
+  recupera la parada segura).
+- **Simulador.** El detector falso tomaba el ángulo del gimbal de la imagen anterior, no de
+  hace `RETARDO_CAMARA` s; con imágenes lentas eso falseaba el retardo. Ahora el gimbal
+  simulado guarda su historial y se interpola.
+
+Comprobado sin robot: 61 pruebas (5 nuevas). Pendiente: decidir en el grupo si los rivales se
+moverán en la demo (si van a estar quietos, el seguimiento aporta poco) y probar primero en
+el robot la demo con los valores por defecto.

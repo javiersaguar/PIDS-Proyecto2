@@ -38,6 +38,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 - Bloque 3 (04/11, `alejandro-cuevas`): seguimiento de rivales en movimiento. La torreta sigue al robot fijado fotograma a fotograma y solo dispara cuando está centrado, compensando el retardo del vídeo; ángulo real del gimbal con `sub_angle` y ráfaga sin esperas de audio. 37 pruebas en simulación; falta ajustarlo en el laboratorio.
 - Bloque 3 (04/11, `alejandro-cuevas`, PR #36): barrido continuo con la torreta girando y memoria de robots atacados en metros sobre el circuito, para no repetir ráfagas contra el mismo robot ni desde otra parada. 48 pruebas en simulación; falta calibrar `ALTURA_ROBOT` en el laboratorio.
 - Bloque 3 (04/11, `alejandro-cuevas`, PR #36): vigilancia durante el recorrido. Avanza por tramos mirando hacia donde va, ataca a los rivales que encuentra y espera si un robot le bloquea el camino. 56 pruebas en simulación; falta probarlo en el laboratorio.
+- Bloque 3 (05/11, `alejandro-cuevas`, PR #36): respuesta a la revisión. Las mejoras vienen desactivadas (la demo por defecto es la de `main`, con la SCAR en cada disparo) y se activan una a una en el laboratorio. El seguimiento adapta la ganancia al tiempo por imagen y completa la ráfaga con CPU (1,1 s por imagen) en simulación. Un robot que no se aparta del camino ya no detiene la demo. 61 pruebas en simulación.
 - T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
 ## Datos de los vídeos

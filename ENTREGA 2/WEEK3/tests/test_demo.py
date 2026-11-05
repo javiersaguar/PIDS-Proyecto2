@@ -66,8 +66,8 @@ class DetectorFalso(torch.nn.Module):
         robot = simulacion.ULTIMO
         self.historial.append((robot.t, robot.gimbal.yaw))
         t_visto = robot.t - self.retardo
-        anteriores = [y for t, y in self.historial if t <= t_visto + 1e-9]
-        yaw = anteriores[-1] if anteriores else self.historial[0][1]
+        # Hacia dónde miraba el gimbal cuando se tomó la imagen (también si se analiza más de una vez por segundo)
+        yaw = robot.gimbal.yaw_en(t_visto)
         if self.t0 is None:
             self.t0 = robot.t
         cajas = []
@@ -108,8 +108,14 @@ class PruebasDemo(unittest.TestCase):
                                                     'SEGUIMIENTO', 'SONIDO_CADA_DISPARO', 'LEER_ANGULO_GIMBAL',
                                                     'ANTICIPAR', 'RETARDO_CAMARA', 'BARRIDO_CONTINUO',
                                                     'ROBOTS_TOTALES', 'TIEMPO_MEMORIA', 'VIGILANCIA',
-                                                    'ATACAR_EN_RUTA', 'ESPERA_OBSTACULO']}
+                                                    'ATACAR_EN_RUTA', 'ESPERA_OBSTACULO', 'MEMORIA',
+                                                    'DETENER_SI_BLOQUEADO']}
+        self.paso_imagen = simulacion.PASO_IMAGEN
         C.BAILE_FINAL, C.AUDIO_MOTOR, C.ESPERA_CAMARA = False, None, 0
+        # En circuito.py las mejoras vienen desactivadas (la demo de main). Estas pruebas son de
+        # las mejoras, así que las activan; las que prueban la demo de main las desactivan.
+        C.SEGUIMIENTO, C.BARRIDO_CONTINUO, C.LEER_ANGULO_GIMBAL, C.MEMORIA = True, True, True, True
+        C.SONIDO_CADA_DISPARO = False
         # La vigilancia del recorrido añade imágenes y divide los avances: sus pruebas la activan
         C.VIGILANCIA = False
         espera = mock.patch('time.sleep')   # sin esperas reales (cámara, disparos, batería)
@@ -119,6 +125,7 @@ class PruebasDemo(unittest.TestCase):
     def tearDown(self):
         for k, v in self.original.items():
             setattr(C, k, v)
+        simulacion.PASO_IMAGEN = self.paso_imagen
         shutil.rmtree(self.salida, ignore_errors=True)
 
     def lanzar(self, robots, circuito, **kw):
@@ -142,6 +149,27 @@ class PruebasDemo(unittest.TestCase):
         self.assertEqual(set(fases[2:]), {'seguimiento'})
         self.assertEqual(d.registro.filas[-1]['disparos'], 12)
 
+    def test_por_defecto_es_la_demo_de_main(self):
+        # Las mejoras vienen desactivadas en circuito.py: se activan una a una en el laboratorio
+        nuevas = ['SEGUIMIENTO', 'BARRIDO_CONTINUO', 'LEER_ANGULO_GIMBAL', 'MEMORIA', 'VIGILANCIA',
+                  'DETENER_SI_BLOQUEADO']
+        self.assertEqual({k: self.original[k] for k in nuevas}, dict.fromkeys(nuevas, False))
+        self.assertTrue(self.original['SONIDO_CADA_DISPARO'])
+        for k in nuevas + ['SONIDO_CADA_DISPARO']:
+            setattr(C, k, self.original[k])
+        C.AUDIO_DISPARO = os.path.join(CARPETA, 'scar.wav')
+        open(C.AUDIO_DISPARO, 'wb').close()
+        p = [dict(nombre='P1', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([70], p)
+        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual([f['fase'] for f in d.registro.filas], ['barrido', 'barrido', 'confirmado'])
+        tipos = [a['tipo'] for a in ep.acciones]
+        self.assertNotIn('gimbal.drive_speed', tipos)       # sin seguimiento ni barrido continuo
+        self.assertEqual([a for a in ep.acciones if a['tipo'] == 'chasis.move'][0]['x'], 0.5)   # sin tramos
+        audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
+        self.assertEqual(audios.count('scar.wav'), 12)       # la SCAR en cada disparo
+        self.assertFalse(d.torreta.suscrito)                 # sin leer el ángulo del gimbal
+
     def test_sin_seguimiento_confirma_una_vez_y_dispara_la_rafaga(self):
         C.SEGUIMIENTO = False
         p = [dict(nombre='P1', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=1)]
@@ -160,6 +188,41 @@ class PruebasDemo(unittest.TestCase):
         giros = [a for a in ep.acciones if a['tipo'] == 'gimbal.drive_speed']
         self.assertTrue(giros)
         self.assertEqual((giros[-1]['yaw_speed'], giros[-1]['pitch_speed']), (0, 0))   # queda parada
+
+    def test_seguimiento_con_cpu_completa_la_rafaga(self):
+        # Con CPU cada imagen tarda ~1,1 s y la torreta sigue girando mientras se analiza: con la
+        # ganancia de GPU se pasaba de largo y oscilaba (3/12 disparos a 3 º/s). Ahora la ganancia
+        # se adapta al tiempo medido por imagen.
+        simulacion.PASO_IMAGEN = 1.1
+        C.PARADAS = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        C.RETARDO_CAMARA = 0.3
+        for v in (0, 3, 6, 10):
+            ep = demo.connect('wifi')
+            robot = lambda t, v=v: 5 + v * t   # noqa: E731
+            detector = DetectorFalso([robot], retardo=0.3)
+            d = demo.Demo(ep, detector, Args(self.salida))
+            errores = []
+            disparar = ep.blaster.fire
+
+            def disparar_y_medir(**kw):
+                errores.append(abs(robot(ep.t - detector.t0) - ep.gimbal.yaw))
+                return disparar(**kw)
+            ep.blaster.fire = disparar_y_medir
+            d.ejecutar()
+            ataque = d.ataques[0]
+            self.assertTrue(ataque['completo'], f'{v} º/s')
+            self.assertEqual(len(errores), 12)
+            self.assertLess(max(errores), 7, f'{v} º/s')
+            self.assertAlmostEqual(ataque['s_por_imagen'], 1.1, delta=0.15)
+            self.assertLess(ataque['segundos'], 20)
+
+    def test_no_dispara_hasta_ver_dos_veces_al_robot(self):
+        # Con una sola imagen no se conoce la velocidad del robot y el disparo saldría detrás
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([0], p)
+        filas = [f for f in d.registro.filas if f['fase'] == 'seguimiento']
+        self.assertEqual(filas[0]['disparos'], 0)
+        self.assertEqual(filas[1]['disparos'], 1)
 
     def test_compensa_el_retardo_de_la_camara(self):
         # La imagen llega 0,3 s tarde y el robot va a 12 º/s: cada disparo debe caer sobre él
@@ -234,6 +297,16 @@ class PruebasDemo(unittest.TestCase):
              dict(nombre='P2', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
         ep, d, r = self.lanzar([(2.0, 0.3)], p)
         self.assertEqual(ep.disparos(), 24)
+
+    def test_sin_memoria_cada_parada_empieza_de_cero(self):
+        # MEMORIA = False (por defecto): como en main, el robot se ataca desde las dos paradas
+        C.MEMORIA = False
+        p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_FRONTAL, pitch=0, objetivos=None),
+             dict(nombre='P2', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
+        ep, d, r = self.lanzar([(2.0, 0.3)], p)
+        self.assertEqual(ep.disparos(), 24)
+        self.assertEqual([x['atacados'] for x in r['paradas']], [1, 1])
+        self.assertEqual(len(r['memoria']), 2)   # se anotan igualmente, para las evidencias
 
     def test_memoria_distingue_robots_juntos_en_angulo(self):
         # A 2 m y separados 0,6 m (unos 17 grados): son dos robots
@@ -338,7 +411,7 @@ class PruebasDemo(unittest.TestCase):
                                                            if a.get('rgb') == (255, 255, 0)))
 
     def test_camino_bloqueado_detiene_la_demo_de_forma_segura(self):
-        C.VIGILANCIA, C.ATACAR_EN_RUTA, C.ESPERA_OBSTACULO = True, False, 2
+        C.VIGILANCIA, C.ATACAR_EN_RUTA, C.ESPERA_OBSTACULO, C.DETENER_SI_BLOQUEADO = True, False, 2, True
         C.PARADAS = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=[0], pitch=0, objetivos=None)]
         ep = demo.connect('wifi')
         d = demo.Demo(ep, DetectorFalso([(0.7, 0.0)]), Args(self.salida))
@@ -347,6 +420,19 @@ class PruebasDemo(unittest.TestCase):
         self.assertEqual(self.movimientos(ep), [])
         self.assertEqual(ep.acciones[-1]['rgb'], (0, 0, 0))
         self.assertEqual(ep.gimbal.yaw, 0)
+
+    def test_camino_bloqueado_sigue_el_recorrido_por_defecto(self):
+        # Un rival inutilizado no se aparta y la distancia puede estar mal calibrada: la demo sigue
+        self.assertFalse(self.original['DETENER_SI_BLOQUEADO'])
+        C.DETENER_SI_BLOQUEADO = False
+        C.VIGILANCIA, C.ATACAR_EN_RUTA, C.ESPERA_OBSTACULO = True, False, 2
+        p = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=[0], pitch=0, objetivos=None)]
+        ep, d, r = self.lanzar([(0.7, 0.0)], p)
+        self.assertEqual(len(self.movimientos(ep)), 2)
+        bloqueos = [e for e in r['eventos_ruta'] if e['tipo'] == 'bloqueado']
+        self.assertTrue(bloqueos)
+        self.assertTrue(all(e['sigue'] for e in bloqueos))
+        self.assertEqual(r['pose_final'][:2], [1.0, 0.0])
 
     def test_un_robot_a_un_lado_o_lejos_no_bloquea(self):
         C.VIGILANCIA, C.ATACAR_EN_RUTA = True, False

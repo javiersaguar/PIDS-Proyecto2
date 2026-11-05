@@ -806,8 +806,11 @@ class Memoria:
                                   distancia=None if distancia is None else round(distancia, 2),
                                   tipo=tipo, parada=parada))
 
-    def conocido(self, punto, t, distancia=None, origen=None):
-        """La entrada que coincide con `punto` (visto desde `origen`) en el instante `t`, o None."""
+    def conocido(self, punto, t, distancia=None, origen=None, tipos=None):
+        """La entrada que coincide con `punto` (visto desde `origen`) en el instante `t`, o None.
+
+        `tipos` limita la búsqueda a esos tipos de entrada (p. ej. solo 'descartado').
+        """
         if punto is None:
             return None
         visual = None
@@ -816,6 +819,8 @@ class Memoria:
             if np.hypot(*v) > 1e-6:
                 visual = v / np.hypot(*v)
         for e in self.entradas:
+            if tipos is not None and e['tipo'] not in tipos:
+                continue
             limite = self.tiempo_descarte if e['tipo'] == 'descartado' else self.tiempo_memoria
             if limite is not None and t - e['t'] > limite:
                 continue

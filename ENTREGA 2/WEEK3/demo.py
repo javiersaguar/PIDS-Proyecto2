@@ -323,8 +323,9 @@ class Demo:
     def despejar(self, etiqueta, rumbo, alcance):
         """Con el chasis parado: ataca a los rivales nuevos y espera a que el camino esté libre.
 
-        Si un robot sigue en el pasillo pasados ESPERA_OBSTACULO s, detiene la demo
-        (RuntimeError), que para el chasis y deja la torreta centrada.
+        Si un robot sigue en el pasillo pasados ESPERA_OBSTACULO s, lo anota y sigue el
+        recorrido; con DETENER_SI_BLOQUEADO detiene la demo (RuntimeError), que para el
+        chasis y deja la torreta centrada.
         """
         inicio, ataques, esperando = self.reloj(), 0, False
         while True:
@@ -354,9 +355,17 @@ class Demo:
             if self.reloj() - inicio > C.ESPERA_OBSTACULO:
                 self.eventos_ruta.append(dict(tramo=etiqueta, tipo='bloqueado',
                                               segundos=round(self.reloj() - inicio, 1),
+                                              distancia=round(bloqueo[0], 2), sigue=not C.DETENER_SI_BLOQUEADO,
                                               pose=[round(v, 2) for v in self.pose]))
-                raise RuntimeError(f'{etiqueta}: un robot bloquea el camino a {bloqueo[0]:.1f} m desde hace '
-                                   f'{C.ESPERA_OBSTACULO} s')
+                if C.DETENER_SI_BLOQUEADO:
+                    raise RuntimeError(f'{etiqueta}: un robot bloquea el camino a {bloqueo[0]:.1f} m desde hace '
+                                       f'{C.ESPERA_OBSTACULO} s')
+                # Puede ser un rival ya inutilizado (no se va a apartar) o una distancia mal estimada
+                # (ALTURA_ROBOT sin calibrar): la demo sigue en lugar de terminar
+                print(f'[aviso] {etiqueta}: el robot del camino (a {bloqueo[0]:.1f} m) no se aparta en '
+                      f'{C.ESPERA_OBSTACULO} s: se sigue el recorrido')
+                self.senales.estado('moviendo')
+                return
             if not esperando:
                 print(f'  robot en el camino a {bloqueo[0]:.1f} m ({bloqueo[1]:+.0f} grados): esperando')
                 self.senales.estado('obstaculo', parpadeo=True)
@@ -393,8 +402,14 @@ class Demo:
         return None if distancia is None else punto_en_circuito(self.pose, yaw, distancia)
 
     def es_conocido(self, yaw, distancia, t):
-        """True si la detección coincide con un robot ya atacado o un descarte reciente (ver Memoria)."""
-        return self.memoria.conocido(self.en_circuito(yaw, distancia), t, distancia, self.pose[:2]) is not None
+        """True si la detección coincide con un robot ya atacado o un descarte reciente (ver Memoria).
+
+        Sin MEMORIA solo cuentan los descartes: los robots atacados se siguen anotando (para las
+        evidencias), pero no se usan para dejar de disparar, como en la versión de main.
+        """
+        tipos = None if C.MEMORIA else ('descartado',)
+        return self.memoria.conocido(self.en_circuito(yaw, distancia), t, distancia, self.pose[:2],
+                                     tipos=tipos) is not None
 
     def mirar(self, espera=None):
         """Captura y aplica el detector: (imagen, predicción, ms).
@@ -430,8 +445,14 @@ class Demo:
         Cada imagen se analiza en cuanto llega (sin esperas). Se elige la detección más
         cercana a donde se espera el robot, contando con lo que se ha movido, y se gira la
         torreta a una velocidad proporcional al error más la velocidad estimada del robot.
+        La torreta sigue girando mientras se analiza la imagen siguiente, así que la ganancia
+        se limita a CORRECCION_POR_IMAGEN / (tiempo medido por imagen): en cada imagen se
+        corrige como mucho esa fracción del error, también con CPU (más de 1 s por imagen).
+        Por lo mismo, el tiempo máximo con un robot crece si cada imagen tarda mucho.
         Se dispara cuando el error es menor que la tolerancia (que crece con el tamaño de
         la caja) y han pasado INTERVALO_DISPARO s desde el anterior, hasta DISPAROS_POR_ROBOT.
+        Con ANTICIPAR no se dispara hasta haberlo visto en dos imágenes: con una sola aún no
+        se conoce su velocidad y, si se mueve, el disparo sale detrás de él.
 
         Para fijarlo hace falta confianza >= UMBRAL, que no sea un robot ya atacado (en la
         parada, `ya_atacados`, o en la memoria del circuito) y que esté a menos de SALTO_MAX
@@ -447,17 +468,28 @@ class Demo:
         inicio = self.reloj()
         objetivo, t_objetivo = angulo, None   # último ángulo visto del robot (respecto al chasis) y cuándo
         velocidad = 0.0                       # velocidad angular estimada del robot (º/s)
-        fijado, centrados, disparos, perdidas, imagenes = False, 0, 0, 0, 0
+        fijado, centrados, disparos, perdidas, imagenes, vistas = False, 0, 0, 0, 0, 0
         ultimo_disparo, sonado, motivo = None, False, 'completado'
+        periodo, t_anterior = None, None      # s por imagen (media móvil) e instante de la imagen anterior
+        tiempo_max = C.TIEMPO_MAX_OBJETIVO
         try:
             while centrados < C.DISPAROS_POR_ROBOT:
-                if self.reloj() - inicio > C.TIEMPO_MAX_OBJETIVO:
+                if self.reloj() - inicio > tiempo_max:
                     motivo = 'tiempo agotado'
                     break
+                t_pedida = self.reloj()
                 image = self.camara.capturar(0)
                 t_captura = self.reloj() - C.RETARDO_CAMARA
                 prediction, ms = detectar(self.model, image, C.RESIZE)
                 ahora = self.reloj()
+                dt = ahora - (t_anterior if t_anterior is not None else t_pedida)
+                t_anterior = ahora
+                if dt > 0:
+                    periodo = dt if periodo is None else 0.5 * periodo + 0.5 * dt
+                ganancia = (C.GANANCIA_SEGUIMIENTO if not periodo else
+                            min(C.GANANCIA_SEGUIMIENTO, C.CORRECCION_POR_IMAGEN / periodo))
+                if periodo:
+                    tiempo_max = max(C.TIEMPO_MAX_OBJETIVO, 2 * C.DISPAROS_POR_ROBOT * periodo)
                 yaw, pitch = self.torreta.leer()
                 yaw_c, pitch_c = self.torreta.angulo_en(t_captura)   # hacia dónde miraba al tomar la imagen
                 imagenes += 1
@@ -485,6 +517,7 @@ class Demo:
                     v = (a - objetivo) / (t_captura - t_objetivo)
                     velocidad = limitar(0.5 * velocidad + 0.5 * v, VEL_GIMBAL_MAX)
                 objetivo, t_objetivo, fijado, perdidas = a, t_captura, True, 0
+                vistas += 1
 
                 # Error de puntería ahora (el robot ha seguido moviéndose desde la imagen) y
                 # tolerancia según su tamaño aparente
@@ -493,7 +526,8 @@ class Demo:
                 ancho, alto = tamano_angular(image, caja)
                 centrado = (abs(err_yaw) <= max(C.TOLERANCIA_DISPARO, 0.4 * ancho)
                             and abs(err_pitch) <= max(C.TOLERANCIA_DISPARO, 0.4 * alto))
-                if centrado and (ultimo_disparo is None or ahora - ultimo_disparo >= C.INTERVALO_DISPARO):
+                if (centrado and vistas >= (2 if C.ANTICIPAR else 1)
+                        and (ultimo_disparo is None or ahora - ultimo_disparo >= C.INTERVALO_DISPARO)):
                     if not self.args.sin_disparar:
                         if disparos == 0:
                             self.senales.estado('disparando', parpadeo=True)
@@ -512,8 +546,8 @@ class Demo:
                 self.registro.imagen(image, prediction, ms, parada, 'seguimiento', yaw, pitch, objetivo=caja,
                                      objetivo_yaw=a, disparos=disparos, distancia=d)
                 if centrados < C.DISPAROS_POR_ROBOT:
-                    giro = (velocidad if C.ANTICIPAR else 0.0) + C.GANANCIA_SEGUIMIENTO * err_yaw
-                    self.torreta.velocidad(giro, C.GANANCIA_SEGUIMIENTO * err_pitch)
+                    giro = (velocidad if C.ANTICIPAR else 0.0) + ganancia * err_yaw
+                    self.torreta.velocidad(giro, ganancia * err_pitch)
         finally:
             self.torreta.parar()
         completo = centrados >= C.DISPAROS_POR_ROBOT
@@ -522,6 +556,7 @@ class Demo:
         self.ataques.append(dict(parada=parada, yaw=round(objetivo, 1), confianza=round(confianza, 3),
                                  confirmado=fijado, disparos=disparos, completo=completo, imagenes=imagenes,
                                  segundos=round(duracion, 1), velocidad_robot=round(velocidad, 1),
+                                 s_por_imagen=None if periodo is None else round(periodo, 2),
                                  distancia_m=None if distancia is None else round(distancia, 2),
                                  punto=None if punto is None else [round(v, 2) for v in punto]))
         if completo:
@@ -730,8 +765,8 @@ class Demo:
     def rafaga(self):
         """Ráfaga sin seguimiento (SEGUIMIENTO = False). Devuelve cuántas órdenes de disparo confirmó el SDK.
 
-        Por defecto suena una vez y dispara cada INTERVALO_DISPARO s. Con SONIDO_CADA_DISPARO
-        espera al audio de cada disparo, como en la primera versión (más lento).
+        Con SONIDO_CADA_DISPARO (por defecto, como en main) espera al audio de cada disparo;
+        sin él suena una vez y dispara cada INTERVALO_DISPARO s.
         """
         audio = self.ruta_audio(C.AUDIO_DISPARO)
         por_disparo = audio is not None and C.SONIDO_CADA_DISPARO
@@ -867,15 +902,17 @@ class Demo:
                             tolerancia_yaw=C.TOLERANCIA_YAW, seguimiento=C.SEGUIMIENTO,
                             umbral_seguimiento=C.UMBRAL_SEGUIMIENTO, salto_max=C.SALTO_MAX,
                             tolerancia_disparo=C.TOLERANCIA_DISPARO, intervalo_disparo=C.INTERVALO_DISPARO,
-                            ganancia=C.GANANCIA_SEGUIMIENTO, anticipar=C.ANTICIPAR,
+                            ganancia=C.GANANCIA_SEGUIMIENTO, correccion_por_imagen=C.CORRECCION_POR_IMAGEN,
+                            anticipar=C.ANTICIPAR, sonido_cada_disparo=C.SONIDO_CADA_DISPARO,
                             corregir_pitch=C.CORREGIR_PITCH,
                             lectura_gimbal=self.torreta.usar_medida, barrido_continuo=C.BARRIDO_CONTINUO,
                             paso_barrido=C.PASO_BARRIDO, campo_vision=C.CAMPO_VISION,
-                            altura_robot=C.ALTURA_ROBOT, radio_mismo_robot=C.RADIO_MISMO_ROBOT,
+                            memoria=C.MEMORIA, altura_robot=C.ALTURA_ROBOT, radio_mismo_robot=C.RADIO_MISMO_ROBOT,
                             error_distancia=C.ERROR_DISTANCIA, robots_totales=C.ROBOTS_TOTALES,
                             vigilancia=C.VIGILANCIA, tramo_vigilancia=C.TRAMO_VIGILANCIA,
                             atacar_en_ruta=C.ATACAR_EN_RUTA, ancho_pasillo=C.ANCHO_PASILLO,
-                            distancia_seguridad=C.DISTANCIA_SEGURIDAD),
+                            distancia_seguridad=C.DISTANCIA_SEGURIDAD,
+                            detener_si_bloqueado=C.DETENER_SI_BLOQUEADO),
             imagenes=len(filas),
             ms_inferencia_medio=round(sum(f['ms_inferencia'] for f in filas) / len(filas), 1) if filas else None,
             disparos=sum(a['disparos'] for a in self.ataques),

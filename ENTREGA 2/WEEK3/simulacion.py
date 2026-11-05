@@ -96,22 +96,42 @@ class Gimbal:
         self.pitch = 0.0
         self.v_yaw = self.v_pitch = 0.0
         self._callback = None
+        self.historial = [(0.0, 0.0)]   # (t, yaw) al empezar y acabar cada giro, para yaw_en()
 
     def _avisar(self):
         if self._callback is not None:
             self._callback((self.pitch, self.yaw, self.pitch, self.yaw))
 
+    def _anotar(self, t):
+        self.historial.append((t, self.yaw))
+        if len(self.historial) > 2000:
+            del self.historial[:1000]
+
+    def yaw_en(self, t):
+        """Yaw que tenía el gimbal en el instante simulado `t` (interpola entre giros)."""
+        h = self.historial
+        if t >= h[-1][0]:
+            return self.yaw
+        for (t0, y0), (t1, y1) in zip(reversed(h[:-1]), reversed(h[1:])):
+            if t0 <= t <= t1:
+                return y1 if t1 <= t0 else y0 + (t - t0) / (t1 - t0) * (y1 - y0)
+        return h[0][1]
+
     def avanzar(self, dt):
         if self.v_yaw or self.v_pitch:
+            self._anotar(self.r.t)
             self.yaw += self.v_yaw * dt
             self.pitch = max(-20.0, min(35.0, self.pitch + self.v_pitch * dt))
+            self._anotar(self.r.t + dt)
             self._avisar()
 
     def _girar(self, d_yaw, d_pitch, velocidad):
         self.v_yaw = self.v_pitch = 0.0
+        self._anotar(self.r.t)
         self.r.avanzar(max(abs(d_yaw), abs(d_pitch)) / max(velocidad, 1e-6))
         self.yaw += d_yaw
         self.pitch += d_pitch
+        self._anotar(self.r.t)
         self._avisar()
 
     def move(self, pitch=0, yaw=0, pitch_speed=30, yaw_speed=30):
