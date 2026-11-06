@@ -1,9 +1,10 @@
 # Informes sobre la plantilla oficial
 
-Contenido actualizado el **01/11/2026**.
+Contenido actualizado el **06/11/2026**.
 
 | Documento | Contenido |
 |---|---|
+| [`informe_entrega3.docx`](informe_entrega3.docx) | **Borrador de la memoria de la entrega 3**: la de la entrega 2 más el Bloque 3 (apartados 13 a 17), creada con `herramientas/generar_entrega3.py` a partir de [`../informe_bloque3_borrador.md`](../informe_bloque3_borrador.md). Lo marcado en amarillo como [PENDIENTE] falta por medir o decidir. Ahora tiene 40 páginas, 25 de cuerpo; el límite de la entrega 3 es 30 (Bloques 1 a 3, sin portada, índice, respuesta a la revisión, reparto, referencias ni anexos). Se entrega como `PIDS_grupo2_entrega3.pdf`. |
 | [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (34 páginas, 20 de cuerpo, de la 4 a la 23; el límite es 20). |
 | [`informe_fase1.docx`](informe_fase1.docx) | Fuente de la memoria de la entrega 1 (Bloque 1), base de `generar_entrega2.py`. El PDF entregado está en `docs/entregas/PIDS_grupo2_entrega1.pdf` y difiere en algo de redacción. |
 | `figuras/` | Figuras de maquetación que no están en `ENTREGA 1/WEEK1/` ni en `WEEK2/`, incluidas las añadidas por la revisión. |
@@ -24,7 +25,24 @@ como `docs/entregas/PIDS_grupo2_entrega2.pdf`.
 numeración de figuras, apartados 5.1–5.5, referencias [6]–[8]) que el script no reproduce,
 así que no se debe regenerar.
 
+## Entrega 3: borrador del Bloque 3
+
+El texto del Bloque 3 se escribe en `docs/informe_bloque3_borrador.md`, que se puede revisar en las PR.
+`herramientas/generar_entrega3.py` copia `informe_entrega2.docx` (que no se toca) y le añade:
+- en la portada, «Fases 1, 2 y 3» y «Entrega 3 · Bloques 1, 2 y 3», con la fecha pendiente;
+- el borrador antes de «Referencias», con los mismos estilos de títulos, pies, tablas y figuras;
+- la referencia [21] al estudio del robot camuflado (`docs/senuelo_aliado.md`).
+
+Tablas y figuras nuevas llevan el prefijo B3 (Tabla B3.1, Figura B3.1) hasta numerar toda la memoria al
+cerrarla. El script no sobrescribe el `.docx` sin `--forzar`: cuando se empiece a editar a mano en Word, los
+cambios del borrador se pasan a mano. Después de generarlo, actualizar el índice (F9).
+
 ## Historial
+
+**06/11/2026** — borrador de la entrega 3: Bloque 3 (integración en el robot, circuito, puntería y
+disparo, ataque en marcha, robot camuflado y aliados, pruebas), con la Figura B3.1
+(`figuras/circuito_demo.png`, de `herramientas/figura_circuito.py`) y las imágenes del estudio del
+señuelo (`figuras/senuelo/`).
 
 **03/11/2026** — métricas de test de todos los modelos y fecha de entrega:
 - El Anexo E (ahora «Métricas de test») añade las Tablas 26 y 27 con los siete modelos y, para cada uno, todos,

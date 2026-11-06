@@ -11,6 +11,8 @@ y probarlos primero con `python demo.py --sin-disparar`, con un compañero al
 lado del robot y Ctrl+C a mano.
 """
 
+from recorrido import paradas_desde_plano
+
 # --- Modelo -------------------------------------------------------------------
 # Modelo final del Bloque 2 (Faster R-CNN v2, umbral fijado en validación).
 MODELO = 'faster_rcnn_v2'
@@ -20,13 +22,15 @@ RESIZE = None            # (alto, ancho) si la inferencia en el portátil es dem
 USAR_GPU = True          # si no hay GPU se usa la CPU
 
 # --- Estrategia de detección ----------------------------------------------------
-DISPAROS_POR_ROBOT = 12  # el enunciado pide 12 impactos para inutilizar un robot
+DISPAROS_POR_ROBOT = 20  # el enunciado pide 12 impactos; 20 por si el rival no registra alguno
 DISPARAR_A_TODOS = True  # True: a todas las detecciones nuevas >= UMBRAL; False: solo a la mejor de cada imagen
 BARRIDO_COMPLETO = False # False: se deja de girar en cuanto se han atacado los `objetivos` de la parada
 CONFIRMAR = True         # volver a detectar ya apuntado antes de disparar y corregir el error de puntería
 TOLERANCIA_YAW = 15      # grados: dos detecciones más cercanas se tratan como el mismo robot
 SIGNO_YAW = 1            # poner -1 si en la prueba el gimbal gira hacia el lado contrario del robot
-ESPERA_CAMARA = 0.5      # s de espera tras mover el gimbal antes de capturar (imagen sin movimiento)
+ESPERA_CAMARA = 1.0      # s de espera tras mover el gimbal antes de capturar (el vídeo llega con retraso por wifi)
+CORRECCIONES_PUNTERIA = 4  # giros de corrección como mucho hasta centrar el robot antes de disparar
+TOLERANCIA_PUNTERIA = 3  # grados: centrado si el error es menor (o menor que el 30 % del ancho del robot)
 
 # --- Mejoras de la PR 36: todas desactivadas por defecto ------------------------------
 # Con SEGUIMIENTO, BARRIDO_CONTINUO, MEMORIA, VIGILANCIA y LEER_ANGULO_GIMBAL a False la demo
@@ -105,28 +109,86 @@ BARRIDO_360 = [0, 60, 120, 180, -120, -60]
 BARRIDO_FRONTAL = [0, -45, 45]
 
 # --- Recorrido --------------------------------------------------------------------
-# nombre: aparece en las evidencias. movimientos: lista de (x, y, z) que se
-# ejecutan en orden para llegar a la parada. barrido: yaw del gimbal (grados,
-# respecto al frente del chasis) donde se captura. pitch: inclinación del gimbal.
-# objetivos: robots que se espera ver desde ahí (None = desconocido, barrido entero).
-PARADAS = [
-    dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=BARRIDO_FRONTAL, pitch=0, objetivos=1),
-    dict(nombre='P2', movimientos=[(0, 0, 90), (1.0, 0, 0)], barrido=BARRIDO_360, pitch=0, objetivos=1),
-    dict(nombre='P3', movimientos=[(0, 0, -90), (0.8, 0, 0)], barrido=BARRIDO_360, pitch=0, objetivos=None),
+# Las paradas se miden sobre el plano del circuito (ver recorrido.py): origen en la
+# salida de nuestro robot (esquina de arriba a la izquierda del boceto), x en metros
+# hacia la derecha, y en metros hacia abajo. Rumbos: 0 derecha, 90 abajo, 180
+# izquierda, -90 arriba. Antes de probar, revisar lo calculado con
+#     python recorrido.py
+#
+# Se rellena movimiento a movimiento con las pruebas en el circuito real
+# (python probar_recorrido.py --paso N). Hasta conocer la orientación del boceto,
+# x es la dirección en la que mira el robot en la salida (RUMBO_INICIAL = 0).
+RUMBO_INICIAL = 0        # hacia dónde mira nuestro robot en la salida (0 = derecha del boceto)
+# Ataque en marcha (movimientos con atacar=yaw): la torreta busca al rival mientras el
+# chasis avanza, lo sigue y dispara la ráfaga sin parar. Con CPU cada imagen tarda ~2 s y
+# la ráfaga 6 s: a 0,1 m/s, 1,25 m dan unos 12 s, lo justo para girar, verlo y disparar.
+VELOCIDAD_ATAQUE_EN_MARCHA = 0.1  # m/s del chasis mientras ataca
+IMAGENES_TRAS_PARAR = 3           # si al acabar el avance aún no lo ha visto, imágenes que sigue buscando parado
+TIEMPO_MAX_ATAQUE_EN_MARCHA = 40  # s como mucho buscando y disparando en un mismo avance
+# Pitch inicial para buscar un rival en alto. La cámara ve unos ±30º en vertical, así que
+# basta con acercarse: luego se corrige con la caja. Un robot 30 cm más alto que el cañón
+# queda a unos 17º a 1 m y a unos 9º a 2 m. El gimbal sube como mucho 30º (Torreta.PITCH_MAX).
+PITCH_RIVAL_ALTO = 10
+GIRAR_EN_RUTA = True     # True: gira hacia cada punto y avanza; False: va en diagonal sin girar (mecanum)
+PLANO = [
+    # nombre, punto donde se para, puntos intermedios (por), rumbo al llegar (mirar),
+    # rivales (puntos donde se espera un robot: el barrido mira hacia ellos)
+    # paso 1: 2,85 m en línea recta (medido el 05/11). Paso 2: la torreta gira a la derecha
+    # unos 90º, detecta al rival y le dispara; después gira a la izquierda (-90º) y elimina
+    # al robot camuflado (docs/senuelo_aliado.md). Si no ve a alguno, prueba a ±60º y ±120º.
+    # Con objetivos=2, deja de barrer en cuanto ha atacado a los dos.
+    dict(nombre='P1', punto=(2.85, 0.0), barrido=[90, -90, 60, -60, 120, -120], pitch=0, objetivos=2),
+    # paso 3: la rotonda, con movimientos relativos del chasis sin girarlo (x adelante,
+    # y derecha). Al retroceder, la torreta mira 90º a la izquierda y dispara al rival
+    # que vea, sin parar. Al acabar no se barre (barrido=[]).
+    dict(nombre='R1', movimientos=[
+        dict(x=1.9, velocidad=0.4),                                       # adelante 1,9 m a 0,4 m/s
+        dict(y=-1.0),                                                     # izquierda 1 m
+        dict(x=-1.25, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=-90),  # atrás 1,25 m atacando a la izquierda
+        dict(y=1.0),                                                      # derecha 1 m
+    ], barrido=[]),
+    # paso 4 (supuesto, sin probar): la torreta ya vuelve al centro al acabar el ataque.
+    # Recta de 2,5 m, 0,7 m a la izquierda y 2 m hacia delante despacio con la torreta
+    # girada 180º, disparando al rival que queda detrás. Después, el baile con Super Estrella.
+    # Ese rival está en alto (una plataforma de 20-40 cm): la torreta lo busca inclinada
+    # PITCH_RIVAL_ALTO grados y, al verlo, corrige el pitch con la caja (CORREGIR_PITCH).
+    dict(nombre='R2', movimientos=[
+        dict(x=2.5),                                                      # adelante 2,5 m y se para
+        dict(y=-0.7),                                                     # izquierda 0,7 m
+        dict(x=2.0, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=180,     # adelante 2 m atacando hacia atrás,
+             pitch=PITCH_RIVAL_ALTO),                                     # con la torreta inclinada hacia arriba
+    ], barrido=[]),
 ]
+PARADAS = paradas_desde_plano(RUMBO_INICIAL, PLANO, girar=GIRAR_EN_RUTA, abanico=30, barrido_sin_rivales=BARRIDO_360)
+# También se pueden escribir a mano, como antes: movimientos (x, y, z) relativos (x
+# adelante, y derecha, z giro a la izquierda), barrido (yaws respecto al chasis), pitch
+# y objetivos (robots que se espera ver; None = desconocido, barrido entero). Ejemplo:
+#   PARADAS = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=BARRIDO_FRONTAL, pitch=0, objetivos=1)]
 VOLVER_AL_INICIO = False # deshacer el recorrido al terminar (en orden inverso)
 # Velocidades del chasis. Se pueden bajar, nunca subir: demo.py las recorta a las del SDK (0,5 m/s y 30 º/s).
-VELOCIDAD_XY = 0.3       # m/s
+# Los avances van con drive_speed y la odometría, a VELOCIDAD_XY m/s reales. Con chassis.move
+# el robot iba a unos 0,06 m/s: el SDK no convierte xy_speed a m/s reales.
+VELOCIDAD_XY = 0.5       # m/s reales en los avances (máximo 0,5): 2,85 m en unos 6 s
+AVANCE_CON_ODOMETRIA = True  # False: avances con chassis.move (mucho más lentos)
 VELOCIDAD_Z = 30         # º/s
 
 # --- Extras -------------------------------------------------------------------------
 BAILE_FINAL = True
-AUDIO_MOTOR = 'audio/engine_sound_corto.wav'  # 6 s al arrancar; None para no usarlo
+# Suena al empezar la primera recta. f1_recta.wav dura lo mismo que esa recta (6,4 s): se crea
+# con audio/preparar_motor.py. Si no existe, se usa AUDIO_MOTOR_RESERVA. None para no usarlo.
+AUDIO_MOTOR = 'audio/propios/f1_recta.wav'
+AUDIO_MOTOR_RESERVA = 'audio/engine_sound_corto.wav'
 # Audios propios (WAV mono 48 kHz, ver audio/convertir_audio.py). Van en audio/propios/,
 # que no se sube a GitHub por los derechos de autor. Si no existen, se usan los sonidos del SDK.
-AUDIO_DISPARO = 'audio/propios/scar.wav'          # suena al empezar cada ráfaga (o en cada disparo, ver SONIDO_CADA_DISPARO)
+# El SDK no sube el volumen del altavoz: se sube en el audio con audio/preparar_disparo.py, que
+# crea scar_fuerte.wav (un disparo) y scar_rafaga.wav (los 12, cada INTERVALO_DISPARO s).
+AUDIO_RAFAGA = 'audio/propios/scar_rafaga.wav'    # sin SEGUIMIENTO: suena una vez y se dispara a su ritmo
+AUDIO_DISPARO = 'audio/propios/scar_fuerte.wav'   # un disparo: con SEGUIMIENTO, o si no hay AUDIO_RAFAGA
+SILENCIO_AUDIO_DISPARO = 0.3 # s de silencio al principio de esos audios (--silencio de preparar_disparo.py)
 AUDIO_FINAL = 'audio/propios/superestrella.wav'   # canción del baile final
-ESPERA_AUDIO_DISPARO = 2.0   # s máximos que se espera al audio de cada disparo (solo sin SEGUIMIENTO y con SONIDO_CADA_DISPARO)
+# Voz al detectar un rival, antes de cada ráfaga (audio/preparar_voz.py). Si no existe, el sonido del SDK
+AUDIO_DETECTADO = 'audio/propios/enemy_spotted.wav'
+ESPERA_AUDIO_DISPARO = 2.0   # s máximos que se espera al audio de cada disparo (sin SEGUIMIENTO ni AUDIO_RAFAGA)
 LED_FIESTA_HZ = 10           # cambios de color por segundo en el baile final
 DURACION_FIESTA_MAX = 40     # s máximos de luces tras el baile mientras suena la canción
 # Sonidos predefinidos del SDK (robot.SOUND_ID_*); se pueden escuchar con audio/predefined_sounds.py

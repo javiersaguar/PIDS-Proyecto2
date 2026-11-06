@@ -24,13 +24,15 @@ from typing import Tuple, Union, Any
 warnings.filterwarnings('ignore', message=r'The transform `ToTensor\(\)` is deprecated')
 
 
-def connect(connection='networking'):
+def connect(connection='networking', auto=True):
     """Connect to the RoboMaster and return the robot object.
 
     Run connect.py once and scan the QR code so the robot joins your network.
     In 'networking' mode the robot is found by the serial number saved in
     'serial_number.txt' (created by connect.py).
     :param connection: 'networking' (router), 'wifi' (direct Wi-Fi) or 'usb'.
+    :param auto: con 'networking', pasar a wifi directo si falta serial_number.txt o el
+                 portátil está en la wifi del robot. False respeta el modo pedido.
     :return: ep_robot, a connected RoboMaster object.
     """
     conn_types = {'networking': 'sta', 'wifi': 'ap', 'usb': 'rndis'}
@@ -39,9 +41,17 @@ def connect(connection='networking'):
     ruta = 'serial_number.txt'
     if not os.path.isfile(ruta):
         ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'serial_number.txt')
-    # Sin serial_number.txt (no se ha usado connect.py) se conecta por wifi directo al robot
-    if connection == 'networking' and not os.path.isfile(ruta):
-        connection = 'wifi'
+    # Sin serial_number.txt (no se ha usado connect.py) se conecta por wifi directo al robot.
+    # Con él, si el portátil está en la wifi del propio robot (IP 192.168.2.x), también: en esa
+    # red no hay router y el modo networking no lo encuentra.
+    if connection == 'networking' and auto:
+        if not os.path.isfile(ruta):
+            connection = 'wifi'
+        elif hasattr(robot, '__file__'):
+            ip = ip_hacia('192.168.2.1')
+            if ip is not None and ip.startswith('192.168.2.'):
+                print(f'El portátil está en la wifi del robot ({ip}): se usa wifi directo y no serial_number.txt')
+                connection = 'wifi'
     print(f'Conexion: {connection}')
 
     # In networking mode the robot is identified by its serial number
@@ -416,29 +426,67 @@ def calentar(model, resize_shape=None, forma=(720, 1280, 3)):
 class Camara:
     """Cámara del robot con el vídeo abierto durante toda la demo.
 
-    predict() abre y cierra el vídeo en cada captura, lo que tarda y puede
-    devolver un fotograma antiguo. Aquí se abre una vez y se lee siempre el
-    fotograma más reciente, tras esperar a que el gimbal se quede quieto.
+    El SDK decodifica el vídeo en un hilo y deja los fotogramas en una cola de 64
+    (unos 2 s). Si nadie la vacía mientras se analiza una imagen o gira la torreta,
+    se llena, el decodificador se bloquea, el robot pierde datos y luego llegan
+    fotogramas viejos o corruptos (franjas verticales). Por eso un hilo propio vacía
+    la cola sin parar y guarda solo el último fotograma y cuándo llegó: capturar()
+    devuelve uno llegado después de la espera, es decir, con la torreta ya quieta.
     """
 
     def __init__(self, ep_robot, espera=0.5):
         self.ep_camera = ep_robot.camera
         self.espera = espera
         self.ep_camera.start_video_stream(display=False, resolution=camera.STREAM_720P)
+        # El hilo solo con el SDK real: la cámara simulada avanza su reloj en cada lectura
+        self._en_hilo = hasattr(camera, '__file__')
+        self._ultimo, self._t_ultimo = None, 0.0
+        self._cond = threading.Condition()
+        self._activa = True
+        if self._en_hilo:
+            self._hilo = threading.Thread(target=self._recibir, daemon=True)
+            self._hilo.start()
         time.sleep(1.0)
 
+    def _leer(self, timeout=3):
+        try:
+            return self.ep_camera.read_cv2_image(timeout=timeout, strategy='newest')
+        except TypeError:
+            return self.ep_camera.read_cv2_image(timeout=timeout)
+
+    def _recibir(self):
+        while self._activa:
+            try:
+                frame = self._leer(timeout=1)
+            except Exception:   # cola vacía (queue.Empty) u otro fallo pasajero
+                continue
+            if frame is None:
+                continue
+            with self._cond:
+                self._ultimo, self._t_ultimo = frame, time.monotonic()
+                self._cond.notify_all()
+
     def capturar(self, espera=None):
-        """Fotograma más reciente en RGB. `espera` (s) deja quieta la imagen; 0 al seguir a un robot."""
+        """Fotograma en RGB llegado después de `espera` s (0: el siguiente que llegue, al seguir a un robot)."""
         espera = self.espera if espera is None else espera
         if espera > 0:
             time.sleep(espera)
-        try:
-            image = self.ep_camera.read_cv2_image(timeout=3, strategy='newest')
-        except TypeError:
-            image = self.ep_camera.read_cv2_image(timeout=3)
+        if not self._en_hilo:
+            return cv2.cvtColor(self._leer(), cv2.COLOR_BGR2RGB)
+        desde = time.monotonic()
+        with self._cond:
+            fin = desde + 3
+            while self._t_ultimo <= desde and time.monotonic() < fin:
+                self._cond.wait(0.05)
+            if self._ultimo is None:
+                raise RuntimeError('la cámara no envía imágenes')
+            image = self._ultimo
         return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     def cerrar(self):
+        self._activa = False
+        if self._en_hilo:
+            self._hilo.join(timeout=2)
         self.ep_camera.stop_video_stream()
 
 
@@ -629,6 +677,111 @@ def ejecutar_accion(ep_robot, crear, timeout, que, durante=None):
             durante()
     if not accion.wait_for_completed(timeout=timeout):
         raise RuntimeError(f'{que}: no ha terminado en {timeout:.0f} s (¿batería baja o robot desconectado?)')
+
+
+class Odometria:
+    """Posición del chasis (x adelante, y derecha, en m) respecto a donde estaba al crearla.
+
+    Usa chassis.sub_position(cs=0). Si el SDK no la da, `activa` es False.
+    """
+
+    def __init__(self, chassis, freq=20):
+        self.chassis, self.ultima = chassis, None
+        try:
+            self.activa = chassis.sub_position(cs=0, freq=freq, callback=self._leer) is not False
+        except Exception as e:
+            print(f'[aviso] sin odometría del chasis: {e!r}')
+            self.activa = False
+
+    def _leer(self, info):
+        self.ultima = tuple(float(v) for v in info[:3])
+
+    def esperar(self, maximo=2.0, dormir=time.sleep, reloj=time.monotonic):
+        """Primera lectura (o None si no llega en `maximo` s)."""
+        fin = reloj() + maximo
+        while self.activa and self.ultima is None and reloj() < fin:
+            dormir(0.05)
+        return self.ultima
+
+    def cerrar(self):
+        if self.activa:
+            try:
+                self.chassis.unsub_position()
+            except Exception:   # el SDK falla si no ha llegado ninguna lectura
+                pass
+            self.activa = False
+
+
+def avanzar(ep_robot, x, y, velocidad, que='chasis', dormir=time.sleep, reloj=time.monotonic):
+    """Avanza (x, y) metros sin girar con drive_speed, a `velocidad` m/s reales, midiendo con la odometría.
+
+    chassis.move no sirve para ir rápido: el SDK no acepta menos de 0,5 y no convierte
+    la velocidad a m/s reales (en el laboratorio, 0,5 dio unos 0,06 m/s). drive_speed sí
+    va en m/s. Se frena en los últimos centímetros y se para a 1 cm del destino. drive_speed lleva
+    un tiempo máximo de 0,5 s: si el programa deja de mandar órdenes, el robot se para solo.
+
+    :return: (x, y) recorridos según la odometría, o None si no hay odometría (entonces
+             no se mueve y hay que usar chassis.move).
+    """
+    distancia = (x * x + y * y) ** 0.5
+    velocidad = limitar(velocidad, VEL_XY_MAX)
+    odometria = Odometria(ep_robot.chassis)
+    if odometria.esperar(dormir=dormir, reloj=reloj) is None:
+        odometria.cerrar()
+        return None
+    x0, y0 = odometria.ultima[:2]
+    ux, uy = x / distancia, y / distancia
+    maximo = 2 * distancia / max(velocidad, 0.05) + 5
+    limite = reloj() + maximo
+    try:
+        while True:
+            px, py = odometria.ultima[0] - x0, odometria.ultima[1] - y0
+            falta = (x - px) * ux + (y - py) * uy        # lo que queda a lo largo de la dirección pedida
+            if falta <= 0.01:
+                break
+            if reloj() > limite:
+                raise RuntimeError(f'{que}: no ha llegado en {maximo:.0f} s (lleva {distancia - falta:.2f} de '
+                                   f'{distancia:.2f} m; ¿batería baja u obstáculo?)')
+            # rampa de frenada: 3 m/s por metro que falta (a 0,5 m/s empieza a frenar a 17 cm), sin bajar de 0,08
+            v = min(velocidad, max(0.08, 3.0 * falta))
+            # corrige la deriva lateral respecto a la línea recta
+            lateral = -(px * uy - py * ux)
+            vx, vy = v * ux + 1.5 * lateral * uy, v * uy - 1.5 * lateral * ux
+            norma = (vx * vx + vy * vy) ** 0.5
+            if norma > VEL_XY_MAX:                         # nunca más de la velocidad máxima
+                vx, vy = vx * VEL_XY_MAX / norma, vy * VEL_XY_MAX / norma
+            ep_robot.chassis.drive_speed(x=vx, y=vy, z=0, timeout=0.5)
+            dormir(0.05)
+    finally:
+        try:
+            ep_robot.chassis.drive_speed(x=0, y=0, z=0)
+        except Exception:
+            pass
+        dormir(0.3)   # última lectura con el robot ya parado
+        final = odometria.ultima
+        odometria.cerrar()
+    return final[0] - x0, final[1] - y0
+
+
+def mover_chasis(ep_robot, x, y, z, v_xy, v_z, que='chasis', durante=None, odometria=True):
+    """Mueve el chasis (x adelante, y derecha, z giro a la izquierda) sin pasar de las velocidades máximas.
+
+    Los avances sin giro van con avanzar() (velocidad real en m/s); los giros, los
+    movimientos que mezclan avance y giro, los que llevan `durante` (vigilancia) o si no
+    hay odometría, con chassis.move.
+    :return: (x, y) medidos por la odometría en los avances, o None.
+    """
+    v_xy, v_z = limitar(v_xy, VEL_XY_MAX), limitar(v_z, VEL_Z_MAX)
+    if odometria and (x or y) and not z and durante is None:
+        medido = avanzar(ep_robot, x, y, v_xy, que)
+        if medido is not None:
+            return medido
+        print('[aviso] sin odometría: el avance va con chassis.move, mucho más lento')
+    # chassis.move: el SDK sube a 0,5 cualquier xy_speed menor, pero no son m/s reales
+    tiempo = (x * x + y * y) ** 0.5 / 0.06 + abs(z) / v_z if (x or y) else abs(z) / v_z
+    ejecutar_accion(ep_robot, lambda: ep_robot.chassis.move(x=x, y=y, z=z, xy_speed=v_xy, z_speed=v_z),
+                    timeout=2 * tiempo + 5, que=que, durante=durante)
+    return None
 
 
 class Senales:

@@ -109,9 +109,10 @@ class PruebasDemo(unittest.TestCase):
                                                     'ANTICIPAR', 'RETARDO_CAMARA', 'BARRIDO_CONTINUO',
                                                     'ROBOTS_TOTALES', 'TIEMPO_MEMORIA', 'VIGILANCIA',
                                                     'ATACAR_EN_RUTA', 'ESPERA_OBSTACULO', 'MEMORIA',
-                                                    'DETENER_SI_BLOQUEADO']}
+                                                    'DETENER_SI_BLOQUEADO', 'AUDIO_RAFAGA']}
         self.paso_imagen = simulacion.PASO_IMAGEN
         C.BAILE_FINAL, C.AUDIO_MOTOR, C.ESPERA_CAMARA = False, None, 0
+        C.AUDIO_RAFAGA = None   # audio/propios/ puede tenerla en local: sus pruebas la activan
         # En circuito.py las mejoras vienen desactivadas (la demo de main). Estas pruebas son de
         # las mejoras, así que las activan; las que prueban la demo de main las desactivan.
         C.SEGUIMIENTO, C.BARRIDO_CONTINUO, C.LEER_ANGULO_GIMBAL, C.MEMORIA = True, True, True, True
@@ -734,6 +735,29 @@ class PruebasDemo(unittest.TestCase):
             self.assertEqual(audios.count('scar.wav'), 12)
             self.assertEqual(ep.disparos(), 12)
 
+    def test_rafaga_suena_una_vez_y_dispara_a_su_ritmo(self):
+        C.SEGUIMIENTO = False
+        C.AUDIO_RAFAGA = os.path.join(CARPETA, 'rafaga.wav')
+        C.AUDIO_DISPARO = os.path.join(CARPETA, 'scar.wav')
+        for f in (C.AUDIO_RAFAGA, C.AUDIO_DISPARO):
+            open(f, 'wb').close()
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([0], p)
+        audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
+        self.assertEqual(audios.count('rafaga.wav'), 1)
+        self.assertNotIn('scar.wav', audios)
+        self.assertEqual(ep.disparos(), 12)
+
+    def test_sin_audio_de_rafaga_suena_cada_disparo(self):
+        C.SEGUIMIENTO, C.SONIDO_CADA_DISPARO = False, True
+        C.AUDIO_RAFAGA = 'audio/propios/no_existe.wav'
+        C.AUDIO_DISPARO = os.path.join(CARPETA, 'scar.wav')
+        open(C.AUDIO_DISPARO, 'wb').close()
+        p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        ep, d, r = self.lanzar([0], p)
+        audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
+        self.assertEqual(audios.count('scar.wav'), 12)
+
     def test_baile_con_cancion_y_luces(self):
         C.BAILE_FINAL = True
         C.AUDIO_FINAL = os.path.join(CARPETA, 'cancion.wav')
@@ -755,6 +779,46 @@ class PruebasDemo(unittest.TestCase):
         image, prediction = demo.detect_and_shoot(ep, DetectorFalso([10]), score_threshold=0.5)
         self.assertEqual(ep.disparos(), 1)
         self.assertAlmostEqual(ep.gimbal.yaw, 10, delta=0.5)
+
+
+class PruebaConexion(unittest.TestCase):
+    """Con serial_number.txt, la demo usa networking salvo si el portátil está en la wifi del robot."""
+
+    def conectar(self, ip, *args, **kw):
+        du = sys.modules['demo_utils']
+        carpeta = tempfile.mkdtemp(prefix='conexion_')
+        self.addCleanup(shutil.rmtree, carpeta, True)
+        with open(os.path.join(carpeta, 'serial_number.txt'), 'w') as f:
+            f.write('NUMERO_FALSO\n')
+        pedido = {}
+
+        class RobotFalso:
+            def initialize(self, conn_type=None, sn=None):
+                pedido.update(conn_type=conn_type, sn=sn)
+
+        anterior = os.getcwd()
+        os.chdir(carpeta)
+        try:
+            with mock.patch.object(du.robot, '__file__', 'robot.py', create=True), \
+                    mock.patch.object(du.robot, 'Robot', RobotFalso), \
+                    mock.patch.object(du, 'ip_hacia', return_value=ip):
+                du.connect(*args, **kw)
+        finally:
+            os.chdir(anterior)
+        return pedido
+
+    def test_en_la_wifi_del_robot_usa_wifi_directo(self):
+        self.assertEqual(self.conectar('192.168.2.23', 'networking'), dict(conn_type='ap', sn=None))
+
+    def test_en_otra_red_usa_networking_con_el_numero_de_serie(self):
+        self.assertEqual(self.conectar('10.0.0.5', 'networking'), dict(conn_type='sta', sn='NUMERO_FALSO'))
+
+    def test_networking_forzado(self):
+        self.assertEqual(self.conectar('192.168.2.23', 'networking', auto=False)['conn_type'], 'sta')
+
+    def test_opcion_conexion(self):
+        self.assertEqual(demo.argumentos([]).conexion, 'auto')
+        self.assertEqual(demo.argumentos(['--conexion', 'wifi']).conexion, 'wifi')
 
 
 class PruebaPython38(unittest.TestCase):

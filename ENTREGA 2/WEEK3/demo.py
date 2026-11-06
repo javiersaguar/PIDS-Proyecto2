@@ -38,6 +38,8 @@ def argumentos(argv=None):
     p.add_argument('--ver', action='store_true', help='mostrar en una ventana cada imagen analizada')
     p.add_argument('--umbral', type=float, default=None, help='umbral de confianza (por defecto, el de circuito.py)')
     p.add_argument('--evidencias', default=os.path.join(AQUI, 'evidencias'), help='carpeta de salida')
+    p.add_argument('--conexion', choices=['auto', 'wifi', 'networking'], default='auto',
+                   help='modo de conexión; auto: networking con serial_number.txt, salvo en la wifi del robot')
     return p.parse_args(argv)
 
 
@@ -48,6 +50,7 @@ if __name__ == '__main__' and '--simulacion' in sys.argv:
 
 from demo_utils import *  # noqa: E402,F401,F403
 import circuito as C      # noqa: E402
+from recorrido import movimiento  # noqa: E402
 
 
 def detect_and_shoot(ep_robot, model, score_threshold=0.5, resize_shape=None):
@@ -91,6 +94,7 @@ class Torreta:
     """
 
     YAW_MAX = 240                     # el gimbal admite unos ±250º
+    GIRO_MAX = 45                     # º como mucho por cada orden gimbal.move
     PITCH_MIN, PITCH_MAX = -20, 30    # el gimbal admite unos -20º/+35º
 
     def __init__(self, ep_robot, reloj=time.monotonic):
@@ -218,10 +222,15 @@ class Torreta:
         pitch = actual_pitch if pitch is None else max(self.PITCH_MIN, min(self.PITCH_MAX, pitch))
         d_yaw, d_pitch = yaw - actual_yaw, pitch - actual_pitch
         if abs(d_yaw) > 0.5 or abs(d_pitch) > 0.5:
-            tiempo = max(abs(d_yaw), abs(d_pitch)) / VEL_GIMBAL_MAX
-            ejecutar_accion(self.ep_robot, lambda: self.gimbal.move(pitch=d_pitch, yaw=d_yaw, pitch_speed=VEL_GIMBAL_MAX,
-                                                                    yaw_speed=VEL_GIMBAL_MAX),
-                            timeout=2 * tiempo + 5, que='gimbal')
+            # El SDK documenta gimbal.move solo hasta ±55º por orden: los giros mayores van en tramos
+            tramos = max(1, int(np.ceil(max(abs(d_yaw), abs(d_pitch)) / self.GIRO_MAX - 1e-9)))
+            p_yaw, p_pitch = d_yaw / tramos, d_pitch / tramos
+            tiempo = max(abs(p_yaw), abs(p_pitch)) / VEL_GIMBAL_MAX
+            for _ in range(tramos):
+                ejecutar_accion(self.ep_robot, lambda: self.gimbal.move(pitch=p_pitch, yaw=p_yaw,
+                                                                        pitch_speed=VEL_GIMBAL_MAX,
+                                                                        yaw_speed=VEL_GIMBAL_MAX),
+                                timeout=2 * tiempo + 5, que='gimbal')
         self.yaw, self.pitch = yaw, pitch
         self.historial.clear()        # tras un giro hasta un ángulo, el pasado ya no sirve
         self.leer()
@@ -250,7 +259,7 @@ class Demo:
         self.inicio = time.time()
 
     # --- piezas ---------------------------------------------------------------
-    def mover(self, x, y, z, durante=None):
+    def mover(self, x, y, z, durante=None, velocidad=None):
         """Mueve el chasis (x adelante, y derecha, z giro a la izquierda) sin pasar de la velocidad del SDK.
 
         `durante` se llama una y otra vez mientras el chasis está en marcha (vigilancia).
@@ -258,10 +267,11 @@ class Demo:
         print(f'  chasis: x={x:+.2f} m  y={y:+.2f} m  z={z:+.0f} grados')
         if self.args.sin_mover:
             return
-        v_xy, v_z = limitar(C.VELOCIDAD_XY, VEL_XY_MAX), limitar(C.VELOCIDAD_Z, VEL_Z_MAX)
-        tiempo = (x * x + y * y) ** 0.5 / v_xy + abs(z) / v_z
-        ejecutar_accion(self.ep_robot, lambda: self.ep_robot.chassis.move(x=x, y=y, z=z, xy_speed=v_xy, z_speed=v_z),
-                        timeout=2 * tiempo + 5, que='chasis', durante=durante)
+        v_xy = C.VELOCIDAD_XY if velocidad is None else velocidad
+        medido = mover_chasis(self.ep_robot, x, y, z, v_xy, C.VELOCIDAD_Z, que='chasis', durante=durante,
+                              odometria=getattr(C, 'AVANCE_CON_ODOMETRIA', True))
+        if medido is not None:
+            print(f'    odometría: x={medido[0]:+.2f} m  y={medido[1]:+.2f} m')
         self.pose = mover_pose(self.pose, x, y, z)
 
     # --- vigilancia durante el recorrido -------------------------------------------------
@@ -372,7 +382,7 @@ class Demo:
                 esperando = True
             time.sleep(0.2)
 
-    def recorrer(self, etiqueta, x, y, z):
+    def recorrer(self, etiqueta, x, y, z, velocidad=None):
         """Movimiento del recorrido entre paradas, vigilando el camino (VIGILANCIA).
 
         Los avances se dividen en tramos de TRAMO_VIGILANCIA m con la torreta mirando hacia
@@ -382,7 +392,7 @@ class Demo:
         """
         largo = (x * x + y * y) ** 0.5
         if not C.VIGILANCIA or self.args.sin_mover or largo < 1e-6 or z:
-            self.mover(x, y, z)
+            self.mover(x, y, z, velocidad=velocidad)
             if C.VIGILANCIA and z and not self.args.sin_mover:
                 self.torreta.centrar()
             return
@@ -395,7 +405,7 @@ class Demo:
                 self.despejar(etiqueta, rumbo, paso)
             self._aviso_ruta, self._analisis_tramo, self._ultimo_analisis = False, 0, None
             self.senales.estado('moviendo')
-            self.mover(x / n, y / n, 0, durante=lambda: self.vigilar(etiqueta, rumbo, paso))
+            self.mover(x / n, y / n, 0, durante=lambda: self.vigilar(etiqueta, rumbo, paso), velocidad=velocidad)
 
     def en_circuito(self, yaw, distancia):
         """Punto del circuito donde está un robot visto con ese yaw del gimbal y a esa distancia."""
@@ -439,6 +449,16 @@ class Demo:
         self.senales.sonido('disparo')
         return True
 
+    def avisar_detectado(self):
+        """Aviso de rival detectado: la voz de AUDIO_DETECTADO o, si no existe, el sonido del SDK.
+
+        La ráfaga espera a que acabe (esperar_sonido), así que suena siempre antes de los disparos.
+        """
+        self.senales.esperar_sonido(3)   # p. ej. el final del motor: el SDK no admite dos sonidos a la vez
+        voz = self.ruta_audio(getattr(C, 'AUDIO_DETECTADO', None))
+        if voz is None or not self.senales.audio(voz):
+            self.senales.sonido('detectado')
+
     def seguir_y_disparar(self, parada, angulo, confianza, ya_atacados=(), distancia=None):
         """Fija el robot visto en `angulo`, lo sigue con la torreta y le dispara solo cuando está centrado.
 
@@ -463,7 +483,7 @@ class Demo:
                  si se habría completado); None si no se ha fijado o se ha perdido antes.
         """
         self.senales.estado('apuntando')
-        self.senales.sonido('detectado')
+        self.avisar_detectado()
         self.torreta.ir(angulo)
         inicio = self.reloj()
         objetivo, t_objetivo = angulo, None   # último ángulo visto del robot (respecto al chasis) y cuándo
@@ -581,20 +601,35 @@ class Demo:
         :return: True si se ha atacado (o, con --sin-disparar, si se habría atacado).
         """
         self.senales.estado('apuntando')
-        self.senales.sonido('detectado')
+        self.avisar_detectado()
         self.torreta.ir(angulo)
         caja = None
         if C.CONFIRMAR:
-            image, prediction, ms = self.mirar()
-            yaw_captura = self.torreta.yaw
-            objetivos = seleccionar(prediction, C.UMBRAL)
+            # Puntería por pasos: con cada imagen se gira lo que falta para centrar el robot,
+            # hasta que queda centrado o se acaban las correcciones. Solo cuentan giros
+            # relativos, así que no importa si el ángulo de la torreta se ha desviado.
             residuo = None
-            if objetivos:
+            for intento in range(C.CORRECCIONES_PUNTERIA + 1):
+                image, prediction, ms = self.mirar()
+                yaw_captura = self.torreta.yaw
+                objetivos = seleccionar(prediction, C.UMBRAL)
+                if not objetivos:
+                    residuo = None
+                    break
                 caja, confianza_conf = mas_centrada(image, objetivos)
                 residuo = C.SIGNO_YAW * auto_aim(image, caja)
-                if abs(residuo) > C.TOLERANCIA_YAW or not es_nuevo(yaw_captura + residuo, ya_atacados,
-                                                                   C.TOLERANCIA_YAW):
+                if not es_nuevo(yaw_captura + residuo, ya_atacados, C.TOLERANCIA_YAW):
                     residuo = None
+                    break
+                tolerancia = max(C.TOLERANCIA_PUNTERIA, 0.3 * tamano_angular(image, caja)[0])
+                if abs(residuo) <= tolerancia:
+                    break
+                if intento == C.CORRECCIONES_PUNTERIA:
+                    break   # sin más correcciones: se gira lo que falta y se dispara
+                self.registro.imagen(image, prediction, ms, parada, 'corrigiendo', yaw_captura, self.torreta.pitch,
+                                     objetivo=caja, objetivo_yaw=yaw_captura + residuo)
+                print(f'  corrigiendo la puntería {residuo:+.1f} grados (confianza {confianza_conf:.3f})')
+                self.torreta.ir(yaw_captura + residuo)
             if residuo is None:
                 self.registro.imagen(image, prediction, ms, parada, 'sin_confirmar', yaw_captura, self.torreta.pitch)
                 print(f'  objetivo en {angulo:+.1f} grados no confirmado: no se dispara')
@@ -618,6 +653,158 @@ class Demo:
         print(f'  objetivo en {self.torreta.yaw:+.1f} grados (confianza {confianza:.3f}): {disparos} disparos')
         self.celebrar()
         return True
+
+    # --- ataque en marcha ------------------------------------------------------------
+    def mover_atacando(self, nombre, x, y, yaw, velocidad, pitch=None):
+        """Se desplaza (x, y) sin girar el chasis mientras la torreta mira hacia `yaw`, busca un rival y le dispara.
+
+        Es un movimiento con atacar= en circuito.py. El chasis va en otro hilo (avanzar,
+        con drive_speed y la odometría) y este gira la torreta y analiza imágenes
+        (disparar_en_marcha). `pitch` (opcional) inclina la torreta para buscar un rival
+        en alto; al verlo, el pitch se corrige con la caja (CORREGIR_PITCH). Al acabar,
+        la torreta vuelve al centro.
+        """
+        etiqueta = f'{nombre}-marcha'
+        distancia = (x * x + y * y) ** 0.5
+        hacia = f'{yaw:+.0f} grados' + ('' if pitch is None else f', pitch {pitch:+.0f}')
+        print(f'  chasis: x={x:+.2f} m  y={y:+.2f} m a {velocidad:.2f} m/s, atacando hacia {hacia}')
+        resultado, hilo = {}, None
+        if not self.args.sin_mover:
+            def moverse():
+                try:
+                    resultado['medido'] = avanzar(self.ep_robot, x, y, velocidad, que='chasis (ataque en marcha)')
+                except Exception as e:   # se relanza en este hilo al acabar
+                    resultado['error'] = e
+            hilo = threading.Thread(target=moverse, daemon=True)
+            hilo.start()
+        try:
+            self.senales.estado('buscando')
+            self.torreta.ir(yaw, pitch)
+            self.disparar_en_marcha(etiqueta, hilo)
+        finally:
+            self.torreta.parar()
+            if hilo is not None:
+                hilo.join(timeout=2 * distancia / max(velocidad, 0.05) + 10)
+                if hilo.is_alive():
+                    self.ep_robot.chassis.drive_speed(x=0, y=0, z=0)
+        if hilo is not None and hilo.is_alive():
+            raise RuntimeError(f'{etiqueta}: el chasis no ha terminado el avance')
+        if 'error' in resultado:
+            raise RuntimeError(str(resultado['error']))
+        if hilo is not None:
+            if resultado.get('medido') is None:
+                # Sin odometría avanzar() no mueve el robot: el avance se hace ahora, con chassis.move
+                print('[aviso] sin odometría: el avance se hace después del ataque, con chassis.move')
+                self.mover(x, y, 0, velocidad=velocidad)
+            else:
+                medido = resultado['medido']
+                print(f'    odometría: x={medido[0]:+.2f} m  y={medido[1]:+.2f} m')
+                self.pose = mover_pose(self.pose, x, y, 0)
+        self.torreta.centrar()
+
+    def _rafaga_en_hilo(self, salida):
+        try:
+            salida['disparos'] = self.rafaga()
+        except Exception as e:
+            salida['error'] = e
+
+    def disparar_en_marcha(self, etiqueta, hilo):
+        """Busca un rival con la torreta en su yaw, gira hasta él y dispara la ráfaga en otro hilo.
+
+        Mientras dura la ráfaga el chasis sigue moviéndose y el rival cambia de ángulo: con
+        cada imagen se corrige la torreta con gimbal.drive_speed (velocidad del rival
+        estimada entre imágenes más una corrección proporcional al error, con la ganancia
+        limitada por el tiempo por imagen, como en seguir_y_disparar). Si el avance acaba
+        sin haberlo visto, se miran IMAGENES_TRAS_PARAR imágenes más con el robot parado.
+        """
+        inicio = time.monotonic()
+        objetivo = None                    # (instante, yaw) de la última vez que se vio al rival
+        velocidad = 0.0                    # º/s del rival respecto al chasis
+        periodo, t_anterior, confianza = None, None, None
+        rafaga, salida, tras_parar = None, {}, 0
+        while time.monotonic() - inicio < C.TIEMPO_MAX_ATAQUE_EN_MARCHA:
+            if rafaga is not None and not rafaga.is_alive():
+                break
+            if rafaga is None and not (hilo is not None and hilo.is_alive()):
+                tras_parar += 1
+                if tras_parar > C.IMAGENES_TRAS_PARAR:
+                    break
+            yaw_c, pitch_c = self.torreta.leer()
+            image = self.camara.capturar(0)
+            t_cap = time.monotonic()
+            prediction, ms = detectar(self.model, image, C.RESIZE)
+            ahora = time.monotonic()
+            if t_anterior is not None:
+                dt = ahora - t_anterior
+                periodo = dt if periodo is None else 0.5 * periodo + 0.5 * dt
+            t_anterior = ahora
+            elegido = None
+            if objetivo is None:
+                candidatos = seleccionar(prediction, C.UMBRAL)
+                if candidatos:
+                    elegido = mas_centrada(image, candidatos)
+            else:
+                prevision = objetivo[1] + velocidad * (t_cap - objetivo[0])
+                cerca = [(abs(yaw_c + C.SIGNO_YAW * auto_aim(image, c) - prevision), c, sc)
+                         for c, sc in seleccionar(prediction, min(C.UMBRAL, C.UMBRAL_SEGUIMIENTO))]
+                if cerca:
+                    error, caja, score = min(cerca, key=lambda e: e[0])
+                    if error <= C.SALTO_MAX:
+                        elegido = (caja, score)
+            if elegido is None:
+                self.registro.imagen(image, prediction, ms, etiqueta, 'buscando' if rafaga is None else 'siguiendo',
+                                     yaw_c, pitch_c)
+                if rafaga is not None:
+                    self.torreta.velocidad(velocidad)   # sin verlo, la torreta sigue su último movimiento
+                continue
+            caja, confianza = elegido
+            a = yaw_c + C.SIGNO_YAW * auto_aim(image, caja)
+            if objetivo is not None and t_cap > objetivo[0]:
+                v = (a - objetivo[1]) / (t_cap - objetivo[0])
+                velocidad = limitar(0.5 * velocidad + 0.5 * v, VEL_GIMBAL_MAX)
+            objetivo = (t_cap, a)
+            yaw_ahora, pitch_ahora = self.torreta.leer()
+            prevision = a + velocidad * (time.monotonic() - t_cap)
+            # En vertical se apunta al punto ALTURA_PUNTERIA de la caja (p. ej. un rival en alto)
+            p = pitch_c + auto_pitch(image, caja, C.ALTURA_PUNTERIA) if C.CORREGIR_PITCH else None
+            if rafaga is None:
+                self.registro.imagen(image, prediction, ms, etiqueta, 'fijado', yaw_c, pitch_c,
+                                     objetivo=caja, objetivo_yaw=a)
+                print(f'  rival visto en marcha a {a:+.1f} grados'
+                      + ('' if p is None else f', pitch {p:+.1f}') + f' (confianza {confianza:.3f})')
+                self.avisar_detectado()
+                self.torreta.ir(prevision, p)
+                if self.args.sin_disparar:
+                    self.ataques.append(dict(parada=etiqueta, yaw=round(a, 1), confianza=round(confianza, 3),
+                                             confirmado=True, disparos=0, en_marcha=True))
+                    return
+                self.senales.estado('disparando', parpadeo=True)
+                rafaga = threading.Thread(target=self._rafaga_en_hilo, args=(salida,), daemon=True)
+                rafaga.start()
+            else:
+                self.registro.imagen(image, prediction, ms, etiqueta, 'siguiendo', yaw_c, pitch_c,
+                                     objetivo=caja, objetivo_yaw=a)
+                ganancia = (C.GANANCIA_SEGUIMIENTO if not periodo else
+                            min(C.GANANCIA_SEGUIMIENTO, C.CORRECCION_POR_IMAGEN / periodo))
+                self.torreta.velocidad(velocidad + ganancia * (prevision - yaw_ahora),
+                                       0.0 if p is None else ganancia * (p - pitch_ahora))
+        self.torreta.parar()
+        if rafaga is None:
+            print('  no se ha visto ningún rival durante el avance')
+            self.ataques.append(dict(parada=etiqueta, confirmado=False, disparos=0, en_marcha=True))
+            return
+        rafaga.join(timeout=C.DISPAROS_POR_ROBOT * C.INTERVALO_DISPARO + 15)
+        disparos = salida.get('disparos', 0)
+        self.ataques.append(dict(parada=etiqueta, yaw=round(objetivo[1], 1), confianza=round(confianza, 3),
+                                 confirmado=True, disparos=disparos, en_marcha=True,
+                                 velocidad_rival=round(velocidad, 1)))
+        if 'error' in salida:
+            raise RuntimeError(f'{etiqueta}: ráfaga: {salida["error"]}')
+        if disparos < C.DISPAROS_POR_ROBOT:
+            raise RuntimeError(f'{etiqueta}: el blaster no confirmó el disparo {disparos + 1} '
+                               f'de {C.DISPAROS_POR_ROBOT} ({disparos} confirmados por el SDK)')
+        print(f'  ráfaga en marcha: {disparos} disparos')
+        self.senales.estado('hecho')
 
     def celebrar(self):
         """Gesto corto tras inutilizar un robot: LED verde y cabeceo del gimbal."""
@@ -768,10 +955,15 @@ class Demo:
         Con SONIDO_CADA_DISPARO (por defecto, como en main) espera al audio de cada disparo;
         sin él suena una vez y dispara cada INTERVALO_DISPARO s.
         """
+        rafaga = self.ruta_audio(getattr(C, 'AUDIO_RAFAGA', None))
+        if rafaga is not None:
+            self.senales.esperar_sonido(8)  # deja acabar el motor o el aviso de detección
+            if self.senales.audio(rafaga):
+                return self.disparar_al_ritmo()
         audio = self.ruta_audio(C.AUDIO_DISPARO)
         por_disparo = audio is not None and C.SONIDO_CADA_DISPARO
         if por_disparo:
-            self.senales.esperar_sonido(8)  # deja acabar el motor o el aviso de detección
+            self.senales.esperar_sonido(8)
         sonado = False
         for confirmados in range(C.DISPAROS_POR_ROBOT):
             if not self.ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1):
@@ -783,6 +975,21 @@ class Demo:
             else:
                 sonado = self.sonar_disparo(sonado)
                 time.sleep(C.INTERVALO_DISPARO)
+        return C.DISPAROS_POR_ROBOT
+
+    def disparar_al_ritmo(self):
+        """Dispara DISPAROS_POR_ROBOT veces al ritmo de AUDIO_RAFAGA, que ya está sonando.
+
+        Cada disparo va en su instante (silencio inicial + i * INTERVALO_DISPARO desde que
+        empieza el audio), así el tiempo que tarda fire() no retrasa los siguientes.
+        :return: órdenes de disparo confirmadas por el SDK.
+        """
+        inicio = time.monotonic() + C.SILENCIO_AUDIO_DISPARO
+        for confirmados in range(C.DISPAROS_POR_ROBOT):
+            time.sleep(max(0.0, inicio + confirmados * C.INTERVALO_DISPARO - time.monotonic()))
+            if not self.ep_robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1):
+                return confirmados
+        self.senales.esperar_sonido(2)   # deja acabar el último disparo del audio
         return C.DISPAROS_POR_ROBOT
 
     def luces_fiesta(self, parar):
@@ -810,17 +1017,20 @@ class Demo:
         luces = threading.Thread(target=self.luces_fiesta, args=(parar,), daemon=True)
         luces.start()
         try:
-            for _ in range(4):
+            # Torreta y chasis bailan, alternando, mientras suena la canción (como las luces).
+            # El giro del chasis (+20, -40, +20) se hace entero para que acabe mirando igual.
+            fin = time.time() + C.DURACION_FIESTA_MAX
+            vueltas = 0
+            while vueltas < 1 or (self.senales.ocupado() and time.time() < fin):
                 self.torreta.ir(20, 10)
                 self.torreta.ir(-20, -5)
+                if not (self.senales.ocupado() and time.time() < fin):
+                    break
+                if not self.args.sin_mover:
+                    for z in (20, -40, 20):
+                        self.mover(0, 0, z)
+                vueltas += 1
             self.torreta.ir(0, 0)
-            if not self.args.sin_mover:
-                for z in (20, -40, 20):
-                    self.mover(0, 0, z)
-            # Las luces siguen mientras suena la canción
-            fin = time.time() + C.DURACION_FIESTA_MAX
-            while self.senales.ocupado() and time.time() < fin:
-                parar.wait(0.1)
         finally:
             parar.set()
             luces.join(timeout=1)
@@ -854,15 +1064,25 @@ class Demo:
             self.senales.sonido('inicio')
             self.senales.esperar_sonido(8)  # el SDK no admite dos sonidos a la vez
             if C.AUDIO_MOTOR:
-                self.senales.audio(os.path.join(AQUI, C.AUDIO_MOTOR))
+                # play_audio sube el fichero y después manda reproducirlo: suena con la primera recta
+                motor = self.ruta_audio(C.AUDIO_MOTOR) or self.ruta_audio(getattr(C, 'AUDIO_MOTOR_RESERVA', None))
+                self.senales.audio(motor)
 
             for p in C.PARADAS[:ultima + 1]:
                 print(f'[{p["nombre"]}] desplazamiento')
                 self.senales.estado('moviendo')
-                for x, y, z in p['movimientos']:
-                    self.recorrer(p['nombre'] + '-ruta', x, y, z)
+                for m in p['movimientos']:
+                    x, y, z, opciones = movimiento(m)
+                    if opciones.get('atacar') is not None and not z:
+                        self.mover_atacando(p['nombre'], x, y, opciones['atacar'],
+                                            opciones.get('velocidad', C.VELOCIDAD_ATAQUE_EN_MARCHA),
+                                            pitch=opciones.get('pitch'))
+                    else:
+                        self.recorrer(p['nombre'] + '-ruta', x, y, z, velocidad=opciones.get('velocidad'))
                     recorrido.append((x, y, z))
-                if C.ROBOTS_TOTALES is not None and len(self.memoria.atacados()) >= C.ROBOTS_TOTALES:
+                if not p['barrido']:
+                    pass   # parada sin barrido: solo movimientos (y ataques en marcha)
+                elif C.ROBOTS_TOTALES is not None and len(self.memoria.atacados()) >= C.ROBOTS_TOTALES:
                     print(f'[{p["nombre"]}] ya se han atacado los {C.ROBOTS_TOTALES} robots: no se barre')
                 elif not elegidas or p['nombre'] in elegidas:
                     self.atacar_parada(p)
@@ -931,11 +1151,19 @@ def main(argv=None):
     C.RUTA_MODELO = args.modelo or C.RUTA_MODELO
     if args.umbral is not None:
         C.UMBRAL = args.umbral
+    if not args.simulacion:
+        # El decodificador de vídeo del SDK necesita CPU libre mientras se analiza una imagen
+        torch.set_num_threads(max(1, min(torch.get_num_threads(), (os.cpu_count() or 4) - 2)))
     model, device, _ = cargar_modelo(C.MODELO, C.RUTA_MODELO, use_gpu=C.USAR_GPU)
     print(f'Modelo {C.MODELO} en {device}; primera inferencia: {calentar(model, C.RESIZE):.0f} ms')
     # El robot simulado no necesita serial_number.txt
     try:
-        ep_robot = connect('wifi' if args.simulacion else 'networking')
+        if args.simulacion:
+            ep_robot = connect('wifi')
+        elif args.conexion == 'auto':
+            ep_robot = connect('networking')
+        else:
+            ep_robot = connect(args.conexion, auto=False)
     except ConnectionError as e:
         print(f'[error] {e}')
         return None

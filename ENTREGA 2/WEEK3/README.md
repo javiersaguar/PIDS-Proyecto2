@@ -14,9 +14,11 @@ completó el 04/11/2026 con nuestra demo.
 | **`circuito.py`** | **Configuración: modelo, umbral, estrategia y paradas del circuito. Es lo que se ajusta en el laboratorio** |
 | **`demo.py`** | La demo: recorrido, barrido, puntería, disparo, evidencias, LED, sonido y baile. También `detect_and_shoot` completado según la plantilla |
 | `demo_utils.py` | Funciones de la asignatura y las nuestras (sección «Añadidos del grupo 2»): carga comprobada del modelo, cámara abierta toda la demo, evidencias, LED y sonido |
+| `recorrido.py` | Convierte las paradas medidas sobre el plano del circuito en movimientos del chasis y barridos de la torreta. `python recorrido.py` muestra lo calculado |
 | `simulacion.py` | Robot simulado para probar la demo sin el RoboMaster |
 | **`guia_pruebas.pdf`** | **Guía paso a paso de las pruebas con el robot antes de la demo final** |
 | `tests/test_demo.py` | Pruebas con el robot simulado y un detector falso, y comprobación de sintaxis de Python 3.8 |
+| `tests/test_recorrido.py` | Pruebas de `recorrido.py`: los movimientos calculados llegan a los puntos del plano |
 | `connect.py` | Une el robot a la wifi del laboratorio con un QR y guarda su número de serie en `serial_number.txt` |
 | `audio/`, `camera/`, `chassis/`, `gimbal/`, `others/` | Ejemplos de cada módulo del SDK |
 | `pyproject.toml`, `pixi.lock` | Entorno de la asignatura (pixi, Python 3.8) |
@@ -170,12 +172,28 @@ cualquier audio (mp3, m4a, wav…), lo recorta y normaliza el volumen:
 ```
 python audio/convertir_audio.py ENTRADA audio/propios/scar.wav --duracion 1
 python audio/convertir_audio.py ENTRADA audio/propios/superestrella.wav --inicio 50 --duracion 25
+python audio/preparar_disparo.py audio/propios/scar.wav audio/propios/scar
 ```
+
+El SDK no permite subir el volumen del altavoz. Además, el altavoz tarda un poco en
+arrancar y se come el principio de cada audio: un disparo de 0,2 s no llega a oírse.
+`audio/preparar_disparo.py` crea, a partir de un disparo:
+
+- `scar_fuerte.wav`: el disparo con unos 9 dB más de volumen (saturación suave, sin
+  recortar) y 0,3 s de silencio delante;
+- `scar_rafaga.wav`: el mismo silencio y los 12 disparos cada 0,3 s.
+
+Sus valores por defecto coinciden con `DISPAROS_POR_ROBOT`, `INTERVALO_DISPARO` y
+`SILENCIO_AUDIO_DISPARO`; si se cambian en `circuito.py`, hay que cambiarlos también al
+crear los audios. Si sigue sin oírse, se puede subir más con `--ganancia 12`.
+`python audio/probar_disparo.py` reproduce en el robot la SCAR original, la fuerte y la
+ráfaga, una tras otra, para compararlas.
 
 | Audio (`circuito.py`) | Cuándo suena |
 |---|---|
 | `AUDIO_MOTOR` (`audio/engine_sound_corto.wav`) | Al arrancar: los 6 primeros segundos de `engine_sound.wav`, para que no tape los demás sonidos |
-| `AUDIO_DISPARO` (`audio/propios/scar.wav`) | En cada disparo (`SONIDO_CADA_DISPARO = True`, por defecto): si hay otro sonido en curso se omite (con seguimiento) o se espera (sin seguimiento), porque el SDK no admite dos sonidos a la vez. Con `SONIDO_CADA_DISPARO = False`, solo al empezar cada ráfaga, sin esperar a que acabe |
+| `AUDIO_RAFAGA` (`audio/propios/scar_rafaga.wav`) | Sin `SEGUIMIENTO` (por defecto): suena una vez al empezar la ráfaga y los 12 disparos van a su ritmo, cada uno en su instante. Así no se sube un audio al robot en cada disparo. Si no existe, se usa `AUDIO_DISPARO` en cada disparo |
+| `AUDIO_DISPARO` (`audio/propios/scar_fuerte.wav`) | Con `SEGUIMIENTO`, o sin `AUDIO_RAFAGA`: en cada disparo (`SONIDO_CADA_DISPARO = True`, por defecto): si hay otro sonido en curso se omite (con seguimiento) o se espera (sin seguimiento), porque el SDK no admite dos sonidos a la vez. Con `SONIDO_CADA_DISPARO = False`, solo al empezar cada ráfaga, sin esperar a que acabe |
 | `AUDIO_FINAL` (`audio/propios/superestrella.wav`) | En el baile final. Los LED cambian de color `LED_FIESTA_HZ` veces por segundo mientras suena |
 
 `audio/propios/` no se sube a GitHub, porque las canciones y los sonidos de juegos tienen
@@ -275,14 +293,26 @@ vistos y tiempos.
      error). Poner el robot en modo *networking*, lanzar `python connect.py` y enseñarle
      el QR.
 
-   Todos los scripts eligen el modo solos: con `serial_number.txt`, networking; sin él,
-   wifi directo. Al conectar muestran `Conexion: wifi` o `Conexion: networking`.
+   `demo.py` elige el modo solo: networking si existe `serial_number.txt`, y wifi directo si
+   no existe o si el portátil está en la wifi del robot (IP `192.168.2.x`), aunque se haya
+   lanzado `connect.py` antes. `--conexion wifi` o `--conexion networking` fuerzan el modo.
+   Los scripts de prueba usan wifi directo. Al conectar se muestra `Conexion: wifi` o
+   `Conexion: networking`.
 4. **Probar sin robot**, en el ordenador del laboratorio:
    `python demo.py --simulacion CARPETA`, con una carpeta de imágenes; dentro del
    repositorio basta `--simulacion`, que usa `ENTREGA 1/WEEK2/DATOS_ASIGNATURA/data_test`.
    Comprueba que el modelo carga y mide la inferencia en ese equipo.
-5. **Medir el circuito** y escribir las paradas en `circuito.PARADAS`: movimientos,
-   ángulos de barrido y robots esperados. Comprobar el sentido del gimbal: si apunta al
+5. **Medir el circuito** y escribir las paradas en `circuito.PLANO`, en metros sobre el
+   plano: origen en la salida de nuestro robot (esquina de arriba a la izquierda del
+   boceto), x hacia la derecha y y hacia abajo. Por cada parada:
+   - `punto`: dónde se para;
+   - `por`: puntos intermedios, para rodear obstáculos;
+   - `mirar`: rumbo al llegar (0 derecha, 90 abajo, 180 izquierda, -90 arriba);
+   - `rivales`: dónde se espera un robot; el barrido mira hacia ellos, ±30º.
+
+   `RUMBO_INICIAL` es hacia dónde mira el robot en la salida. Con `GIRAR_EN_RUTA = False`,
+   va en diagonal sin girar. `python recorrido.py` muestra los movimientos y barridos
+   calculados: revisarlos antes de la prueba. Comprobar el sentido del gimbal: si apunta al
    lado contrario del robot, poner `SIGNO_YAW = -1`.
 6. **Calibrar cada parada sin moverse ni disparar:**
    `python demo.py --sin-mover --sin-disparar --paradas P1`. Revisar en `evidencias/`
@@ -324,6 +354,7 @@ Opciones de `demo.py`:
 | `--modelo RUTA`, `--arquitectura NOMBRE` | Usa otro checkpoint, por ejemplo `faster_rcnn_v3` si la inferencia es lenta |
 | `--simulacion [CARPETA]` | Robot simulado que ve las imágenes de `CARPETA` (por defecto, el test de la asignatura) |
 | `--evidencias CARPETA` | Carpeta de salida |
+| `--conexion wifi` / `--conexion networking` | Fuerza el modo de conexión (por defecto, `auto`) |
 
 ## 5. Pruebas
 
