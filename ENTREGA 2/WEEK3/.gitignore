@@ -14,3 +14,4 @@ __pycache__/
 audio/propios/
 # Datos de conexión del robot rival (rival/config_rival.ejemplo.json): wifi y número de serie
 rival/config_rival.json
+.venv-gpu/

@@ -12,7 +12,7 @@ Es un extra de la demo. **No sustituye al circuito autónomo** que pide el enunc
 sigue siendo `demo.py`. Sirve para la presentación y para calibrar en el laboratorio
 (colocar rivales, ver la cámara, probar la detección y los sonidos).
 
-Estado: 08/11/2026, sin empezar. Tiempo estimado: unos 9 días de trabajo de una persona,
+Estado: 08/11/2026, implementación en curso. Tiempo estimado: unos 9 días de trabajo de una persona,
 que se pueden repartir (apartado 12).
 
 ## 1. Viabilidad
@@ -99,7 +99,7 @@ subirlos. Los ajustes solo permiten bajarlos.
 
 ## 4. Fase 0: preparación (medio día)
 
-- [ ] **0.1 Carpeta.** Crear `ENTREGA 2/WEEK3/mando/` con esta estructura:
+- [x] **0.1 Carpeta.** Crear `ENTREGA 2/WEEK3/mando/` con esta estructura:
   ```
   mando/
   ├── Roadmap.md         este plan
@@ -111,14 +111,14 @@ subirlos. Los ajustes solo permiten bajarlos.
   ├── config_mando.json  controles y ajustes guardados (sin datos privados)
   └── web/               index.html, estilo.css, app.js, mando.js, audio.js
   ```
-- [ ] **0.2 Entorno del robot.** El mismo `.venv` de Python 3.8 de la demo, más un servidor web
+- [x] **0.2 Entorno del robot.** El mismo `.venv` de Python 3.8 de la demo, más un servidor web
   con WebSocket: FastAPI con uvicorn, o aiohttp. Hay que fijar versiones que aún admitan
   Python 3.8 y apuntarlas en el README.
 - [ ] **0.3 Entorno del detector.** `.venv-gpu` con Python 3.11 y torch 2.7 o posterior con
   CUDA 12.8; la RTX 5070 necesita al menos esa versión. Comprobar con
   `torch.cuda.is_available()` y medir cuánto tarda una imagen con `faster_rcnn_v2` y con
   `faster_rcnn_v3`. `.venv-gpu/` va al `.gitignore`.
-- [ ] **0.4 Audios.** Copiar los MP3 a `audio/propios/`, que no se sube por los derechos de
+- [x] **0.4 Audios.** Copiar los MP3 a `audio/propios/`, que no se sube por los derechos de
   autor, y prepararlos con un script nuevo, `audio/preparar_emotes.py`, basado en
   `preparar_voz.py`. Para cada uno: quitar el silencio, igualar el volumen y guardar dos
   versiones, una para el navegador (OGG o MP3) y otra para el robot (WAV mono a 48 kHz).
@@ -375,3 +375,10 @@ entiende los controles y activa el modo automático sin ayuda.
 | Subir canciones al robot tarda | Audio en el ordenador por defecto |
 | El modo automático dispara a imágenes de robots | Umbral 0,95, punto de mira dentro de la caja, aviso en ajustes y parada de emergencia |
 | Derechos de autor de las canciones | Siguen en `audio/propios/`, sin subir a GitHub |
+## Registro de implementación
+
+- Fase 0. Entorno del servidor con aiohttp 3.10.11 instalado en Python 3.8.
+- GPU pendiente. Windows bloquea Python 3.11 con Control de aplicaciones. No se cambian directivas del sistema. Falta también el checkpoint de faster_rcnn_v3 para CPU.
+- Audios locales preparados en WAV mono PCM16 48 kHz y OGG. Intro Moonwalk de 48 tiempos a 117 BPM (24,615 s). Alineación musical y bucle del motor pendientes de escucha en laboratorio.
+- DualShock pendiente de prueba física. Abrir /prueba_mando.html, cerrar Steam y pulsar un botón.
+- Adaptación propuesta de coreografías. Reducir amplitud del temblor de Risa y del contoneo Waka para cumplir 30 º/s. Reservar tres segundos al giro 45º y vuelta. FPS queda deshabilitado por defecto hasta medir en laboratorio el giro inducido del chasis.

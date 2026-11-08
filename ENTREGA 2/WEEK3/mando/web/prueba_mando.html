@@ -1,0 +1,4 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><title>Prueba del DualShock 4</title>
+<style>body{background:#10141d;color:#eff4ff;font:18px monospace;padding:32px}pre{white-space:pre-wrap}</style>
+<h1>Prueba del mando por USB</h1><p>Cierra Steam, conecta un cable de datos y pulsa un botón. Comprueba mapping=standard, ejes 0–3 y R2=botón 7 entre 0 y 1.</p><pre id="datos">Esperando un botón del mando…</pre>
+<script>function ver(){document.getElementById('datos').textContent=JSON.stringify([...navigator.getGamepads()].filter(Boolean).map(p=>({id:p.id,mapping:p.mapping,ejes:[...p.axes],botones:p.buttons.map((b,i)=>({i,valor:b.value,pulsado:b.pressed}))})),null,2);requestAnimationFrame(ver)}ver()</script></html>
