@@ -51,6 +51,8 @@ def configuracion(datos):
             salida[k] = v
     if salida.get('modo') == 'fps':
         raise ValueError('GIMBAL_LEAD pendiente de medir en laboratorio')
+    if salida.get('asistente'):
+        raise ValueError('Asistente de puntería pendiente de calibración')
     return salida
 
 
@@ -90,7 +92,7 @@ class Conductor(threading.Thread):
                 if datos.get('nombre') not in CATALOGO:
                     raise ValueError('Emote desconocido')
                 self.cola.append(datos['nombre'])
-            elif tipo == 'config':
+            elif tipo in ('config', 'activar'):
                 nuevos = configuracion(datos['config'])
                 # Un cambio de ajustes exige recibir controles nuevos.
                 self.parar()
@@ -98,6 +100,9 @@ class Conductor(threading.Thread):
                 temporal = CONFIG.with_suffix('.tmp')
                 temporal.write_text(json.dumps(self.config, ensure_ascii=False, indent=2), encoding='utf-8')
                 os.replace(str(temporal), str(CONFIG))
+                if tipo == 'activar':
+                    self.ultimo = self.reloj()
+                    self.emergencia.clear()
             else:
                 raise ValueError('Mensaje desconocido')
 
@@ -122,6 +127,7 @@ class Conductor(threading.Thread):
         with self.cerrojo:
             salida = dict(self.estado, config=dict(self.config))
             if self.resultado:
+                salida['age_ms'] = round(max(0, self.reloj()-self.resultado.get('instante', 0))*1000)
                 salida['deteccion'] = {k: v for k, v in self.resultado.items()
                                        if k in ('boxes', 'scores', 'width', 'height')}
             return salida
@@ -154,9 +160,10 @@ class Conductor(threading.Thread):
                 self.estado.update(emote=None, progreso=0, automatico=False)
                 return
             if self.cola and not self.baile:
-                from coreografias import CATALOGO
+                from coreografias import CATALOGO, validar
                 nombre = self.cola.pop()
                 self.cola.clear()
+                validar(nombre)
                 self.baile = (nombre, ahora)
                 self.robot.set_robot_mode(mode='free')
                 self.eventos.append(dict(tipo='emote', nombre=nombre))
@@ -197,6 +204,7 @@ class Conductor(threading.Thread):
             self.baile = None
             self.velocidades([0, 0], [0, 0])
             self.parar()
+            self.estado.update(emote=None, progreso=0)
             self.eventos.append(dict(tipo='fin_emote'))
             return
         paso = muestra(nombre, t)
@@ -234,14 +242,16 @@ class Conductor(threading.Thread):
                 if ahora - anterior >= .05:
                     if self.simulado:
                         frame = self.camara.capturar(0)
+                        instante = ahora
                     else:
                         import cv2
                         with self.camara._cond:
                             frame = self.camara._ultimo
+                            instante = self.camara._t_ultimo
                             frame = None if frame is None else cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     if frame is not None:
                         with self.cerrojo:
-                            self.imagen = (ahora, frame)
+                            self.imagen = (instante, frame)
                         self.estado['fps'] = round(1/max(.001, ahora-anterior), 1)
                     anterior = ahora
                 self.estado['yaw'], self.estado['pitch'] = self.torreta.leer()

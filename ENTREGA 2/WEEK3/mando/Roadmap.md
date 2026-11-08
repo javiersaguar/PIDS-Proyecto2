@@ -166,9 +166,9 @@ durante 10 minutos seguidos, sin congelarse.
 - [x] **2.3 Si se pierde la conexión:** sin mensajes durante 0,3 s, el chasis y la torreta se
   paran. Lo mismo al cerrar la pestaña, desenchufar el mando o pasar la página a segundo
   plano.
-- [ ] **2.4 Teclado.** WASD y flechas con `keydown` y `keyup`, ignorando la repetición
+- [x] **2.4 Teclado.** WASD y flechas con `keydown` y `keyup`, ignorando la repetición
   automática de teclas. Esc o espacio, parada de emergencia.
-- [ ] **2.5 Mando.**
+- [x] **2.5 Mando.**
   - Leer la Gamepad API con `requestAnimationFrame`.
   - Zona muerta de 0,15 en los joysticks.
   - Curva cuadrática, para tener precisión cerca del centro.
@@ -185,9 +185,9 @@ torreta apunta, nunca pasa de los límites y se para solo al cortar la conexión
 
 - [x] **3.1 Disparo.** Clic o R2 (valor > 0,5) dispara un infrarrojo. Mantenido, uno cada
   0,3 s, como en la demo. Cada disparo pasa por la cola del Conductor.
-- [ ] **3.2 Sonido de SCAR** en cada disparo, en el ordenador, con Web Audio, sin retraso.
+- [x] **3.2 Sonido de SCAR** en cada disparo, en el ordenador, con Web Audio, sin retraso.
   Con salida en el robot se usa el audio de un disparo, como en la demo.
-- [ ] **3.3 Motor de F1 mientras se mueve:**
+- [x] **3.3 Motor de F1 mientras se mueve:**
   - el bucle del motor sube de volumen al empezar a moverse y baja al pararse, con fundidos
     de 0,3 s;
   - la velocidad de reproducción va de 0,8 a 1,3 según la velocidad del robot, así que el
@@ -212,7 +212,7 @@ cortes y nada se queda sonando al parar.
 - [x] **4.2 En el servidor,** un hilo manda al detector siempre la imagen más nueva, con solo
   una pendiente a la vez. Si el detector no responde, se cambia a `faster_rcnn_v3` en CPU y
   se avisa en el HUD.
-- [ ] **4.3 Cajas en pantalla.** El navegador dibuja las cajas y la confianza en un canvas
+- [x] **4.3 Cajas en pantalla.** El navegador dibuja las cajas y la confianza en un canvas
   encima del vídeo, sin volver a codificar la imagen. Verde si llegan a 0,95 y naranja si
   no, como en las evidencias.
 - [x] **4.4 Modo automático**, que se activa y desactiva en los ajustes:
@@ -226,7 +226,7 @@ cortes y nada se queda sonando al parar.
   corrección proporcional). El jugador sigue moviendo el chasis.
 - [x] **4.6 Evidencias.** Cada imagen en la que dispara el modo automático se guarda con
   `Registro` en `evidencias/mando_<fecha_hora>/`, con sus cajas.
-- [ ] **4.7 Aviso en los ajustes.** El detector también ve como robots las imágenes de robots
+- [x] **4.7 Aviso en los ajustes.** El detector también ve como robots las imágenes de robots
   (estudio del señuelo). Solo detecta robots, no personas, pero el modo automático no se
   deja activo sin vigilar.
 
@@ -286,13 +286,13 @@ robot acaba donde empezó (±10 cm).
 
 ## 10. Fase 6: interfaz y ajustes (1,5 días)
 
-- [ ] **6.1 Pantalla principal:**
+- [x] **6.1 Pantalla principal:**
   - vídeo a pantalla completa con su canvas de cajas y un punto de mira en el centro;
   - HUD arriba: batería, retraso, imágenes por segundo, ms del detector, modo FPS o libre y
     «AUTO» si está activo;
   - abajo, los 4 emotes con su tecla y su botón del mando;
   - ⚙ arriba a la derecha.
-- [ ] **6.2 Ajustes** (ventana con pestañas):
+- [x] **6.2 Ajustes** (ventana con pestañas):
   - **Controles:** tabla de teclado y de mando con lo que hace cada tecla y botón; se pueden
     reasignar haciendo clic y pulsando la nueva tecla o botón. Botón «Restablecer».
   - **Disparo:** modo automático sí o no, asistente de puntería sí o no, umbral (0,95 por
@@ -304,21 +304,21 @@ robot acaba donde empezó (±10 cm).
   - **Detector:** GPU (`faster_rcnn_v2`) o CPU (`faster_rcnn_v3`), y mostrar cajas sí o no.
 
   Se guardan en `config_mando.json` (servidor) y en el navegador, y se aplican al momento.
-- [ ] **6.3 Mando conectado.** Icono del mando en el HUD cuando se detecta y aviso «Pulsa un
+- [x] **6.3 Mando conectado.** Icono del mando en el HUD cuando se detecta y aviso «Pulsa un
   botón del mando» si aún no ha aparecido.
-- [ ] **6.4 Respuesta visual:**
+- [x] **6.4 Respuesta visual:**
   - marca de impacto en el punto de mira al disparar;
   - borde rojo suave mientras dispara el modo automático;
   - aviso breve al empezar un baile («Moonwalk 🕺») y barra de progreso de la canción;
   - botón del emote resaltado mientras dura.
-- [ ] **6.5 Retoques estéticos:**
+- [x] **6.5 Retoques estéticos:**
   - tema oscuro con un color de acento;
   - tipografía legible sobre el vídeo (texto con sombra);
   - iconos de los botones de PlayStation (□ △ ○ ✕) y de las teclas;
   - animaciones cortas (menos de 200 ms) al abrir los ajustes y al pulsar emotes;
   - modo pantalla completa;
   - que se vea bien en 1080p y en el portátil.
-- [ ] **6.6 Pantalla de conexión:** «Conectando con el robot…» mientras arranca y error claro
+- [x] **6.6 Pantalla de conexión:** «Conectando con el robot…» mientras arranca y error claro
   si no lo encuentra, con el modo de conexión que se ha intentado.
 
 **Hecho cuando:** alguien que no ha visto el código maneja el robot, abre los ajustes,
@@ -388,3 +388,5 @@ entiende los controles y activa el modo automático sin ayuda.
 - Fase 4. Servicio GPU y cliente con una imagen pendiente; regla AUTO y Registro integrados. Checkpoint v3 facilitado por Javier, leído de forma restringida y exportado solo con pesos a models/faster_rcnn_v3/mando_pesos.pt (ignorado). CPU sintética tras calentamiento, cuatro hilos: 116,2 / 117,3 / 119,6 ms. GPU sin medir por bloqueo del ejecutable. AUTO rechaza imágenes de más de 0,3 s.
 
 - Fase 5. Cuatro coreografías temporizadas, cinco pruebas de límites y retorno geométrico correctas. Risa reducida a 1,5 grados; Waka reserva tres segundos al giro y vuelta. Sincronía musical, compensación del retraso y retorno físico pendientes de laboratorio. No se reutiliza el baile bloqueante como ejecución directa, se conservan sus gestos en una línea de tiempo cancelable.
+
+- Fase 6. Página oscura adaptable, controles reasignables, audio Web Audio, HUD y ajustes con persistencia. Probada conexión, vídeo sintético, activación y emote Risa en navegador integrado. Marca de disparo confirma orden, no impacto real. FPS, audio robot y asistente aparecen deshabilitados con explicación. La fase 6.2 implementa los ajustes disponibles; las opciones físicas pendientes siguen indicadas.

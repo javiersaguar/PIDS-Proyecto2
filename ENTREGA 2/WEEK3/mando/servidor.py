@@ -3,6 +3,7 @@ import argparse
 import asyncio
 import json
 import sys
+import time
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
@@ -18,6 +19,9 @@ def crear_app(conductor):
 
     async def indice(request):
         return web.FileResponse(BASE / 'web' / 'index.html')
+
+    async def prueba_mando(request):
+        return web.FileResponse(BASE / 'web' / 'prueba_mando.html')
 
     async def video(request):
         respuesta = web.StreamResponse(headers={
@@ -55,11 +59,14 @@ def crear_app(conductor):
         conductor.parar()
 
         async def estado():
+            ultimo_estado = 0
             while not socket.closed:
-                await socket.send_json(dict(tipo='estado', **conductor.instantanea()))
+                if time.monotonic() - ultimo_estado >= .5:
+                    await socket.send_json(dict(tipo='estado', **conductor.instantanea()))
+                    ultimo_estado = time.monotonic()
                 while conductor.eventos:
                     await socket.send_json(conductor.eventos.popleft())
-                await asyncio.sleep(.5)
+                await asyncio.sleep(.025)
 
         envio = asyncio.create_task(estado())
         try:
@@ -99,12 +106,14 @@ def crear_app(conductor):
     app.router.add_get('/ws', ws)
     app.router.add_get('/audio/{nombre}.ogg', audio)
     app.router.add_static('/web/', BASE / 'web')
-    app.router.add_get('/prueba_mando.html', lambda request: web.FileResponse(BASE/'web'/'prueba_mando.html'))
+    app.router.add_get('/prueba_mando.html', prueba_mando)
     app.on_cleanup.append(limpiar)
     return app
 
 
 def main():
+    if sys.platform == 'win32':
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--simulacion', metavar='CARPETA')
     p.add_argument('--sin-mover', action='store_true')

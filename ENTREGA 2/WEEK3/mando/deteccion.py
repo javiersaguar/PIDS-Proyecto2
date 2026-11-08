@@ -59,6 +59,8 @@ class Detector(threading.Thread):
                 raise FileNotFoundError('Falta el checkpoint CPU faster_rcnn_v3: ' + str(self.modelo_cpu))
             self._probar_cpu = False
             self._modelo, _, _ = cargar_modelo('faster_rcnn_v3', str(self.modelo_cpu), use_gpu=False)
+            import torch
+            torch.set_num_threads(4)
         pred, ms = detectar(self._modelo, image)
         return dict(boxes=pred['boxes'].tolist(), scores=pred['scores'].tolist(), ms=ms)
 
