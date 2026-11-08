@@ -115,6 +115,8 @@ class Conductor(threading.Thread):
     def publicar(self, resultado):
         with self.cerrojo:
             self.resultado = resultado
+            self.estado.update(ms_detector=resultado.get('ms'), detector=resultado.get('detector'),
+                               aviso=resultado.get('aviso', ''))
 
     def instantanea(self):
         with self.cerrojo:
@@ -168,7 +170,7 @@ class Conductor(threading.Thread):
                 from deteccion import regla_auto
                 auto = self.config['automatico'] and regla_auto(
                     resultado['boxes'], resultado['scores'], resultado['width'],
-                    resultado['height'], self.config['umbral'])
+                    resultado['height'], self.config['umbral']) is not None
             if (disparo or auto) and ahora - self.ultimo_disparo >= self.config['intervalo']:
                 from robomaster import blaster
                 if not self.robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1):
@@ -177,10 +179,10 @@ class Conductor(threading.Thread):
                 self.estado['disparos'] += 1
                 self.eventos.append(dict(tipo='disparo', numero=self.estado['disparos']))
                 self.senales.estado('disparando', parpadeo=True)
-                if auto and resultado.get('imagen') is not None:
+                if auto and resultado.get('image') is not None:
                     import numpy as np
                     pred = {k: np.asarray(resultado[k]) for k in ('boxes', 'scores')}
-                    self.registro.imagen(resultado['imagen'], pred, resultado.get('ms', 0),
+                    self.registro.imagen(resultado['image'], pred, resultado.get('ms', 0),
                                          'mando', 'auto', self.torreta.yaw, self.torreta.pitch, disparos=1)
             elif any(mover):
                 self.senales.estado('moviendo')

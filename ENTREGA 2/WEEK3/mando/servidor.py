@@ -119,8 +119,22 @@ def main():
     conductor = Conductor(lambda: connect('networking' if args.conexion == 'auto' else args.conexion,
                                          auto=args.conexion == 'auto'),
                           sin_mover=args.sin_mover, simulado=bool(args.simulacion))
+    from deteccion import Detector
+    def proveedor():
+        foto = conductor.foto()
+        return None if foto is None else (foto[1], foto[0])
+    detector = Detector(proveedor, conductor.publicar, simulado=bool(args.simulacion))
+    async def detener_detector(app):
+        await asyncio.get_running_loop().run_in_executor(None, detector.cerrar)
     app = crear_app(conductor)
+    app.on_cleanup.append(detener_detector)
+    original_recibir = conductor.recibir
+    def recibir(datos):
+        original_recibir(datos)
+        detector.configurar(conductor.config)
+    conductor.recibir = recibir
     conductor.start()
+    detector.start()
     web.run_app(app, host='127.0.0.1', port=args.puerto)
 
 

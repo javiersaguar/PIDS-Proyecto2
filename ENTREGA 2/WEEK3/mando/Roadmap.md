@@ -204,18 +204,18 @@ cortes y nada se queda sonando al parar.
 
 ## 8. Fase 4: detector en la GPU y modo automático (1,5 días)
 
-- [ ] **4.1 `detector_gpu.py`** (Python 3.11):
+- [x] **4.1 `detector_gpu.py`** (Python 3.11):
   - carga `model_demo.pt` con la misma arquitectura que la demo y lo calienta con una imagen
     vacía;
   - escucha en `127.0.0.1` y responde a cada imagen JPEG con sus cajas y confianzas en JSON;
   - mide los ms de cada imagen.
-- [ ] **4.2 En el servidor,** un hilo manda al detector siempre la imagen más nueva, con solo
+- [x] **4.2 En el servidor,** un hilo manda al detector siempre la imagen más nueva, con solo
   una pendiente a la vez. Si el detector no responde, se cambia a `faster_rcnn_v3` en CPU y
   se avisa en el HUD.
 - [ ] **4.3 Cajas en pantalla.** El navegador dibuja las cajas y la confianza en un canvas
   encima del vídeo, sin volver a codificar la imagen. Verde si llegan a 0,95 y naranja si
   no, como en las evidencias.
-- [ ] **4.4 Modo automático**, que se activa y desactiva en los ajustes:
+- [x] **4.4 Modo automático**, que se activa y desactiva en los ajustes:
   - dispara si una caja llega a 0,95 y el punto de mira cae dentro de ella (encogida un
     20 %, para no disparar al borde);
   - como mucho un disparo cada 0,3 s, solo infrarrojos;
@@ -224,7 +224,7 @@ cortes y nada se queda sonando al parar.
 - [ ] **4.5 Asistente de puntería** (opcional, otro interruptor). La torreta se mueve sola
   hacia la caja más centrada, con el seguimiento de la demo (velocidad estimada más
   corrección proporcional). El jugador sigue moviendo el chasis.
-- [ ] **4.6 Evidencias.** Cada imagen en la que dispara el modo automático se guarda con
+- [x] **4.6 Evidencias.** Cada imagen en la que dispara el modo automático se guarda con
   `Registro` en `evidencias/mando_<fecha_hora>/`, con sus cajas.
 - [ ] **4.7 Aviso en los ajustes.** El detector también ve como robots las imágenes de robots
   (estudio del señuelo). Solo detecta robots, no personas, pero el modo automático no se
@@ -384,3 +384,5 @@ entiende los controles y activa el modo automático sin ayuda.
 - Adaptación propuesta de coreografías. Reducir amplitud del temblor de Risa y del contoneo Waka para cumplir 30 º/s. Reservar tres segundos al giro 45º y vuelta. FPS queda deshabilitado por defecto hasta medir en laboratorio el giro inducido del chasis.
 
 - Fases 1–3. Servidor aiohttp, vídeo MJPEG y WebSocket, Conductor con vigilancia 0,3 s y timeout 0,5 s. FPS y audio en robot pendientes por seguridad. Estas marcas indican implementación; las condiciones físicas de fin siguen pendientes.
+
+- Fase 4. Servicio GPU y cliente con una imagen pendiente; regla AUTO y Registro integrados. Checkpoint v3 facilitado por Javier, leído de forma restringida y exportado solo con pesos a models/faster_rcnn_v3/mando_pesos.pt (ignorado). CPU sintética tras calentamiento, cuatro hilos: 116,2 / 117,3 / 119,6 ms. GPU sin medir por bloqueo del ejecutable. AUTO rechaza imágenes de más de 0,3 s.
