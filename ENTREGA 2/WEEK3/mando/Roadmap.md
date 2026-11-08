@@ -235,7 +235,7 @@ automático dispara a un robot solo cuando lo tiene en el punto de mira.
 
 ## 9. Fase 5: emotes y bailes (2 días)
 
-- [ ] **5.1 Motor de coreografías** (`coreografias.py`). Cada baile es una lista de pasos con
+- [x] **5.1 Motor de coreografías** (`coreografias.py`). Cada baile es una lista de pasos con
   su instante en tiempos de compás (BPM de la canción):
   `(tiempo, chasis vx/vy/giro, torreta yaw/pitch, LED, duración)`.
   - Lo ejecuta el Conductor, con la música en el ordenador y, si se elige, en el robot.
@@ -246,8 +246,8 @@ automático dispara a un robot solo cuando lo tiene en el punto de mira.
     recorrido total cabe en 1 × 1 m.
 - [ ] **5.2 Sincronía.** La música y los movimientos empiezan a la vez. Se mide el retraso
   del robot (wifi) y se adelantan los movimientos esos ms. El retraso es un ajuste.
-- [ ] **5.3 Super Estrella (F / ○).** Pasar el `baile()` actual de la demo al formato nuevo.
-- [ ] **5.4 Moonwalk con Billie Jean (Q / □).** Unos 25 s de la intro, a 117 BPM: un tiempo
+- [x] **5.3 Super Estrella (F / ○).** Pasar el `baile()` actual de la demo al formato nuevo.
+- [x] **5.4 Moonwalk con Billie Jean (Q / □).** Unos 25 s de la intro, a 117 BPM: un tiempo
   cada 0,51 s y un compás cada 2,05 s.
   1. **Pose inicial (1 compás):** torreta centrada e inclinada hacia abajo (pitch −15º), como
      el sombrero. LED blancos.
@@ -266,14 +266,14 @@ automático dispara a un robot solo cuando lo tiene en el punto de mira.
      todos los LED en blanco, y se apagan al final.
 
   Son 12 compases, unos 25 s. El robot no se aleja más de 36 cm de donde empieza.
-- [ ] **5.5 Waka Waka (E / △).** 11,7 s, a unos 127 BPM (un tiempo cada 0,47 s):
+- [x] **5.5 Waka Waka (E / △).** 11,7 s, a unos 127 BPM (un tiempo cada 0,47 s):
   1. **Contoneo:** el chasis se desliza a los lados (±6 cm por tiempo) mientras la torreta va
      al lado contrario (yaw ±10º cada dos tiempos), como las caderas.
   2. **«Eh, eh»:** dos cabeceos rápidos (pitch +8º) en cada acento.
   3. **LED:** los colores de la bandera de Sudáfrica (verde, amarillo, rojo, azul), uno por
      tiempo.
   4. **Final:** medio giro del chasis de 45º y vuelta, con los LED en amarillo.
-- [ ] **5.6 Risa (C / ✕).** 3,4 s:
+- [x] **5.6 Risa (C / ✕).** 3,4 s:
   - la torreta tiembla arriba y abajo (pitch ±5º, unas 3 veces por segundo) mientras el chasis
     se balancea ±5º;
   - los LED parpadean en amarillo 10 veces por segundo;
@@ -386,3 +386,5 @@ entiende los controles y activa el modo automático sin ayuda.
 - Fases 1–3. Servidor aiohttp, vídeo MJPEG y WebSocket, Conductor con vigilancia 0,3 s y timeout 0,5 s. FPS y audio en robot pendientes por seguridad. Estas marcas indican implementación; las condiciones físicas de fin siguen pendientes.
 
 - Fase 4. Servicio GPU y cliente con una imagen pendiente; regla AUTO y Registro integrados. Checkpoint v3 facilitado por Javier, leído de forma restringida y exportado solo con pesos a models/faster_rcnn_v3/mando_pesos.pt (ignorado). CPU sintética tras calentamiento, cuatro hilos: 116,2 / 117,3 / 119,6 ms. GPU sin medir por bloqueo del ejecutable. AUTO rechaza imágenes de más de 0,3 s.
+
+- Fase 5. Cuatro coreografías temporizadas, cinco pruebas de límites y retorno geométrico correctas. Risa reducida a 1,5 grados; Waka reserva tres segundos al giro y vuelta. Sincronía musical, compensación del retraso y retorno físico pendientes de laboratorio. No se reutiliza el baile bloqueante como ejecución directa, se conservan sus gestos en una línea de tiempo cancelable.
