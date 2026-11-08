@@ -7,12 +7,13 @@ from unittest.mock import Mock
 
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
-from conductor import Conductor, control, configuracion
+from conductor import Conductor, control, configuracion, REPOSO
 
 
 class Seguridad(unittest.TestCase):
     def test_diagonal_y_limites(self):
-        mover, mirar, disparo = control(dict(mover=[8,8], mirar=[9,-9], disparo=True))
+        mover, mirar, disparo, girar = control(dict(mover=[8,8], mirar=[9,-9], disparo=True, girar=5))
+        self.assertEqual(girar, 1)
         self.assertLessEqual(sum(v*v for v in mover), 1.000001)
         self.assertEqual(mirar, [1,-1])
         self.assertEqual(configuracion(dict(velocidad=50, angular=90)), dict(velocidad=.5, angular=30))
@@ -43,7 +44,7 @@ class Seguridad(unittest.TestCase):
         d.parar()
         d.recibir(dict(tipo='control', mover=[1, 0], mirar=[1, 0], disparo=True))
         self.assertTrue(d.emergencia.is_set())
-        self.assertEqual(d.orden, ([0, 0], [0, 0], False))
+        self.assertEqual(d.orden, REPOSO)
 
 
 if __name__ == '__main__':

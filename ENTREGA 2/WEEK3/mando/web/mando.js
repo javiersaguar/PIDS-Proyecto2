@@ -5,11 +5,12 @@
     adelante: "KeyW", atras: "KeyS", izquierda: "KeyA", derecha: "KeyD",
     mirar_izquierda: "ArrowLeft", mirar_derecha: "ArrowRight",
     mirar_arriba: "ArrowUp", mirar_abajo: "ArrowDown",
+    girar_izquierda: "KeyZ", girar_derecha: "KeyX",
     moonwalk: "KeyQ", waka: "KeyE", superestrella: "KeyF", risa: "KeyC",
     parar: "Space", ajustes: "Tab"
   };
   const botones = {
-    disparo: 7, moonwalk: 2, waka: 3, superestrella: 1, risa: 0, parar: 8, ajustes: 9
+    disparo: 7, girar_izquierda: 4, girar_derecha: 5, moonwalk: 2, waka: 3, superestrella: 1, risa: 0, parar: 8, ajustes: 9
   };
   function curva(valor, zona) {
     const v = Math.max(-1, Math.min(1, Number(valor) || 0));
@@ -21,10 +22,13 @@
     return {
       mover: teclado.mover.map((v, i) => mayor(v, mando.mover[i])),
       mirar: teclado.mirar.map((v, i) => mayor(v, mando.mirar[i])),
-      disparo: teclado.disparo || mando.disparo
+      disparo: teclado.disparo || mando.disparo,
+      girar: mayor(teclado.girar || 0, mando.girar || 0)
     };
   }
-  function vacio() { return { mover: [0, 0], mirar: [0, 0], disparo: false }; }
+  function vacio() { return { mover: [0, 0], mirar: [0, 0], disparo: false, girar: 0 }; }
+  // Botones que se mantienen pulsados: se leen en cada ciclo, no al pulsarlos.
+  const mantenidos = ["disparo", "girar_izquierda", "girar_derecha"];
   function editable(elemento) {
     return elemento && (elemento.isContentEditable || /INPUT|SELECT|TEXTAREA/.test(elemento.tagName));
   }
@@ -99,7 +103,7 @@
           }
         } else if (pad.mapping === "standard") {
           for (const [accion, i] of Object.entries(this.botones)) {
-            if (accion === "disparo" || !(valores[i] > 0.5) || this.anterior[i] > 0.5) continue;
+            if (mantenidos.includes(accion) || !(valores[i] > 0.5) || this.anterior[i] > 0.5) continue;
             if (accion === "parar") this.opciones.parar("Parada desde SHARE");
             else if (accion === "ajustes") this.opciones.ajustes();
             else if (this.opciones.activo()) this.opciones.emote(accion);
@@ -111,7 +115,9 @@
             this.juego = {
               mover: [-eje(1), eje(0)],
               mirar: [eje(2), -eje(3) * (this.config.invertir ? -1 : 1)],
-              disparo: valores[this.botones.disparo] > 0.5
+              disparo: valores[this.botones.disparo] > 0.5,
+              girar: (valores[this.botones.girar_derecha] > 0.5 ? 1 : 0) -
+                (valores[this.botones.girar_izquierda] > 0.5 ? 1 : 0)
             };
           } else this.juego = vacio();
         } else this.juego = vacio();
@@ -128,7 +134,8 @@
           si("mirar_derecha") - si("mirar_izquierda"),
           (si("mirar_arriba") - si("mirar_abajo")) * (this.config.invertir ? -1 : 1)
         ],
-        disparo: this.raton
+        disparo: this.raton,
+        girar: si("girar_derecha") - si("girar_izquierda")
       };
       return combinar(teclado, this.juego);
     }

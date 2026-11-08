@@ -7,7 +7,7 @@
     modo: "free", velocidad: .5, angular: 30, automatico: false, asistente: false,
     umbral: .95, intervalo: .3, audio: "ordenador", volumen: .7, volumen_motor: .3,
     motor: true, detector: "gpu", cajas: true, zona_muerta: .15, sensibilidad: 1,
-    invertir: false, retardo_ms: 0
+    invertir: false, retardo_ms: 0, relativo_camara: true
   };
   let config = Object.assign({}, defaults);
   try { config = Object.assign(config, JSON.parse(localStorage.getItem("robomaster-config") || "{}")); } catch (_) {}
@@ -15,7 +15,7 @@
   config.automatico = false;
   let ws, activo = false, estado = {}, conexionAbierta = false, primerEstado = true;
   let disparos = null, ultimoEmote = null, ultimoMensaje = 0, avisoTemporal = "", avisoHasta = 0;
-  let capturaTimer = null, marcaTimer = null, disparoEvento = false;
+  let capturaTimer = null, marcaTimer = null, disparoEvento = false, activadoEn = 0;
   const dialogo = el("dialogo");
   const sonido = new AudioRM(mensaje => avisar(mensaje, 6000));
   function avisar(mensaje, duracion = 3500) {
@@ -70,6 +70,7 @@
     adelante: "Adelante", atras: "Atrás", izquierda: "Izquierda", derecha: "Derecha",
     mirar_izquierda: "Mirar a la izquierda", mirar_derecha: "Mirar a la derecha",
     mirar_arriba: "Mirar arriba", mirar_abajo: "Mirar abajo",
+    girar_izquierda: "Girar el chasis a la izquierda", girar_derecha: "Girar el chasis a la derecha",
     disparo: "Disparar", moonwalk: "Moonwalk", waka: "Waka Waka",
     superestrella: "Super Estrella", risa: "Risa", parar: "Parada", ajustes: "Ajustes"
   };
@@ -158,7 +159,17 @@
       sonido.tocar("scar");
       return;
     }
-    if (nuevo.tipo === "fin_emote") { sonido.pararEmote(); ultimoEmote = null; return; }
+    if (nuevo.tipo === "fin_emote") {
+      // Los controles siguen activos: se vuelve a conducir sin pulsar Activar.
+      sonido.pararEmote(); ultimoEmote = null; estado.emote = null;
+      for (const b of document.querySelectorAll(".emote")) { b.classList.remove("activo"); b.disabled = !activo; }
+      return;
+    }
+    if (nuevo.tipo === "desarmado") {
+      if (activo) parar("Controles desactivados en el robot: " + (nuevo.motivo || "sin órdenes") + ". Pulsa «Activar controles».");
+      return;
+    }
+    if (nuevo.tipo === "aviso") { avisar(nuevo.mensaje || "Aviso del robot", 5000); return; }
     if (nuevo.tipo === "emote") {
       if (nuevo.nombre !== ultimoEmote) {
         ultimoEmote = nuevo.nombre;
@@ -208,6 +219,10 @@
       b.classList.toggle("activo", nuevo.emote === b.dataset.emote);
       b.disabled = !activo || !!nuevo.emote;
     }
+    // Red de seguridad por si se pierde el aviso: el robot ya no obedece.
+    if (activo && nuevo.armado === false && performance.now() - activadoEn > 1500) {
+      parar("Controles desactivados en el robot. Pulsa «Activar controles».");
+    }
     if (nuevo.error) {
       avisar(nuevo.error, 6000);
       if (activo) parar("Error del robot");
@@ -249,6 +264,7 @@
     }
     entrada.limpiar();
     activo = true;
+    activadoEn = performance.now();
     config.automatico = intencionAuto;
     enviar(Object.assign({ tipo: "activar", config }, ControlRM.vacio()));
     el("control-estado").textContent = "Controles activos";

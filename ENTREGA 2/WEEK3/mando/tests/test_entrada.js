@@ -10,7 +10,7 @@ assert.ok(curva(.5, .15) < .5);
 assert.deepEqual(combinar(
   { mover: [1, 0], mirar: [0, -.3], disparo: false },
   { mover: [.2, -.8], mirar: [.8, .1], disparo: true }
-), { mover: [1, -.8], mirar: [.8, -.3], disparo: true });
+), { mover: [1, -.8], mirar: [.8, -.3], disparo: true, girar: 0 });
 assert.deepEqual(combinar(
   { mover: [1, -1], mirar: [0, 0], disparo: false },
   { mover: [-.9, .9], mirar: [0, 0], disparo: false }

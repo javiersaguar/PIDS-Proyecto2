@@ -15,3 +15,6 @@ audio/propios/
 # Datos de conexión del robot rival (rival/config_rival.ejemplo.json): wifi y número de serie
 rival/config_rival.json
 .venv-gpu/
+# Ajustes locales del mando (los reescribe el servidor); la plantilla es mando/config_mando.ejemplo.json
+mando/config_mando.json
+mando/config_mando.tmp

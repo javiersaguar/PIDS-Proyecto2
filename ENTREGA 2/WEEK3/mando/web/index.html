@@ -37,7 +37,7 @@
     <div class="coordenadas"><span id="angulos">YAW — · PITCH —</span><span id="velocidad">0,00 m/s</span></div>
     </section>
     <section class="inferior" aria-label="Controles y emotes">
-      <div class="control-linea"><span class="titulo-seccion">02 / EMOTES</span><span id="mando-estado">Pulsa un botón del mando</span><span><kbd>W A S D</kbd> mover · <kbd>↑ ↓ ← →</kbd> mirar · clic / <kbd>R2</kbd> disparar</span></div>
+      <div class="control-linea"><span class="titulo-seccion">02 / EMOTES</span><span id="mando-estado">Pulsa un botón del mando</span><span><kbd>W A S D</kbd> mover · <kbd>Z X</kbd> / <kbd>L1 R1</kbd> girar · <kbd>↑ ↓ ← →</kbd> mirar · clic / <kbd>R2</kbd> disparar</span></div>
       <div class="emotes">
         <button class="emote" data-emote="moonwalk"><span class="ps cuadrado">□</span><span><strong>Moonwalk</strong><small>Billie Jean</small></span><kbd data-tecla="moonwalk">Q</kbd></button>
         <button class="emote" data-emote="waka"><span class="ps triangulo">△</span><span><strong>Waka Waka</strong><small>Shakira</small></span><kbd data-tecla="waka">E</kbd></button>
@@ -74,13 +74,14 @@
   </div>
   <div class="panel-ajustes" id="panel-movimiento" hidden>
     <label class="fila">Modo<select data-config="modo"><option value="free">Libre · torreta independiente</option><option value="fps" id="opcion-fps" disabled>FPS · pendiente de laboratorio</option></select></label>
+    <label class="fila">Moverse hacia donde mira la cámara<input data-config="relativo_camara" type="checkbox"></label>
     <label class="fila">Velocidad máxima (m/s)<input data-config="velocidad" type="number" min="0" max="0.5" step="0.05"></label>
     <label class="fila">Torreta máxima (º/s)<input data-config="angular" type="number" min="0" max="30" step="1"></label>
     <label class="fila">Sensibilidad<input data-config="sensibilidad" type="range" min="0.1" max="1" step="0.05"></label>
     <label class="fila">Zona muerta del mando<input data-config="zona_muerta" type="number" min="0.05" max="0.5" step="0.01"></label>
     <label class="fila">Invertir mirada vertical<input data-config="invertir" type="checkbox"></label>
     <label class="fila">Compensación de sincronía (ms)<input data-config="retardo_ms" type="number" min="0" max="500" step="10"></label>
-    <p class="ayuda">El modo FPS necesita medir el giro inducido del chasis antes de habilitarse. Máximos del proyecto: 0,5 m/s y 30 º/s.</p>
+    <p class="ayuda">Con «Moverse hacia donde mira la cámara», W avanza en la dirección de la torreta aunque esté girada; sin él, hacia el frente del chasis. Z/X o L1/R1 giran el chasis a 30 º/s. El modo FPS necesita medir el giro inducido del chasis antes de habilitarse. Máximos del proyecto: 0,5 m/s y 30 º/s.</p>
   </div>
   <div class="panel-ajustes" id="panel-audio" hidden>
     <label class="fila">Salida de emotes<strong>Altavoz del robot</strong></label><label class="fila">Motor y SCAR<strong>Ordenador</strong></label>

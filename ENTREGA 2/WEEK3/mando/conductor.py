@@ -8,7 +8,20 @@ import time
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
+# Ajustes locales, ignorados por Git. Si no existen se parte de la plantilla versionada.
 CONFIG = BASE / 'config_mando.json'
+EJEMPLO = BASE / 'config_mando.ejemplo.json'
+
+CADUCIDAD = .3      # s sin órdenes del navegador antes de parar y desarmar
+EDAD_AUTO = .5      # s como mucho entre la imagen y el disparo automático
+GIRO_AUTO = 2.0     # º que puede haberse movido la torreta desde esa imagen
+GIRO_CHASIS = 30    # º/s del chasis con L1/R1 o Z/X (límite del proyecto)
+REPOSO = ([0, 0], [0, 0], False, 0)
+
+
+def leer_config():
+    ruta = CONFIG if CONFIG.is_file() else EJEMPLO
+    return json.loads(ruta.read_text(encoding='utf-8-sig'))
 
 
 def numero(valor, minimo, maximo):
@@ -23,8 +36,9 @@ def control(datos):
     mirar = [numero(v, -1, 1) for v in datos['mirar']]
     if len(mover) != 2 or len(mirar) != 2 or not isinstance(datos['disparo'], bool):
         raise ValueError('Control inválido')
+    girar = numero(datos.get('girar', 0), -1, 1)
     norma = max(1, math.hypot(*mover))
-    return [v / norma for v in mover], mirar, datos['disparo']
+    return [v / norma for v in mover], mirar, datos['disparo'], girar
 
 
 def configuracion(datos):
@@ -35,7 +49,7 @@ def configuracion(datos):
     for k, v in datos.items():
         if k in limites:
             salida[k] = numero(v, *limites[k])
-        elif k in ('automatico', 'asistente', 'cajas', 'motor', 'invertir'):
+        elif k in ('automatico', 'asistente', 'cajas', 'motor', 'invertir', 'relativo_camara'):
             if not isinstance(v, bool):
                 raise ValueError('Se esperaba un interruptor')
             salida[k] = v
@@ -56,7 +70,20 @@ def configuracion(datos):
     return salida
 
 
+def hacia_camara(mover, yaw):
+    """Pasa (adelante, derecha) de la cámara a ejes del chasis; yaw > 0 a la derecha."""
+    a = math.radians(yaw)
+    f, r = mover
+    return [f * math.cos(a) - r * math.sin(a), f * math.sin(a) + r * math.cos(a)]
+
+
 class Conductor(threading.Thread):
+    """Único hilo que habla con el SDK.
+
+    El cerrojo solo protege el estado compartido con el servidor. Las órdenes al
+    robot se mandan fuera de él, para que la parada y el vídeo no esperen.
+    """
+
     def __init__(self, conectar, sin_mover=False, simulado=False, reloj=time.monotonic):
         super().__init__(daemon=True)
         self.conectar, self.sin_mover, self.simulado, self.reloj = conectar, sin_mover, simulado, reloj
@@ -65,19 +92,22 @@ class Conductor(threading.Thread):
         self.emergencia = threading.Event()
         self.emergencia.set()
         self.cola = collections.deque(maxlen=1)
-        self.config = configuracion(json.loads(CONFIG.read_text(encoding='utf-8-sig')))
+        self.config = dict(relativo_camara=True)
+        self.config.update(configuracion(leer_config()))
         self.config['automatico'] = False
-        self.orden = ([0, 0], [0, 0], False)
+        self.orden = REPOSO
         self.ultimo = -float('inf')
         self.ultimo_disparo = -float('inf')
         self.estado = dict(error=None, aviso='', bateria=None, modo='free', velocidad=[0, 0],
                            yaw=0, pitch=0, fps=0, ms_detector=None, automatico=False,
-                           disparos=0, emote=None, progreso=0, detector='inactivo')
+                           disparos=0, sin_confirmar=0, emote=None, progreso=0,
+                           detector='inactivo', armado=False, lectura_torreta=None)
         self.imagen = None
         self.resultado = None
         self.eventos = collections.deque(maxlen=100)
         self.baile = None
         self.audio_robot = None
+        self._led = None
         self.estado['listo'] = False
 
     def recibir(self, datos):
@@ -94,7 +124,7 @@ class Conductor(threading.Thread):
                 self.orden = orden
                 self.ultimo = self.reloj()
             elif tipo == 'emote':
-                if self.emergencia.is_set() or self.reloj()-self.ultimo >= .3:
+                if self.emergencia.is_set() or self.reloj()-self.ultimo >= CADUCIDAD:
                     raise ValueError('Activa los controles antes de lanzar un emote')
                 from coreografias import CATALOGO
                 if datos.get('nombre') not in CATALOGO:
@@ -112,6 +142,7 @@ class Conductor(threading.Thread):
                 if tipo == 'activar':
                     self.ultimo = self.reloj()
                     self.emergencia.clear()
+                    self.estado['armado'] = True
             else:
                 raise ValueError('Mensaje desconocido')
 
@@ -119,8 +150,9 @@ class Conductor(threading.Thread):
         with self.cerrojo:
             self.emergencia.set()
             self.config['automatico'] = False
-            self.orden = ([0, 0], [0, 0], False)
+            self.orden = REPOSO
             self.cola.clear()
+            self.estado['armado'] = False
 
     def foto(self):
         with self.cerrojo:
@@ -141,104 +173,164 @@ class Conductor(threading.Thread):
                                        if k in ('boxes', 'scores', 'width', 'height')}
             return salida
 
-    def velocidades(self, mover, mirar):
+    # --- órdenes al robot (solo desde este hilo y sin el cerrojo) -----------------------
+    def velocidades(self, mover, mirar, girar=0):
         from demo_utils import limitar
         x, y = [v * self.config['velocidad'] for v in mover]
+        if self.config.get('relativo_camara', True) and (x or y):
+            # W lleva el robot hacia donde mira la cámara, no hacia el frente del chasis.
+            x, y = hacia_camara([x, y], self.torreta.leer()[0])
+        z = -limitar(girar * GIRO_CHASIS, GIRO_CHASIS)   # z > 0 gira a la izquierda
         if self.sin_mover:
-            x = y = 0
-        self.robot.chassis.drive_speed(x=x, y=y, z=0, timeout=.5)
+            x = y = z = 0
+        self.robot.chassis.drive_speed(x=x, y=y, z=z, timeout=.5)
         self.torreta.velocidad(limitar(mirar[0] * self.config['angular'], 30),
-                              limitar(mirar[1] * self.config['angular'], 30))
+                               limitar(mirar[1] * self.config['angular'], 30))
         self.estado['velocidad'] = [x, y]
+
+    def senal(self, nombre, parpadeo=False):
+        """Cambia los LED solo si cambia el estado, para no saturar la conexión."""
+        clave = ('senal', nombre, parpadeo)
+        if clave != self._led:
+            self.senales.estado(nombre, parpadeo=parpadeo)
+            self._led = clave
+
+    def color(self, rgb):
+        from robomaster import led
+        clave = ('rgb', tuple(rgb))
+        if clave != self._led:
+            self.robot.led.set_led(comp=led.COMP_ALL, r=rgb[0], g=rgb[1], b=rgb[2],
+                                   effect=led.EFFECT_ON)
+            self._led = clave
+
+    def reposo(self):
+        if self.baile:
+            self.baile = None
+            self._led = None
+            self.eventos.append(dict(tipo='fin_emote'))
+        self.velocidades([0, 0], [0, 0])
+        if self.audio_robot:
+            self.audio_robot.parar()
+        # Centrado por velocidad: cancelable y sin esperar acciones largas.
+        yaw, pitch = self.torreta.leer()
+        self.torreta.velocidad(max(-30, min(30, -yaw*2)), max(-30, min(30, -pitch*2)))
+        self.estado.update(emote=None, progreso=0, automatico=False)
+
+    def blanco(self, resultado, ahora):
+        """True si la última detección tiene un robot bajo la mira y sigue valiendo.
+
+        Vale si la imagen es reciente y la torreta apenas se ha movido desde que se
+        tomó (el mismo criterio de ángulo en el instante de la imagen que la demo).
+        """
+        if not resultado or ahora - resultado.get('instante', -float('inf')) >= EDAD_AUTO:
+            return False
+        from deteccion import regla_auto
+        if regla_auto(resultado['boxes'], resultado['scores'], resultado['width'],
+                      resultado['height'], self.config['umbral']) is None:
+            return False
+        import circuito as C
+        yaw0, pitch0 = self.torreta.angulo_en(resultado['instante'] - C.RETARDO_CAMARA)
+        yaw, pitch = self.torreta.leer()
+        return abs(yaw - yaw0) <= GIRO_AUTO and abs(pitch - pitch0) <= GIRO_AUTO
+
+    def disparar(self, ahora, auto, resultado):
+        from robomaster import blaster
+        self.ultimo_disparo = ahora
+        try:
+            confirmado = self.robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1)
+            motivo = 'el robot no lo confirmó'
+        except Exception as e:
+            confirmado, motivo = False, str(e)
+        if not confirmado:
+            # Un disparo perdido no corta la sesión: se avisa y se sigue.
+            self.estado['sin_confirmar'] += 1
+            self.eventos.append(dict(tipo='aviso', mensaje='Disparo sin confirmar: ' + motivo))
+            return
+        self.estado['disparos'] += 1
+        self.eventos.append(dict(tipo='disparo', numero=self.estado['disparos']))
+        self.senal('disparando', parpadeo=True)
+        if auto and resultado.get('image') is not None:
+            import numpy as np
+            pred = {k: np.asarray(resultado[k]) for k in ('boxes', 'scores')}
+            self.registro.imagen(resultado['image'], pred, resultado.get('ms', 0),
+                                 'mando', 'auto', self.torreta.yaw, self.torreta.pitch, disparos=1)
+
+    def empezar_baile(self, nombre):
+        from coreografias import validar
+        from audio_robot import SILENCIO
+        validar(nombre)
+        self.robot.set_robot_mode(mode='free')
+        # La música se envía con el robot quieto y ya precargada.
+        self.velocidades([0, 0], [0, 0])
+        self.audio_robot.reproducir(nombre)
+        self.baile = (nombre, self.reloj() + SILENCIO)
+        self.eventos.append(dict(tipo='emote', nombre=nombre))
 
     def paso(self):
         ahora = self.reloj()
         with self.cerrojo:
-            caducado = self.emergencia.is_set() or ahora - self.ultimo >= .3
-            mover, mirar, disparo = self.orden
-            if caducado:
+            armado = not self.emergencia.is_set()
+            if armado and ahora - self.ultimo >= CADUCIDAD:
                 self.emergencia.set()
+                armado = False
+                self.eventos.append(dict(tipo='desarmado',
+                                         motivo='No llegan órdenes del navegador'))
+            emote = None
+            if not armado:
                 self.config['automatico'] = False
                 self.cola.clear()
-                if self.baile:
-                    self.baile = None
-                    self.eventos.append(dict(tipo='fin_emote'))
-                self.velocidades([0, 0], [0, 0])
-                if self.audio_robot:
-                    self.audio_robot.parar()
-                # Centrado por velocidad: cancelable y sin esperar acciones largas.
-                yaw, pitch = self.torreta.leer()
-                self.torreta.velocidad(max(-30, min(30, -yaw*2)), max(-30, min(30, -pitch*2)))
-                self.estado.update(emote=None, progreso=0, automatico=False)
-                return
-            if self.cola and not self.baile:
-                from coreografias import CATALOGO, validar
-                nombre = self.cola.pop()
+            elif self.cola and not self.baile:
+                emote = self.cola.pop()
                 self.cola.clear()
-                validar(nombre)
-                self.robot.set_robot_mode(mode='free')
-                # La música se envía con el robot quieto y ya precargada.
-                self.velocidades([0, 0], [0, 0])
-                self.audio_robot.reproducir(nombre)
-                from audio_robot import SILENCIO
-                self.baile = (nombre, self.reloj() + SILENCIO)
-                self.eventos.append(dict(tipo='emote', nombre=nombre))
-            if self.baile:
-                self.paso_baile(ahora)
-                return
-            self.velocidades(mover, mirar)
+            mover, mirar, disparo, girar = self.orden
+            automatico = self.config['automatico']
+            intervalo = self.config['intervalo']
             resultado = self.resultado
-            auto = False
-            if resultado and ahora - resultado.get('instante', -float('inf')) < .3:
-                from deteccion import regla_auto
-                auto = self.config['automatico'] and regla_auto(
-                    resultado['boxes'], resultado['scores'], resultado['width'],
-                    resultado['height'], self.config['umbral']) is not None
-            if (disparo or auto) and ahora - self.ultimo_disparo >= self.config['intervalo']:
-                from robomaster import blaster
-                if not self.robot.blaster.fire(fire_type=blaster.INFRARED_FIRE, times=1):
-                    raise RuntimeError('El blaster no confirmó el disparo')
-                self.ultimo_disparo = ahora
-                self.estado['disparos'] += 1
-                self.eventos.append(dict(tipo='disparo', numero=self.estado['disparos']))
-                self.senales.estado('disparando', parpadeo=True)
-                if auto and resultado.get('image') is not None:
-                    import numpy as np
-                    pred = {k: np.asarray(resultado[k]) for k in ('boxes', 'scores')}
-                    self.registro.imagen(resultado['image'], pred, resultado.get('ms', 0),
-                                         'mando', 'auto', self.torreta.yaw, self.torreta.pitch, disparos=1)
-            elif any(mover):
-                self.senales.estado('moviendo')
-            self.estado['automatico'] = self.config['automatico']
+            self.estado['armado'] = armado
+        if not armado:
+            self.reposo()
+            return
+        if emote:
+            self.empezar_baile(emote)
+        if self.baile:
+            self.paso_baile(ahora)
+            return
+        self.velocidades(mover, mirar, girar)
+        auto = automatico and self.blanco(resultado, ahora)
+        if (disparo or auto) and ahora - self.ultimo_disparo >= intervalo:
+            self.disparar(ahora, auto, resultado)
+        elif any(mover) or girar:
+            self.senal('moviendo')
+        self.estado['automatico'] = automatico
 
     def paso_baile(self, ahora):
         from coreografias import CATALOGO, muestra
-        from robomaster import led
         nombre, inicio = self.baile
         t = ahora - inicio + self.config['retardo_ms']/1000
         if t >= CATALOGO[nombre]['duracion']:
+            # Al acabar se sigue con los controles armados: el navegador manda reposo
+            # mientras dura el baile, así que el robot no arranca solo.
             self.baile = None
+            self._led = None
             self.velocidades([0, 0], [0, 0])
             self.audio_robot.parar()
-            self.parar()
             self.estado.update(emote=None, progreso=0)
             self.eventos.append(dict(tipo='fin_emote'))
             return
         paso = muestra(nombre, t)
         self.robot.chassis.drive_speed(x=0 if self.sin_mover else paso['vx'],
-                                      y=0 if self.sin_mover else paso['vy'],
-                                      z=0 if self.sin_mover else paso['z'], timeout=.5)
+                                       y=0 if self.sin_mover else paso['vy'],
+                                       z=0 if self.sin_mover else paso['z'], timeout=.5)
         yaw, pitch = self.torreta.leer()
         self.torreta.velocidad(max(-30, min(30, (paso['yaw']-yaw)*4)),
-                              max(-30, min(30, (paso['pitch']-pitch)*4)))
-        self.robot.led.set_led(comp=led.COMP_ALL, r=paso['color'][0], g=paso['color'][1],
-                               b=paso['color'][2], effect=led.EFFECT_ON)
+                               max(-30, min(30, (paso['pitch']-pitch)*4)))
+        self.color(paso['color'])
         self.estado.update(emote=nombre, progreso=max(0, min(1, t/CATALOGO[nombre]['duracion'])))
 
     def run(self):
         from demo_utils import Camara, Senales, Registro, nivel_bateria, liberar_cerrojo_sdk
         from demo import Torreta
-        self.robot = self.camara = self.registro = None
+        self.robot = self.camara = self.registro = self.torreta = None
         try:
             self.robot = self.conectar()
             self.robot.set_robot_mode(mode='free')
@@ -249,6 +341,9 @@ class Conductor(threading.Thread):
                 self.estado['aviso'] = 'Batería por debajo del 20 %'
             self.torreta = Torreta(self.robot)
             self.torreta.centrar()
+            # Lee el ángulo real del gimbal; sin esto se estima con las órdenes y deriva.
+            self.estado['lectura_torreta'] = self.torreta.comprobar_lectura()
+            print('Torreta: ' + self.estado['lectura_torreta'], flush=True)
             self.senales = Senales(self.robot)
             from audio_robot import AudioRobot
             self.audio_robot = AudioRobot(self.robot, simulado=self.simulado)
@@ -288,7 +383,9 @@ class Conductor(threading.Thread):
             if self.robot:
                 for cerrar in [lambda: self.robot.chassis.drive_speed(x=0,y=0,z=0,timeout=.5),
                                lambda: self.audio_robot and self.audio_robot.parar(),
-                               lambda: self.torreta.centrar(), lambda: self.senales.estado('apagado'),
+                               lambda: self.torreta and self.torreta.centrar(),
+                               lambda: self.torreta and self.torreta.cancelar_lectura(),
+                               lambda: self.senales.estado('apagado'),
                                lambda: self.camara and self.camara.cerrar(),
                                lambda: self.registro and self.registro.cerrar(dict(disparos=self.estado['disparos'])),
                                self.robot.close]:

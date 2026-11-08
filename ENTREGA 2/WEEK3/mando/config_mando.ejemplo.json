@@ -1,0 +1,20 @@
+{
+  "modo": "free",
+  "velocidad": 0.5,
+  "angular": 30,
+  "relativo_camara": true,
+  "automatico": false,
+  "asistente": false,
+  "umbral": 0.95,
+  "intervalo": 0.3,
+  "audio": "ordenador",
+  "volumen": 0.7,
+  "volumen_motor": 0.3,
+  "motor": true,
+  "detector": "gpu",
+  "cajas": true,
+  "zona_muerta": 0.15,
+  "sensibilidad": 1,
+  "invertir": false,
+  "retardo_ms": 0
+}

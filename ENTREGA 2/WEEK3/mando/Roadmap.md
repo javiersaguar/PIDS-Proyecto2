@@ -108,7 +108,7 @@ subirlos. Los ajustes solo permiten bajarlos.
   ├── conductor.py       hilo único con el SDK: movimiento, disparo, LED, bailes
   ├── coreografias.py    los bailes como líneas de tiempo
   ├── detector_gpu.py    servidor del detector (Python 3.11 + CUDA)
-  ├── config_mando.json  controles y ajustes guardados (sin datos privados)
+  ├── config_mando.ejemplo.json  ajustes por defecto; config_mando.json es local e ignorado
   └── web/               index.html, estilo.css, app.js, mando.js, audio.js
   ```
 - [x] **0.2 Entorno del robot.** El mismo `.venv` de Python 3.8 de la demo, más un servidor web
@@ -303,7 +303,8 @@ robot acaba donde empezó (±10 cm).
     sí o no.
   - **Detector:** GPU (`faster_rcnn_v2`) o CPU (`faster_rcnn_v3`), y mostrar cajas sí o no.
 
-  Se guardan en `config_mando.json` (servidor) y en el navegador, y se aplican al momento.
+  Se guardan en `config_mando.json` (servidor, local e ignorado; la plantilla es
+  `config_mando.ejemplo.json`) y en el navegador, y se aplican al momento.
 - [x] **6.3 Mando conectado.** Icono del mando en el HUD cuando se detecta y aviso «Pulsa un
   botón del mando» si aún no ha aparecido.
 - [x] **6.4 Respuesta visual:**

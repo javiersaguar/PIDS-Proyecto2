@@ -65,6 +65,7 @@ El asistente de puntería opcional queda deshabilitado hasta calibrarlo.
 | Acción | Teclado / ratón | DualShock 4 |
 |---|---|---|
 | Desplazamiento | WASD | Joystick izquierdo |
+| Girar el chasis | Z / X | L1 / R1 |
 | Torreta | Flechas | Joystick derecho |
 | Infrarrojos | Clic izquierdo mantenido | R2 >0,5 |
 | Moonwalk | Q | □ |
@@ -75,8 +76,22 @@ El asistente de puntería opcional queda deshabilitado hasta calibrarlo.
 | Ajustes | Tab / engranaje | OPTIONS |
 
 Los controles se reasignan en ajustes. La configuración se guarda en el navegador y en
-config_mando.json. Activar controles permite el audio mediante un gesto del usuario.
-Se requiere rearmar tras una parada, perder foco o desconectar el mando.
+config_mando.json, que es local y está en .gitignore; si no existe, se parte de
+config_mando.ejemplo.json. Activar controles permite el audio mediante un gesto del usuario.
+Se requiere rearmar tras una parada, perder foco o desconectar el mando. Si el servidor
+desarma los controles por su cuenta (no le llegan órdenes en 0,3 s), avisa a la página y
+esta vuelve a mostrar «Activar controles». Al acabar un baile los controles siguen activos.
+
+Con «Moverse hacia donde mira la cámara» (activado por defecto), W lleva el robot en la
+dirección de la torreta aunque esté girada respecto al chasis. Usa el ángulo que lee el
+gimbal: al arrancar, el servidor comprueba esa lectura con un giro corto de 20º y 10º, como
+la demo, y si falla lo estima con las órdenes enviadas. Z/X y L1/R1 giran el chasis a 30 º/s.
+
+Un disparo que el robot no confirma no corta la sesión: la página avisa y se cuenta en
+sin_confirmar. El disparo automático solo usa una detección de menos de 0,5 s y si la
+torreta se ha movido como mucho 2º desde que se tomó la imagen (ángulo en el instante de
+la imagen, con RETARDO_CAMARA). El detector CPU tarda unos 140 ms por imagen en este portátil.
+Los LED solo se cambian cuando cambia su estado o su color.
 
 Chasis limitado vectorialmente a 0,5 m/s y 30 º/s. Torreta a 30 º/s.
 Cada orden del chasis caduca en 0,5 s. Sin mensajes durante 0,3 s, el Conductor para,
@@ -124,6 +139,8 @@ Pendientes de laboratorio:
 - Latencia real y estabilidad de vídeo durante 15 minutos.
 - Cortar wifi, cerrar pestaña y desconectar mando en marcha, primero con ruedas en alto.
 - FPS y velocidad inducida del chasis.
+- Movimiento hacia la cámara: con la torreta girada 90º, W debe ir hacia donde mira.
+  Comprobar también qué hace la torreta al girar el chasis con Z/X en modo libre.
 - Cada baile con --sin-mover, sobre caja y tres veces en el suelo con 1 × 1 m libre.
 - Desviación final ±10 cm, alineación musical y sincronía de disparos.
 - Rendimiento GPU con vídeo del robot, incluidos transporte y latencia.
@@ -219,7 +236,9 @@ Las comprobaciones de altavoz, ruedas, impactos, wifi y deriva requieren hardwar
 
 ### Resultado actual de las pruebas locales
 
-24 pruebas Python y dos pruebas JavaScript correctas. Se comprueban reproducción y
+31 pruebas Python y dos pruebas JavaScript correctas (siete nuevas en test_correcciones.py:
+rearme tras el baile, aviso de desarme, disparo sin confirmar, puntería automática, LED,
+movimiento hacia la cámara con giro del chasis y plantilla de ajustes). Se comprueban reproducción y
 parada con el formato binario real del SDK, rechazo de órdenes y falta de ACK,
 precarga FTP, cortes de control durante un emote y 15 minutos de reloj simulado.
 La petición WebSocket de Risa completó inicio y fin con controles periódicos.

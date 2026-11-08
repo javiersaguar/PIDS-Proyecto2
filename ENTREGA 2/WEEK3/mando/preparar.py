@@ -14,7 +14,7 @@ sys.path.insert(0, str(WEEK3))
 
 def comprobar():
     from audio_robot import NOMBRES, CARPETA, comprobar_audio
-    from conductor import configuracion
+    from conductor import configuracion, leer_config
     from coreografias import CATALOGO, validar
     resultados = []
     def revisar(nombre, operacion, obligatorio=True):
@@ -27,8 +27,7 @@ def comprobar():
                                    detalle=str(error)))
     revisar('Python del servidor', lambda: version_servidor())
     revisar('SDK y servidor web', lambda: paquetes())
-    revisar('Configuración', lambda: configuracion(json.loads(
-        (BASE/'config_mando.json').read_text(encoding='utf-8-sig'))))
+    revisar('Configuración', lambda: configuracion(leer_config()))
     for nombre in NOMBRES:
         revisar('WAV ' + nombre, lambda n=nombre: '%.3f s' % comprobar_audio(
             CARPETA/('mando_'+n+'_robot.wav')))
