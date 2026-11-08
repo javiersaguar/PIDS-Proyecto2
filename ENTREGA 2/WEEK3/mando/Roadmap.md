@@ -326,7 +326,7 @@ entiende los controles y activa el modo automático sin ayuda.
 
 ## 11. Fase 7: pruebas y robustez (1 día)
 
-- [ ] **7.1 Pruebas sin robot** con `simulacion.py`:
+- [x] **7.1 Pruebas sin robot** con `simulacion.py`:
   - límites de velocidad;
   - parada sin mensajes;
   - suma de teclado y mando;
@@ -340,7 +340,7 @@ entiende los controles y activa el modo automático sin ayuda.
   - 15 minutos seguidos sin que se congele el vídeo;
   - medir el retraso (cronómetro en pantalla grabado por la cámara);
   - cada baile 3 veces seguidas.
-- [ ] **7.3 Errores del SDK** («Robot is already performing», sin respuesta): reutilizar
+- [x] **7.3 Errores del SDK** («Robot is already performing», sin respuesta): reutilizar
   `liberar_cerrojo_sdk` y los tiempos máximos de `ejecutar_accion`.
 
 ## 12. Fase 8: documentación y reparto (medio día)
@@ -390,3 +390,5 @@ entiende los controles y activa el modo automático sin ayuda.
 - Fase 5. Cuatro coreografías temporizadas, cinco pruebas de límites y retorno geométrico correctas. Risa reducida a 1,5 grados; Waka reserva tres segundos al giro y vuelta. Sincronía musical, compensación del retraso y retorno físico pendientes de laboratorio. No se reutiliza el baile bloqueante como ejecución directa, se conservan sus gestos en una línea de tiempo cancelable.
 
 - Fase 6. Página oscura adaptable, controles reasignables, audio Web Audio, HUD y ajustes con persistencia. Probada conexión, vídeo sintético, activación y emote Risa en navegador integrado. Marca de disparo confirma orden, no impacto real. FPS, audio robot y asistente aparecen deshabilitados con explicación. La fase 6.2 implementa los ajustes disponibles; las opciones físicas pendientes siguen indicadas.
+
+- Fase 7. 16 pruebas nuevas Python 3.8 y prueba JS correctas. Integración con simulacion.py comprueba disparo IR, caducidad y cierre. HTTP comprueba sesión única y rechazo de origen ajeno. Navegador integrado: vídeo simulado, Risa, ajustes, rearme AUTO y Esc verificados. No se ejecutaron ni modificaron las pruebas antiguas de 12 disparos. Latencia real y 15 minutos con robot siguen pendientes.
