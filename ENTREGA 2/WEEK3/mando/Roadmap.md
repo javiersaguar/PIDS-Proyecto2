@@ -394,3 +394,9 @@ entiende los controles y activa el modo automático sin ayuda.
 - Fase 7. 16 pruebas nuevas Python 3.8 y prueba JS correctas. Integración con simulacion.py comprueba disparo IR, caducidad y cierre. HTTP comprueba sesión única y rechazo de origen ajeno. Navegador integrado: vídeo simulado, Risa, ajustes, rearme AUTO y Esc verificados. No se ejecutaron ni modificaron las pruebas antiguas de 12 disparos. Latencia real y 15 minutos con robot siguen pendientes.
 
 - Fase 8. README con instalación, uso, controles, resultados y pendientes. Párrafo propuesto para memoria incluido en README; insertar captura real y vídeo de presentación sigue pendiente. La PR #38 ya estaba fusionada al empezar: se actualizó su descripción conservando el texto previo, y los cambios se subieron a javier-saguar.
+
+- Rediseño 08/11/2026. Paleta, fuentes locales y bordes del Portfolio, visor de cámara
+  separado de telemetría y controles. Diagnóstico con registro de botones y ejes
+  para USB/Bluetooth. Pasan 16 pruebas Python y la prueba JS. La automatización
+  de Chrome se detuvo al no poder verificar su URL. No se confirmaron botones
+  físicos en el navegador integrado. Fase 0.5 continúa pendiente.

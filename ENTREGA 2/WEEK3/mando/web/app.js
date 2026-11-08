@@ -123,7 +123,8 @@
     activo: () => activo && conexionAbierta && !dialogo.open && !document.hidden && !estado.emote,
     parar, ajustes: abrirAjustes, emote, reasignar,
     mando: pad => {
-      el("mando-estado").textContent = pad ? (pad.mapping === "standard" ? "♧ Mando conectado · estándar" : "♧ Mando sin mapeo estándar · abre la prueba") : "♧ Pulsa un botón del mando";
+      el("mando-estado").textContent = pad ? (pad.mapping === "standard" ? "Mando conectado / estándar" : "Mando sin mapeo estándar / abre la prueba") : "Pulsa un botón del mando";
+      el("mando-estado").title = pad ? pad.id : "Conecta por USB o Bluetooth y pulsa un botón";
     }
   });
   entrada.asignar(config);

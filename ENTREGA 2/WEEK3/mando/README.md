@@ -143,3 +143,23 @@ y vigilancia de caducidad. La inferencia GPU se separa del SDK Python 3.8 y disp
 alternativa CPU. Se añadieron cuatro coreografías cancelables y audio local. La
 latencia wifi, los falsos positivos sobre imágenes de robots y la sincronía física
 requieren comprobación experimental.
+
+### Rediseño y diagnóstico Bluetooth · 08/11/2026
+
+La interfaz adopta la paleta negro verdoso y verde #5ce483, los bordes rectos y
+las fuentes Silkscreen, Geist y JetBrains Mono del Portfolio de Javier.
+Las fuentes se sirven desde web/fonts/, con sus licencias. El vídeo ocupa un
+visor independiente y la telemetría y los controles quedan fuera de la imagen.
+
+La página /prueba_mando.html admite USB o Bluetooth según lo que exponga el navegador.
+Registra botones observados, valores mínimo y máximo de R2 y recorrido de los ejes.
+Con más de un mando se prefiere el que tenga mapeo estándar. El HUD muestra el
+identificador del dispositivo al situar el puntero sobre su estado.
+
+Comprobaciones realizadas en esta revisión: 16 pruebas Python, prueba JavaScript
+de entradas, sintaxis de cuatro scripts, referencias DOM e HTTP de páginas y fuentes.
+El navegador integrado no mostró entradas del mando durante la observación.
+El control de Chrome se detuvo porque la automatización no pudo verificar su URL.
+La revisión visual final y los botones físicos por Bluetooth quedan pendientes.
+Para completarlos, abrir /prueba_mando.html en Chrome, dejar la página delante,
+pulsar los botones indicados y recorrer ambos joysticks y R2.

@@ -83,7 +83,8 @@
       }
     }
     leerMando() {
-      const pad = navigator.getGamepads ? [...navigator.getGamepads()].find(p => p && p.connected) : null;
+      const disponibles = navigator.getGamepads ? [...navigator.getGamepads()].filter(p => p && p.connected) : [];
+      const pad = disponibles.find(p => p.mapping === "standard") || disponibles[0] || null;
       this.opciones.mando(pad);
       if (!pad) {
         this.juego = vacio();

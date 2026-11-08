@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101419">
+<meta name="theme-color" content="#0c0d0b">
 <title>RoboMaster · Mando del grupo 2</title>
 <link rel="stylesheet" href="/web/estilo.css">
 <script defer src="/web/mando.js"></script>
@@ -13,12 +13,8 @@
 <body>
 <main id="cabina">
   <div class="video-contenedor" id="pantalla">
-    <img id="video" src="/video" alt="Vídeo en directo de la cámara del RoboMaster">
-    <canvas id="cajas" aria-label="Cajas de detección"></canvas>
-    <div class="reticula" id="reticula" aria-hidden="true"><i></i><b></b></div>
-    <div class="sombra-arriba"></div><div class="sombra-abajo"></div>
     <header class="cabecera">
-      <div class="identidad"><span class="marca">RM</span><div><strong>ROBOMASTER</strong><small>GRUPO 02 · CONTROL LOCAL</small></div></div>
+      <div class="identidad"><span class="marca">RM</span><div><strong>CONTROL ROOM<span class="terminal-cursor" aria-hidden="true">_</span></strong><small>PIDS / GRUPO 02</small></div></div>
       <div class="estado-conexion"><span id="conexion-luz" class="luz"></span><span id="conexion">Conectando con el robot…</span></div>
       <div class="acciones"><button id="pantalla-completa" class="icono" title="Pantalla completa" aria-label="Pantalla completa">⛶</button><button id="ajustes" class="icono" title="Ajustes · Tab" aria-label="Abrir ajustes">⚙</button></div>
     </header>
@@ -31,10 +27,17 @@
       <div><small>MODO</small><strong id="modo">LIBRE</strong></div>
       <span id="auto" hidden>AUTO</span>
     </section>
+    <section class="visor" aria-label="Vista de cámara">
+      <div class="etiqueta-video"><span class="pixel">01 / CAMARA</span><span>960 × 540</span></div>
+    <img id="video" src="/video" alt="Vídeo en directo de la cámara del RoboMaster">
+    <canvas id="cajas" aria-label="Cajas de detección"></canvas>
+    <div class="reticula" id="reticula" aria-hidden="true"><i></i><b></b></div>
+    <div class="sombra-arriba"></div><div class="sombra-abajo"></div>
     <div id="aviso" role="status" aria-live="polite"></div>
     <div class="coordenadas"><span id="angulos">YAW — · PITCH —</span><span id="velocidad">0,00 m/s</span></div>
+    </section>
     <section class="inferior" aria-label="Controles y emotes">
-      <div class="control-linea"><span id="mando-estado">♧ Pulsa un botón del mando</span><span><kbd>W A S D</kbd> mover · <kbd>↑ ↓ ← →</kbd> mirar · clic / <kbd>R2</kbd> disparar</span></div>
+      <div class="control-linea"><span class="titulo-seccion">02 / EMOTES</span><span id="mando-estado">Pulsa un botón del mando</span><span><kbd>W A S D</kbd> mover · <kbd>↑ ↓ ← →</kbd> mirar · clic / <kbd>R2</kbd> disparar</span></div>
       <div class="emotes">
         <button class="emote" data-emote="moonwalk"><span class="ps cuadrado">□</span><span><strong>Moonwalk</strong><small>Billie Jean</small></span><kbd data-tecla="moonwalk">Q</kbd></button>
         <button class="emote" data-emote="waka"><span class="ps triangulo">△</span><span><strong>Waka Waka</strong><small>Shakira</small></span><kbd data-tecla="waka">E</kbd></button>
@@ -59,7 +62,7 @@
     <p id="captura" role="status"></p>
     <button id="restablecer">Restablecer controles</button>
     <a href="/prueba_mando.html" target="_blank" rel="noopener">Abrir prueba del DualShock 4 ↗</a>
-    <p class="ayuda">USB de datos, Steam cerrado y un botón pulsado con la página abierta. El botón PS lo reserva el sistema. El mando físico está pendiente de prueba.</p>
+    <p class="ayuda">USB o Bluetooth, Steam cerrado y un botón pulsado con la página abierta. La página de prueba registra los botones y ejes observados. El botón PS puede estar reservado al sistema.</p>
   </div>
   <div class="panel-ajustes" id="panel-disparo" hidden>
     <label class="fila">Disparo automático<input data-config="automatico" type="checkbox"></label>
