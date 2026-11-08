@@ -141,15 +141,15 @@ audios están preparados y el mando se ve en el navegador.
 
 ## 5. Fase 1: servidor y vídeo (1 día)
 
-- [ ] **1.1** `servidor.py` conecta con el robot con `connect()` de `demo_utils` y comprueba
+- [x] **1.1** `servidor.py` conecta con el robot con `connect()` de `demo_utils` y comprueba
   la batería. Arranca la `Camara` y el Conductor.
-- [ ] **1.2** Ruta `/video`: MJPEG con la última imagen, reducida a 960×540 con calidad JPEG 70,
+- [x] **1.2** Ruta `/video`: MJPEG con la última imagen, reducida a 960×540 con calidad JPEG 70,
   a 15–20 imágenes por segundo. Si el navegador va lento, se salta imágenes en lugar de
   acumularlas.
-- [ ] **1.3** Ruta `/` con la página. Ruta `/ws` con el WebSocket de control y de estado.
-- [ ] **1.4** Mensaje de estado cada 0,5 s: batería, modo, velocidad, ángulos de la torreta,
+- [x] **1.3** Ruta `/` con la página. Ruta `/ws` con el WebSocket de control y de estado.
+- [x] **1.4** Mensaje de estado cada 0,5 s: batería, modo, velocidad, ángulos de la torreta,
   imágenes por segundo, ms del detector y si el modo automático está activo.
-- [ ] **1.5** Al cerrar (Ctrl+C o error): parar el chasis, centrar la torreta, apagar los LED
+- [x] **1.5** Al cerrar (Ctrl+C o error): parar el chasis, centrar la torreta, apagar los LED
   y cerrar la conexión, igual que la demo.
 
 **Hecho cuando:** el navegador muestra lo que ve el robot con menos de 0,5 s de retraso
@@ -157,13 +157,13 @@ durante 10 minutos seguidos, sin congelarse.
 
 ## 6. Fase 2: movimiento y cañón (1 día)
 
-- [ ] **2.1 Mensajes de control.** El navegador manda 20 veces por segundo
+- [x] **2.1 Mensajes de control.** El navegador manda 20 veces por segundo
   `{mover: [x, y], mirar: [yaw, pitch], disparo: bool}`, con valores de −1 a 1. Teclado y
   mando se suman: gana el valor mayor de cada eje.
-- [ ] **2.2 Conductor.** Convierte los valores en velocidades:
+- [x] **2.2 Conductor.** Convierte los valores en velocidades:
   - x e y × velocidad máxima del chasis, como mucho 0,5 m/s, con `drive_speed(timeout=0.5)`;
   - yaw y pitch × velocidad máxima de la torreta, como mucho 30 º/s, con `gimbal.drive_speed`.
-- [ ] **2.3 Si se pierde la conexión:** sin mensajes durante 0,3 s, el chasis y la torreta se
+- [x] **2.3 Si se pierde la conexión:** sin mensajes durante 0,3 s, el chasis y la torreta se
   paran. Lo mismo al cerrar la pestaña, desenchufar el mando o pasar la página a segundo
   plano.
 - [ ] **2.4 Teclado.** WASD y flechas con `keydown` y `keyup`, ignorando la repetición
@@ -183,7 +183,7 @@ torreta apunta, nunca pasa de los límites y se para solo al cortar la conexión
 
 ## 7. Fase 3: disparo y sonidos (1 día)
 
-- [ ] **3.1 Disparo.** Clic o R2 (valor > 0,5) dispara un infrarrojo. Mantenido, uno cada
+- [x] **3.1 Disparo.** Clic o R2 (valor > 0,5) dispara un infrarrojo. Mantenido, uno cada
   0,3 s, como en la demo. Cada disparo pasa por la cola del Conductor.
 - [ ] **3.2 Sonido de SCAR** en cada disparo, en el ordenador, con Web Audio, sin retraso.
   Con salida en el robot se usa el audio de un disparo, como en la demo.
@@ -196,7 +196,7 @@ torreta apunta, nunca pasa de los límites y se para solo al cortar la conexión
     los disparos y los emotes.
 - [ ] **3.4 Prioridad de sonidos en el robot:** emote > disparo > motor. El emote corta lo que
   esté sonando.
-- [ ] **3.5 LED:** azul al moverse, rojo parpadeando al disparar, verde al acertar (fase 4) y
+- [x] **3.5 LED:** azul al moverse, rojo parpadeando al disparar, verde al acertar (fase 4) y
   los de cada baile.
 
 **Hecho cuando:** cada disparo suena a la vez que sale, el motor acompaña al movimiento sin
@@ -382,3 +382,5 @@ entiende los controles y activa el modo automático sin ayuda.
 - Audios locales preparados en WAV mono PCM16 48 kHz y OGG. Intro Moonwalk de 48 tiempos a 117 BPM (24,615 s). Alineación musical y bucle del motor pendientes de escucha en laboratorio.
 - DualShock pendiente de prueba física. Abrir /prueba_mando.html, cerrar Steam y pulsar un botón.
 - Adaptación propuesta de coreografías. Reducir amplitud del temblor de Risa y del contoneo Waka para cumplir 30 º/s. Reservar tres segundos al giro 45º y vuelta. FPS queda deshabilitado por defecto hasta medir en laboratorio el giro inducido del chasis.
+
+- Fases 1–3. Servidor aiohttp, vídeo MJPEG y WebSocket, Conductor con vigilancia 0,3 s y timeout 0,5 s. FPS y audio en robot pendientes por seguridad. Estas marcas indican implementación; las condiciones físicas de fin siguen pendientes.
