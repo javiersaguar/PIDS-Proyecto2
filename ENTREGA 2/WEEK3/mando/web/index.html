@@ -83,11 +83,11 @@
     <p class="ayuda">El modo FPS necesita medir el giro inducido del chasis antes de habilitarse. Máximos del proyecto: 0,5 m/s y 30 º/s.</p>
   </div>
   <div class="panel-ajustes" id="panel-audio" hidden>
-    <label class="fila">Salida<select data-config="audio"><option value="ordenador">Ordenador</option><option value="robot" disabled>Robot · pendiente de cancelación segura</option><option value="ambos" disabled>Ambos · pendiente de cancelación segura</option></select></label>
+    <label class="fila">Salida de emotes<strong>Altavoz del robot</strong></label><label class="fila">Motor y SCAR<strong>Ordenador</strong></label>
     <label class="fila">Volumen general<input data-config="volumen" type="range" min="0" max="1" step="0.05"></label>
     <label class="fila">Volumen del motor<input data-config="volumen_motor" type="range" min="0" max="1" step="0.05"></label>
     <label class="fila">Motor F1 al moverse<input data-config="motor" type="checkbox"></label>
-    <p class="ayuda">Activa los controles para permitir audio en este navegador. La salida del robot queda pendiente de cancelación segura y de medir la subida de audio por FTP. El motor en bucle suena en el ordenador. Los archivos se preparan localmente con preparar_emotes.py.</p>
+    <p class="ayuda">Los cuatro emotes se cargan en el robot antes de habilitar los controles y suenan en su altavoz. La parada envía también la orden de cortar el audio. El motor y la SCAR suenan en el ordenador. En simulación los emotes se registran sin sonido.</p>
   </div>
   <div class="panel-ajustes" id="panel-detector" hidden>
     <label class="fila">Detector<select data-config="detector"><option value="gpu">GPU · Faster R-CNN v2</option><option value="cpu">CPU · Faster R-CNN v3</option></select></label>

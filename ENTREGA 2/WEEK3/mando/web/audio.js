@@ -21,7 +21,7 @@
       }
       await this.contexto.resume();
       this.configurar(this.config);
-      for (const n of ["scar", "motor", "moonwalk", "waka", "superestrella", "risa"]) {
+      for (const n of ["scar", "motor"]) {
         this.cargar(n).catch(() => {});
       }
     }
@@ -60,8 +60,7 @@
     }
     async baile(nombre, progreso = 0, duracion = 0) {
       this.pararEmote();
-      if (!nombre || !this.local()) return;
-      this.emote = await this.tocar(nombre, progreso * duracion);
+      // Los emotes se reproducen en el robot, desde los WAV precargados.
     }
     pararEmote() {
       if (this.emote) { try { this.emote.stop(); } catch (_) {} }

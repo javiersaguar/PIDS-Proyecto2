@@ -243,7 +243,10 @@
   }
   el("activar").addEventListener("click", async () => {
     try { await sonido.activar(); } catch (_) { avisar("El navegador no pudo activar el audio"); }
-    if (!conexionAbierta || estado.error || dialogo.open) return;
+    if (!conexionAbierta || estado.error || estado.listo === false || dialogo.open) {
+      if (estado.listo === false) avisar(estado.aviso || "Preparando el robot y sus audios");
+      return;
+    }
     entrada.limpiar();
     activo = true;
     config.automatico = intencionAuto;

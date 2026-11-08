@@ -36,6 +36,11 @@ def preparar(carpeta):
                             destino + '.wav'], check=True)
             subprocess.run([ffmpeg(), '-y', '-v', 'error', '-i', destino + '.wav',
                             '-c:a', 'libvorbis', '-q:a', '5', destino + '.ogg'], check=True)
+            if nombre in ('moonwalk', 'waka', 'superestrella', 'risa'):
+                # El altavoz necesita un margen de arranque, como el de la SCAR.
+                subprocess.run([ffmpeg(), '-y', '-v', 'error', '-i', destino + '.wav',
+                                '-af', 'adelay=300', '-ac', '1', '-ar', '48000',
+                                '-c:a', 'pcm_s16le', destino + '_robot.wav'], check=True)
         finally:
             os.remove(temporal)
         print(nombre, round(len(x)/FRECUENCIA, 3), 's')

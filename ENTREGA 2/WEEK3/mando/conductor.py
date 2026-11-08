@@ -77,17 +77,25 @@ class Conductor(threading.Thread):
         self.resultado = None
         self.eventos = collections.deque(maxlen=100)
         self.baile = None
+        self.audio_robot = None
+        self.estado['listo'] = False
 
     def recibir(self, datos):
         tipo = datos.get('tipo')
         with self.cerrojo:
+            if tipo in ('control', 'emote', 'activar') and not self.estado['listo']:
+                raise ValueError('Espera a que termine la preparación del robot')
             if tipo == 'parar':
                 self.parar()
             elif tipo == 'control':
-                self.orden = control(datos)
+                orden = control(datos)
+                if self.emergencia.is_set():
+                    return
+                self.orden = orden
                 self.ultimo = self.reloj()
-                self.emergencia.clear()
             elif tipo == 'emote':
+                if self.emergencia.is_set() or self.reloj()-self.ultimo >= .3:
+                    raise ValueError('Activa los controles antes de lanzar un emote')
                 from coreografias import CATALOGO
                 if datos.get('nombre') not in CATALOGO:
                     raise ValueError('Emote desconocido')
@@ -149,12 +157,15 @@ class Conductor(threading.Thread):
             caducado = self.emergencia.is_set() or ahora - self.ultimo >= .3
             mover, mirar, disparo = self.orden
             if caducado:
+                self.emergencia.set()
                 self.config['automatico'] = False
                 self.cola.clear()
                 if self.baile:
                     self.baile = None
                     self.eventos.append(dict(tipo='fin_emote'))
                 self.velocidades([0, 0], [0, 0])
+                if self.audio_robot:
+                    self.audio_robot.parar()
                 # Centrado por velocidad: cancelable y sin esperar acciones largas.
                 yaw, pitch = self.torreta.leer()
                 self.torreta.velocidad(max(-30, min(30, -yaw*2)), max(-30, min(30, -pitch*2)))
@@ -165,8 +176,12 @@ class Conductor(threading.Thread):
                 nombre = self.cola.pop()
                 self.cola.clear()
                 validar(nombre)
-                self.baile = (nombre, ahora)
                 self.robot.set_robot_mode(mode='free')
+                # La música se envía con el robot quieto y ya precargada.
+                self.velocidades([0, 0], [0, 0])
+                self.audio_robot.reproducir(nombre)
+                from audio_robot import SILENCIO
+                self.baile = (nombre, self.reloj() + SILENCIO)
                 self.eventos.append(dict(tipo='emote', nombre=nombre))
             if self.baile:
                 self.paso_baile(ahora)
@@ -204,6 +219,7 @@ class Conductor(threading.Thread):
         if t >= CATALOGO[nombre]['duracion']:
             self.baile = None
             self.velocidades([0, 0], [0, 0])
+            self.audio_robot.parar()
             self.parar()
             self.estado.update(emote=None, progreso=0)
             self.eventos.append(dict(tipo='fin_emote'))
@@ -217,7 +233,7 @@ class Conductor(threading.Thread):
                               max(-30, min(30, (paso['pitch']-pitch)*4)))
         self.robot.led.set_led(comp=led.COMP_ALL, r=paso['color'][0], g=paso['color'][1],
                                b=paso['color'][2], effect=led.EFFECT_ON)
-        self.estado.update(emote=nombre, progreso=min(1, t/CATALOGO[nombre]['duracion']))
+        self.estado.update(emote=nombre, progreso=max(0, min(1, t/CATALOGO[nombre]['duracion'])))
 
     def run(self):
         from demo_utils import Camara, Senales, Registro, nivel_bateria, liberar_cerrojo_sdk
@@ -234,8 +250,14 @@ class Conductor(threading.Thread):
             self.torreta = Torreta(self.robot)
             self.torreta.centrar()
             self.senales = Senales(self.robot)
+            from audio_robot import AudioRobot
+            self.audio_robot = AudioRobot(self.robot, simulado=self.simulado)
+            self.audio_robot.preparar(progreso=lambda texto: self.estado.update(aviso=texto))
             self.camara = Camara(self.robot, espera=0)
             self.registro = Registro(str(BASE.parent / 'evidencias' / 'mando'))
+            self.parar()
+            self.estado.update(listo=True, aviso='Emotes preparados en el robot' if not self.simulado
+                               else 'Simulación: audio del robot registrado sin reproducir')
             anterior = 0
             while not self.fin.wait(.025):
                 self.paso()
@@ -262,8 +284,10 @@ class Conductor(threading.Thread):
             self.estado['error'] = str(e)
             self.parar()
         finally:
+            self.estado['listo'] = False
             if self.robot:
                 for cerrar in [lambda: self.robot.chassis.drive_speed(x=0,y=0,z=0,timeout=.5),
+                               lambda: self.audio_robot and self.audio_robot.parar(),
                                lambda: self.torreta.centrar(), lambda: self.senales.estado('apagado'),
                                lambda: self.camara and self.camara.cerrar(),
                                lambda: self.registro and self.registro.cerrar(dict(disparos=self.estado['disparos'])),

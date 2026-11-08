@@ -36,6 +36,15 @@ class Seguridad(unittest.TestCase):
             with self.assertRaises(ValueError):
                 configuracion(dato)
 
+    def test_control_tardio_no_rearma_una_parada(self):
+        d = Conductor(lambda: None, reloj=lambda: 2)
+        d.estado['listo'] = True
+        d.emergencia.clear()
+        d.parar()
+        d.recibir(dict(tipo='control', mover=[1, 0], mirar=[1, 0], disparo=True))
+        self.assertTrue(d.emergencia.is_set())
+        self.assertEqual(d.orden, ([0, 0], [0, 0], False))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -42,8 +42,10 @@ Entorno previsto .venv-gpu, Python 3.11, torch 2.7.1 y torchvision 0.22.1 con CU
     .venv-gpu\Scripts\python.exe mando\detector_gpu.py --medir 10
 
 El proceso escucha en 127.0.0.1:8766. Reutiliza cargar_modelo y detectar, con una imagen
-pendiente. En este portátil Windows bloqueó Python 3.11 con Control de aplicaciones.
-La instalación GPU y sus tiempos quedan pendientes, sin cambiar directivas del sistema.
+pendiente. La primera instalación quedó bloqueada por Control de aplicaciones. El 08/11/2026
+el intérprete volvió a poder ejecutarse y se completó el entorno sin cambiar
+directivas. torch 2.7.1+cu128 reconoce la RTX 5070 Laptop. Tras calentamiento y diez
+imágenes sintéticas por modelo: v2 93,98 ms e v3 31,65 ms de media.
 
 La alternativa CPU necesita models/faster_rcnn_v3/mando_pesos.pt, un checkpoint con
 la clave model. El fichero facilitado por Javier se leyó con weights_only y clases
@@ -83,9 +85,11 @@ Ctrl+C intenta parar, centrar, apagar LED, cerrar cámara y guardar evidencias.
 Los tiempos efectivos de respuesta del SDK deben medirse en laboratorio.
 
 FPS/GIMBAL_LEAD queda visible y deshabilitado hasta comprobar el giro inducido del
-chasis. Solo se ofrece audio por ordenador. El SDK no tiene cancelación pública de
-audio y subir WAV por FTP bloquearía el Conductor. La salida robot/ambos queda pendiente
-de una solución con tiempos acotados y cancelación.
+chasis. Los cuatro emotes suenan en el robot. Se precargan por FTP antes de habilitar
+los controles y se reproducen con ProtoPlaySound, con confirmación de como mucho
+0,1 s por orden. La parada envía _play_ctrl=0. Este adaptador usa el protocolo del
+SDK 0.1.1.68 y requiere validar reproducción y parada en el altavoz físico.
+Motor y SCAR se mantienen en el ordenador.
 
 ## Audios y bailes
 
@@ -103,8 +107,9 @@ La Risa tiene amplitud reducida a 1,5º para respetar 30 º/s. Waka reserva tres
 para el giro final. Super Estrella conserva los gestos del baile de la demo.
 La intro de Billie Jean tiene 48 tiempos a 117 BPM, 24,615 s. La alineación real del
 primer golpe, la mezcla del bucle y el ajuste retardo_ms necesitan escucha y medición.
-El sonido del navegador se inicia al recibir el evento del servidor. La sincronía
-física y el adelanto de movimientos todavía requieren medición.
+Los WAV para el robot terminan en _robot.wav y añaden 0,3 s de silencio inicial,
+como los sonidos de disparo de la demo. La coreografía respeta ese margen de arranque.
+La sincronía física y el ajuste fino todavía requieren medición.
 
 ## Mando físico y laboratorio
 
@@ -121,7 +126,7 @@ Pendientes de laboratorio:
 - FPS y velocidad inducida del chasis.
 - Cada baile con --sin-mover, sobre caja y tres veces en el suelo con 1 × 1 m libre.
 - Desviación final ±10 cm, alineación musical y sincronía de disparos.
-- GPU en un Python 3.11 autorizado por Windows.
+- Rendimiento GPU con vídeo del robot, incluidos transporte y latencia.
 - Captura y vídeo de conducción real para la presentación y la memoria.
 
 ## Verificación
@@ -163,3 +168,67 @@ El control de Chrome se detuvo porque la automatización no pudo verificar su UR
 La revisión visual final y los botones físicos por Bluetooth quedan pendientes.
 Para completarlos, abrir /prueba_mando.html en Chrome, dejar la página delante,
 pulsar los botones indicados y recorrer ambos joysticks y R2.
+
+
+## Preparación para llegar al laboratorio
+
+Ejecuta desde WEEK3:
+
+    .venv\Scripts\python.exe -I mando\preparar.py
+
+Comprueba Python 3.8, SDK y protocolo de audio, configuración, cuatro WAV del robot,
+límites y retorno de las coreografías, checkpoint CPU y disponibilidad opcional de CUDA.
+Esta comprobación no conecta al robot. Los errores obligatorios detienen el lanzador.
+
+Para arrancar después de conectar el portátil a la red del robot:
+
+    mando\arrancar.cmd
+
+El lanzador ejecuta la comprobación y el servidor. En modo detector auto, el servidor
+reutiliza un detector GPU existente o intenta arrancarlo con .venv-gpu. Espera su
+disponibilidad y recurre a CPU si no arranca. El proceso GPU creado se cierra al salir.
+Los registros de ese arranque van a evidencias/detector/, ignorado por Git.
+Los emotes se transfieren una sola vez por conexión. Espera a que el servidor indique
+listo antes de activar los controles. El modo de conexión sigue siendo auto.
+
+Para probar el detector real sobre una imagen sintética sin tener el robot:
+
+    .venv\Scripts\python.exe mando\servidor.py --simulacion CARPETA --sin-mover --detector-real
+
+La simulación registra órdenes de reproducción y parada del altavoz sin reproducir
+los emotes en el ordenador. /salud expone preparación, errores y detector activo.
+La prueba de estabilidad ejecuta 18.000 pasos y representa 15 minutos de reloj
+simulado, con pérdidas de control y cuatro coreografías. No mide estabilidad wifi.
+
+Mando observado en el navegador el 08/11/2026:
+Wireless Controller, Vendor 054c Product 09cc, mapping standard, cuatro ejes con
+recorrido -1 a 1, R2 de 0 a 1, los cuatro botones de emotes, SHARE y OPTIONS registrados.
+Javier confirma la conexión Bluetooth y que la prueba de control funciona.
+
+Pruebas cortas que quedan al disponer del robot:
+
+1. Encender, conectar la red y arrancar con mando/arrancar.cmd --sin-mover.
+2. Confirmar los cuatro emotes y cortar uno con Esc y otro con SHARE.
+3. Comprobar mirada y disparo IR con un rival, con el robot inmovilizado.
+4. En caja, verificar sentidos y parada al perder control o desconectar el mando.
+5. En suelo, probar cada baile y medir deriva, sincronía y latencia de vídeo.
+6. Ejecutar una sesión real prolongada. FPS sigue pendiente de comprobar su giro inducido.
+
+Las comprobaciones de altavoz, ruedas, impactos, wifi y deriva requieren hardware.
+
+
+### Resultado actual de las pruebas locales
+
+24 pruebas Python y dos pruebas JavaScript correctas. Se comprueban reproducción y
+parada con el formato binario real del SDK, rechazo de órdenes y falta de ACK,
+precarga FTP, cortes de control durante un emote y 15 minutos de reloj simulado.
+La petición WebSocket de Risa completó inicio y fin con controles periódicos.
+Esto valida integración de software y protocolo, con el transporte de robot simulado.
+La audición, confirmación del firmware y corte físico del altavoz siguen pendientes.
+
+
+El arranque automático se comprobó con el robot simulado y el detector real:
+el servicio pasó a listo, sin errores, y publicó detector=gpu. También se verificó
+una petición JPEG Python 3.8 → servicio GPU y el cierre del proceso creado.
+Una parada queda enclavada en el servidor; los mensajes de control tardíos no la
+levantan. Es necesario pulsar Activar controles.

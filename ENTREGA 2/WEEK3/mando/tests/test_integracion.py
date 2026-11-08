@@ -3,6 +3,8 @@ import sys
 import tempfile
 import time
 import unittest
+import wave
+from unittest.mock import patch
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parents[1]
@@ -18,6 +20,16 @@ class Integracion(unittest.TestCase):
         from conductor import Conductor
         with tempfile.TemporaryDirectory() as carpeta:
             cv2.imwrite(str(Path(carpeta)/'imagen.jpg'), np.zeros((540,960,3),np.uint8))
+            from audio_robot import NOMBRES
+            for nombre in NOMBRES:
+                with wave.open(str(Path(carpeta)/('mando_'+nombre+'_robot.wav')), 'wb') as w:
+                    w.setnchannels(1)
+                    w.setsampwidth(2)
+                    w.setframerate(48000)
+                    w.writeframes(bytes(960))
+            parche = patch('audio_robot.CARPETA', Path(carpeta))
+            parche.start()
+            self.addCleanup(parche.stop)
             simulacion.instalar(carpeta)
             from demo_utils import connect
             d = Conductor(lambda: connect('wifi'), simulado=True)
@@ -28,6 +40,8 @@ class Integracion(unittest.TestCase):
                     time.sleep(.05)
                 self.assertIsNone(d.estado['error'])
                 self.assertIsNotNone(d.foto())
+                with patch('conductor.CONFIG', Path(carpeta)/'config.json'):
+                    d.recibir(dict(tipo='activar',config={}))
                 d.recibir(dict(tipo='control',mover=[1,1],mirar=[1,0],disparo=True))
                 time.sleep(.15)
                 self.assertGreater(d.estado['disparos'],0)

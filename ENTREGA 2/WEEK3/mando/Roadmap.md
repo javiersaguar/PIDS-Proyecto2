@@ -114,7 +114,7 @@ subirlos. Los ajustes solo permiten bajarlos.
 - [x] **0.2 Entorno del robot.** El mismo `.venv` de Python 3.8 de la demo, más un servidor web
   con WebSocket: FastAPI con uvicorn, o aiohttp. Hay que fijar versiones que aún admitan
   Python 3.8 y apuntarlas en el README.
-- [ ] **0.3 Entorno del detector.** `.venv-gpu` con Python 3.11 y torch 2.7 o posterior con
+- [x] **0.3 Entorno del detector.** `.venv-gpu` con Python 3.11 y torch 2.7 o posterior con
   CUDA 12.8; la RTX 5070 necesita al menos esa versión. Comprobar con
   `torch.cuda.is_available()` y medir cuánto tarda una imagen con `faster_rcnn_v2` y con
   `faster_rcnn_v3`. `.venv-gpu/` va al `.gitignore`.
@@ -132,7 +132,7 @@ subirlos. Los ajustes solo permiten bajarlos.
   | SCAR | `scar_fuerte.wav` | 0,5 s | Ya está |
   | Super Estrella | `superestrella.wav` | 27,2 s | Ya está |
 
-- [ ] **0.5 Probar el mando.** Enchufarlo, cerrar Steam y abrir una página de prueba de mandos
+- [x] **0.5 Probar el mando.** Enchufarlo, cerrar Steam y abrir una página de prueba de mandos
   en Chrome. Apuntar qué número tiene cada botón y eje, y comprobar que R2 da un valor de 0 a
   1. Si no aparece, pasar al plan B con `pygame`.
 
@@ -194,7 +194,7 @@ torreta apunta, nunca pasa de los límites y se para solo al cortar la conexión
     motor sube de tono al acelerar;
   - en el altavoz del robot no se hace, porque solo suena una cosa a la vez: el motor taparía
     los disparos y los emotes.
-- [ ] **3.4 Prioridad de sonidos en el robot:** emote > disparo > motor. El emote corta lo que
+- [x] **3.4 Prioridad de sonidos en el robot:** emote > disparo > motor. El emote corta lo que
   esté sonando.
 - [x] **3.5 LED:** azul al moverse, rojo parpadeando al disparar, verde al acertar (fase 4) y
   los de cada baile.
@@ -400,3 +400,19 @@ entiende los controles y activa el modo automático sin ayuda.
   para USB/Bluetooth. Pasan 16 pruebas Python y la prueba JS. La automatización
   de Chrome se detuvo al no poder verificar su URL. No se confirmaron botones
   físicos en el navegador integrado. Fase 0.5 continúa pendiente.
+
+
+- Preparación de laboratorio 08/11/2026. Mando observado en el navegador con mapping
+  standard, 4 ejes completos, R2 0–1 y botones de emotes, SHARE y OPTIONS.
+  Python 3.11 ahora ejecutable; entorno CUDA 12.8 instalado, RTX 5070 reconocida.
+  Diez imágenes sintéticas tras calentamiento: v2 93,98 ms; v3 31,65 ms.
+- Los emotes se precargan en el robot antes de habilitar controles y se controlan
+  con ProtoPlaySound, incluyendo parada (_play_ctrl=0) y ACK acotado a 0,1 s.
+  Las pruebas validan paquetes y errores contra transportes simulados. Confirmación
+  del firmware, reproducción y corte del altavoz pendientes de robot real.
+- WAV específicos con 0,3 s de margen inicial y compensación en la línea de tiempo.
+  SCAR y motor siguen en el ordenador; los emotes no se reproducen en el navegador.
+- Lanzador mando/arrancar.cmd con comprobación previa sin hardware y arranque
+  automático del proceso GPU con alternativa CPU. Servicio /salud para diagnóstico.
+  24 pruebas Python y dos JS. Estabilidad de 15 minutos de reloj simulado y prueba
+  WebSocket de Risa completas. Las mediciones wifi y los bailes físicos son pendientes.
