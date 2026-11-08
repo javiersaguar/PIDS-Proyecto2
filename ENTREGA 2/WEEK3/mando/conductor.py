@@ -98,7 +98,8 @@ class Conductor(threading.Thread):
                 self.parar()
                 self.config.update(nuevos)
                 temporal = CONFIG.with_suffix('.tmp')
-                temporal.write_text(json.dumps(self.config, ensure_ascii=False, indent=2), encoding='utf-8')
+                guardada = dict(self.config, automatico=False)
+                temporal.write_text(json.dumps(guardada, ensure_ascii=False, indent=2), encoding='utf-8')
                 os.replace(str(temporal), str(CONFIG))
                 if tipo == 'activar':
                     self.ultimo = self.reloj()

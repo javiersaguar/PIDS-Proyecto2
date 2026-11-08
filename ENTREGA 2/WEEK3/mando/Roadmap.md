@@ -345,7 +345,7 @@ entiende los controles y activa el modo automático sin ayuda.
 
 ## 12. Fase 8: documentación y reparto (medio día)
 
-- [ ] **8.1 `mando/README.md`:** instalación de los dos entornos, cómo arrancar
+- [x] **8.1 `mando/README.md`:** instalación de los dos entornos, cómo arrancar
   (`python mando/servidor.py` y `python mando/detector_gpu.py`), los controles, el mando de
   PS4 (Steam cerrado, pulsar un botón) y los problemas frecuentes.
 - [ ] **8.2 Memoria:** un párrafo y una captura en el apartado de extras. Contar también los
@@ -392,3 +392,5 @@ entiende los controles y activa el modo automático sin ayuda.
 - Fase 6. Página oscura adaptable, controles reasignables, audio Web Audio, HUD y ajustes con persistencia. Probada conexión, vídeo sintético, activación y emote Risa en navegador integrado. Marca de disparo confirma orden, no impacto real. FPS, audio robot y asistente aparecen deshabilitados con explicación. La fase 6.2 implementa los ajustes disponibles; las opciones físicas pendientes siguen indicadas.
 
 - Fase 7. 16 pruebas nuevas Python 3.8 y prueba JS correctas. Integración con simulacion.py comprueba disparo IR, caducidad y cierre. HTTP comprueba sesión única y rechazo de origen ajeno. Navegador integrado: vídeo simulado, Risa, ajustes, rearme AUTO y Esc verificados. No se ejecutaron ni modificaron las pruebas antiguas de 12 disparos. Latencia real y 15 minutos con robot siguen pendientes.
+
+- Fase 8. README con instalación, uso, controles, resultados y pendientes. Párrafo propuesto para memoria incluido en README; insertar captura real y vídeo de presentación sigue pendiente. La PR #38 ya estaba fusionada al empezar: se actualizó su descripción conservando el texto previo, y los cambios se subieron a javier-saguar.
