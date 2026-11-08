@@ -1,7 +1,9 @@
 # Semana 3 · Integración del detector en el robot (Bloque 3)
 
 El RoboMaster recorre el circuito, se para en puntos elegidos, busca a los robots
-rivales con el detector del Bloque 2 y les dispara 12 veces con el infrarrojo.
+rivales con el detector del Bloque 2 y les dispara 20 veces con el infrarrojo (el
+enunciado pide 12). Qué hace en cada tramo, con medidas, tiempos y audios:
+[`circuito_paso_a_paso.md`](circuito_paso_a_paso.md).
 
 El material de la asignatura (`connect.py`, los ejemplos de `audio/`, `camera/`,
 `chassis/`, `gimbal/`, `others/` y la plantilla de `demo.py` y `demo_utils.py`) se
@@ -16,6 +18,8 @@ completó el 04/11/2026 con nuestra demo.
 | `demo_utils.py` | Funciones de la asignatura y las nuestras (sección «Añadidos del grupo 2»): carga comprobada del modelo, cámara abierta toda la demo, evidencias, LED y sonido |
 | `recorrido.py` | Convierte las paradas medidas sobre el plano del circuito en movimientos del chasis y barridos de la torreta. `python recorrido.py` muestra lo calculado |
 | `simulacion.py` | Robot simulado para probar la demo sin el RoboMaster |
+| `circuito_paso_a_paso.md` | El circuito de la demo tramo a tramo: medidas, tiempos, torreta, disparos, audios, luces y dónde va cada rival |
+| `rival/` | Kit para mover el rival 2 desde otro portátil durante la rotonda (instrucciones en [`rival/README.md`](rival/README.md)) |
 | **`guia_pruebas.pdf`** | **Guía paso a paso de las pruebas con el robot antes de la demo final** |
 | `tests/test_demo.py` | Pruebas con el robot simulado y un detector falso, y comprobación de sintaxis de Python 3.8 |
 | `tests/test_recorrido.py` | Pruebas de `recorrido.py`: los movimientos calculados llegan a los puntos del plano |
@@ -323,6 +327,13 @@ vistos y tiempos.
    al robot y Ctrl+C a mano. Dejar espacio en todas direcciones y no confundir x e y.
 8. **Demo completa:** `python demo.py`. Agarrar el robot siempre por la base, nunca por
    la cabeza, y no apuntar a nadie con el blaster.
+9. **Rival 2 en movimiento.** El rival 2 se mueve en la rotonda. Lo maneja otro portátil con
+   `rival/rival_movil.py` (ver [`rival/README.md`](rival/README.md)). Para que arranque solo:
+   - se lanza la demo con `python demo.py --aviso-rival <IP de ese portátil>`;
+   - al empezar el retroceso de R1, la demo le manda un aviso por la red del laboratorio.
+
+   Sin `--aviso-rival`, la consola muestra «ARRANCAR RIVAL 2 AHORA» y el rival se arranca
+   con Enter.
 
 ### 4.1. Activar las mejoras de una en una
 

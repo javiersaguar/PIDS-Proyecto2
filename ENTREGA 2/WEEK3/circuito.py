@@ -125,10 +125,28 @@ RUMBO_INICIAL = 0        # hacia dónde mira nuestro robot en la salida (0 = der
 VELOCIDAD_ATAQUE_EN_MARCHA = 0.1  # m/s del chasis mientras ataca
 IMAGENES_TRAS_PARAR = 3           # si al acabar el avance aún no lo ha visto, imágenes que sigue buscando parado
 TIEMPO_MAX_ATAQUE_EN_MARCHA = 40  # s como mucho buscando y disparando en un mismo avance
+# En marcha algunos fotogramas salen movidos: de los llegados en los últimos VENTANA_NITIDEZ s
+# se analiza el más nítido (Camara.capturar_nitida). 0 para usar siempre el último.
+VENTANA_NITIDEZ = 0.2
 # Pitch inicial para buscar un rival en alto. La cámara ve unos ±30º en vertical, así que
 # basta con acercarse: luego se corrige con la caja. Un robot 30 cm más alto que el cañón
 # queda a unos 17º a 1 m y a unos 9º a 2 m. El gimbal sube como mucho 30º (Torreta.PITCH_MAX).
 PITCH_RIVAL_ALTO = 10
+# Dónde se colocan los rivales, en el plano (m). La demo los busca con la cámara: estas
+# posiciones sirven para el montaje y la figura del circuito y, en los ataques en marcha
+# (rival= en el movimiento), para prever cómo se moverá el rival en la imagen mientras la
+# torreta lo sigue (distancia y velocidad relativa al chasis).
+# El rival 2 se mueve despacio en paralelo a nuestro robot mientras este retrocede en la
+# rotonda: lo maneja otro portátil con rival/rival_movil.py, que arranca con el aviso que
+# manda la demo al empezar ese ataque (python demo.py --aviso-rival IP; ver rival/README.md).
+VELOCIDAD_RIVAL_MOVIL = 0.05   # m/s del rival 2 (rival_movil.py --velocidad); como mucho 0,1
+RIVALES = {
+    'rival 1': dict(punto=(2.85, 1.2)),                     # a la derecha de P1, a 1,2 m
+    'robot camuflado': dict(punto=(2.85, -1.2)),            # a la izquierda de P1, a 1,2 m (impreso en A3)
+    'rival 2': dict(punto=(4.6, -2.2), hasta=(3.85, -2.2),  # 1,2 m a la izquierda del retroceso de R1,
+                    velocidad=VELOCIDAD_RIVAL_MOVIL),       # avanza 0,75 m en el mismo sentido (15 s)
+    'rival 3': dict(punto=(5.35, -0.7), alto=0.3),          # detrás del último tramo, en una plataforma
+}
 GIRAR_EN_RUTA = True     # True: gira hacia cada punto y avanza; False: va en diagonal sin girar (mecanum)
 PLANO = [
     # nombre, punto donde se para, puntos intermedios (por), rumbo al llegar (mirar),
@@ -144,7 +162,8 @@ PLANO = [
     dict(nombre='R1', movimientos=[
         dict(x=1.9, velocidad=0.4),                                       # adelante 1,9 m a 0,4 m/s
         dict(y=-1.0),                                                     # izquierda 1 m
-        dict(x=-1.25, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=-90),  # atrás 1,25 m atacando a la izquierda
+        dict(x=-1.25, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=-90,   # atrás 1,25 m atacando a la izquierda
+             rival='rival 2'),                                            # al rival 2, que se mueve en paralelo
         dict(y=1.0),                                                      # derecha 1 m
     ], barrido=[]),
     # paso 4 (supuesto, sin probar): la torreta ya vuelve al centro al acabar el ataque.
@@ -156,7 +175,7 @@ PLANO = [
         dict(x=2.5),                                                      # adelante 2,5 m y se para
         dict(y=-0.7),                                                     # izquierda 0,7 m
         dict(x=2.0, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=180,     # adelante 2 m atacando hacia atrás,
-             pitch=PITCH_RIVAL_ALTO),                                     # con la torreta inclinada hacia arriba
+             pitch=PITCH_RIVAL_ALTO, rival='rival 3'),                    # con la torreta inclinada hacia arriba
     ], barrido=[]),
 ]
 PARADAS = paradas_desde_plano(RUMBO_INICIAL, PLANO, girar=GIRAR_EN_RUTA, abanico=30, barrido_sin_rivales=BARRIDO_360)

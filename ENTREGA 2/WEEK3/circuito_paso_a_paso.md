@@ -1,11 +1,13 @@
 # Demo del Bloque 3, paso a paso
 
 Qué hace el robot en cada momento de la demo: movimientos, tiempos, torreta, disparos,
-audios y luces. Estado del 06/11/2026.
+audios y luces. Estado del 08/11/2026.
 
 - **P1** está medido en el laboratorio.
 - **R1 y R2** son supuestos hasta montar el circuito.
-- **Los dos puntos del final** dependen de la respuesta del profesor al correo sobre la
+- **El rival 2 se mueve** en paralelo a nuestro robot durante la rotonda. Lo maneja Alejandro
+  desde su portátil con el kit de [`rival/`](rival/README.md).
+- **El contraataque del final** depende de la respuesta del profesor al correo sobre la
   colaboración de otro grupo.
 
 La configuración está en [`circuito.py`](circuito.py) y el recorrido dibujado, en
@@ -18,7 +20,7 @@ La configuración está en [`circuito.py`](circuito.py) y el recorrido dibujado,
 | 0 | Salida | Comprobaciones, cuenta atrás y sonido de Fórmula 1 | 5 s |
 | 1 | P1 | Recta de 2,85 m con el sonido de F1 | 6,4 s |
 | 2 | P1 | Parada: rival 1 a la derecha y robot camuflado a la izquierda | 45 s |
-| 3 | R1 | Rotonda: adelante, izquierda, atrás disparando al rival 2, derecha | 26 s |
+| 3 | R1 | Rotonda: adelante, izquierda, atrás disparando al rival 2, que se mueve en paralelo, derecha | 26 s |
 | 4 | R2 | Recta final: adelante, izquierda y adelante disparando hacia atrás al rival 3, en alto | 33 s |
 | 5 | Final | Super Estrella y baile | 27 s |
 | | | **Total** | **unos 2 min 20 s** |
@@ -28,6 +30,19 @@ Los tiempos de la parada dependen de cuántas correcciones de puntería haga el 
 **Plano.** El origen está en la salida de nuestro robot (esquina de arriba a la izquierda).
 x va hacia delante, como mira el robot al salir. y es positiva hacia la derecha del robot y
 negativa hacia la izquierda.
+
+## Dónde va cada robot
+
+| Robot | Posición (x; y) en m | Respecto a nuestro robot | Notas |
+|---|---|---|---|
+| Nuestro robot | (0; 0) | — | Mirando hacia +x |
+| Rival 1 | (2,85; 1,2) | 1,2 m a la derecha de P1 | Quieto |
+| Robot camuflado | (2,85; −1,2) | 1,2 m a la izquierda de P1 | Detective impreso en A3, de pie |
+| Rival 2 | De (4,6; −2,2) a (3,85; −2,2) | 1,2 m a la izquierda del retroceso de R1 | Se mueve 0,75 m a 0,05 m/s (15 s), en el mismo sentido que nuestro robot |
+| Rival 3 | (5,35; −0,7), en alto | De 0,65 a 2,65 m por detrás en el último tramo | Plataforma de 20–40 cm de alto y 40 × 40 cm como mucho |
+
+Todas las posiciones dejan al menos 0,6 m entre el centro de cada rival y el camino de
+nuestro robot. Están en `RIVALES` de [`circuito.py`](circuito.py) y en la figura.
 
 ## Reglas que se cumplen siempre
 
@@ -121,18 +136,40 @@ del SDK. Se preparan con `audio/preparar_disparo.py`, `audio/preparar_motor.py` 
 | 3.4 | Centra la torreta, parado | — | 3 s | Vuelve al centro |
 | 3.5 | 1 m a la derecha, hasta (3,5; 0) | 0,5 m/s | 2,5 s | Centrada |
 
-**Ataque en marcha (3.3).** El chasis retrocede despacio y, a la vez:
+**Ataque en marcha a un rival que también se mueve (3.3).**
+
+Al empezar el retroceso, la demo avisa al portátil de Alejandro y el rival 2 arranca. Va en
+paralelo a nuestro robot, 1,2 m a su izquierda y en el mismo sentido, pero más despacio:
+0,05 m/s frente a 0,1. A la vez:
 1. luz ámbar y la torreta gira 90º a la izquierda (3 s, con el chasis ya en marcha);
-2. analiza una imagen cada 2 s;
-3. al ver al rival 2, suena «enemy spotted», la torreta gira hasta él y empieza la ráfaga:
-   luz roja, SCAR y 20 disparos en 6,2 s;
-4. mientras dispara, la torreta lo sigue, porque el robot se mueve y el ángulo del rival cambia;
-5. si al acabar el retroceso aún no lo ha visto, mira 3 imágenes más ya parado.
+2. analiza una imagen cada 2 s. De los fotogramas de los últimos 0,2 s elige el más nítido,
+   porque con el robot en marcha algunos salen movidos y el detector pierde confianza;
+3. al ver al rival 2:
+   - calcula cuánto se va a desplazar en la imagen. Va 0,05 m/s más lento que nuestro robot y
+     a 1,2 m, así que se queda atrás unos 2,4 º/s;
+   - suena «enemy spotted», la torreta gira a donde estará el rival al acabar la voz y empieza
+     a girar a esa velocidad;
+   - empieza la ráfaga: luz roja, SCAR y 20 disparos en 6,2 s;
+4. mientras dispara, corrige con cada imagen la velocidad y el ángulo de la torreta;
+5. cuando nuestro robot se para, el rival sigue avanzando y cambia de sentido en la imagen:
+   la torreta lo compensa en el momento, sin esperar a la siguiente imagen;
+6. si al acabar el retroceso aún no lo ha visto, mira 3 imágenes más ya parado.
 
 Va a 0,1 m/s porque necesita unos 12 s: 3 s de giro, 2–4 s para verlo, 1,4 s de voz y 6,2 s
-de ráfaga.
+de ráfaga. La ráfaga puede acabar 1–2 s después de que se pare nuestro robot. El rival se
+mueve durante 15 s, así que sigue en marcha hasta el último disparo.
 
-**Montaje:** rival 2 a la izquierda del tramo de retroceso, a 1–1,5 m, hacia (4,1; −2,2).
+**Montaje y arranque del rival 2:**
+- Rival 2 en (4,6; −2,2), mirando hacia la salida (hacia −x), para que avance en paralelo al
+  retroceso de nuestro robot.
+- Alejandro lanza `python rival/rival_movil.py` antes de empezar la demo. El rival espera
+  quieto.
+- Nuestro portátil lanza la demo con `--aviso-rival <IP del portátil de Alejandro>`. Al
+  empezar el paso 3.3, la demo le avisa por la red del laboratorio y el rival arranca solo.
+- Si el aviso no llega, la consola de la demo muestra «ARRANCAR RIVAL 2 AHORA» y Alejandro
+  pulsa Enter. La señal visual es que nuestro robot empieza a retroceder y su torreta gira a
+  la izquierda.
+- Instrucciones de conexión en [`rival/README.md`](rival/README.md).
 
 ## 4. Recta final R2 (unos 33 s)
 
@@ -151,9 +188,12 @@ Como referencia, un robot 30 cm más alto que el cañón queda a unos 17º a 1 m
 2 m. La torreta sube como mucho 30º.
 
 **Montaje:**
-- Rival 3 sobre una plataforma de 20–40 cm, detrás del tramo: hacia (5,0; −0,7), 1 m por
-  detrás del punto donde empieza 4.3.
-- El robot se aleja de él de 1,5 a 3 m mientras dispara.
+- Rival 3 sobre una plataforma de 20–40 cm de alto, en (5,35; −0,7): 0,65 m por detrás del
+  punto donde empieza 4.3. Antes estaba en (5,0; −0,7), pero quedaba a 25 cm del tramo 3.2
+  de la rotonda (x = 4,75) y nuestro robot chocaba con él.
+- La plataforma no debe medir más de 40 × 40 cm, para dejar paso a los tramos 3.2 y 4.2.
+- El robot se aleja de él de 0,65 a 2,65 m. Cuando lo ve por primera vez, tras girar la
+  torreta, ya está a unos 1,3–1,5 m.
 
 ## 5. Final: Super Estrella y baile (27 s)
 
@@ -167,8 +207,9 @@ Como referencia, un robot 30 cm más alto que el cañón queda a unos 17º a 1 m
 
 ## 6. Pendiente de la respuesta del profesor
 
-En el correo a Daniel Fuertes se preguntó si otro grupo puede colaborar con su robot. Ninguno
-de estos dos puntos está programado todavía. Si dice que sí, esto es lo que se haría.
+En el correo a Daniel Fuertes se preguntó si otro grupo puede colaborar con su robot. El
+rival que se mueve (6.2) ya está programado en la rotonda, con un segundo robot que maneja
+Alejandro. El contraataque (6.1) sigue sin programar.
 
 ### 6.1. Contraataque a un rival en modo solo disparo
 
@@ -204,30 +245,24 @@ impacto, nuestro robot gira la torreta hacia ese lado, lo detecta y le responde 
   infrarrojos, que no dice el lado;
 - la sensibilidad de las placas.
 
-### 6.2. Rival que se mueve despacio
+### 6.2. Rival que se mueve despacio (hecho, en la rotonda)
 
-**Qué se vería.** El otro grupo mueve su robot muy despacio con el mando y el nuestro lo
-sigue con la torreta mientras le dispara. Así se mide la eficacia contra un blanco en
-movimiento.
-
-**Dónde.** En P1, con el rival 1:
-1. En lugar de estar quieto a la derecha, cruza por delante de nuestro robot, a 1,5 m y a
-   0,1 m/s como mucho.
-2. El robot camuflado sigue a la izquierda, quieto.
-
-**Cómo funciona.** Se usa el seguimiento de la PR #36 (`SEGUIMIENTO` en `circuito.py`), que ahora está
-desactivado:
-1. La torreta sigue al rival imagen a imagen, girando con su velocidad estimada.
-2. Solo dispara cuando está centrado, hasta los 20 disparos.
-3. Habría que activarlo solo en P1, con una opción por parada.
+Se ha hecho en R1, con el rival 2, en lugar de en P1 (apartado 3):
+- no usa el seguimiento de la PR #36, que sigue desactivado;
+- amplía el ataque en marcha, que ya seguía al rival mientras disparaba, con lo que hace falta
+  para un blanco móvil:
+  - la imagen más nítida de los últimos 0,2 s;
+  - la velocidad prevista del rival desde la primera imagen;
+  - la compensación cuando se para nuestro robot.
 
 **Límites.**
-- Con unos 2 s por imagen, un rival a 0,1 m/s y 1,5 m de distancia se mueve unos 4 º/s: unos
-  8º entre imagen e imagen. Es asumible si va despacio.
-- A 0,2 m/s o más, la torreta llegaría tarde.
+- Con unos 2 s por imagen, un rival que cambia de ángulo a 2–5 º/s se desplaza de 4 a 10º
+  entre imagen e imagen. La torreta lo sigue con la velocidad prevista y lo corrige en cada
+  imagen.
+- Más de 0,1 m/s respecto a nuestro robot, a 1,2 m, serían unos 5 º/s o más, y el error entre
+  imágenes crecería. Por eso `rival_movil.py` no deja pasar de 0,1 m/s.
 
-**Tiempo añadido.** Unos 10–20 s más en P1, según cuánto tarde en completar los 20 disparos
-centrados.
-
-**Por comprobar en el laboratorio:** a qué velocidad máxima del rival se mantienen los
-impactos, contados en el rival.
+**Por comprobar en el laboratorio:**
+- que el aviso llega por la red del laboratorio;
+- cuántos de los 20 disparos registra el rival 2;
+- la columna `nitidez` del `registro.csv`, para ver si se descartan fotogramas movidos.

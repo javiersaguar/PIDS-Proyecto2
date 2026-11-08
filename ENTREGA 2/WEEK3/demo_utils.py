@@ -1,3 +1,4 @@
+import collections
 import csv
 import json
 import os
@@ -441,6 +442,7 @@ class Camara:
         # El hilo solo con el SDK real: la cámara simulada avanza su reloj en cada lectura
         self._en_hilo = hasattr(camera, '__file__')
         self._ultimo, self._t_ultimo = None, 0.0
+        self._recientes = collections.deque(maxlen=12)   # (instante, fotograma) de los últimos ~0,4 s
         self._cond = threading.Condition()
         self._activa = True
         if self._en_hilo:
@@ -464,6 +466,7 @@ class Camara:
                 continue
             with self._cond:
                 self._ultimo, self._t_ultimo = frame, time.monotonic()
+                self._recientes.append((self._t_ultimo, frame))
                 self._cond.notify_all()
 
     def capturar(self, espera=None):
@@ -483,11 +486,56 @@ class Camara:
             image = self._ultimo
         return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+    def capturar_nitida(self, ventana=0.2):
+        """El fotograma más nítido de los últimos `ventana` s: (imagen RGB, instante de llegada, nitidez).
+
+        Con el chasis o la torreta en marcha algunos fotogramas salen movidos y el detector
+        pierde confianza en ellos. Se espera a que llegue uno nuevo y, de los llegados en los
+        últimos `ventana` s, se elige el de más nitidez. Puede ser un poco más antiguo que el
+        último: por eso se devuelve cuándo llegó, para buscar el ángulo de la torreta en ese momento.
+        """
+        if not self._en_hilo:
+            image = self.capturar(0)
+            return image, time.monotonic(), nitidez(image)
+        desde = time.monotonic()
+        with self._cond:
+            fin = desde + 3
+            while self._t_ultimo <= desde and time.monotonic() < fin:
+                self._cond.wait(0.05)
+            if self._ultimo is None:
+                raise RuntimeError('la cámara no envía imágenes')
+            candidatos = [(t, f) for t, f in self._recientes if t >= self._t_ultimo - ventana]
+            candidatos = candidatos or [(self._t_ultimo, self._ultimo)]
+        valor, t, frame = max(((nitidez(f), t, f) for t, f in candidatos), key=lambda e: e[0])
+        return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), t, valor
+
     def cerrar(self):
         self._activa = False
         if self._en_hilo:
             self._hilo.join(timeout=2)
         self.ep_camera.stop_video_stream()
+
+
+def nitidez(image):
+    """Nitidez de una imagen: varianza del laplaciano en una copia de 320 px de ancho (más alto = más nítida)."""
+    alto, ancho = image.shape[:2]
+    pequena = cv2.resize(image, (320, max(1, int(alto * 320 / ancho))), interpolation=cv2.INTER_AREA)
+    gris = cv2.cvtColor(pequena, cv2.COLOR_BGR2GRAY)
+    return float(cv2.Laplacian(gris, cv2.CV_64F).var())
+
+
+def velocidad_angular(yaw, distancia, v_rel):
+    """º/s a los que cambia el yaw (> 0 a la derecha) de un objetivo a `distancia` m.
+
+    `v_rel` = (vx, vy) es la velocidad del objetivo respecto al chasis, en m/s (x adelante,
+    y derecha): la del rival menos la de nuestro robot. Un rival a 1,2 m a la izquierda que
+    se queda atrás a 0,05 m/s gira unos 2,4 º/s.
+    """
+    if not distancia or distancia <= 0:
+        return 0.0
+    r = np.deg2rad(yaw)
+    rx, ry = distancia * np.cos(r), distancia * np.sin(r)
+    return float(np.rad2deg((rx * v_rel[1] - ry * v_rel[0]) / distancia ** 2))
 
 
 def seleccionar(prediction, umbral):
@@ -556,7 +604,7 @@ class Registro:
     """
 
     CAMPOS = ['n', 'momento', 'parada', 'fase', 'yaw', 'pitch', 'ms_inferencia', 'n_cajas_0_3',
-              'n_aceptadas', 'confianzas', 'cajas', 'objetivo_yaw', 'distancia_m', 'disparos', 'imagen']
+              'n_aceptadas', 'confianzas', 'cajas', 'objetivo_yaw', 'distancia_m', 'disparos', 'imagen', 'nitidez']
 
     def __init__(self, carpeta='evidencias', umbral=0.5, mostrar=False):
         self.mostrar = mostrar   # ver cada imagen analizada en una ventana
@@ -587,7 +635,7 @@ class Registro:
                 print(f'[aviso] no se pudo guardar {ruta}: {e!r}')
 
     def imagen(self, image, prediction, ms, parada, fase, yaw, pitch, objetivo=None, objetivo_yaw=None, disparos=0,
-               distancia=None):
+               distancia=None, nitidez=None):
         """Guarda una imagen analizada y su fila del registro; devuelve el nombre del fichero."""
         self.n += 1
         nombre = f'{self.n:03d}_{parada}_{fase}_yaw{yaw:+.0f}.jpg'
@@ -608,7 +656,7 @@ class Registro:
             'cajas': json.dumps([[round(float(v), 1) for v in b] for b in prediction['boxes'][visibles]]),
             'objetivo_yaw': '' if objetivo_yaw is None else round(objetivo_yaw, 1),
             'distancia_m': '' if distancia is None else round(distancia, 2),
-            'disparos': disparos, 'imagen': nombre,
+            'disparos': disparos, 'imagen': nombre, 'nitidez': '' if nitidez is None else round(nitidez, 1),
         }
         self.w.writerow(fila)
         self.f.flush()

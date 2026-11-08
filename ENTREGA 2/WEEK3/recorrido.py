@@ -36,6 +36,27 @@ def aplicar(punto, rumbo, x, y, z):
     return (round(px, 3), round(py, 3)), rumbo - z
 
 
+def rival_relativo(rival, punto, rumbo):
+    """Un rival de circuito.RIVALES visto desde el chasis, en `punto` del plano y con `rumbo`.
+
+    :return: dict con yaw (grados hacia los que queda, > 0 a la derecha), distancia (m) y
+             velocidad (vx, vy) del rival en m/s y en ejes del chasis (x adelante, y derecha);
+             (0, 0) si está quieto. Si tiene `hasta` y `velocidad`, se mueve de `punto` hacia `hasta`.
+    """
+    r = math.radians(rumbo)
+    dx, dy = rival['punto'][0] - punto[0], rival['punto'][1] - punto[1]
+    vx = vy = 0.0
+    if rival.get('hasta') is not None and rival.get('velocidad'):
+        hx, hy = rival['hasta'][0] - rival['punto'][0], rival['hasta'][1] - rival['punto'][1]
+        largo = math.hypot(hx, hy)
+        if largo > 0:
+            v_x, v_y = rival['velocidad'] * hx / largo, rival['velocidad'] * hy / largo
+            vx, vy = v_x * math.cos(r) + v_y * math.sin(r), -v_x * math.sin(r) + v_y * math.cos(r)
+    adelante, derecha = dx * math.cos(r) + dy * math.sin(r), -dx * math.sin(r) + dy * math.cos(r)
+    return dict(yaw=math.degrees(math.atan2(derecha, adelante)), distancia=math.hypot(dx, dy),
+                velocidad=(vx, vy))
+
+
 def normalizar(angulo):
     """Ángulo equivalente en (-180, 180]."""
     a = (angulo + 180.0) % 360.0 - 180.0
