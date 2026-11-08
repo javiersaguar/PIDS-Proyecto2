@@ -1,0 +1,7 @@
+{
+  "conexion": "networking",
+  "serial": "<numero-de-serie-del-robot-rival>",
+  "ssid": "<wifi-del-laboratorio>",
+  "password": "<contrasena-de-la-wifi>",
+  "puerto": 50555
+}

@@ -21,7 +21,7 @@ El enunciado limita la velocidad del chasis a 0,5 m/s y 30 º/s y la de la torre
 
 El recorrido se define sobre un plano con el origen en la salida de nuestro robot, en metros. Cada tramo es un desplazamiento del chasis sin girarlo: las ruedas mecanum permiten moverse hacia los lados y hacia atrás. Se ha preparado y medido movimiento a movimiento en el laboratorio, y no se pasa al siguiente hasta comprobar el anterior en el robot real. La Figura B3.1 muestra el recorrido completo y la Tabla B3.1, cada movimiento.
 
-![Figura B3.1. Recorrido de la demo. Azul: desplazamientos; naranja: ataques en marcha; rojo discontinuo: dirección de la torreta en cada ataque. Las posiciones de los rivales no están medidas todavía.](informes/figuras/circuito_demo.png)
+![Figura B3.1. Recorrido de la demo con la longitud y la velocidad de cada tramo. Azul: desplazamientos; naranja: ataques en marcha; granate: rivales y movimiento del rival 2; rojo discontinuo: distancia de tiro. Las posiciones de los rivales son las previstas para el montaje y aún no se han comprobado en el laboratorio.](informes/figuras/circuito_demo.png)
 
 | Tramo | Movimiento | Velocidad | Tiempo | Acción |
 |---|---|---|---|---|
@@ -29,7 +29,7 @@ El recorrido se define sobre un plano con el origen en la salida de nuestro robo
 | P1 | Parada | — | — | Torreta a la derecha (90º): rival 1. Torreta a la izquierda (−90º): robot camuflado |
 | R1 | 1,9 m adelante | 0,4 m/s | unos 5 s | — |
 | R1 | 1 m a la izquierda | 0,5 m/s | unos 2,5 s | — |
-| R1 | 1,25 m atrás | 0,1 m/s | unos 12,5 s | Torreta a la izquierda: rival 2, sin parar |
+| R1 | 1,25 m atrás | 0,1 m/s | unos 12,5 s | Torreta a la izquierda: rival 2, que avanza en paralelo a 0,05 m/s, sin parar |
 | R1 | 1 m a la derecha | 0,5 m/s | unos 2,5 s | — |
 | R2 | 2,5 m adelante | 0,5 m/s | unos 5,5 s | — |
 | R2 | 0,7 m a la izquierda | 0,5 m/s | unos 2 s | — |
@@ -62,9 +62,17 @@ En dos tramos el robot dispara sin pararse. Se reparten tres tareas que se ejecu
 
 La velocidad del tramo sale de sumar los tiempos: girar la torreta 90º (3 s), ver al rival (una o dos imágenes de 2 s), el aviso de voz (1,4 s) y la ráfaga (6,2 s). A 0,1 m/s, el retroceso de 1,25 m dura unos 12,5 s, lo justo para todo ello. Mientras dura la ráfaga, la torreta sigue al rival: su velocidad angular se estima entre imágenes y se le suma una corrección proporcional al error. Como la torreta sigue girando mientras se analiza la imagen siguiente, la corrección se limita al 80 % del error por imagen.
 
+El rival 2 también se mueve. Es un segundo robot, 1,2 m a la izquierda del tramo de retroceso, que avanza 0,75 m a 0,05 m/s en el mismo sentido que el nuestro. Lo mueve un compañero desde otro portátil con un script propio. La demo le manda un aviso por la red del laboratorio al empezar el tramo, y si el aviso no llega se arranca a mano. Para un blanco que se mueve se han añadido tres cosas.
+
+**Imagen nítida.** Con el robot en marcha algunas imágenes salen movidas. De las que llegan en los últimos 0,2 s se analiza la más nítida, medida con la varianza del laplaciano. Se usa el ángulo que tenía la torreta cuando se tomó esa imagen.
+
+**Velocidad prevista.** Desde la primera detección se prevé cuánto se desplaza el rival en la imagen. La torreta no espera a una segunda imagen para seguirlo. Con la distancia del plano y las velocidades de los dos robots, el rival 2 se queda atrás unos 2,4 º/s. Tras la voz de aviso, la torreta apunta a donde estará el rival y empieza a girar a esa velocidad. Después la corrige con cada imagen.
+
+**Parada de nuestro robot.** Cuando nuestro robot se para, el rival sigue avanzando y cambia de sentido en la imagen. La torreta le quita a la velocidad estimada la parte que venía de nuestro movimiento sin esperar a la siguiente imagen.
+
 El rival del último tramo está sobre una plataforma de 20 a 40 cm. Un robot 30 cm más alto que el cañón queda a unos 17º de inclinación a 1 m y a unos 9º a 2 m, dentro de los 30º que admite la torreta. La torreta lo busca inclinada 10º y, al verlo, corrige la inclinación con la caja detectada.
 
-[PENDIENTE: probar el ataque en marcha en el laboratorio y medir cuántos impactos registra el rival.]
+[PENDIENTE: probar el ataque en marcha en el laboratorio con el rival 2 en movimiento y medir cuántos impactos registra cada rival.]
 
 ## 15.3. Disparo, sonido y luces
 
