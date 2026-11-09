@@ -1,10 +1,10 @@
 # Informes sobre la plantilla oficial
 
-Contenido actualizado el **06/11/2026**.
+Contenido actualizado el **09/11/2026**.
 
 | Documento | Contenido |
 |---|---|
-| [`informe_entrega3.docx`](informe_entrega3.docx) | **Borrador de la memoria de la entrega 3**: la de la entrega 2 más el Bloque 3 (apartados 13 a 17), creada con `herramientas/generar_entrega3.py` a partir de [`../informe_bloque3_borrador.md`](../informe_bloque3_borrador.md). Lo marcado en amarillo como [PENDIENTE] falta por medir o decidir. Ahora tiene 41 páginas, 26 de cuerpo; el límite de la entrega 3 es 30 (Bloques 1 a 3, sin portada, índice, respuesta a la revisión, reparto, referencias ni anexos). Se entrega como `PIDS_grupo2_entrega3.pdf`. |
+| [`informe_entrega3.docx`](informe_entrega3.docx) | **Borrador de la memoria de la entrega 3**: la de la entrega 2 más el Bloque 3 (apartados 13 a 17), creada con `herramientas/generar_entrega3.py` a partir de [`../informe_bloque3_borrador.md`](../informe_bloque3_borrador.md). Incluye las correcciones de la revisión de la entrega 2 (`herramientas/correcciones_entrega2.py`). Lo marcado en amarillo como [PENDIENTE] falta por medir o decidir. Ahora tiene 44 páginas, 30 de cuerpo (de la 4 a la 33); el límite de la entrega 3 es 30 (Bloques 1 a 3, sin portada, índice, respuesta a la revisión, reparto, referencias ni anexos). Se entrega como `PIDS_grupo2_entrega3.pdf`. |
 | [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (34 páginas, 20 de cuerpo, de la 4 a la 23; el límite es 20). |
 | [`informe_fase1.docx`](informe_fase1.docx) | Fuente de la memoria de la entrega 1 (Bloque 1), base de `generar_entrega2.py`. El PDF entregado está en `docs/entregas/PIDS_grupo2_entrega1.pdf` y difiere en algo de redacción. |
 | `figuras/` | Figuras de maquetación que no están en `ENTREGA 1/WEEK1/` ni en `WEEK2/`, incluidas las añadidas por la revisión. |
@@ -38,6 +38,17 @@ cerrarla. El script no sobrescribe el `.docx` sin `--forzar`: cuando se empiece 
 cambios del borrador se pasan a mano. Después de generarlo, actualizar el índice (F9).
 
 ## Historial
+
+**09/11/2026** — correcciones de la revisión de la entrega 2 y borrador de la presentación:
+- `herramientas/correcciones_entrega2.py`, llamado desde `generar_entrega3.py`, responde a los comentarios
+  obligatorios C2.1 a C2.8 y a los opcionales sobre los Bloques 1 y 2, sin tocar `informe_entrega2.docx`.
+  También cambia la Figura 9 por un esquema de bloques (`figuras/sistema_entrenamiento.png`) y añade la curva
+  precisión-exhaustividad en test como Figura 10 (`figuras/curva_pr.png`); las dos salen de
+  `herramientas/figuras_revision_entrega2.py`. Además pasa las tasas a notación científica, añade la columna
+  del Bloque 3 al reparto, las referencias [22] a [28] y la tabla de respuesta a la revisión de la entrega 2.
+- El cuerpo ocupa ahora las 30 páginas del límite: cualquier texto nuevo del Bloque 3 tiene que compensarse.
+- Borrador de la presentación de las tres fases en `presentacion/` (React), con las cifras y las imágenes de
+  esta memoria; ver su README.
 
 **08/11/2026** — el rival 2 se mueve en paralelo a nuestro robot durante la rotonda:
 - nuevo texto en el apartado 15.2 (imagen nítida, velocidad prevista y parada de nuestro robot);
