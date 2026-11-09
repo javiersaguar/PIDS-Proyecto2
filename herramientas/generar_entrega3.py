@@ -5,14 +5,16 @@ Copia docs/informes/informe_entrega2.docx (editado a mano en Word, que no se toc
 - en la portada, «Fases 1, 2 y 3», «Entrega 3 · Bloques 1, 2 y 3» y la fecha pendiente;
 - el texto de docs/informe_bloque3_borrador.md, antes de «Referencias», con los estilos
   de la plantilla (títulos, texto, pies, tablas con cabecera azul y filas alternas, figuras);
-- la referencia [21] al estudio del robot camuflado.
+- la referencia [21] al estudio del robot camuflado;
+- las correcciones de la revisión de la entrega 2 (correcciones_entrega2.py): Bloques 1 y 2
+  corregidos, columna del Bloque 3 en el reparto, referencias [22] a [28] y tabla de respuesta.
 
     python herramientas/generar_entrega3.py                 crea docs/informes/informe_entrega3.docx
     python herramientas/generar_entrega3.py --forzar        lo sobrescribe (se pierden los cambios a mano)
 
 El borrador admite: «# » y «## » (títulos), párrafos, tablas Markdown seguidas de un pie
-«*Tabla ...*», figuras «![Figura ...](ruta|ruta)» con rutas relativas a docs/, **negrita** y
-[PENDIENTE: ...] (resaltado en amarillo). Las líneas que empiezan por «>» se ignoran.
+«*Tabla ...*», figuras «![Figura ...](ruta|ruta)» con rutas relativas a docs/, **negrita**, __entradilla__
+(cursiva subrayada), ^superíndice^ y [PENDIENTE: ...] (resaltado en amarillo). Las líneas que empiezan por «>» se ignoran.
 Después hay que abrirlo en Word, actualizar el índice (F9) y revisar la paginación.
 """
 
@@ -26,6 +28,8 @@ import docx
 from docx.oxml import parse_xml
 from docx.shared import Cm
 from docx.text.paragraph import Paragraph
+
+import correcciones_entrega2
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS = os.path.join(RAIZ, 'docs')
@@ -80,18 +84,26 @@ def leer_bloques(ruta):
 
 # --- XML de la plantilla -------------------------------------------------------------
 def runs(texto, tam=None, color=None, negrita=False):
-    """Runs de un texto con **negrita** y [PENDIENTE ...] resaltado; sin `código`."""
+    """Runs de un texto con **negrita**, __cursiva subrayada__ (entradillas), ^superíndice^ y
+    [PENDIENTE ...] resaltado; sin `código`."""
     texto = texto.replace('`', '')
-    partes = re.split(r'(\*\*.+?\*\*|\[PENDIENTE[^\]]*\])', texto)
+    partes = re.split(r'(\*\*.+?\*\*|__.+?__|\^[^^\s]+\^|\[PENDIENTE[^\]]*\])', texto)
     xml = []
     for parte in partes:
         if not parte:
             continue
         b = negrita or parte.startswith('**')
+        entradilla = parte.startswith('__') and parte.endswith('__') and len(parte) > 4
+        sup = parte.startswith('^') and parte.endswith('^') and len(parte) > 2
         resaltar = parte.startswith('[PENDIENTE')
-        parte = parte[2:-2] if parte.startswith('**') else parte
-        rpr = ('<w:b/>' if b else '') + (f'<w:color w:val="{color}"/>' if color else '')
+        if parte.startswith('**') or entradilla:
+            parte = parte[2:-2]
+        elif sup:
+            parte = parte[1:-1]
+        rpr = ('<w:b/>' if b else '') + ('<w:i/><w:iCs/>' if entradilla else '')
+        rpr += (f'<w:color w:val="{color}"/>' if color else '')
         rpr += (f'<w:sz w:val="{tam}"/>' if tam else '') + ('<w:highlight w:val="yellow"/>' if resaltar else '')
+        rpr += ('<w:u w:val="single"/>' if entradilla else '') + ('<w:vertAlign w:val="superscript"/>' if sup else '')
         rpr += '<w:lang w:val="es-ES"/>'
         xml.append(f'<w:r><w:rPr>{rpr}</w:rPr><w:t xml:space="preserve">{escape(parte)}</w:t></w:r>')
     return ''.join(xml)
@@ -164,8 +176,6 @@ def generar(salida):
     titulos = [p for p in doc.paragraphs if p.style.name == 'Heading 1']
     referencias = next(p for p in titulos if p.text.strip() == 'Referencias')
     anexos = next(p for p in titulos if p.text.strip() == 'Anexos')
-    reparto = next(p for p in doc.paragraphs if p.text.startswith('Tabla 1. Reparto del trabajo'))
-    reparto._p.addnext(parrafo('[PENDIENTE: añadir la columna del Bloque 3 al reparto del trabajo.]'))
     anexos._p.addprevious(parrafo(REFERENCIA, extra='<w:jc w:val="left"/>'))
 
     primero = True
@@ -193,6 +203,7 @@ def generar(salida):
                 p.add_run().add_picture(ruta, width=ancho)
             el = parrafo(bloque[1], 'Descripcin', '<w:keepLines/>')
         referencias._p.addprevious(el)
+    correcciones_entrega2.aplicar(doc, sys.modules[__name__])
     doc.save(salida)
     print(f'Creado {salida}')
 
