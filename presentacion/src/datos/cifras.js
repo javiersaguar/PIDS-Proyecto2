@@ -24,7 +24,7 @@ export const EDA_DECISIONES = [
     despues: 'AP@0,5 de 0,951 en validación y 0,952 en test' },
   { visto: '26,4 % de robots difficult, en los bordes y en algunos vídeos', decision: 'Conservarlos y medir su AP aparte',
     despues: '74 de los 115 robots perdidos en test son difficult' },
-  { visto: 'Ninguna caja de menos de 30 px; en validación, un 2,5 %', decision: 'Alejar hasta ×0,6 y probar 1024 px',
+  { visto: 'Ninguna caja de menos de 30 px; en validación, un 2,5 %', decision: 'Alejar hasta ×0,6 y probar una imagen más grande',
     despues: 'AP de objetos pequeños de 0,12 a 0,19' },
   { visto: 'Cajas casi cuadradas: las anclas cubren el 99,6 %', decision: 'Anclas por defecto y escala sin deformar',
     despues: 'Los cuatro modelos con ResNet-50 superan 0,93' },
@@ -47,7 +47,7 @@ export const AJUSTE_V1 = [
   { nombre: 'Sin aumento · tasa 10⁻⁴', ap: 0.9228, epoca: 20 },
   { nombre: 'Con aumento · tasa 10⁻⁴', ap: 0.9416, epoca: 29 },
   { nombre: 'Con aumento · tasa 10⁻³', ap: 0.9433, epoca: 5 },
-  { nombre: 'Con aumento · 1024 px', ap: 0.9465, epoca: 2 },
+  { nombre: 'Con aumento · tasa 10⁻³ · imagen grande', ap: 0.9465, epoca: 2 },
 ];
 export const ARQUITECTURAS = [
   { modelo: 'Faster R-CNN v2', corto: 'FRCNN v2', etapas: 2, ap: 0.9513, apDiff: 0.6422, ms: 99.5 },

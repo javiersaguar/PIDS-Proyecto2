@@ -168,7 +168,7 @@ export function Eda() {
             )))}
           </div>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }} style={{ marginTop: 22, fontSize: 19, color: 'var(--texto)' }}>
-            La evaluación tiene más robots por imagen y más pequeños: el aumento aleja los robots hasta ×0,6 y se prueba la imagen a 1024 px.
+            La evaluación tiene más robots por imagen y más pequeños: el aumento aleja los robots hasta ×0,6 y se prueba a reescalar la imagen a 1820 × 1024 en vez de 1333 × 750.
           </motion.p>
         </div>
       </div>

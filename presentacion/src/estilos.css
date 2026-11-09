@@ -133,6 +133,7 @@ body {
   position: absolute; left: -1px; bottom: 100%; margin-bottom: 4px; white-space: nowrap;
   font: 600 13px/1 var(--mono); padding: 4px 6px; color: var(--fondo); background: var(--c, var(--acento)); letter-spacing: 0.04em;
 }
+.caja .rotulo.derecha { left: auto; right: -1px; }
 .caja .rotulo span { color: var(--fondo); }
 .caja .relleno { position: absolute; inset: 0; background: currentColor; opacity: 0.08; }
 

@@ -129,7 +129,7 @@ function Propuestas({ cajas }) {
   return props.map((p, i) => (
     <motion.div key={i} style={{ position: 'absolute', left: `${p.x * 100}%`, top: `${p.y * 100}%`, width: `${p.w * 100}%`, height: `${p.h * 100}%`,
       border: '1.5px dashed rgba(236,238,230,0.75)' }}
-      initial={{ opacity: 0 }} animate={{ opacity: [0, 0.9, 0.9, 0] }}
+      initial={{ opacity: 0 }} animate={{ opacity: [0, 0.9, 0.9, 0.22] }}
       transition={{ delay: 0.8 + i * 0.035, duration: 2.4, times: [0, 0.1, 0.7, 1] }} />
   ));
 }
@@ -142,7 +142,7 @@ function Anclas() {
     return (
       <motion.span key={k} style={{ position: 'absolute', left: `${((c + 0.5) / cols) * 100}%`, top: `${((f + 0.5) / filas) * 100}%`,
         width: 4, height: 4, marginLeft: -2, marginTop: -2, borderRadius: '50%', background: 'var(--azul)' }}
-        initial={{ opacity: 0, scale: 0 }} animate={{ opacity: [0, 1, 1, 0.25], scale: [0, 1.4, 1, 1] }}
+        initial={{ opacity: 0, scale: 0 }} animate={{ opacity: [0, 1, 1, 0.45], scale: [0, 1.4, 1, 1] }}
         transition={{ delay: 0.8 + (c + f) * 0.025, duration: 1.6, times: [0, 0.2, 0.5, 1] }} />
     );
   });
@@ -156,7 +156,7 @@ export function Etapas() {
   return (
     <div className="diapo">
       <Cabecera fase="Fase 02 · Arquitecturas" titulo="Detectores de una y de dos etapas"
-        subtitulo="Todos parten de pesos preentrenados en COCO y casi todos añaden una FPN, que combina mapas de detalle y de contexto. Cambia cómo se buscan los robots." />
+        subtitulo="Todos parten de pesos preentrenados en COCO y casi todos añaden una FPN, una pirámide de mapas en la que cada robot se busca en el nivel adecuado a su tamaño. Lo que cambia es cómo se proponen las cajas." />
       <div className="cuerpo dos">
         {pasos.map(([t, m, d], i) => (
           <div key={t} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -194,7 +194,7 @@ export function Hiperparametros() {
           <h3 style={{ marginTop: 10 }}>8 imágenes</h3>
           <BarrasH anchoEtiqueta={44} retraso={0.7} paso={0.12} alto={34} textoNulo="sin memoria"
             datos={LOTES.map((l) => ({ etiqueta: l.lote, valor: l.ap, destacado: l.lote === '8' }))} />
-          <p style={{ marginTop: 16, fontSize: 18 }}>AP@0,5 a las 3 épocas: los tres a menos de 0,4 pp. 8 es el mayor que cabe en 12 GB y da gradientes estables, con unos 400 pasos por época.</p>
+          <p style={{ marginTop: 16, fontSize: 18 }}>AP@0,5 a las 3 épocas: los tres a menos de 0,4 puntos porcentuales (pp). 8 es el mayor que cabe en 12 GB y da gradientes estables, con unos 400 pasos por época.</p>
         </motion.div>
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.6, ease: CURVA }}>
           <div className="etiqueta">Tasa de aprendizaje</div>
@@ -244,7 +244,7 @@ function PuntosAjuste() {
             initial={{ cx: sx(0.915), opacity: 0 }} animate={{ cx: sx(e.ap), opacity: 1 }}
             transition={{ delay: 0.6 + i * 0.3, duration: 0.9, ease: CURVA }} />
           <motion.text y={fila(i) + 10} x={sx(e.ap) + 18} className="valor" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ delay: 1.4 + i * 0.3 }}>{coma(e.ap, 4)} · época {e.epoca}</motion.text>
+            transition={{ delay: 1.4 + i * 0.3 }}>{coma(e.ap, 3)} · época {e.epoca}</motion.text>
         </g>
       ))}
       <text x={(m.l + ancho - m.r) / 2} y={alto - 4} textAnchor="middle" style={{ fill: 'var(--tenue)' }}>AP@0,5 en validación · Faster R-CNN v1</text>
@@ -261,7 +261,7 @@ export function Ajuste() {
         <div className="panel" style={{ padding: '20px 24px' }}>
           <PuntosAjuste />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.6 }} style={{ fontSize: 18 }}>
-            Aumento: +1,9 pp. A 1024 px sube 0,3 pp pero baja el AP estricto y tarda un 62 % más: se queda 800 px.
+            El aumento es lo que más mejora (+1,9 pp). Las imágenes de 1280 × 720 entran al modelo a 1333 × 750; a 1820 × 1024 el AP@0,5 apenas cambia, las cajas se ajustan peor y tarda un 62 % más: se queda la imagen normal.
           </motion.p>
         </div>
         <div className="panel" style={{ padding: '20px 24px' }}>

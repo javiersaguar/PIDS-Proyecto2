@@ -44,7 +44,7 @@ export const DIAPOSITIVAS = [
   { id: 'hiperparametros', fase: 2, titulo: 'Hiperparámetros', Componente: Hiperparametros,
     notas: 'Lote 8: el mayor que cabe y estable. Tasa 10⁻³: 10⁻⁵ apenas aprende y 10⁻¹ diverge. SGD con momentum 0,9 y weight decay 5·10⁻⁴, del artículo de Faster R-CNN y del tutorial de torchvision.' },
   { id: 'ajuste', fase: 2, titulo: 'Primeros experimentos y sobreajuste', Componente: Ajuste,
-    notas: 'El aumento sube 1,9 pp. La validación toca su mínimo en la época 4 y luego sube mientras el entrenamiento baja: guardamos el mejor checkpoint de validación.' },
+    notas: 'El aumento sube 1,9 pp (puntos porcentuales). La imagen grande no compensa: más falsos positivos, peores cajas y un 62 % más lenta. La validación toca su mínimo en la época 4 y luego sube mientras el entrenamiento baja: guardamos el mejor checkpoint de validación.' },
   { id: 'arquitecturas', fase: 2, titulo: 'Siete arquitecturas', Componente: Arquitecturas,
     notas: 'Precisión frente a tiempo. La línea discontinua une los modelos que ningún otro supera en las dos cosas. Faster R-CNN v2 es el final; MobileNet, la alternativa rápida.' },
   { id: 'test', fase: 2, titulo: 'Evaluación final en test', Componente: Test,
