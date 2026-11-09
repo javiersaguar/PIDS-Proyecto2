@@ -19,7 +19,7 @@ const coma = (v, d = 2) => fmt(v, d);
 export function Seccion2() {
   return (
     <Seccion numero="02" titulo="Modelo" fotos={[curvaPrPng, precisionLatenciaPng, tasaPng, erroresPng, casosPng]}
-      lema="Montar el entrenamiento, ajustar lo que más importa y comparar siete detectores con las mismas reglas."
+      lema="Montamos el entrenamiento, ajustamos lo que más influía y comparamos siete detectores con las mismas reglas."
       puntos={['PyTorch y torchvision', '7 arquitecturas', '3 tasas', 'umbral en validación', 'test una sola vez']} />
   );
 }
@@ -58,8 +58,7 @@ export function Sistema() {
   const reducido = useReducedMotion();
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 02 · El sistema" titulo="Cómo se entrena y se evalúa cada detector"
-        subtitulo="Cada bloque es un módulo; cada flecha, los datos que pasa al siguiente. Unos se repiten en cada lote, otros en cada época y el test, una sola vez." />
+      <Cabecera fase="Fase 02 · El sistema" titulo="Cómo entrenamos cada detector y cómo lo medimos" />
       <div style={{ display: 'flex', gap: 26, marginBottom: 6 }} className="mono">
         {[['lote', 'Cada lote: entrenamiento'], ['epoca', 'Cada época: validación'], ['una', 'Una vez: test']].map(([g, t], i) => (
           <motion.span key={g} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 + i * 0.1 }}
@@ -155,8 +154,7 @@ export function Etapas() {
   ];
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 02 · Arquitecturas" titulo="Detectores de una y de dos etapas"
-        subtitulo="Todos parten de pesos preentrenados en COCO y casi todos añaden una FPN, una pirámide de mapas en la que cada robot se busca en el nivel adecuado a su tamaño. Lo que cambia es cómo se proponen las cajas." />
+      <Cabecera fase="Fase 02 · Arquitecturas" titulo="Dos formas de buscar el robot en la imagen" />
       <div className="cuerpo dos">
         {pasos.map(([t, m, d], i) => (
           <div key={t} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -176,6 +174,7 @@ export function Etapas() {
         ))}
       </div>
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.4 }} style={{ margin: '10px 0 0', fontSize: 20 }}>
+        Todos parten de pesos preentrenados en COCO y casi todos usan una FPN, que busca cada robot en el mapa adecuado a su tamaño.{' '}
         <span className="acento">En nuestras medidas</span>, con el mismo backbone, la diferencia de tiempo es pequeña: pesan más el backbone y el tamaño de la imagen.
       </motion.p>
     </div>
@@ -186,25 +185,24 @@ export function Etapas() {
 export function Hiperparametros() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 02 · Hiperparámetros" titulo="Pruebas cortas antes de la cadena de entrenamientos"
-        subtitulo="Tres épocas de Faster R-CNN v1 para fijar el lote y la tasa; el resto, con valores contrastados para ajuste fino de detectores." />
+      <Cabecera fase="Fase 02 · Hiperparámetros" titulo="Cómo elegimos el lote, la tasa de aprendizaje y el optimizador" />
       <div className="cuerpo tres">
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6, ease: CURVA }}>
-          <div className="etiqueta">Tamaño del lote</div>
+          <div className="etiqueta">Lote · AP@0,5 tras 3 épocas de prueba</div>
           <h3 style={{ marginTop: 10 }}>8 imágenes</h3>
           <BarrasH anchoEtiqueta={44} retraso={0.7} paso={0.12} alto={34} textoNulo="sin memoria"
             datos={LOTES.map((l) => ({ etiqueta: l.lote, valor: l.ap, destacado: l.lote === '8' }))} />
           <p style={{ marginTop: 16, fontSize: 21 }}>El mayor que cabe en la GPU. 1, 2 y 8 acaban casi igual.</p>
         </motion.div>
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.6, ease: CURVA }}>
-          <div className="etiqueta">Tasa de aprendizaje</div>
+          <div className="etiqueta">Tasa · AP@0,5 tras 3 épocas de prueba</div>
           <h3 style={{ marginTop: 10 }}>10<sup>−3</sup></h3>
           <BarrasH anchoEtiqueta={44} retraso={1.0} paso={0.14} alto={34} textoNulo="diverge: NaN"
             datos={TASAS.map((t) => ({ etiqueta: t.tasa, valor: t.ap, destacado: t.tasa === '10⁻³' }))} />
           <p style={{ marginTop: 16, fontSize: 21 }}>Muy baja no aprende; muy alta diverge.</p>
         </motion.div>
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.6, ease: CURVA }}>
-          <div className="etiqueta">Optimizador y programador</div>
+          <div className="etiqueta">Optimizador · valores habituales</div>
           <h3 style={{ marginTop: 10 }}>SGD</h3>
           <Revela as="ul" className="lista" retraso={1.3} paso={0.15} style={{ fontSize: 21 }}>
             <Item as="li"><span><b>Momentum 0,9:</b> suaviza el ruido</span></Item>
@@ -252,8 +250,7 @@ export function Ajuste() {
   const s = generados.sobreajuste;
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 02 · Primeros experimentos" titulo="El aumento ayuda; las épocas de más, no"
-        subtitulo="Con un único modelo se fijaron aumento, tasa y resolución. La validación deja de mejorar muy pronto mientras el entrenamiento sigue bajando." />
+      <Cabecera fase="Fase 02 · Primeros experimentos" titulo="Qué mejoró al primer modelo, y cuándo dejó de mejorar" />
       <div className="cuerpo dos">
         <div className="panel" style={{ padding: '20px 24px' }}>
           <PuntosAjuste />
@@ -307,12 +304,11 @@ export function Arquitecturas() {
     'RetinaNet v1': [14, 24], 'Faster R-CNN MobileNet': [16, -10], 'SSD300 VGG16': [16, 6], SSDlite320: [16, -14] };
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 02 · Comparación" titulo="Siete detectores: precisión frente a tiempo"
-        subtitulo="Mismo aumento, misma tasa (10⁻³), 12 épocas y el mejor checkpoint de validación. Tiempo por imagen en la GPU de entrenamiento (RTX 3060)." />
+      <Cabecera fase="Fase 02 · Comparación" titulo="Los siete detectores, en precisión y en tiempo" />
       <div className="cuerpo dos-asim" style={{ alignItems: 'center' }}>
         <svg className="grafica" viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label="AP@0,5 frente a milisegundos por imagen de siete detectores">
           <Ejes ancho={ancho} alto={alto} m={m} sx={sx} sy={syEscala} ticksX={[4, 10, 20, 50, 100]} ticksY={[0.88, 0.9, 0.92, 0.94, 0.96]}
-            fx={(v) => `${v} ms`} fy={(v) => coma(v)} tituloX="milisegundos por imagen (escala logarítmica)" tituloY="AP@0,5 en validación" />
+            fx={(v) => `${v} ms`} fy={(v) => coma(v)} tituloX="ms por imagen en la GPU de entrenamiento (RTX 3060), escala logarítmica" tituloY="AP@0,5 en validación" />
           <motion.path d={frontera.map((a, i) => `${i ? 'L' : 'M'}${sx(a.ms)},${sy(a.ap)}`).join('')} fill="none" stroke="var(--tenue)"
             strokeWidth="1.5" strokeDasharray="6 6" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 2.4, duration: 1.2 }} />
           {orden.map((a, i) => {
@@ -353,7 +349,7 @@ export function Arquitecturas() {
             <p>Seis veces más rápido por 2,3 pp menos. Candidato si el robot necesita más imágenes por segundo.</p>
           </Item>
           <Item as="p" style={{ margin: 0, fontSize: 18, color: 'var(--suave)' }}>
-            La arquitectura pesa más que la tasa: con tres tasas, los tres mejores cambian menos de 0,3 pp.
+            Mismas reglas para los siete: mismo aumento, tasa 10⁻³, 12 épocas y el mejor checkpoint de validación. La arquitectura pesa más que la tasa: con tres tasas, los tres mejores cambian menos de 0,3 pp.
           </Item>
         </Revela>
       </div>
@@ -369,10 +365,12 @@ export function Test() {
   const elegido = (c, u) => c.find((p) => Math.abs(p.umbral - u) < 1e-6);
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 02 · Evaluación final" titulo="En test, una sola vez: 0,952 de AP@0,5"
-        subtitulo={`Faster R-CNN v2 sobre ${fmt(t.imagenes)} imágenes de otros grupos (${fmt(t.robots)} robots), con el umbral de confianza 0,95 fijado en validación.`} />
+      <Cabecera fase="Fase 02 · Evaluación final" titulo="El resultado en imágenes que el modelo no había visto" />
       <div className="cuerpo dos-asim-inv">
         <div style={{ display: 'grid', gap: 14, alignContent: 'start' }}>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} style={{ margin: 0, fontSize: 19, color: 'var(--suave)' }}>
+            Faster R-CNN v2, una sola vez, sobre {fmt(t.imagenes)} imágenes de otros grupos ({fmt(t.robots)} robots) y con el umbral 0,95 fijado en validación.
+          </motion.p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             {[['AP@0,5', t.ap50, true], ['F1', t.f1], ['Precisión', t.precision], ['Exhaustividad', t.exhaustividad]].map(([n, v, a], i) => (
               <motion.div key={n} className="panel" style={{ padding: '14px 20px' }} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
@@ -438,8 +436,7 @@ export function Test() {
 export function Cualitativo() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 02 · Análisis cualitativo" titulo="Mirar las predicciones, no solo las métricas"
-        subtitulo="Algunos falsos positivos eran robots sin etiquetar en validación; los fallos reales se concentran en difficult, robots lejanos y algunas secuencias." />
+      <Cabecera fase="Fase 02 · Análisis cualitativo" titulo="Dónde acierta el detector y dónde se equivoca" />
       <div className="cuerpo" style={{ gridTemplateColumns: '1.35fr 1fr', alignItems: 'start' }}>
         <div style={{ display: 'grid', gap: 18 }}>
           <motion.img src={casosPng} alt="Acierto completo y caso con más errores en validación" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}

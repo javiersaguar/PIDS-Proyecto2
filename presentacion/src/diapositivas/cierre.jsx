@@ -14,8 +14,7 @@ const LECCIONES = [
 export function Conclusiones() {
   return (
     <div className="diapo">
-      <Cabecera fase="Conclusiones" titulo="Lo que nos llevamos de cada fase"
-        subtitulo="Borrador: se cerrará con los resultados del circuito montado en el laboratorio." />
+      <Cabecera fase="Conclusiones" titulo="Qué nos llevamos de cada fase" />
       <Revela className="cuerpo tres" retraso={0.3} paso={0.2} style={{ flex: 'none' }}>
         {LECCIONES.map((l) => (
           <Item key={l.n} className="panel" style={{ padding: '28px 30px' }}>

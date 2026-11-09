@@ -24,7 +24,7 @@ function Laboratorio({ i, style }) {
 export function Seccion3() {
   return (
     <Seccion numero="03" titulo="Robot" color="var(--rojo)" fotos={[laboratorioJpg, mandoJpg, circuitoPng, detectiveJpg, aliadoJpg]}
-      lema="El detector sale del cuaderno y entra en el RoboMaster: recorrer el circuito, encontrar a los rivales y dispararles."
+      lema="Llevamos el detector al RoboMaster: recorrer el circuito, encontrar a los rivales y dispararles."
       puntos={['SDK en Python 3.8', 'circuito por tramos', 'puntería por pasos', 'ataque en marcha', 'robot camuflado', 'mando']} />
   );
 }
@@ -66,7 +66,7 @@ function Enlace() {
   );
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 230px 1fr', alignItems: 'center' }}>
-      {caja('Portátil', ['Python 3.8 y SDK oficial', 'Faster R-CNN v2 en CPU', 'Robot simulado para probar'], 0)}
+      {caja('Portátil', ['SDK oficial: obliga a Python 3.8', 'Sin GPU: el detector va en CPU', 'Robot simulado para probar'], 0)}
       <div style={{ position: 'relative', height: 120 }}>
         <svg viewBox="0 0 230 120" style={{ width: '100%', height: '100%' }} aria-hidden>
           <line x1="10" x2="220" y1="40" y2="40" stroke="var(--acento)" strokeDasharray="4 6" />
@@ -93,8 +93,7 @@ function Enlace() {
 export function Integracion() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Integración" titulo="El detector, en un portátil conectado al robot"
-        subtitulo="El SDK del RoboMaster va en Python 3.8 y, con esa versión, el modelo no puede usar la GPU del portátil: cada imagen se analiza en CPU." />
+      <Cabecera fase="Fase 03 · Integración" titulo="Cómo conectamos el detector al robot" />
       <div style={{ display: 'grid', gap: 26 }}>
         <Enlace />
         <Latencia />
@@ -181,6 +180,13 @@ function Mapa() {
           <text x={px(p)[0] + dx} y={px(p)[1] + dy} textAnchor={ancla} style={{ font: '600 15px var(--mono)', fill: 'var(--texto)' }}>{t}</text>
         </g>
       ))}
+      {/* Leyenda: azul, desplazamientos; naranja, ataques sin parar */}
+      <g style={{ font: '600 15px var(--mono)' }}>
+        <line x1="80" x2="116" y1="372" y2="372" stroke="var(--azul)" strokeWidth="4" />
+        <text x="126" y="377" style={{ fill: 'var(--suave)' }}>desplazamiento</text>
+        <line x1="80" x2="116" y1="402" y2="402" stroke="var(--naranja)" strokeWidth="9" strokeLinecap="round" />
+        <text x="126" y="407" style={{ fill: 'var(--suave)' }}>ataque sin parar</text>
+      </g>
       <motion.g style={{ x, y }}>
         <rect x="-14" y="-11" width="28" height="22" rx="5" fill="var(--acento)" />
         <circle r="18" fill="none" stroke="var(--acento)" strokeOpacity="0.4" strokeWidth="2" />
@@ -191,8 +197,7 @@ function Mapa() {
 export function Circuito() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Circuito" titulo="Un recorrido por tramos, comprobado uno a uno"
-        subtitulo="Las ruedas mecanum permiten moverse de lado y hacia atrás sin girar el chasis. Azul, desplazamientos; naranja, ataques sin parar." />
+      <Cabecera fase="Fase 03 · Circuito" titulo="El recorrido que tiene que hacer el robot" />
       <div className="cuerpo" style={{ gridTemplateColumns: '1.55fr 1fr', alignItems: 'start' }}>
         <div className="panel" style={{ padding: '14px 18px' }}><Mapa /></div>
         <Revela style={{ display: 'grid', gap: 14 }} retraso={0.8} paso={0.18}>
@@ -202,7 +207,7 @@ export function Circuito() {
           </Item>
           <Item className="panel" style={{ padding: '18px 22px' }}>
             <div className="etiqueta">R1 y R2 · ataques en marcha</div>
-            <p style={{ color: 'var(--texto)', marginTop: 6 }}>Retroceso de 1,25 m a 0,1 m/s disparando al rival 2, que se mueve; 2 m a 0,1 m/s hacia el rival 3, en alto.</p>
+            <p style={{ color: 'var(--texto)', marginTop: 6 }}>Las ruedas mecanum retroceden y van de lado sin girar el chasis: 1,25 m hacia atrás disparando al rival 2, que se mueve, y 2 m hacia el rival 3, en alto.</p>
           </Item>
           <Item className="panel" style={{ padding: '18px 22px', borderColor: 'var(--acento-oscuro)' }}>
             <div className="etiqueta acento">Primer problema del laboratorio</div>
@@ -265,8 +270,7 @@ function Cola({ arreglado }) {
 export function Punteria({ paso }) {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Puntería" titulo="Veía al rival con 0,96 a 1,00… y no disparaba"
-        subtitulo="En el laboratorio la torreta daba saltos y las imágenes de confirmación salían vacías o con franjas. La causa no era el modelo, sino el vídeo." />
+      <Cabecera fase="Fase 03 · Puntería" titulo="Por qué veía al rival y no disparaba" />
       <div className="cuerpo dos-asim-inv" style={{ alignItems: 'start' }}>
         <div style={{ display: 'grid', gap: 12 }}>
           {['a) Rival detectado y centrado, confianza 1,00', 'b) La foto de un robot en su caja también es un robot', 'c) Imagen corrupta por la cola de vídeo llena'].map((t, i) => (
@@ -279,7 +283,7 @@ export function Punteria({ paso }) {
         </div>
         <div style={{ display: 'grid', gap: 18 }}>
           <div className="panel">
-            <div className="etiqueta" style={{ marginBottom: 14, color: paso ? 'var(--acento)' : 'var(--rojo)' }}>{paso ? 'Arreglo' : 'Causa'}</div>
+            <div className="etiqueta" style={{ marginBottom: 14, color: paso ? 'var(--acento)' : 'var(--rojo)' }}>{paso ? 'Arreglo' : 'Causa: el vídeo, no el modelo'}</div>
             <Cola arreglado={paso >= 1} />
           </div>
           <Paso paso={paso} desde={1} className="panel" style={{ padding: '18px 22px' }}>
@@ -300,15 +304,14 @@ export function Marcha() {
   const VEL = 2.2;              // segundos de animación por cada segundo real ÷ VEL
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Ataque en marcha" titulo="12,5 s para girar, ver, avisar y disparar"
-        subtitulo="El retroceso de 1,25 m a 0,1 m/s dura unos 12,5 s: lo justo para la secuencia completa. El chasis no espera a la inferencia." />
+      <Cabecera fase="Fase 03 · Ataque en marcha" titulo="Disparar sin detener el robot" />
       <div className="panel" style={{ padding: '26px 30px' }}>
         {/* El robot recorre el tramo al mismo ritmo que se llena la barra de tiempo */}
         <div style={{ position: 'relative', height: 78, marginBottom: 10 }}>
           <div style={{ position: 'absolute', left: 0, right: 0, top: 30, height: 2, background: 'var(--borde)' }} />
           <motion.div style={{ position: 'absolute', top: 14, width: 44, height: 34, marginLeft: -22, borderRadius: 6, background: 'var(--acento)' }}
             initial={{ left: '0%' }} animate={{ left: '100%' }} transition={{ delay: 0.8, duration: total / VEL, ease: 'linear' }} />
-          <span className="mono" style={{ position: 'absolute', left: 0, top: 56, fontSize: 14, color: 'var(--tenue)' }}>inicio del retroceso</span>
+          <span className="mono" style={{ position: 'absolute', left: 0, top: 56, fontSize: 14, color: 'var(--tenue)' }}>retroceso de 1,25 m a 0,1 m/s: unos 12,5 s, sin parar el chasis</span>
           <span className="mono" style={{ position: 'absolute', right: 0, top: 56, fontSize: 14, color: 'var(--tenue)' }}>1,25 m después</span>
         </div>
         <div style={{ display: 'flex', height: 64, gap: 3 }}>
@@ -368,14 +371,13 @@ function ImagenDetectada({ src, alt, caja, conf, retraso, aliado }) {
 export function Camuflaje() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Robot camuflado" titulo="El disfraz no engaña al detector"
-        subtitulo="Un RoboMaster disfrazado de detective y cuatro robots «aliados» generados con IA: el detector los ve a todos como robots con más del 92 %." />
+      <Cabecera fase="Fase 03 · Robot camuflado" titulo="Un disfraz no basta: el aliado se marca en verde" />
       <div className="cuerpo" style={{ gridTemplateColumns: '0.8fr 1.2fr', alignItems: 'start' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <ImagenDetectada src={detectiveJpg} alt="RoboMaster disfrazado de detective" caja={{ x: 0.07, y: 0.1, w: 0.86, h: 0.87 }} conf={0.99} retraso={0.6} />
           <ImagenDetectada src={aliadoJpg} alt="Robot aliado con bandera verde" caja={{ x: 0.06, y: 0.1, w: 0.88, h: 0.87 }} conf={0.99} retraso={0.9} aliado />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.6 }} style={{ gridColumn: '1 / -1', margin: '6px 0 0', fontSize: 18, color: 'var(--suave)' }}>
-            Tapando partes del detective, la confianza solo baja al 52 % si se tapan ruedas, cañón y chasis a la vez: ha aprendido el concepto de robot, no una pieza.
+            El robot disfrazado de detective y los cuatro aliados generados con IA salen como robot con más del 92 %. Solo baja al 52 % tapando ruedas, cañón y chasis a la vez.
           </motion.p>
         </div>
         <div style={{ display: 'grid', gap: 18 }}>
@@ -414,8 +416,7 @@ export function Camuflaje() {
 export function Mando() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Control manual" titulo="Un mando en el navegador, con el detector en GPU"
-        subtitulo="Para colocar el robot, probar el detector en el laboratorio y hacer una demostración libre. Aquí el detector sí usa la GPU." />
+      <Cabecera fase="Fase 03 · Control manual" titulo="Mover el robot a mano desde el navegador" />
       <div className="cuerpo dos-asim" style={{ alignItems: 'start' }}>
         <div style={{ position: 'relative', borderRadius: 6, overflow: 'hidden', border: '1px solid var(--borde)' }}>
           <motion.img src={mandoJpg} alt="Interfaz del mando con un robot detectado al 99,9 %" style={{ width: '100%', display: 'block' }}
@@ -426,7 +427,7 @@ export function Mando() {
         </div>
         <div style={{ display: 'grid', gap: 18 }}>
           <div className="panel" style={{ padding: '20px 24px' }}>
-            <div className="etiqueta" style={{ marginBottom: 12 }}>Imágenes analizadas por segundo</div>
+            <div className="etiqueta" style={{ marginBottom: 12 }}>Imágenes por segundo: aquí el detector sí usa la GPU</div>
             <BarrasH anchoEtiqueta={190} max={32} dec={1} retraso={0.8} paso={0.18} alto={30}
               datos={[
                 { etiqueta: 'CPU del laboratorio', valor: 1 / 2.3, texto: '0,4' },
@@ -436,6 +437,7 @@ export function Mando() {
               ]} />
           </div>
           <Revela as="ul" className="lista" retraso={1.8} paso={0.14} style={{ fontSize: 22 }}>
+            <Item as="li"><span><b>Uso:</b> colocar el robot, probar el detector y hacer una demo libre</span></Item>
             <Item as="li"><span><b>Teclado, ratón o mando de PS4</b></span></Item>
             <Item as="li"><span><b>Seguro:</b> sin órdenes, se para</span></Item>
             <Item as="li"><span><b>Disparo automático</b> opcional</span></Item>
@@ -465,6 +467,7 @@ const HECHO = [
   'Ataques en marcha, rival en alto y baile final, en simulación',
   'Robot camuflado probado en papel y en tableta',
   'Mando con detector en GPU y 31 pruebas automáticas',
+  'Cada ejecución guarda imágenes, cajas, ángulos y tiempos',
 ];
 const PENDIENTE = [
   'Disparar en el laboratorio con la cámara corregida',
@@ -476,8 +479,7 @@ const PENDIENTE = [
 export function Estado() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Estado" titulo="Qué funciona y qué queda para el laboratorio"
-        subtitulo="Cada ejecución guarda las imágenes analizadas, sus cajas, el ángulo de la torreta y los tiempos: el material para los resultados del bloque." />
+      <Cabecera fase="Fase 03 · Estado" titulo="Qué ya funciona y qué falta probar en el laboratorio" />
       <div className="cuerpo dos" style={{ alignItems: 'start' }}>
         {[[HECHO, true, 'Hecho'], [PENDIENTE, false, 'Pendiente']].map(([lista, hecho, t], col) => (
           <div key={t} className="panel">

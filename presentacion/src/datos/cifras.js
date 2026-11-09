@@ -19,20 +19,10 @@ export const CRITERIOS = [
   ['Negativas', 'imagen y XML vacío: también enseñan'],
 ];
 export const DATASET = { originales: 808, depuradas: 796, cajasDepuradas: 1399, copias: 2388, total: 3184, cajasTotal: 5566 };
-export const EDA_DECISIONES = [
-  { visto: 'La imagen más parecida es del mismo vídeo en el 74 % de los casos', decision: 'Validar con secuencias de otros grupos',
-    despues: 'AP@0,5 de 0,951 en validación y 0,952 en test' },
-  { visto: '26,4 % de robots difficult, en los bordes y en algunos vídeos', decision: 'Conservarlos y medir su AP aparte',
-    despues: '74 de los 115 robots perdidos en test son difficult' },
-  { visto: 'Ninguna caja de menos de 30 px; en validación, un 2,5 %', decision: 'Alejar hasta ×0,6 y probar una imagen más grande',
-    despues: 'AP de objetos pequeños de 0,12 a 0,19' },
-  { visto: 'Cajas casi cuadradas: las anclas cubren el 99,6 %', decision: 'Anclas por defecto y escala sin deformar',
-    despues: 'Los cuatro modelos con ResNet-50 superan 0,93' },
-];
 export const AUMENTO = [
-  { grupo: 'Geometría', items: ['volteo horizontal', 'escala ×0,6–1,25', 'desplazamiento', 'giro ±6°'] },
-  { grupo: 'Color', items: ['brillo y contraste ±20 %', 'gamma', 'tono suave', 'balance RGB'] },
-  { grupo: 'Calidad', items: ['desenfoque de movimiento', 'JPEG 35–75', 'ruido de sensor', 'menos resolución'] },
+  { grupo: 'Geometría', porque: 'robots lejanos y cámara inclinada', items: ['volteo horizontal', 'escala ×0,6–1,25', 'desplazamiento', 'giro ±6°'] },
+  { grupo: 'Color', porque: 'otras luces', items: ['brillo y contraste ±20 %', 'gamma', 'tono suave', 'balance RGB'] },
+  { grupo: 'Calidad', porque: 'vídeo movido o comprimido', items: ['desenfoque de movimiento', 'JPEG 35–75', 'ruido de sensor', 'menos resolución'] },
 ];
 
 // Bloque 2 · Tablas 14, 16, 18, 22 y 23
@@ -109,11 +99,4 @@ export const SOPORTES = [
   { soporte: 'Papel', tam: '¼ del alto', conf: '0,87–0,92', dispara: false },
   { soporte: 'Tableta', tam: '⅓–½ del alto', conf: '0,29–0,63', dispara: false },
   { soporte: 'Tableta', tam: 'toda la imagen', conf: '0,55–0,95', dispara: null },
-];
-export const EQUIPO = [
-  { nombre: 'Javier Saguar', lote: 'A', videos: '01–02' },
-  { nombre: 'Alejandro Cuevas', lote: 'B', videos: '03–04' },
-  { nombre: 'Mónica Fernández', lote: 'C', videos: '05–06' },
-  { nombre: 'Pedro José Orrego', lote: 'D', videos: '07–08' },
-  { nombre: 'Daniel Naval', lote: 'E', videos: '09–10' },
 ];
