@@ -34,7 +34,7 @@ TOLERANCIA_PUNTERIA = 3  # grados: centrado si el error es menor (o menor que el
 
 # --- Mejoras de la PR 36: todas desactivadas por defecto ------------------------------
 # Con SEGUIMIENTO, BARRIDO_CONTINUO, MEMORIA, VIGILANCIA y LEER_ANGULO_GIMBAL a False la demo
-# hace lo mismo que la de main (confirmación única y ráfaga de 12 con la SCAR en cada disparo).
+# hace lo mismo que la de main (confirmación única, puntería por pasos y ráfaga de DISPAROS_POR_ROBOT).
 # Se activan en el laboratorio de una en una, en este orden, comprobando cada una con el
 # robot (pasos en el README): LEER_ANGULO_GIMBAL, SEGUIMIENTO, BARRIDO_CONTINUO,
 # MEMORIA (tras calibrar ALTURA_ROBOT) y VIGILANCIA.
@@ -43,7 +43,8 @@ TOLERANCIA_PUNTERIA = 3  # grados: centrado si el error es menor (o menor que el
 # Con SEGUIMIENTO, al fijar un robot la torreta lo sigue imagen a imagen (gimbal.drive_speed)
 # y solo dispara cuando está centrado, hasta DISPAROS_POR_ROBOT. La ganancia se adapta al
 # tiempo medido por imagen (CORRECCION_POR_IMAGEN), así que funciona con CPU (~1,1 s por
-# imagen, 12 disparos en unos 15 s) y con GPU (~0,1 s, unos 4 s).
+# imagen, como mucho un disparo por imagen: 20 disparos en unos 23 s) y con GPU (~0,1 s, unos 6 s,
+# los que marca INTERVALO_DISPARO).
 # False: confirmación única y ráfaga sin mirar (como en main).
 SEGUIMIENTO = False
 UMBRAL_SEGUIMIENTO = 0.8 # ya fijado el robot, confianza mínima para no perderlo (para fijarlo hace falta UMBRAL)
@@ -200,7 +201,7 @@ AUDIO_MOTOR_RESERVA = 'audio/engine_sound_corto.wav'
 # Audios propios (WAV mono 48 kHz, ver audio/convertir_audio.py). Van en audio/propios/,
 # que no se sube a GitHub por los derechos de autor. Si no existen, se usan los sonidos del SDK.
 # El SDK no sube el volumen del altavoz: se sube en el audio con audio/preparar_disparo.py, que
-# crea scar_fuerte.wav (un disparo) y scar_rafaga.wav (los 12, cada INTERVALO_DISPARO s).
+# crea scar_fuerte.wav (un disparo) y scar_rafaga.wav (los 20, cada INTERVALO_DISPARO s).
 AUDIO_RAFAGA = 'audio/propios/scar_rafaga.wav'    # sin SEGUIMIENTO: suena una vez y se dispara a su ritmo
 AUDIO_DISPARO = 'audio/propios/scar_fuerte.wav'   # un disparo: con SEGUIMIENTO, o si no hay AUDIO_RAFAGA
 SILENCIO_AUDIO_DISPARO = 0.3 # s de silencio al principio de esos audios (--silencio de preparar_disparo.py)

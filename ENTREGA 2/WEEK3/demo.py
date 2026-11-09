@@ -598,10 +598,10 @@ class Demo:
     def apuntar_y_disparar(self, parada, angulo, confianza, ya_atacados=()):
         """Gira hacia un objetivo, confirma que sigue ahí, corrige la puntería y dispara.
 
-        Al confirmar se toma la detección más centrada. Si queda a más de
-        TOLERANCIA_YAW del centro, el objetivo previsto no está; si coincide con un
-        robot ya atacado en la parada, se dispararía dos veces al mismo. En ambos
-        casos no se dispara.
+        Al confirmar se toma la detección más centrada y la torreta la centra por pasos
+        (hasta CORRECCIONES_PUNTERIA correcciones), aunque esté lejos del ángulo previsto.
+        No se dispara si no se ve ningún robot o si el más centrado coincide con uno ya
+        atacado en la parada (se le dispararía dos veces).
         :return: True si se ha atacado (o, con --sin-disparar, si se habría atacado).
         """
         self.senales.estado('apuntando')

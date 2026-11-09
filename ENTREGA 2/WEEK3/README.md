@@ -15,6 +15,7 @@ completó el 04/11/2026 con nuestra demo.
 |---|---|
 | **`circuito.py`** | **Configuración: modelo, umbral, estrategia y paradas del circuito. Es lo que se ajusta en el laboratorio** |
 | **`demo.py`** | La demo: recorrido, barrido, puntería, disparo, evidencias, LED, sonido y baile. También `detect_and_shoot` completado según la plantilla |
+| `demo_gpu.py` | La misma demo con el detector en la GPU del portátil (unos 0,1 s por imagen en vez de 2,3 s) y la CPU de respaldo. No cambia `demo.py`: ver [4.2](#42-demo-con-el-detector-en-la-gpu) |
 | `demo_utils.py` | Funciones de la asignatura y las nuestras (sección «Añadidos del grupo 2»): carga comprobada del modelo, cámara abierta toda la demo, evidencias, LED y sonido |
 | `recorrido.py` | Convierte las paradas medidas sobre el plano del circuito en movimientos del chasis y barridos de la torreta. `python recorrido.py` muestra lo calculado |
 | `simulacion.py` | Robot simulado para probar la demo sin el RoboMaster |
@@ -32,7 +33,7 @@ completó el 04/11/2026 con nuestra demo.
 **Opciones por defecto.** Las mejoras para rivales que se mueven (`SEGUIMIENTO`,
 `BARRIDO_CONTINUO`, `MEMORIA`, `VIGILANCIA` y `LEER_ANGULO_GIMBAL`) vienen a `False` en
 `circuito.py`. Así, la demo hace lo mismo que la de `main`: barrido por pasos, confirmación
-única y ráfaga de 12 disparos con la SCAR en cada uno. Se activan en el laboratorio de una en
+única, puntería por pasos y ráfaga de `DISPAROS_POR_ROBOT` (20) disparos. Se activan en el laboratorio de una en
 una (sección 4.1). Lo que sigue describe cada paso con la mejora activada y sin ella.
 
 Para cada parada de `circuito.PARADAS`:
@@ -78,7 +79,7 @@ Para cada parada de `circuito.PARADAS`:
      de 2, con CPU la torreta se pasaba de largo y oscilaba.
    - **Dispara solo con el robot centrado:** error menor que `TOLERANCIA_DISPARO` (3º) o que
      el 40 % del tamaño de la caja, si es mayor, y al menos `INTERVALO_DISPARO` (0,3 s)
-     desde el disparo anterior, hasta llegar a 12. Con `ANTICIPAR` espera a haberlo visto en
+     desde el disparo anterior, hasta llegar a `DISPAROS_POR_ROBOT` (20). Con `ANTICIPAR` espera a haberlo visto en
      dos imágenes, para conocer ya su velocidad.
    - **Compensa el retardo del vídeo:** la imagen llega `RETARDO_CAMARA` s tarde (unos
      0,25 s por wifi). El ángulo del robot se calcula con el que tenía la torreta al tomar la
@@ -87,7 +88,7 @@ Para cada parada de `circuito.PARADAS`:
      `TIEMPO_MAX_OBJETIVO` s (20 s, o lo que duren 24 imágenes si es más). No cuenta como
      atacado y el barrido sigue.
 
-   Tras los 12 disparos, el gimbal cabecea y el LED se pone verde. Con `SEGUIMIENTO = False`
+   Tras la ráfaga, el gimbal cabecea y el LED se pone verde. Con `SEGUIMIENTO = False`
    (por defecto) se usa la versión de `main`: confirma una vez (`CONFIRMAR`), corrige y dispara
    la ráfaga sin volver a mirar. Solo sirve para robots quietos.
 5. **Fin de la parada.** Si se han atacado los `objetivos` esperados en la parada, se
@@ -150,7 +151,7 @@ Al terminar: vuelta al inicio (opcional) y baile final con LED, sonido, gimbal y
 | Chasis | Recorrido entre paradas y baile |
 | Gimbal (torreta) | Barrido continuo, seguimiento del objetivo (`drive_speed`), lectura de su ángulo (`sub_angle`), cabeceo tras inutilizar un robot y baile |
 | Cámara | Vídeo abierto toda la demo; se lee siempre el fotograma más reciente, situado con el ángulo de la torreta al tomarlo |
-| Blaster | 12 disparos de infrarrojo por robot, de uno en uno |
+| Blaster | 20 disparos de infrarrojo por robot (`DISPAROS_POR_ROBOT`; el enunciado pide 12 impactos), de uno en uno |
 | LED | Color según el estado: azul en marcha, ámbar buscando, naranja apuntando, rojo parpadeando al disparar, verde tras inutilizar un robot, morado sin hallazgos, amarillo parpadeando con un robot en el camino |
 | Audio | Sonidos del SDK al empezar, buscar, detectar, disparar y terminar, y `engine_sound.wav` al arrancar |
 | Batería | Se lee al empezar y se avisa por debajo del 20 % |
@@ -185,7 +186,7 @@ arrancar y se come el principio de cada audio: un disparo de 0,2 s no llega a o�
 
 - `scar_fuerte.wav`: el disparo con unos 9 dB más de volumen (saturación suave, sin
   recortar) y 0,3 s de silencio delante;
-- `scar_rafaga.wav`: el mismo silencio y los 12 disparos cada 0,3 s.
+- `scar_rafaga.wav`: el mismo silencio y los 20 disparos cada 0,3 s (6,2 s en total).
 
 Sus valores por defecto coinciden con `DISPAROS_POR_ROBOT`, `INTERVALO_DISPARO` y
 `SILENCIO_AUDIO_DISPARO`; si se cambian en `circuito.py`, hay que cambiarlos también al
@@ -196,7 +197,7 @@ ráfaga, una tras otra, para compararlas.
 | Audio (`circuito.py`) | Cuándo suena |
 |---|---|
 | `AUDIO_MOTOR` (`audio/engine_sound_corto.wav`) | Al arrancar: los 6 primeros segundos de `engine_sound.wav`, para que no tape los demás sonidos |
-| `AUDIO_RAFAGA` (`audio/propios/scar_rafaga.wav`) | Sin `SEGUIMIENTO` (por defecto): suena una vez al empezar la ráfaga y los 12 disparos van a su ritmo, cada uno en su instante. Así no se sube un audio al robot en cada disparo. Si no existe, se usa `AUDIO_DISPARO` en cada disparo |
+| `AUDIO_RAFAGA` (`audio/propios/scar_rafaga.wav`) | Sin `SEGUIMIENTO` (por defecto): suena una vez al empezar la ráfaga y los 20 disparos van a su ritmo, cada uno en su instante. Así no se sube un audio al robot en cada disparo. Si no existe, se usa `AUDIO_DISPARO` en cada disparo |
 | `AUDIO_DISPARO` (`audio/propios/scar_fuerte.wav`) | Con `SEGUIMIENTO`, o sin `AUDIO_RAFAGA`: en cada disparo (`SONIDO_CADA_DISPARO = True`, por defecto): si hay otro sonido en curso se omite (con seguimiento) o se espera (sin seguimiento), porque el SDK no admite dos sonidos a la vez. Con `SONIDO_CADA_DISPARO = False`, solo al empezar cada ráfaga, sin esperar a que acabe |
 | `AUDIO_FINAL` (`audio/propios/superestrella.wav`) | En el baile final. Los LED cambian de color `LED_FIESTA_HZ` veces por segundo mientras suena |
 
@@ -344,7 +345,7 @@ Si una falla, se vuelve a poner a `False` y la demo sigue funcionando sin ella.
 1. **`LEER_ANGULO_GIMBAL = True`.** No cambia la estrategia. Al arrancar debe aparecer
    `Torreta: lectura del ángulo comprobada`. Si no, la demo estima el ángulo como antes.
 2. **`SEGUIMIENTO = True`.** Con un compañero moviendo un robot delante, la torreta debe
-   seguirlo y disparar 12 veces. Revisar `s_por_imagen` en `resumen.json` y ajustar como
+   seguirlo y disparar la ráfaga de 20. Revisar `s_por_imagen` en `resumen.json` y ajustar como
    se indica en «Ajustar el seguimiento en el laboratorio». Con `SONIDO_CADA_DISPARO = False`
    la ráfaga es más rápida.
 3. **`BARRIDO_CONTINUO = True`.** Comprobar en `evidencias/` que el detector ve los robots con
@@ -367,6 +368,79 @@ Opciones de `demo.py`:
 | `--evidencias CARPETA` | Carpeta de salida |
 | `--conexion wifi` / `--conexion networking` | Fuerza el modo de conexión (por defecto, `auto`) |
 
+
+### 4.2. Demo con el detector en la GPU
+
+El SDK obliga a usar Python 3.8, y el PyTorch de Python 3.8 no admite la RTX 5070, así que
+`demo.py` analiza las imágenes en CPU: 2,2 a 2,4 s cada una en el laboratorio.
+`demo_gpu.py` es la misma demo, con el mismo circuito, la misma configuración y las mismas
+opciones, pero arranca `mando/detector_gpu.py` con `.venv-gpu` (Python 3.11 y CUDA 12.8) y le
+manda cada imagen por `127.0.0.1:8767`. El modelo y el umbral son los de `circuito.py`.
+
+```
+python demo_gpu.py --simulacion                         # probar sin robot
+python demo_gpu.py --sin-mover --sin-disparar --paradas P1
+python demo_gpu.py                                      # demo completa
+python demo_gpu.py --solo-cpu                           # igual que demo.py
+```
+
+- Necesita `.venv-gpu`, el mismo entorno que el mando ([`mando/README.md`](mando/README.md)).
+- Al arrancar dice si usa la GPU. Si no hay GPU, `.venv-gpu` o el detector no arranca, la
+  demo sigue en CPU como `demo.py`. Si la GPU falla durante la demo, esa imagen se analiza
+  en CPU y, tras 3 fallos seguidos, el resto de la demo va en CPU.
+- Al terminar indica cuántas imágenes se han analizado en GPU y en CPU; también lo guarda
+  en `resumen.json` (clave `detector`). El registro del proceso de la GPU queda en
+  `evidencias/detector/`.
+- En `registro.csv`, `ms_inferencia` es el tiempo total: codificar la imagen, enviarla y
+  recibir las cajas.
+- Si algo falla, `python demo.py` sigue funcionando igual que antes.
+- Al arrancar indica qué GPU usa, y `resumen.json` la guarda en `detector.nombre_gpu`.
+
+**Portátil o ordenador del laboratorio.** Las ruedas de PyTorch con CUDA 12.8 admiten la
+RTX 5070 Laptop del portátil de Javier y la RTX 3060 de los ordenadores del laboratorio,
+así que `demo_gpu.py` vale para los dos. Los ordenadores del laboratorio usan Linux y el
+entorno de pixi del apartado 4 (`/home/PIDS/robomaster/.pixi/venv/bin/python`):
+
+1. Ver si ese PyTorch ya usa la GPU. Si escribe `True`, `demo.py` ya analiza en la RTX
+   3060 (`USAR_GPU = True` en `circuito.py`) y no hace falta `demo_gpu.py`:
+   ```
+   /home/PIDS/robomaster/.pixi/venv/bin/python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+   ```
+2. Si escribe `False`, crear `.venv-gpu` en la carpeta donde se han copiado los ficheros
+   (también `mando/`) y comprobar la GPU:
+   ```
+   nvidia-smi                                   # «CUDA Version» 12.8 o mayor
+   uv venv --python 3.11 .venv-gpu
+   uv pip install --python .venv-gpu/bin/python torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cu128
+   uv pip install --python .venv-gpu/bin/python -r mando/requirements-gpu.txt
+   .venv-gpu/bin/python mando/detector_gpu.py --medir 10
+   ```
+   `--medir` escribe el nombre de la GPU y los ms por imagen. Si el controlador es anterior
+   a CUDA 12.8, se usa `--index-url https://download.pytorch.org/whl/cu118`, que también
+   admite la RTX 3060 (no la 5070).
+3. Lanzar la demo con el intérprete de pixi: `python demo_gpu.py --simulacion --paradas P1`
+   y después con el robot.
+
+Si no se puede instalar nada en el laboratorio, la demo se hace desde el portátil de Javier.
+
+Comprobado con el robot simulado (`--simulacion`):
+
+| | `demo.py` (CPU) | `demo_gpu.py` (GPU) |
+|---|---|---|
+| Tiempo medio por imagen | 1279 ms | 117 ms |
+| Imágenes analizadas | 25 | 112 |
+| Disparos (P1, R1 y R2) | 80 | 80 |
+
+En 8 imágenes de test, la GPU da las mismas detecciones que la CPU, con diferencias de
+confianza de 0,002 como mucho por la compresión JPEG. Con el robot real falta medir el
+retardo del vídeo, que pasa a ser el límite.
+
+Puede ayudar con el fallo del laboratorio en que el robot detectaba pero no disparaba. Ese
+fallo venía de la cola de vídeo del SDK, que se llenaba mientras el modelo analizaba cada
+imagen durante unos 2 s. La corrección que lee el vídeo en un hilo está en los dos scripts
+y aún no se ha comprobado en el laboratorio. Con la GPU, el análisis dura unos 0,1 s, así
+que la cola tiene mucho menos tiempo para llenarse.
+
 ## 5. Pruebas
 
 ```
@@ -376,7 +450,7 @@ python -m unittest discover -s tests
 Con el robot simulado y un detector falso que «ve» robots en ángulos conocidos,
 comprueban lo siguiente:
 
-- ataca a cada robot una sola vez, aunque salga en dos imágenes, con 12 disparos y
+- ataca a cada robot una sola vez, aunque salga en dos imágenes, con una ráfaga completa y
   apuntando a su ángulo;
 - deja de barrer al encontrar los robots esperados;
 - no dispara si al confirmar el robot no está centrado o es uno ya atacado, y corrige la puntería si lo está;
