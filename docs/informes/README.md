@@ -32,6 +32,7 @@ El texto del Bloque 3 se escribe en `docs/informe_bloque3_borrador.md`, que se p
 `herramientas/generar_entrega3.py` copia `informe_entrega2.docx` (que no se toca) y le añade:
 - en la portada, «Fases 1, 2 y 3» y «Entrega 3 · Bloques 1, 2 y 3», con la fecha pendiente;
 - el borrador antes de «Referencias», con los mismos estilos de títulos, pies, tablas y figuras;
+- lo que sigue a un título «# Anexo ...» del borrador, al final de los anexos;
 - la referencia [21] al estudio del robot camuflado (`docs/senuelo_aliado.md`).
 
 Tablas y figuras nuevas llevan el prefijo B3 (Tabla B3.1, Figura B3.1) hasta numerar toda la memoria al
@@ -39,6 +40,16 @@ cerrarla. El script no sobrescribe el `.docx` sin `--forzar`: cuando se empiece 
 cambios del borrador se pasan a mano. Después de generarlo, actualizar el índice (F9).
 
 ## Historial
+
+**09/11/2026 (quinta tanda)** — robot camuflado completo y demo en GPU:
+- Pasan al borrador los cambios a mano de Javier en Word: fuera el 13.1 y el párrafo de la primera prueba de la recta.
+- El 16 vuelve entero, con el 16.1 de la prueba impresa, y empieza explicando la idea inicial (un señuelo al que
+  no disparar) y en qué se convirtió (el robot camuflado como objetivo y los aliados como trabajo futuro).
+- Anexo F nuevo con las imágenes: los robots generados con IA (Figura F.1) y las capturas de la webcam con el
+  robot impreso y en la tableta (Figura F.2).
+- El 13 explica la segunda versión de la demo con el detector en la GPU (RTX 5070 del portátil o RTX 3060 del
+  laboratorio) y la CPU de respaldo; se añade al reparto de Javier.
+- 44 páginas; el cuerpo ocupa de la 4 a la 31.
 
 **09/11/2026 (cuarta tanda)** — revisión de Javier y espacio para los resultados del laboratorio:
 - Lo corregido a mano en Word pasa a los scripts: fecha de entrega 15/11/2026 en la portada, tareas del Bloque 3

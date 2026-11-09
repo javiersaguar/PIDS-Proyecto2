@@ -257,7 +257,8 @@ CONCLUSION_B2 = (
 REPARTO_B3 = {
     'Integrante': 'Tareas del Bloque 3',
     'Javier Saguar': 'Demo del circuito: desplazamientos, puntería, disparo, ataques en marcha y robot '
-                     'camuflado. Kit del rival móvil, interfaz del mando y memoria del Bloque 3.',
+                     'camuflado. Demo con el detector en la GPU y la CPU de respaldo, kit del rival móvil, '
+                     'interfaz del mando y memoria del Bloque 3.',
     'Alejandro Cuevas': 'Seguimiento de rivales en movimiento, barrido continuo de la torreta, memoria de '
                         'robots atacados y vigilancia del recorrido.',
     'Mónica Fernández': 'Diseño del boceto del circuito.',

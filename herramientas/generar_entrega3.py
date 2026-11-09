@@ -12,7 +12,8 @@ Copia docs/informes/informe_entrega2.docx (editado a mano en Word, que no se toc
     python herramientas/generar_entrega3.py                 crea docs/informes/informe_entrega3.docx
     python herramientas/generar_entrega3.py --forzar        lo sobrescribe (se pierden los cambios a mano)
 
-El borrador admite: «# » y «## » (títulos), párrafos, tablas Markdown seguidas de un pie
+El borrador admite: «# » y «## » (títulos), «# Anexo ...» (lo que sigue va al final de los anexos,
+antes de la respuesta a la revisión), párrafos, tablas Markdown seguidas de un pie
 «*Tabla ...*», figuras «![Figura ...](ruta|ruta)» con rutas relativas a docs/, **negrita**, __entradilla__
 (cursiva subrayada), ^superíndice^ y [PENDIENTE: ...] (resaltado en amarillo). Las líneas que empiezan por «>» se ignoran.
 Después hay que abrirlo en Word, actualizar el índice (F9) y revisar la paginación.
@@ -178,10 +179,22 @@ def generar(salida):
     anexos = next(p for p in titulos if p.text.strip() == 'Anexos')
     anexos._p.addprevious(parrafo(REFERENCIA, extra='<w:jc w:val="left"/>'))
 
+    # Los anexos del borrador van detrás del último anexo, antes de los párrafos vacíos que
+    # preceden a «Respuesta a la revisión anterior»
+    respuesta = next(p for p in titulos if p.text.strip() == 'Respuesta a la revisión anterior')._p
+    fin_anexos = respuesta
+    while (fin_anexos.getprevious() is not None and fin_anexos.getprevious().tag == respuesta.tag
+           and not ''.join(fin_anexos.getprevious().itertext()).strip()):
+        fin_anexos = fin_anexos.getprevious()
+
     primero = True
+    ancla = referencias._p
     for bloque in leer_bloques(BORRADOR):
         tipo = bloque[0]
-        if tipo == 'h1':
+        if tipo == 'h1' and bloque[1].startswith('Anexo '):
+            ancla = fin_anexos
+            el = parrafo(bloque[1], 'Ttulo2')
+        elif tipo == 'h1':
             el = parrafo(bloque[1], 'Ttulo1', '<w:pageBreakBefore/>' if primero else '')
             primero = False
         elif tipo == 'h2':
@@ -194,7 +207,7 @@ def generar(salida):
             el = tabla(bloque[1])
         elif tipo == 'figura':
             el = parse_xml(f'<w:p {W}><w:pPr><w:keepNext/><w:jc w:val="center"/></w:pPr></w:p>')
-            referencias._p.addprevious(el)
+            ancla.addprevious(el)
             p = Paragraph(el, referencias._parent)
             ancho = Cm(15.5) if len(bloque[2]) == 1 else Cm(15.0 / len(bloque[2]))
             for i, ruta in enumerate(bloque[2]):
@@ -202,7 +215,7 @@ def generar(salida):
                     p.add_run('   ')
                 p.add_run().add_picture(ruta, width=ancho)
             el = parrafo(bloque[1], 'Descripcin', '<w:keepLines/>')
-        referencias._p.addprevious(el)
+        ancla.addprevious(el)
     correcciones_entrega2.aplicar(doc, sys.modules[__name__])
     doc.save(salida)
     print(f'Creado {salida}')
