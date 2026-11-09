@@ -49,8 +49,8 @@ export const DIAPOSITIVAS = [
 
   { id: 'seccion-3', fase: 3, tipo: 'seccion', titulo: 'Fase 3 · Robot', Componente: Seccion3,
     notas: 'Fase 3: el detector en el RoboMaster EP.' },
-  { id: 'circuito', fase: 3, titulo: 'El recorrido que tiene que hacer el robot', Componente: Circuito,
-    notas: 'Recorrido por tramos. Solo P1 está medido en el laboratorio. Primer problema: la orden por distancia del SDK no respetaba la velocidad.' },
+  { id: 'circuito', fase: 3, titulo: 'Dónde se para, dónde va despacio y a quién dispara', Componente: Circuito,
+    notas: 'La animación recorre la demo con el tiempo comprimido (la real dura casi dos minutos). Azul: tramos rápidos, a 0,4–0,5 m/s. P1: se para, gira la torreta a la derecha (rival 1) y a la izquierda (robot camuflado); en cada uno, detección y ráfaga de 20 disparos (el enunciado pide 12 impactos). Naranja: los dos ataques sin parar a 0,1 m/s, al rival 2, que se mueve, durante el retroceso de R1, y al rival 3, en alto y detrás, en los 2 m finales de R2. Los LED van como en el robot: ámbar buscando, rojo al disparar. Solo P1 está medido en el laboratorio. Primer problema: la orden por distancia del SDK no respetaba la velocidad (0,06 m/s), así que mandamos la velocidad 20 veces por segundo con la odometría.' },
   { id: 'marcha', fase: 3, titulo: 'Disparar sin detener el robot', Componente: Marcha,
     notas: 'Presupuesto de tiempo del retroceso de 1,25 m a 0,1 m/s: girar la torreta, ver al rival, avisar y la ráfaga. El chasis no espera a la inferencia. Imagen nítida: con el robot en marcha algunas salen movidas; de las de los últimos 0,2 s se analiza la más nítida (varianza del laplaciano). Velocidad prevista: con el plano y las velocidades, el rival 2 se queda atrás unos 2,4 °/s; la torreta gira a esa velocidad y corrige con cada imagen. Rival en alto: a 1 m queda a unos 17° y a 2 m a 9°; la torreta lo busca inclinada 10° y corrige con la caja. Ráfaga: 20 disparos, uno cada 0,3 s, sincronizados con el sonido; el enunciado pide 12 impactos y los 8 de más cubren los que no registre.' },
   { id: 'mando', fase: 3, titulo: 'La interfaz que hicimos para manejar el robot', Componente: Mando,
