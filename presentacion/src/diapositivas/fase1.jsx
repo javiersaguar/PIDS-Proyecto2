@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Cabecera, Contador, CURVA, fmt, Item, Paso, Revela } from '../componentes/base.jsx';
+import { Cabecera, Contador, CURVA, fmt, Item, Revela } from '../componentes/base.jsx';
 import { Caja, Fotograma } from '../componentes/fotograma.jsx';
 import { BarrasH } from '../componentes/graficas.jsx';
 import { Seccion } from '../componentes/seccion.jsx';
 import { FOTOGRAMAS } from '../datos/fotogramas.js';
-import { ANOTACION, AUMENTO, CRITERIOS, DATASET, EDA_DECISIONES, INTERVALOS, RECOGIDA } from '../datos/cifras.js';
+import { ANOTACION, AUMENTO, CRITERIOS, DATASET, INTERVALOS, RECOGIDA } from '../datos/cifras.js';
 import generados from '../datos/generados.json';
 
 const F = FOTOGRAMAS;
@@ -15,7 +15,7 @@ export const VIDEOS = [F.v01, F.v02, F.v03, F.v04, F.v05, F.v06, F.v07, F.v08, F
 export function Seccion1() {
   return (
     <Seccion numero="01" titulo="Datos" fotos={VIDEOS}
-      lema="Antes de entrenar nada: grabar nuestros vídeos, decidir qué es un robot y mirar bien los datos."
+      lema="Antes de entrenar, grabamos nuestros vídeos, decidimos qué es un robot y analizamos los datos."
       puntos={['10 vídeos', '808 imágenes', '1420 robots', 'análisis exploratorio', 'aumento ×4']} />
   );
 }
@@ -24,14 +24,13 @@ export function Seccion1() {
 const EMBUDO = [
   { v: RECOGIDA.videos, t: 'vídeos grabados con el RoboMaster', d: '1280 × 720 · 30 fps · interior y exterior' },
   { v: RECOGIDA.segundos, dec: 1, t: 'segundos de grabación', d: 'vestíbulo, aulas, pasillo y exterior' },
-  { v: RECOGIDA.fotogramas, t: 'fotogramas', d: 'casi todos repetidos: el robot se mueve poco en 1/30 s' },
+  { v: RECOGIDA.fotogramas, t: 'fotogramas', d: 'de uno al siguiente (1/30 s) casi no cambia nada' },
   { v: RECOGIDA.imagenes, t: 'imágenes para anotar', d: 'una de cada 24 fotogramas (0,79 s)', acento: true },
 ];
 export function Recogida() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 01 · Recolección" titulo="De 19 508 fotogramas a 808 imágenes"
-        subtitulo="Grabamos diez vídeos propios y elegimos cada cuántos fotogramas extraer una imagen midiendo cuántas salían casi repetidas." />
+      <Cabecera fase="Fase 01 · Recolección" titulo="Las imágenes con las que entrenamos" />
       <div className="cuerpo dos" style={{ alignItems: 'start' }}>
         <div style={{ display: 'grid', gap: 10 }}>
           {EMBUDO.map((e, i) => (
@@ -51,14 +50,14 @@ export function Recogida() {
           ))}
         </div>
         <div className="panel">
-          <div className="etiqueta" style={{ marginBottom: 6 }}>Imágenes casi duplicadas según el intervalo</div>
-          <p style={{ fontSize: 18, marginBottom: 22 }}>Parejas consecutivas con una diferencia media de gris entre miniaturas menor de 5, en los diez vídeos.</p>
+          <div className="etiqueta" style={{ marginBottom: 6 }}>¿Cada cuántos fotogramas guardamos una imagen?</div>
+          <p style={{ fontSize: 18, marginBottom: 22 }}>Porcentaje de imágenes casi iguales a la anterior según el intervalo elegido.</p>
           <BarrasH anchoEtiqueta={210} max={12} dec={1} retraso={0.9} paso={0.14} alto={44}
             datos={INTERVALOS.map((d) => ({ etiqueta: `cada ${d.intervalo} · ${fmt(d.imagenes)} img`, valor: d.duplicadas,
               texto: `${fmt(d.duplicadas, 1)} %`, destacado: d.intervalo === 24 }))} />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }}
             style={{ marginTop: 22, fontSize: 19, color: 'var(--texto)' }}>
-            <span className="acento mono">24</span> deja un 1,4 % de casi repetidas y unos 1420 robots que anotar entre cinco.
+            Con una de cada <span className="acento mono">24</span> casi no hay repetidas (1,4 %) y quedan unos 1420 robots: una cantidad razonable para anotar entre cinco.
           </motion.p>
         </div>
       </div>
@@ -70,8 +69,7 @@ export function Recogida() {
 export function Anotacion() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 01 · Anotación" titulo="Qué es un robot, decidido entre los cinco"
-        subtitulo="Antes de anotar fijamos criterios por escrito y los calibramos anotando todos las mismas imágenes difíciles." />
+      <Cabecera fase="Fase 01 · Anotación" titulo="Qué consideramos un robot" />
       <div className="cuerpo dos-asim">
         <div>
           <Fotograma foto={F.anotacion} modo="anotacion" retraso={0.6} paso={0.35} />
@@ -84,6 +82,7 @@ export function Anotacion() {
         </div>
         <div style={{ display: 'grid', gap: 20, alignContent: 'start' }}>
           <Revela className="panel" retraso={0.5} paso={0.1} style={{ padding: '22px 26px' }}>
+            <Item className="etiqueta" style={{ marginBottom: 6 }}>Reglas que fijamos por escrito antes de anotar</Item>
             {CRITERIOS.map(([t, d]) => (
               <Item key={t} style={{ display: 'grid', gridTemplateColumns: '130px 1fr', gap: 14, padding: '7px 0', fontSize: 19 }}>
                 <span className="mono acento" style={{ fontSize: 16, paddingTop: 2 }}>{t}</span>
@@ -94,11 +93,11 @@ export function Anotacion() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             <motion.div className="panel" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.3 }}>
               <div className="cifra peque"><Contador valor={ANOTACION.robots} retraso={1.3} /></div>
-              <div className="cifra-pie"><Contador valor={ANOTACION.difficult} retraso={1.4} /> difficult (26,4 %) y 41 imágenes sin robots</div>
+              <div className="cifra-pie">robots anotados, <Contador valor={ANOTACION.difficult} retraso={1.4} /> de ellos difficult (26,4 %), y 41 imágenes sin robots</div>
             </motion.div>
             <motion.div className="panel" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.5 }}>
               <div className="cifra peque acento"><Contador valor={ANOTACION.iouAnotadores} dec={2} retraso={1.5} /></div>
-              <div className="cifra-pie">IoU medio entre anotadores en 20 imágenes difíciles; donde más discrepamos, en el borde superior</div>
+              <div className="cifra-pie">coincidencia media (IoU) de nuestras cajas en las mismas 20 imágenes difíciles</div>
             </motion.div>
           </div>
         </div>
@@ -135,14 +134,13 @@ function BarrasVideos() {
 const DOMINIO = [
   ['Robots por imagen', '1,76', '2,32', '2,40'],
   ['Robots difficult', '26,4 %', '16,3 %', '15,7 %'],
-  ['Cajas de menos de 50 px', '3,9 %', '11,3 %', '9,1 %'],
-  ['Tono azulado (|B − R| > 12)', '26,4 %', '19,9 %', '1,1 %'],
+  ['Robots de menos de 50 px', '3,9 %', '11,3 %', '9,1 %'],
+  ['Imágenes azuladas', '26,4 %', '19,9 %', '1,1 %'],
 ];
 export function Eda() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 01 · Análisis exploratorio" titulo="Cada vídeo es distinto, y los de evaluación también"
-        subtitulo="Robots por vídeo y diferencias con los conjuntos de validación y test de la asignatura, medidas con el mismo cálculo." />
+      <Cabecera fase="Fase 01 · Análisis exploratorio" titulo="Nuestros vídeos y los de la asignatura no se parecen" />
       <div className="cuerpo dos" style={{ alignItems: 'start' }}>
         <div className="panel">
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -154,13 +152,13 @@ export function Eda() {
           </div>
           <BarrasVideos />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }} style={{ marginTop: 14, fontSize: 18 }}>
-            De 17 difficult en V04 a 65 en V08: el reparto de difficult depende del vídeo, así que se mide su AP aparte.
+            Cada vídeo tiene una cantidad distinta de robots difíciles (de 17 en V04 a 65 en V08), así que medimos aparte cómo los detecta el modelo.
           </motion.p>
         </div>
         <div className="panel">
           <div className="etiqueta" style={{ marginBottom: 18 }}>Nuestros vídeos frente a los de la asignatura</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1.5fr repeat(3, 1fr)', rowGap: 4, fontSize: 19 }}>
-            {['', 'Nuestros', 'Validación', 'Test'].map((c) => <div key={c} className="mono" style={{ fontSize: 14, color: 'var(--tenue)', paddingBottom: 10, textAlign: c ? 'right' : 'left' }}>{c}</div>)}
+            {['', 'Nuestros vídeos', 'Validación', 'Test'].map((c) => <div key={c} className="mono" style={{ fontSize: 14, color: 'var(--tenue)', paddingBottom: 10, textAlign: c ? 'right' : 'left' }}>{c}</div>)}
             {DOMINIO.map((fila, i) => fila.map((c, j) => (
               <motion.div key={`${i}-${j}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 + i * 0.25 + j * 0.06 }}
                 className={j ? 'mono' : ''} style={{ padding: '12px 0', borderTop: '1px solid var(--borde)', textAlign: j ? 'right' : 'left',
@@ -168,33 +166,12 @@ export function Eda() {
             )))}
           </div>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }} style={{ marginTop: 22, fontSize: 19, color: 'var(--texto)' }}>
-            La evaluación tiene más robots por imagen y más pequeños: el aumento aleja los robots hasta ×0,6 y se prueba la imagen a 1024 px.
+            En validación y test hay más robots por imagen y más pequeños. Por eso el aumento aleja los robots (hasta ×0,6) y probamos a darle al modelo la imagen más grande.
+          </motion.p>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.4 }} style={{ marginTop: 14, fontSize: 19, color: 'var(--texto)' }}>
+            Cada imagen se parece sobre todo a otras de su mismo vídeo (<span className="mono acento">74 %</span> de los casos): por eso validamos con vídeos de otros grupos, no con los nuestros.
           </motion.p>
         </div>
-      </div>
-    </div>
-  );
-}
-
-// --- Del EDA a las decisiones (fragmentos) ---------------------------------------------------------
-export function Decisiones({ paso }) {
-  return (
-    <div className="diapo">
-      <Cabecera fase="Fase 01 · Decisiones" titulo="Del análisis a las decisiones del entrenamiento"
-        subtitulo="Cada hallazgo del EDA se convirtió en una decisión, y el Bloque 2 permitió comprobar si acertamos." />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr 60px 1fr', columnGap: 0, rowGap: 14, alignItems: 'stretch' }}>
-        {['Lo que vimos', '', 'Lo que decidimos', '', 'Lo que pasó en el Bloque 2'].map((c, i) => (
-          <motion.div key={i} className="etiqueta" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 + i * 0.05 }}>{c}</motion.div>
-        ))}
-        {EDA_DECISIONES.map((d, i) => [
-          <Paso key={`a${i}`} paso={paso} desde={i} className="panel" style={{ padding: '18px 22px', fontSize: 20 }}>{d.visto}</Paso>,
-          <Paso key={`f${i}`} paso={paso} desde={i} style={{ display: 'grid', placeItems: 'center', color: 'var(--acento)', fontSize: 30 }} y={0}>→</Paso>,
-          <Paso key={`b${i}`} paso={paso} desde={i} className="panel" style={{ padding: '18px 22px', fontSize: 20, borderColor: 'var(--acento-oscuro)' }}>
-            <b style={{ fontWeight: 600 }}>{d.decision}</b>
-          </Paso>,
-          <Paso key={`g${i}`} paso={paso} desde={i} style={{ display: 'grid', placeItems: 'center', color: 'var(--acento)', fontSize: 30 }} y={0}>→</Paso>,
-          <Paso key={`c${i}`} paso={paso} desde={i} className="panel mono" style={{ padding: '18px 22px', fontSize: 17, color: 'var(--acento)' }}>{d.despues}</Paso>,
-        ])}
       </div>
     </div>
   );
@@ -245,7 +222,7 @@ function AumentoEnVivo() {
         ))}
       </div>
       <p style={{ marginTop: 12, fontSize: 18, color: 'var(--suave)' }}>
-        Las cajas acompañan a la geometría. Nada deforma al robot: la escala es la misma en los dos ejes.
+        Las cajas se mueven con la imagen y el robot nunca se deforma: se escala igual a lo ancho que a lo alto.
       </p>
     </div>
   );
@@ -253,19 +230,18 @@ function AumentoEnVivo() {
 export function Aumento() {
   const flujo = [
     { v: DATASET.originales, t: 'originales' },
-    { v: DATASET.depuradas, t: 'tras depurar', d: '−11 casi duplicadas, −1 contradictoria' },
-    { v: DATASET.total, t: 'para entrenar', d: `original + 3 copias · ${fmt(DATASET.cajasTotal)} cajas`, acento: true },
+    { v: DATASET.depuradas, t: 'tras depurar', d: 'quitamos 11 casi repetidas y 1 mal anotada' },
+    { v: DATASET.total, t: 'para entrenar', d: `cada imagen y 3 versiones aumentadas · ${fmt(DATASET.cajasTotal)} robots`, acento: true },
   ];
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 01 · Aumento y depuración" titulo="Más variedad sin inventar escenas"
-        subtitulo="Cada transformación responde a algo que vimos en el EDA: robots lejanos, cámara inclinada, otras luces, vídeo movido o comprimido." />
+      <Cabecera fase="Fase 01 · Aumento y depuración" titulo="Más imágenes sin grabar escenas nuevas" />
       <div className="cuerpo dos">
         <AumentoEnVivo />
         <div style={{ display: 'grid', gap: 16, alignContent: 'start' }}>
           {AUMENTO.map((g, i) => (
             <motion.div key={g.grupo} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 + i * 0.2, duration: 0.6, ease: CURVA }}>
-              <div className="etiqueta" style={{ marginBottom: 8 }}>{g.grupo}</div>
+              <div className="etiqueta" style={{ marginBottom: 8 }}>{g.grupo} · {g.porque}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {g.items.map((it) => <span key={it} className="chip">{it}</span>)}
               </div>

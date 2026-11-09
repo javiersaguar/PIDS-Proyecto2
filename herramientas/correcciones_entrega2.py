@@ -198,7 +198,7 @@ RESOLUCION_TABLA = ('Imágenes de 1280 × 720. Faster R-CNN y RetinaNet las rees
                     'resolución. SSD300 y SSDlite320, a 300 × 300 y 320 × 320.')
 RESOLUCION_COMPARA = (
     'Con la imagen grande se detectan más robots pequeños y difficult, pero aparecen muchos más falsos '
-    'positivos, las cajas se ajustan peor, baja el F1 y cada imagen tarda un 60 % más (Tabla 15).')
+    'positivos, las cajas se ajustan peor, baja el F1 y cada imagen tarda un 62 % más (Tabla 15).')
 RESOLUCION_DECIDE = (
     'Con el criterio fijado de antemano, el AP@0,5, la ganancia es demasiado pequeña para compensar esos '
     'costes, así que se mantiene la imagen normal, que además gana en 7 de las 11 secuencias de '
@@ -242,6 +242,24 @@ FINAL = (
     'cambian y las SSD pierden más.')
 RAPIDO = ('Para la demo, Faster R-CNN MobileNet es una alternativa más rápida: pierde algo de precisión, '
           'pero tarda seis veces menos por imagen.')
+
+# 12. El 26,4 % era la proporción de difficult en nuestras imágenes, no en validación y test (16 %).
+DIFFICULT_VIEJO = 'aunque representan solo el 26,4 % de las cajas anotadas (375 de 1420)'
+DIFFICULT_NUEVO = 'aunque son solo el 16 % de los robots de validación y de test'
+# 12.1. El título promete trabajo pendiente y el texto no lo decía; además, el aumento de datos es lo
+# que más mejora a Faster R-CNN v1 (11.1): lo que influye menos que la arquitectura es el perfil de aumento.
+CONCLUSION_B2 = (
+    'Con el aumento base fijado, la arquitectura influye más que la tasa de aprendizaje o el perfil de '
+    'aumento. Los difficult siguen siendo el principal problema, las SSD tienen dificultades con los '
+    'robots lejanos y Faster R-CNN sobreajusta pronto, por lo que el checkpoint se selecciona mediante '
+    'validación.')
+TRABAJO_PENDIENTE = (
+    'Al cerrar el Bloque 2 quedaban tres trabajos pendientes. El primero, medir en el robot si la '
+    'latencia del modelo permite usarlo durante el recorrido; se aborda en el Bloque 3 (apartado 13). El '
+    'segundo, mejorar la detección de los difficult y de los robots lejanos, para lo que hacen falta más '
+    'ejemplos de ese tipo en el entrenamiento. El tercero, repetir con varias semillas las comparaciones '
+    'con diferencias de menos de 1 pp, como las de los modelos con ResNet-50 o las de las tasas, para '
+    'saber si esas diferencias son reales.')
 
 REPARTO_B3 = {
     'Integrante': 'Tareas del Bloque 3',
@@ -309,6 +327,9 @@ FILAS_RESPUESTA = [
     ['16', 'Opcional: nombres autoexplicativos para los experimentos y tendencias en vez de valores exactos.',
      '11', 'Los experimentos de la Tabla 14 se nombran por lo que cambian y el apartado 11 compara '
            'tendencias; los valores quedan en las tablas.'],
+    ['17', 'El apartado 12.1 habla de «trabajo pendiente», pero no dice cuál es.', '12.1',
+     'Se enumeran los tres trabajos que quedaban pendientes al cerrar el Bloque 2; el primero, la latencia '
+     'en el robot, se aborda en el Bloque 3.'],
 ]
 
 # Notación científica: tasas, weight decay y mínimos del programador.
@@ -589,6 +610,12 @@ def aplicar(doc, xml):
     m.sustituir('Faster R-CNN v2 con lr 0,001 es el modelo final', FINAL)
     m.sustituir('Para la demo, Faster R-CNN MobileNet', RAPIDO)
 
+    # 12. Proporción de difficult y 12.1 con el trabajo pendiente (comentario opcional)
+    p = m.parrafo('Los fallos reales se concentran en tres casos')
+    assert DIFFICULT_VIEJO in texto(p)
+    m.sustituir('Los fallos reales se concentran en tres casos', texto(p).replace(DIFFICULT_VIEJO, DIFFICULT_NUEVO))
+    m.sustituir('La arquitectura influye más que la tasa', CONCLUSION_B2, TRABAJO_PENDIENTE)
+
     # Anexo D: tasas de la Tabla 23 que no son de la forma 0,00x
     t23 = m.tabla('TasaAP@0,5 en las épocas')
     for tr in t23.findall(qn('w:tr'))[1:]:
@@ -622,7 +649,19 @@ def aplicar(doc, xml):
         ultimo = anterior
 
     print('Tasas en notación científica:', notacion_cientifica(body))
+    print('AP50 y AP75 cambiados a AP@0,5 y AP@0,75:', ap50(body))
     comprobar(body)
+
+
+def ap50(body):
+    """El texto usa AP@0,5 y AP@0,75; quedaban «AP50» y «AP75» en pies y tablas del Bloque 2
+    (siempre dentro de un run)."""
+    cambios = 0
+    for t in body.iter(qn('w:t')):
+        if t.text and ('AP50' in t.text or 'AP75' in t.text):
+            cambios += t.text.count('AP50') + t.text.count('AP75')
+            t.text = t.text.replace('AP50', 'AP@0,5').replace('AP75', 'AP@0,75')
+    return cambios
 
 
 def comprobar(body):
@@ -630,6 +669,8 @@ def comprobar(body):
     restos = [t for t in todo if PATRON_NOTACION.search(t)]
     if restos:
         raise SystemExit('Quedan tasas sin notación científica: ' + ' | '.join(r[:80] for r in restos))
+    if any('AP50' in t or 'AP75' in t for t in todo):
+        raise SystemExit('Quedan «AP50» o «AP75» partidos entre runs')
     pies = [int(m.group(1)) for t in todo for m in [re.match(r'Figura (\d+)\. ', t)] if m]
     if pies != list(range(1, len(pies) + 1)):
         raise SystemExit(f'Los pies de figura no van seguidos: {pies}')

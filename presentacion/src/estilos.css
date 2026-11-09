@@ -87,7 +87,7 @@ body {
   color: var(--acento);
 }
 .fase::before { content: ''; width: 8px; height: 8px; background: var(--acento); box-shadow: 0 0 12px var(--acento); }
-.titulo { margin: 14px 0 0; font-size: 54px; line-height: 1.04; font-weight: 650; letter-spacing: -0.025em; max-width: 1300px; text-wrap: balance; }
+.titulo { margin: 14px 0 0; font-size: 54px; line-height: 1.04; font-weight: 650; letter-spacing: -0.025em; text-wrap: pretty; }
 .subtitulo { margin: 14px 0 0; color: var(--suave); font-size: 24px; max-width: 1180px; text-wrap: pretty; }
 
 .cuerpo { flex: 1; min-height: 0; display: grid; gap: 40px; }
@@ -133,6 +133,7 @@ body {
   position: absolute; left: -1px; bottom: 100%; margin-bottom: 4px; white-space: nowrap;
   font: 600 13px/1 var(--mono); padding: 4px 6px; color: var(--fondo); background: var(--c, var(--acento)); letter-spacing: 0.04em;
 }
+.caja .rotulo.derecha { left: auto; right: -1px; }
 .caja .rotulo span { color: var(--fondo); }
 .caja .relleno { position: absolute; inset: 0; background: currentColor; opacity: 0.08; }
 

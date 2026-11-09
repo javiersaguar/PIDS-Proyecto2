@@ -4,7 +4,7 @@ Contenido actualizado el **09/11/2026**.
 
 | Documento | Contenido |
 |---|---|
-| [`informe_entrega3.docx`](informe_entrega3.docx) | **Borrador de la memoria de la entrega 3**: la de la entrega 2 más el Bloque 3 (apartados 13 a 17), creada con `herramientas/generar_entrega3.py` a partir de [`../informe_bloque3_borrador.md`](../informe_bloque3_borrador.md). Incluye las correcciones de la revisión de la entrega 2 (`herramientas/correcciones_entrega2.py`). Lo marcado en amarillo como [PENDIENTE] falta por medir o decidir. Ahora tiene 44 páginas, 30 de cuerpo (de la 4 a la 33); el límite de la entrega 3 es 30 (Bloques 1 a 3, sin portada, índice, respuesta a la revisión, reparto, referencias ni anexos). Se entrega como `PIDS_grupo2_entrega3.pdf`. |
+| [`informe_entrega3.docx`](informe_entrega3.docx) | **Borrador de la memoria de la entrega 3**: la de la entrega 2 más el Bloque 3 (apartados 13 a 17), creada con `herramientas/generar_entrega3.py` a partir de [`../informe_bloque3_borrador.md`](../informe_bloque3_borrador.md). Incluye las correcciones de la revisión de la entrega 2 (`herramientas/correcciones_entrega2.py`). Lo marcado en amarillo como [PENDIENTE] falta por medir o decidir. Ahora tiene 45 páginas, 30 de cuerpo (de la 4 a la 33); el límite de la entrega 3 es 30 (Bloques 1 a 3, sin portada, índice, respuesta a la revisión, reparto, referencias ni anexos). Se entrega como `PIDS_grupo2_entrega3.pdf`. |
 | [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (34 páginas, 20 de cuerpo, de la 4 a la 23; el límite es 20). |
 | [`informe_fase1.docx`](informe_fase1.docx) | Fuente de la memoria de la entrega 1 (Bloque 1), base de `generar_entrega2.py`. El PDF entregado está en `docs/entregas/PIDS_grupo2_entrega1.pdf` y difiere en algo de redacción. |
 | `figuras/` | Figuras de maquetación que no están en `ENTREGA 1/WEEK1/` ni en `WEEK2/`, incluidas las añadidas por la revisión. |
@@ -38,6 +38,18 @@ cerrarla. El script no sobrescribe el `.docx` sin `--forzar`: cuando se empiece 
 cambios del borrador se pasan a mano. Después de generarlo, actualizar el índice (F9).
 
 ## Historial
+
+**09/11/2026 (segunda tanda)** — lo que faltaba de la revisión de la entrega 2, comprobado con el PDF anotado:
+- El comentario del apartado 12.1 («trabajo pendiente» sin decir cuál) no estaba respondido: ahora se enumeran los
+  tres trabajos que quedaban al cerrar el Bloque 2 (latencia en el robot, difficult y robots lejanos, y repetir con
+  varias semillas las comparaciones de menos de 1 pp). Es la fila 17 de la tabla de respuesta.
+- 12.1 decía que la arquitectura influye más que el aumento de datos, en contra del 11.1: lo que influye menos es
+  el perfil de aumento.
+- En el apartado 12, los difficult eran «el 26,4 % de las cajas anotadas», que es la proporción en nuestras
+  imágenes; en validación y test son el 16 %.
+- «AP50» y «AP75» de pies y tablas pasan a AP@0,5 y AP@0,75, como en el texto, y la latencia a 1820 × 1024 se
+  redondea a un 62 % más (+61,9 % en la Tabla 15).
+- El cuerpo sigue en 30 páginas; el total pasa a 45 por la fila nueva de la tabla de respuesta.
 
 **09/11/2026** — correcciones de la revisión de la entrega 2 y borrador de la presentación:
 - `herramientas/correcciones_entrega2.py`, llamado desde `generar_entrega3.py`, responde a los comentarios

@@ -1,38 +1,9 @@
 import { motion } from 'framer-motion';
-import { Cabecera, CURVA, Item, Revela } from '../componentes/base.jsx';
+import { CURVA } from '../componentes/base.jsx';
 import { Fotograma } from '../componentes/fotograma.jsx';
 import { Letras } from '../componentes/seccion.jsx';
 import { FOTOGRAMAS } from '../datos/fotogramas.js';
 import { Reticula } from './inicio.jsx';
-
-const LECCIONES = [
-  { n: '01', t: 'Datos', d: 'Con criterios comunes, lo que más mejoró al detector fue el aumento, sobre todo en difficult. Marcar los difficult en validación y test mostró dónde falla.' },
-  { n: '02', t: 'Modelo', d: 'La arquitectura importa más que la tasa o el perfil de aumento. Faster R-CNN v2 confirma en test lo que daba en validación; los difficult siguen muy por debajo.' },
-  { n: '03', t: 'Robot', d: 'La latencia lo ha condicionado todo: parar a mirar, repartir el tiempo de cada tramo e imágenes recientes y nítidas. Para distinguir aliados hace falta una marca, no una forma.' },
-];
-
-export function Conclusiones() {
-  return (
-    <div className="diapo">
-      <Cabecera fase="Conclusiones" titulo="Lo que nos llevamos de cada fase"
-        subtitulo="Borrador: se cerrará con los resultados del circuito montado en el laboratorio." />
-      <Revela className="cuerpo tres" retraso={0.3} paso={0.2} style={{ flex: 'none' }}>
-        {LECCIONES.map((l) => (
-          <Item key={l.n} className="panel" style={{ padding: '28px 30px' }}>
-            <div style={{ font: '400 64px/1 var(--pixel)', color: 'var(--acento)', marginBottom: 18 }}>{l.n}</div>
-            <h3 style={{ fontSize: 30 }}>{l.t}</h3>
-            <p style={{ fontSize: 20 }}>{l.d}</p>
-          </Item>
-        ))}
-      </Revela>
-      <motion.div className="panel" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.6, ease: CURVA }}
-        style={{ marginTop: 26, display: 'grid', gridTemplateColumns: '200px 1fr', alignItems: 'center', gap: 20, borderColor: 'var(--acento-oscuro)' }}>
-        <span className="etiqueta acento">Trabajo futuro</span>
-        <span style={{ fontSize: 21 }}>Llevar a la demo el detector en GPU del mando (unas 10 imágenes por segundo), añadir la regla de color para los aliados y grabar más robots difficult y lejanos.</span>
-      </motion.div>
-    </div>
-  );
-}
 
 export function Gracias() {
   const f = FOTOGRAMAS.objetivo;

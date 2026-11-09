@@ -19,7 +19,8 @@ export function Caja({ caja, retraso = 0, tipo = 'robot', rotulo, confianza, mos
       <div className="marco-caja" />
       <i className="esq a" /><i className="esq b" /><i className="esq c" /><i className="esq d" />
       {mostrarRotulo && (rotulo || confianza != null) && (
-        <motion.div className="rotulo" initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+        // Si la caja toca el borde derecho, el rótulo se alinea a la derecha para no salirse de la imagen
+        <motion.div className={`rotulo${caja.x + caja.w > 0.85 ? ' derecha' : ''}`} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
           transition={{ delay: retraso + 0.35, duration: 0.35 }}>
           <span>{rotulo}{confianza != null && <> <Contador valor={confianza} dec={2} duracion={0.9} retraso={retraso + 0.35} /></>}</span>
         </motion.div>
