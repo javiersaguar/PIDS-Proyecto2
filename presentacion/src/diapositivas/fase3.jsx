@@ -183,7 +183,7 @@ export function Marcha() {
 export function Mando() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Control manual" titulo="Mover el robot a mano desde el navegador" />
+      <Cabecera fase="Fase 03 · Control manual" titulo="La interfaz que hicimos para manejar el robot" />
       <div className="cuerpo dos-asim" style={{ alignItems: 'start' }}>
         <div style={{ position: 'relative', borderRadius: 6, overflow: 'hidden', border: '1px solid var(--borde)' }}>
           <motion.img src={mandoJpg} alt="Interfaz del mando con un robot detectado al 99,9 %" style={{ width: '100%', display: 'block' }}
