@@ -107,7 +107,7 @@ export function Portada() {
 const FASES_RETO = [
   { n: '01', nombre: 'Datos', que: 'Grabar diez vídeos, extraer, anotar y analizar los robots', cifra: 808, pie: 'imágenes y 1420 robots anotados' },
   { n: '02', nombre: 'Modelo', que: 'Entrenar y comparar siete detectores; elegir uno con validación', cifra: 0.952, dec: 3, pie: 'AP@0,5 en test con Faster R-CNN v2' },
-  { n: '03', nombre: 'Robot', que: 'Llevar el detector al RoboMaster: circuito, puntería y disparo', cifra: 1.0, dec: 2, pie: 'confianza máxima al ver al rival en el laboratorio' },
+  { n: '03', nombre: 'Robot', que: 'Llevar el detector al RoboMaster: circuito, puntería y disparo', cifra: 2.3, dec: 1, sufijo: ' s', pie: 'por imagen en la CPU del laboratorio: el robot se para a mirar' },
 ];
 export function Reto() {
   return (
@@ -134,7 +134,7 @@ export function Reto() {
                   initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.6 + i * 0.45, type: 'spring', stiffness: 400, damping: 14 }} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 20 }}>
                   <h3><span className="mono acento" style={{ marginRight: 14 }}>{f.n}</span>{f.nombre}</h3>
-                  <span className="cifra peque acento"><Contador valor={f.cifra} dec={f.dec || 0} retraso={0.8 + i * 0.45} /></span>
+                  <span className="cifra peque acento"><Contador valor={f.cifra} dec={f.dec || 0} sufijo={f.sufijo} retraso={0.8 + i * 0.45} /></span>
                 </div>
                 <p>{f.que}</p>
                 <p className="mono" style={{ fontSize: 15, marginTop: 8, color: 'var(--tenue)' }}>{f.pie}</p>

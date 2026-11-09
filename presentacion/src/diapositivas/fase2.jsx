@@ -194,27 +194,24 @@ export function Hiperparametros() {
           <h3 style={{ marginTop: 10 }}>8 imágenes</h3>
           <BarrasH anchoEtiqueta={44} retraso={0.7} paso={0.12} alto={34} textoNulo="sin memoria"
             datos={LOTES.map((l) => ({ etiqueta: l.lote, valor: l.ap, destacado: l.lote === '8' }))} />
-          <p style={{ marginTop: 16, fontSize: 18 }}>AP@0,5 a las 3 épocas: los tres a menos de 0,4 puntos porcentuales (pp). 8 es el mayor que cabe en 12 GB y da gradientes estables, con unos 400 pasos por época.</p>
+          <p style={{ marginTop: 16, fontSize: 21 }}>El mayor que cabe en la GPU. 1, 2 y 8 acaban casi igual.</p>
         </motion.div>
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.6, ease: CURVA }}>
           <div className="etiqueta">Tasa de aprendizaje</div>
           <h3 style={{ marginTop: 10 }}>10<sup>−3</sup></h3>
           <BarrasH anchoEtiqueta={44} retraso={1.0} paso={0.14} alto={34} textoNulo="diverge: NaN"
             datos={TASAS.map((t) => ({ etiqueta: t.tasa, valor: t.ap, destacado: t.tasa === '10⁻³' }))} />
-          <p style={{ marginTop: 16, fontSize: 18 }}>Muy baja, apenas avanza (0,03 de AP en 3 épocas); muy alta, la pérdida explota. Entre 10<sup>−4</sup> y 10<sup>−2</sup> cambia la velocidad, no el resultado.</p>
+          <p style={{ marginTop: 16, fontSize: 21 }}>Muy baja no aprende; muy alta diverge.</p>
         </motion.div>
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.6, ease: CURVA }}>
           <div className="etiqueta">Optimizador y programador</div>
           <h3 style={{ marginTop: 10 }}>SGD</h3>
-          <Revela as="ul" className="lista" retraso={1.3} paso={0.15} style={{ fontSize: 19 }}>
-            <Item as="li"><span><b>Momentum 0,9:</b> sigue la media de unos 10 lotes y suaviza el ruido.</span></Item>
-            <Item as="li"><span><b>Weight decay 5·10<sup>−4</sup>:</b> penaliza los pesos grandes.</span></Item>
-            <Item as="li"><span><b>Tasa ×0,1</b> tras 5 épocas sin mejorar la validación.</span></Item>
-            <Item as="li"><span>Valores del artículo de Faster R-CNN y del tutorial de torchvision.</span></Item>
+          <Revela as="ul" className="lista" retraso={1.3} paso={0.15} style={{ fontSize: 21 }}>
+            <Item as="li"><span><b>Momentum 0,9:</b> suaviza el ruido</span></Item>
+            <Item as="li"><span><b>Weight decay 5·10<sup>−4</sup>:</b> frena los pesos grandes</span></Item>
+            <Item as="li"><span><b>Tasa ×0,1</b> si la validación se estanca</span></Item>
+            <Item as="li"><span>Valores de Faster R-CNN y torchvision</span></Item>
           </Revela>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }} style={{ marginTop: 16, fontSize: 17, color: 'var(--tenue)' }}>
-            Mejor estrategia: prueba de rango de la tasa, búsqueda logarítmica y paciencia ajustada a la época en que se estanca.
-          </motion.p>
         </motion.div>
       </div>
     </div>

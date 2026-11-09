@@ -49,8 +49,8 @@ function Latencia() {
           </div>
         </div>
       ))}
-      <p style={{ marginTop: 16, fontSize: 19, color: 'var(--texto)' }}>
-        La latencia lo condiciona todo: el robot se para, mira y dispara, y cada tramo reparte su tiempo entre girar, ver y disparar.
+      <p style={{ marginTop: 16, fontSize: 23, color: 'var(--texto)' }}>
+        Más de 20 veces más lento de lo que haría falta: el robot se para a mirar.
       </p>
     </div>
   );
@@ -61,12 +61,12 @@ function Enlace() {
     <motion.div className="panel" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + x * 0.25, duration: 0.6, ease: CURVA }}
       style={{ padding: '20px 24px' }}>
       <h3 style={{ fontSize: 24 }}>{titulo}</h3>
-      <ul className="lista" style={{ fontSize: 18, gap: 8 }}>{lineas.map((l) => <li key={l}><span>{l}</span></li>)}</ul>
+      <ul className="lista" style={{ fontSize: 21, gap: 8 }}>{lineas.map((l) => <li key={l}><span>{l}</span></li>)}</ul>
     </motion.div>
   );
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 230px 1fr', alignItems: 'center' }}>
-      {caja('Portátil', ['Python 3.8 y SDK oficial', 'Faster R-CNN v2 en CPU, umbral 0,95', 'Configuración separada del código', 'Robot simulado para probar sin él'], 0)}
+      {caja('Portátil', ['Python 3.8 y SDK oficial', 'Faster R-CNN v2 en CPU', 'Robot simulado para probar'], 0)}
       <div style={{ position: 'relative', height: 120 }}>
         <svg viewBox="0 0 230 120" style={{ width: '100%', height: '100%' }} aria-hidden>
           <line x1="10" x2="220" y1="40" y2="40" stroke="var(--acento)" strokeDasharray="4 6" />
@@ -86,7 +86,7 @@ function Enlace() {
         </svg>
         <div className="mono" style={{ position: 'absolute', left: 0, right: 0, top: 48, textAlign: 'center', fontSize: 13, color: 'var(--tenue)' }}>wifi</div>
       </div>
-      {caja('RoboMaster EP', ['Chasis mecanum: hasta 0,5 m/s', 'Torreta: hasta 30 °/s', 'Cámara 1280 × 720 en la torreta', 'Emisor de infrarrojos y LED'], 1)}
+      {caja('RoboMaster EP', ['Chasis mecanum: 0,5 m/s', 'Torreta: 30 °/s', 'Cámara y emisor de infrarrojos'], 1)}
     </div>
   );
 }
@@ -99,9 +99,9 @@ export function Integracion() {
         <Enlace />
         <Latencia />
         <Revela style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} retraso={1.6} paso={0.12}>
-          {[['Topes', 'Toda orden se recorta a 0,5 m/s y 30 °/s.'], ['Órdenes que caducan', 'Si el programa se bloquea, el chasis se para a los 0,5 s.'],
-            ['Final seguro', 'Error, interrupción o fin: parar, centrar la torreta, apagar LED y guardar evidencias.']].map(([t, d]) => (
-            <Item key={t} className="panel" style={{ padding: '16px 20px' }}><b style={{ fontSize: 20 }}>{t}</b><p style={{ fontSize: 17, marginTop: 4 }}>{d}</p></Item>
+          {[['Topes', '0,5 m/s y 30 °/s'], ['Órdenes que caducan', 'Sin órdenes, se para'],
+            ['Final seguro', 'Para y guarda evidencias']].map(([t, d]) => (
+            <Item key={t} className="panel" style={{ padding: '16px 20px' }}><b style={{ fontSize: 22 }}>{t}</b><p style={{ fontSize: 20, marginTop: 4 }}>{d}</p></Item>
           ))}
         </Revela>
       </div>
@@ -330,15 +330,15 @@ export function Marcha() {
       </div>
       <Revela style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18, marginTop: 24 }} retraso={1.4} paso={0.18}>
         {[
-          ['Imagen nítida', 'Con el robot en marcha algunas salen movidas: de las de los últimos 0,2 s se analiza la más nítida (varianza del laplaciano).'],
-          ['Velocidad prevista', 'Con el plano y las velocidades, el rival 2 se queda atrás unos 2,4 °/s: la torreta gira a esa velocidad y corrige con cada imagen.'],
-          ['Rival en alto', 'A 1 m queda a unos 17° de inclinación y a 2 m, a 9°: la torreta lo busca inclinada 10° y corrige con la caja.'],
+          ['Imagen nítida', 'Se analiza la menos movida de las últimas.'],
+          ['Velocidad prevista', 'La torreta sigue al rival y corrige con cada imagen.'],
+          ['Rival en alto', 'La torreta lo busca inclinada 10°.'],
         ].map(([t, d]) => (
-          <Item key={t} className="panel" style={{ padding: '18px 22px' }}><b style={{ fontSize: 21 }}>{t}</b><p style={{ fontSize: 18, marginTop: 6 }}>{d}</p></Item>
+          <Item key={t} className="panel" style={{ padding: '18px 22px' }}><b style={{ fontSize: 23 }}>{t}</b><p style={{ fontSize: 21, marginTop: 6 }}>{d}</p></Item>
         ))}
       </Revela>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.4 }} style={{ margin: '18px 0 0', fontSize: 19 }}>
-        Cada ráfaga son <span className="acento mono">20</span> disparos, uno cada 0,3 s, sincronizados con el sonido: el enunciado pide 12 impactos y los 8 de más cubren los que el rival no registre.
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.4 }} style={{ margin: '18px 0 0', fontSize: 22 }}>
+        Ráfagas de <span className="acento mono">20</span> disparos: se piden 12 impactos y 8 son de margen.
       </motion.p>
     </div>
   );
@@ -415,7 +415,7 @@ export function Mando() {
   return (
     <div className="diapo">
       <Cabecera fase="Fase 03 · Control manual" titulo="Un mando en el navegador, con el detector en GPU"
-        subtitulo="Para colocar el robot, probar la cámara y el detector en el laboratorio y hacer una demostración libre. Un proceso aparte sí usa la GPU del portátil." />
+        subtitulo="Para colocar el robot, probar el detector en el laboratorio y hacer una demostración libre. Aquí el detector sí usa la GPU." />
       <div className="cuerpo dos-asim" style={{ alignItems: 'start' }}>
         <div style={{ position: 'relative', borderRadius: 6, overflow: 'hidden', border: '1px solid var(--borde)' }}>
           <motion.img src={mandoJpg} alt="Interfaz del mando con un robot detectado al 99,9 %" style={{ width: '100%', display: 'block' }}
@@ -431,15 +431,15 @@ export function Mando() {
               datos={[
                 { etiqueta: 'CPU del laboratorio', valor: 1 / 2.3, texto: '0,4' },
                 { etiqueta: 'CPU de 32 hilos', valor: 1 / 1.1, texto: '0,9' },
-                { etiqueta: 'GPU · Faster R-CNN v2', valor: 1 / 0.094, texto: '10,6 · 94 ms', destacado: true },
+                { etiqueta: 'GPU · FRCNN v2', valor: 1 / 0.094, texto: '10,6 · 94 ms', destacado: true },
                 { etiqueta: 'GPU · MobileNet', valor: 1 / 0.032, texto: '≈ 31 · 32 ms', destacado: true, color: 'var(--azul)' },
               ]} />
           </div>
-          <Revela as="ul" className="lista" retraso={1.8} paso={0.14} style={{ fontSize: 19 }}>
-            <Item as="li"><span><b>Teclado, ratón o mando de PS4.</b> El joystick mueve el robot hacia donde mira la cámara.</span></Item>
-            <Item as="li"><span><b>Seguro:</b> sin órdenes durante 0,3 s, el robot se para; mismos topes que la demo.</span></Item>
-            <Item as="li"><span><b>Disparo automático opcional:</b> el centro de la imagen dentro de una caja ≥ 0,95, de menos de 0,5 s y con la torreta quieta.</span></Item>
-            <Item as="li"><span><b><Contador valor={31} retraso={2.4} /> pruebas automáticas</b> y probado con el robot simulado.</span></Item>
+          <Revela as="ul" className="lista" retraso={1.8} paso={0.14} style={{ fontSize: 22 }}>
+            <Item as="li"><span><b>Teclado, ratón o mando de PS4</b></span></Item>
+            <Item as="li"><span><b>Seguro:</b> sin órdenes, se para</span></Item>
+            <Item as="li"><span><b>Disparo automático</b> opcional</span></Item>
+            <Item as="li"><span><b><Contador valor={31} retraso={2.4} /> pruebas automáticas</b></span></Item>
           </Revela>
         </div>
       </div>
