@@ -1,6 +1,6 @@
 # Presentación del proyecto
 
-Borrador de la presentación final de PIDS (Grupo 2): las tres fases del proyecto (datos, modelo y robot) en 21 diapositivas animadas, hechas con React, Vite y Framer Motion.
+Borrador de la presentación final de PIDS (Grupo 2): las tres fases del proyecto (datos, modelo y robot) en 20 diapositivas animadas, hechas con React, Vite y Framer Motion.
 
 ## Cómo se usa
 
@@ -62,7 +62,7 @@ presentacion/
         ├── inicio.jsx          portada y el caso
         ├── fase1.jsx           datos: recogida, anotación, EDA y aumento
         ├── fase2.jsx           modelo: sistema, arquitecturas, ajuste, comparación, test y análisis
-        ├── fase3.jsx           robot: integración, circuito, ataque en marcha y mando
+        ├── fase3.jsx           robot: circuito, ataque en marcha y mando
         └── cierre.jsx          gracias y preguntas
 ```
 
