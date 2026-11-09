@@ -4,12 +4,14 @@ import { Portada, Reto } from './inicio.jsx';
 import { Anotacion, Aumento, Eda, Recogida, Seccion1 } from './fase1.jsx';
 import { Ajuste, Arquitecturas, Cualitativo, Etapas, Hiperparametros, Seccion2, Sistema, Test } from './fase2.jsx';
 import { Circuito, Integracion, Mando, Marcha, Seccion3 } from './fase3.jsx';
+import { Gracias } from './cierre.jsx';
 
 export const FASES = [
   { nombre: 'Introducción' },
   { nombre: 'Fase 1 · Datos' },
   { nombre: 'Fase 2 · Modelo' },
   { nombre: 'Fase 3 · Robot' },
+  { nombre: 'Cierre' },
 ];
 
 export const DIAPOSITIVAS = [
@@ -55,4 +57,6 @@ export const DIAPOSITIVAS = [
     notas: 'Presupuesto de tiempo del retroceso de 1,25 m a 0,1 m/s: girar la torreta, ver al rival, avisar y la ráfaga. El chasis no espera a la inferencia. Imagen nítida: con el robot en marcha algunas salen movidas; de las de los últimos 0,2 s se analiza la más nítida (varianza del laplaciano). Velocidad prevista: con el plano y las velocidades, el rival 2 se queda atrás unos 2,4 °/s; la torreta gira a esa velocidad y corrige con cada imagen. Rival en alto: a 1 m queda a unos 17° y a 2 m a 9°; la torreta lo busca inclinada 10° y corrige con la caja. Ráfaga: 20 disparos, uno cada 0,3 s, sincronizados con el sonido; el enunciado pide 12 impactos y los 8 de más cubren los que no registre.' },
   { id: 'mando', fase: 3, titulo: 'Mover el robot a mano desde el navegador', Componente: Mando,
     notas: 'Interfaz del mando en el navegador. El detector va en un proceso aparte con la GPU: unas 10 imágenes por segundo con Faster R-CNN v2 y unas 31 con MobileNet. El joystick mueve el robot hacia donde mira la cámara. Si dejan de llegar órdenes durante 0,3 s, el robot se para; mismos topes que la demo. Disparo automático opcional: el centro de la imagen dentro de una caja de confianza ≥ 0,95, de menos de 0,5 s y con la torreta quieta. 31 pruebas automáticas y probado con el robot simulado.' },
+
+  { id: 'gracias', fase: 4, tipo: 'portada', titulo: 'Gracias', Componente: Gracias, notas: 'Turno de preguntas.' },
 ];
