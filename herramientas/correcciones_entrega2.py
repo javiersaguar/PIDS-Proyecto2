@@ -246,27 +246,23 @@ RAPIDO = ('Para la demo, Faster R-CNN MobileNet es una alternativa más rápida:
 # 12. El 26,4 % era la proporción de difficult en nuestras imágenes, no en validación y test (16 %).
 DIFFICULT_VIEJO = 'aunque representan solo el 26,4 % de las cajas anotadas (375 de 1420)'
 DIFFICULT_NUEVO = 'aunque son solo el 16 % de los robots de validación y de test'
-# 12.1. El título promete trabajo pendiente y el texto no lo decía; además, el aumento de datos es lo
-# que más mejora a Faster R-CNN v1 (11.1): lo que influye menos que la arquitectura es el perfil de aumento.
+# 12.1. El título prometía trabajo pendiente que el texto no daba: se queda en «Conclusiones». Además, el
+# aumento de datos es lo que más mejora a Faster R-CNN v1 (11.1): lo que influye menos que la arquitectura
+# es el perfil de aumento.
 CONCLUSION_B2 = (
     'Con el aumento base fijado, la arquitectura influye más que la tasa de aprendizaje o el perfil de '
     'aumento. Los difficult siguen siendo el principal problema, las SSD tienen dificultades con los '
     'robots lejanos y Faster R-CNN sobreajusta pronto, por lo que el checkpoint se selecciona mediante '
     'validación.')
-TRABAJO_PENDIENTE = (
-    'Al cerrar el Bloque 2 quedaban tres trabajos pendientes. El primero, medir en el robot si la '
-    'latencia del modelo permite usarlo durante el recorrido; se aborda en el Bloque 3 (apartado 13). El '
-    'segundo, mejorar la detección de los difficult y de los robots lejanos, para lo que hacen falta más '
-    'ejemplos de ese tipo en el entrenamiento. El tercero, repetir con varias semillas las comparaciones '
-    'con diferencias de menos de 1 pp, como las de los modelos con ResNet-50 o las de las tasas, para '
-    'saber si esas diferencias son reales.')
-
 REPARTO_B3 = {
     'Integrante': 'Tareas del Bloque 3',
     'Javier Saguar': 'Demo del circuito: desplazamientos, puntería, disparo, ataques en marcha y robot '
                      'camuflado. Kit del rival móvil, interfaz del mando y memoria del Bloque 3.',
     'Alejandro Cuevas': 'Seguimiento de rivales en movimiento, barrido continuo de la torreta, memoria de '
                         'robots atacados y vigilancia del recorrido.',
+    'Mónica Fernández': 'Diseño del boceto del circuito.',
+    'Pedro José Orrego': 'Conexión y preparación del boceto de la demo.',
+    'Daniel Naval': 'Ayuda en el montaje del circuito.',
 }
 
 REFERENCIAS = [
@@ -327,9 +323,6 @@ FILAS_RESPUESTA = [
     ['16', 'Opcional: nombres autoexplicativos para los experimentos y tendencias en vez de valores exactos.',
      '11', 'Los experimentos de la Tabla 14 se nombran por lo que cambian y el apartado 11 compara '
            'tendencias; los valores quedan en las tablas.'],
-    ['17', 'El apartado 12.1 habla de «trabajo pendiente», pero no dice cuál es.', '12.1',
-     'Se enumeran los tres trabajos que quedaban pendientes al cerrar el Bloque 2; el primero, la latencia '
-     'en el robot, se aborda en el Bloque 3.'],
 ]
 
 # Notación científica: tasas, weight decay y mínimos del programador.
@@ -610,11 +603,15 @@ def aplicar(doc, xml):
     m.sustituir('Faster R-CNN v2 con lr 0,001 es el modelo final', FINAL)
     m.sustituir('Para la demo, Faster R-CNN MobileNet', RAPIDO)
 
-    # 12. Proporción de difficult y 12.1 con el trabajo pendiente (comentario opcional)
+    # 12. Proporción de difficult y 12.1 sin «trabajo pendiente» en el título (comentario opcional)
     p = m.parrafo('Los fallos reales se concentran en tres casos')
     assert DIFFICULT_VIEJO in texto(p)
     m.sustituir('Los fallos reales se concentran en tres casos', texto(p).replace(DIFFICULT_VIEJO, DIFFICULT_NUEVO))
-    m.sustituir('La arquitectura influye más que la tasa', CONCLUSION_B2, TRABAJO_PENDIENTE)
+    m.sustituir('La arquitectura influye más que la tasa', CONCLUSION_B2)
+    titulo = m.parrafo('12.1. Conclusiones y trabajo pendiente')
+    for t in titulo.iter(qn('w:t')):
+        t.text = (t.text or '').replace(' y trabajo pendiente', '')
+    assert texto(titulo).strip() == '12.1. Conclusiones'
 
     # Anexo D: tasas de la Tabla 23 que no son de la forma 0,00x
     t23 = m.tabla('TasaAP@0,5 en las épocas')

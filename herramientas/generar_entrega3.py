@@ -2,7 +2,7 @@
 
 Copia docs/informes/informe_entrega2.docx (editado a mano en Word, que no se toca) y le añade:
 
-- en la portada, «Fases 1, 2 y 3», «Entrega 3 · Bloques 1, 2 y 3» y la fecha pendiente;
+- en la portada, «Fases 1, 2 y 3», «Entrega 3 · Bloques 1, 2 y 3» y la fecha de entrega;
 - el texto de docs/informe_bloque3_borrador.md, antes de «Referencias», con los estilos
   de la plantilla (títulos, texto, pies, tablas con cabecera azul y filas alternas, figuras);
 - la referencia [21] al estudio del robot camuflado;
@@ -41,7 +41,7 @@ W = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
 PORTADA = {
     'MEMORIA DEL PROYECTO  FASES 1 Y 2': 'MEMORIA DEL PROYECTO  FASES 1, 2 Y 3',
     'Entrega 2 · Bloques 1 y 2': 'Entrega 3 · Bloques 1, 2 y 3',
-    '03/11/2026': '[PENDIENTE]',
+    '03/11/2026': '15/11/2026',
 }
 REFERENCIA = ('[21] Grupo 2. Robot camuflado y robots aliados: ¿a qué dispara el detector? 2026. '
               'https://github.com/javiersaguar/PIDS-Proyecto2/blob/main/docs/senuelo_aliado.md')
