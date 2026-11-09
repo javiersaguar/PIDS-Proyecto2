@@ -3,7 +3,7 @@
 import { Portada, Reto } from './inicio.jsx';
 import { Anotacion, Aumento, Eda, Recogida, Seccion1 } from './fase1.jsx';
 import { Ajuste, Arquitecturas, Cualitativo, Etapas, Hiperparametros, Seccion2, Sistema, Test } from './fase2.jsx';
-import { Circuito, Integracion, Mando, Marcha, Seccion3 } from './fase3.jsx';
+import { Circuito, Mando, Marcha, Seccion3 } from './fase3.jsx';
 import { Gracias } from './cierre.jsx';
 
 export const FASES = [
@@ -49,8 +49,6 @@ export const DIAPOSITIVAS = [
 
   { id: 'seccion-3', fase: 3, tipo: 'seccion', titulo: 'Fase 3 · Robot', Componente: Seccion3,
     notas: 'Fase 3: el detector en el RoboMaster EP.' },
-  { id: 'integracion', fase: 3, titulo: 'Cómo conectamos el detector al robot', Componente: Integracion,
-    notas: 'Portátil y robot por wifi: el vídeo de 1280 × 720 llega al portátil y las órdenes van al robot. Python 3.8 obliga a usar la CPU: 2,2–2,4 s por imagen, frente a los 0,1 s que harían falta para ver y moverse a la vez. Por eso el robot se para a mirar y cada tramo reparte el tiempo entre girar, ver y disparar. Umbral de confianza 0,95 y configuración separada del código. Seguridad: toda orden se recorta a 0,5 m/s y 30 °/s; si el programa se bloquea, el chasis se para a los 0,5 s; ante un error, una interrupción o el final, para, centra la torreta, apaga los LED y guarda las evidencias.' },
   { id: 'circuito', fase: 3, titulo: 'El recorrido que tiene que hacer el robot', Componente: Circuito,
     notas: 'Recorrido por tramos. Solo P1 está medido en el laboratorio. Primer problema: la orden por distancia del SDK no respetaba la velocidad.' },
   { id: 'marcha', fase: 3, titulo: 'Disparar sin detener el robot', Componente: Marcha,

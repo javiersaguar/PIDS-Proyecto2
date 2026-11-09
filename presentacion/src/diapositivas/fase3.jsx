@@ -13,86 +13,7 @@ export function Seccion3() {
   return (
     <Seccion numero="03" titulo="Robot" color="var(--rojo)" fotos={[laboratorioJpg, mandoJpg, circuitoPng]}
       lema="Llevamos el detector al RoboMaster: recorrer el circuito, encontrar a los rivales y dispararles."
-      puntos={['SDK en Python 3.8', 'circuito por tramos', 'ataque en marcha', 'mando']} />
-  );
-}
-
-// --- Integración: portátil, wifi y robot -------------------------------------------------------------
-function Latencia() {
-  const reducido = useReducedMotion();
-  return (
-    <div className="panel" style={{ padding: '22px 26px' }}>
-      <div className="etiqueta" style={{ marginBottom: 14 }}>Lo que tarda una imagen, a escala real</div>
-      {[
-        { n: 'CPU del portátil del laboratorio', s: 2.3, c: 'var(--rojo)', t: '2,2–2,4 s' },
-        { n: 'Lo que pediría ver y moverse a la vez', s: 0.1, c: 'var(--acento)', t: '0,1 s · 10 imágenes/s' },
-      ].map((b, i) => (
-        <div key={b.n} style={{ display: 'grid', gridTemplateColumns: '330px 1fr', alignItems: 'center', gap: 16, marginTop: i ? 12 : 0 }}>
-          <span style={{ fontSize: 19, color: 'var(--suave)', textAlign: 'right' }}>{b.n}</span>
-          <div style={{ position: 'relative', height: 30, background: 'var(--panel-2)', borderRadius: 2 }}>
-            <motion.div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${(b.s / 2.5) * 100}%`, background: b.c, transformOrigin: 'left', borderRadius: '0 3px 3px 0' }}
-              initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-              transition={{ delay: 1.2, duration: reducido ? 0 : b.s, ease: 'linear', repeat: reducido ? 0 : Infinity, repeatDelay: 2.5 - b.s + 0.8 }} />
-            <span className="mono" style={{ position: 'absolute', left: `calc(${(b.s / 2.5) * 100}% + 10px)`, top: 4, fontSize: 16, whiteSpace: 'nowrap' }}>{b.t}</span>
-          </div>
-        </div>
-      ))}
-      <p style={{ marginTop: 16, fontSize: 23, color: 'var(--texto)' }}>
-        Más de 20 veces más lento de lo que haría falta: el robot se para a mirar.
-      </p>
-    </div>
-  );
-}
-function Enlace() {
-  const reducido = useReducedMotion();
-  const caja = (titulo, lineas, x) => (
-    <motion.div className="panel" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + x * 0.25, duration: 0.6, ease: CURVA }}
-      style={{ padding: '20px 24px' }}>
-      <h3 style={{ fontSize: 24 }}>{titulo}</h3>
-      <ul className="lista" style={{ fontSize: 21, gap: 8 }}>{lineas.map((l) => <li key={l}><span>{l}</span></li>)}</ul>
-    </motion.div>
-  );
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 230px 1fr', alignItems: 'center' }}>
-      {caja('Portátil', ['SDK oficial: obliga a Python 3.8', 'Sin GPU: el detector va en CPU', 'Robot simulado para probar'], 0)}
-      <div style={{ position: 'relative', height: 120 }}>
-        <svg viewBox="0 0 230 120" style={{ width: '100%', height: '100%' }} aria-hidden>
-          <line x1="10" x2="220" y1="40" y2="40" stroke="var(--acento)" strokeDasharray="4 6" />
-          <line x1="10" x2="220" y1="80" y2="80" stroke="var(--azul)" strokeDasharray="4 6" />
-          <text x="115" y="28" textAnchor="middle" style={{ font: '14px var(--mono)', fill: 'var(--acento)' }}>vídeo 1280 × 720</text>
-          <text x="115" y="106" textAnchor="middle" style={{ font: '14px var(--mono)', fill: 'var(--azul)' }}>órdenes</text>
-          {!reducido && [0, 1, 2].map((k) => (
-            <g key={k}>
-              <rect width="14" height="9" y="35.5" fill="var(--acento)">
-                <animate attributeName="x" from="210" to="10" dur="1.4s" begin={`${1 + k * 0.47}s`} repeatCount="indefinite" />
-              </rect>
-              <circle r="4" cy="80" fill="var(--azul)">
-                <animate attributeName="cx" from="12" to="218" dur="1.4s" begin={`${1.2 + k * 0.47}s`} repeatCount="indefinite" />
-              </circle>
-            </g>
-          ))}
-        </svg>
-        <div className="mono" style={{ position: 'absolute', left: 0, right: 0, top: 48, textAlign: 'center', fontSize: 13, color: 'var(--tenue)' }}>wifi</div>
-      </div>
-      {caja('RoboMaster EP', ['Chasis mecanum: 0,5 m/s', 'Torreta: 30 °/s', 'Cámara y emisor de infrarrojos'], 1)}
-    </div>
-  );
-}
-export function Integracion() {
-  return (
-    <div className="diapo">
-      <Cabecera fase="Fase 03 · Integración" titulo="Cómo conectamos el detector al robot" />
-      <div style={{ display: 'grid', gap: 26 }}>
-        <Enlace />
-        <Latencia />
-        <Revela style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} retraso={1.6} paso={0.12}>
-          {[['Topes', '0,5 m/s y 30 °/s'], ['Órdenes que caducan', 'Sin órdenes, se para'],
-            ['Final seguro', 'Para y guarda evidencias']].map(([t, d]) => (
-            <Item key={t} className="panel" style={{ padding: '16px 20px' }}><b style={{ fontSize: 22 }}>{t}</b><p style={{ fontSize: 20, marginTop: 4 }}>{d}</p></Item>
-          ))}
-        </Revela>
-      </div>
-    </div>
+      puntos={['circuito por tramos', 'ataque en marcha', 'control manual']} />
   );
 }
 
@@ -190,16 +111,16 @@ export function Circuito() {
         <div className="panel" style={{ padding: '14px 18px' }}><Mapa /></div>
         <Revela style={{ display: 'grid', gap: 14 }} retraso={0.8} paso={0.18}>
           <Item className="panel" style={{ padding: '18px 22px' }}>
-            <div className="etiqueta">P1 · medido el 05/11</div>
-            <p style={{ color: 'var(--texto)', marginTop: 6 }}>2,85 m a 0,5 m/s en unos 6 s. Torreta a 90°: rival 1; a −90°: el robot camuflado.</p>
+            <div className="etiqueta">Primera recta (P1) · medida el 05/11</div>
+            <p style={{ color: 'var(--texto)', marginTop: 6 }}>Avanza 2,85 m a 0,5 m/s (unos 6 s), se para y gira la torreta: a la derecha está el rival 1 y a la izquierda, el robot camuflado.</p>
           </Item>
           <Item className="panel" style={{ padding: '18px 22px' }}>
             <div className="etiqueta">R1 y R2 · ataques en marcha</div>
-            <p style={{ color: 'var(--texto)', marginTop: 6 }}>Las ruedas mecanum retroceden y van de lado sin girar el chasis: 1,25 m hacia atrás disparando al rival 2, que se mueve, y 2 m hacia el rival 3, en alto.</p>
+            <p style={{ color: 'var(--texto)', marginTop: 6 }}>Ataca sin pararse dos veces: retrocede 1,25 m disparando al rival 2, que también se mueve, y en los 2 m finales ataca al rival 3, colocado en alto. Las ruedas mecanum le dejan ir hacia atrás o de lado sin girar.</p>
           </Item>
           <Item className="panel" style={{ padding: '18px 22px', borderColor: 'var(--acento-oscuro)' }}>
             <div className="etiqueta acento">Primer problema del laboratorio</div>
-            <p style={{ marginTop: 6 }}>La orden por distancia del SDK sube cualquier velocidad menor de 0,5 a su mínimo interno: el robot iba a 0,06 m/s. Ahora se envían órdenes de velocidad 20 veces por segundo con la odometría, frena en los últimos 17 cm y para a 1 cm.</p>
+            <p style={{ marginTop: 6 }}>La orden del SDK de «avanzar tantos metros» no respetaba la velocidad pedida: el robot iba a 0,06 m/s. Ahora le mandamos la velocidad 20 veces por segundo y medimos lo recorrido con la odometría: frena en los últimos 17 cm y se para con 1 cm de error.</p>
           </Item>
         </Revela>
       </div>
@@ -244,15 +165,15 @@ export function Marcha() {
       </div>
       <Revela style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18, marginTop: 24 }} retraso={1.4} paso={0.18}>
         {[
-          ['Imagen nítida', 'Se analiza la menos movida de las últimas.'],
-          ['Velocidad prevista', 'La torreta sigue al rival y corrige con cada imagen.'],
-          ['Rival en alto', 'La torreta lo busca inclinada 10°.'],
+          ['Imagen nítida', 'Como el robot se mueve, de las últimas imágenes analizamos la menos borrosa.'],
+          ['Seguir al rival', 'La torreta gira a la velocidad prevista del rival y se corrige con cada imagen.'],
+          ['Rival en alto', 'La torreta apunta 10° hacia arriba para encontrarlo.'],
         ].map(([t, d]) => (
           <Item key={t} className="panel" style={{ padding: '18px 22px' }}><b style={{ fontSize: 23 }}>{t}</b><p style={{ fontSize: 21, marginTop: 6 }}>{d}</p></Item>
         ))}
       </Revela>
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.4 }} style={{ margin: '18px 0 0', fontSize: 22 }}>
-        Ráfagas de <span className="acento mono">20</span> disparos: se piden 12 impactos y 8 son de margen.
+        Cada ráfaga son <span className="acento mono">20</span> disparos: el enunciado pide 12 impactos y dejamos 8 de margen por si alguno no se registra.
       </motion.p>
     </div>
   );
@@ -285,9 +206,9 @@ export function Mando() {
           <Revela as="ul" className="lista" retraso={1.8} paso={0.14} style={{ fontSize: 22 }}>
             <Item as="li"><span><b>Uso:</b> colocar el robot, probar el detector y hacer una demo libre</span></Item>
             <Item as="li"><span><b>Teclado, ratón o mando de PS4</b></span></Item>
-            <Item as="li"><span><b>Seguro:</b> sin órdenes, se para</span></Item>
-            <Item as="li"><span><b>Disparo automático</b> opcional</span></Item>
-            <Item as="li"><span><b><Contador valor={31} retraso={2.4} /> pruebas automáticas</b></span></Item>
+            <Item as="li"><span><b>Seguro:</b> si deja de recibir órdenes, se para solo</span></Item>
+            <Item as="li"><span><b>Disparo automático</b> al ver un rival (opcional)</span></Item>
+            <Item as="li"><span><b><Contador valor={31} retraso={2.4} /> pruebas automáticas</b> del código</span></Item>
           </Revela>
         </div>
       </div>

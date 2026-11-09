@@ -12,17 +12,17 @@ export const INTERVALOS = [
 export const ANOTACION = { robots: 1420, difficult: 375, negativas: 41, porImagen: 1.76, iouAnotadores: 0.81,
   imagenesCalibracion: 20, aspecto: 1.11 };
 export const CRITERIOS = [
-  ['Robot', 'chasis, ruedas, torreta y cañón; sin antenas'],
-  ['Oclusión', 'se anota si se ve al menos un 30 %'],
-  ['Difficult', '< 30 px de ancho, medio tapado o movido'],
-  ['Ajenos', 'ni el cañón propio, ni reflejos, ni pantallas'],
-  ['Negativas', 'imagen y XML vacío: también enseñan'],
+  ['Robot', 'la caja cubre chasis, ruedas, torreta y cañón, sin las antenas'],
+  ['Tapados', 'solo se anotan si se ve al menos un 30 % del robot'],
+  ['Difficult', 'menos de 30 px de ancho, medio tapado o movido'],
+  ['No es robot', 'el cañón de nuestro robot, reflejos y robots en pantallas'],
+  ['Sin robots', 'se guardan igual: enseñan al modelo qué no es un robot'],
 ];
 export const DATASET = { originales: 808, depuradas: 796, cajasDepuradas: 1399, copias: 2388, total: 3184, cajasTotal: 5566 };
 export const AUMENTO = [
   { grupo: 'Geometría', porque: 'robots lejanos y cámara inclinada', items: ['volteo horizontal', 'escala ×0,6–1,25', 'desplazamiento', 'giro ±6°'] },
-  { grupo: 'Color', porque: 'otras luces', items: ['brillo y contraste ±20 %', 'gamma', 'tono suave', 'balance RGB'] },
-  { grupo: 'Calidad', porque: 'vídeo movido o comprimido', items: ['desenfoque de movimiento', 'JPEG 35–75', 'ruido de sensor', 'menos resolución'] },
+  { grupo: 'Color', porque: 'otras luces', items: ['brillo y contraste ±20 %', 'luces y sombras (gamma)', 'tono', 'balance de color'] },
+  { grupo: 'Calidad', porque: 'vídeo movido o comprimido', items: ['desenfoque de movimiento', 'compresión JPEG', 'ruido de la cámara', 'menos resolución'] },
 ];
 
 // Bloque 2 · Tablas 14, 16, 18, 22 y 23
@@ -84,6 +84,6 @@ export const CIRCUITO = {
 export const PRESUPUESTO = [
   { que: 'Girar la torreta 90°', s: 3.0 },
   { que: 'Ver al rival (una imagen)', s: 2.0 },
-  { que: '«Enemy spotted»', s: 1.4 },
+  { que: 'Aviso de voz', s: 1.4 },
   { que: 'Ráfaga de 20 disparos', s: 6.2 },
 ];

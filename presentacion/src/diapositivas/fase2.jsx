@@ -103,7 +103,7 @@ export function Sistema() {
         })}
       </svg>
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.6 }} style={{ margin: 0, fontSize: 19, color: 'var(--suave)' }}>
-        Un lote son 8 imágenes y un paso; una época, una pasada por las 3184 imágenes, unos 400 pasos. El test no decide nada: solo mide.
+        Los pesos se ajustan cada 8 imágenes (un lote); una época es repasar las 3184 imágenes, unos 400 ajustes. El test no se usa para elegir nada: solo da la nota final.
       </motion.p>
     </div>
   );
@@ -149,8 +149,8 @@ function Anclas() {
 export function Etapas() {
   const f = FOTOGRAMAS.objetivo;
   const pasos = [
-    ['Dos etapas', 'Faster R-CNN', 'Una red de propuestas (RPN) sugiere unas mil regiones; después se recorta cada una, se clasifica y se ajusta su caja.'],
-    ['Una etapa', 'RetinaNet · SSD', 'En cada posición de los mapas hay anclas de varios tamaños: se predicen la clase y el ajuste de todas a la vez.'],
+    ['Dos etapas', 'Faster R-CNN', 'Primero una red (RPN) propone unas mil zonas donde puede haber un robot; después revisa cada zona, decide si es un robot y ajusta su caja.'],
+    ['Una etapa', 'RetinaNet · SSD', 'Reparte por toda la imagen cajas de referencia (anclas) de varios tamaños y decide de una sola pasada cuáles tienen un robot y cómo ajustarlas.'],
   ];
   return (
     <div className="diapo">
@@ -174,8 +174,8 @@ export function Etapas() {
         ))}
       </div>
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.4 }} style={{ margin: '10px 0 0', fontSize: 20 }}>
-        Todos parten de pesos preentrenados en COCO y casi todos usan una FPN, que busca cada robot en el mapa adecuado a su tamaño.{' '}
-        <span className="acento">En nuestras medidas</span>, con el mismo backbone, la diferencia de tiempo es pequeña: pesan más el backbone y el tamaño de la imagen.
+        Todos parten de un modelo ya entrenado con COCO, un conjunto de miles de objetos cotidianos, y casi todos usan una FPN para buscar a la vez robots grandes y pequeños.{' '}
+        <span className="acento">En nuestras medidas</span>, la velocidad depende más de la red base (backbone) y del tamaño de la imagen que de tener una o dos etapas.
       </motion.p>
     </div>
   );
@@ -190,25 +190,25 @@ export function Hiperparametros() {
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6, ease: CURVA }}>
           <div className="etiqueta">Lote · AP@0,5 tras 3 épocas de prueba</div>
           <h3 style={{ marginTop: 10 }}>8 imágenes</h3>
-          <BarrasH anchoEtiqueta={44} retraso={0.7} paso={0.12} alto={34} textoNulo="sin memoria"
+          <BarrasH anchoEtiqueta={44} retraso={0.7} paso={0.12} alto={34} textoNulo="no cabe en la GPU"
             datos={LOTES.map((l) => ({ etiqueta: l.lote, valor: l.ap, destacado: l.lote === '8' }))} />
-          <p style={{ marginTop: 16, fontSize: 21 }}>El mayor que cabe en la GPU. 1, 2 y 8 acaban casi igual.</p>
+          <p style={{ marginTop: 16, fontSize: 21 }}>Con 1, 2 u 8 el resultado es casi el mismo: elegimos 8, el mayor que cabe en la memoria de la GPU.</p>
         </motion.div>
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.6, ease: CURVA }}>
           <div className="etiqueta">Tasa · AP@0,5 tras 3 épocas de prueba</div>
           <h3 style={{ marginTop: 10 }}>10<sup>−3</sup></h3>
-          <BarrasH anchoEtiqueta={44} retraso={1.0} paso={0.14} alto={34} textoNulo="diverge: NaN"
+          <BarrasH anchoEtiqueta={44} retraso={1.0} paso={0.14} alto={34} textoNulo="no converge"
             datos={TASAS.map((t) => ({ etiqueta: t.tasa, valor: t.ap, destacado: t.tasa === '10⁻³' }))} />
-          <p style={{ marginTop: 16, fontSize: 21 }}>Muy baja no aprende; muy alta diverge.</p>
+          <p style={{ marginTop: 16, fontSize: 21 }}>Con 10⁻⁵ casi no aprende y con 10⁻¹ el entrenamiento se rompe. Elegimos 10⁻³: aprende bien y rápido.</p>
         </motion.div>
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.6, ease: CURVA }}>
           <div className="etiqueta">Optimizador · valores habituales</div>
           <h3 style={{ marginTop: 10 }}>SGD</h3>
           <Revela as="ul" className="lista" retraso={1.3} paso={0.15} style={{ fontSize: 21 }}>
-            <Item as="li"><span><b>Momentum 0,9:</b> suaviza el ruido</span></Item>
-            <Item as="li"><span><b>Weight decay 5·10<sup>−4</sup>:</b> frena los pesos grandes</span></Item>
-            <Item as="li"><span><b>Tasa ×0,1</b> si la validación se estanca</span></Item>
-            <Item as="li"><span>Valores de Faster R-CNN y torchvision</span></Item>
+            <Item as="li"><span><b>Momentum 0,9:</b> cada paso tiene en cuenta los anteriores y el ajuste es más estable</span></Item>
+            <Item as="li"><span><b>Weight decay 5·10<sup>−4</sup>:</b> evita pesos muy grandes, que llevan a memorizar</span></Item>
+            <Item as="li"><span><b>La tasa baja a la décima parte</b> si la validación deja de mejorar</span></Item>
+            <Item as="li"><span>Son los valores del artículo de Faster R-CNN y de torchvision</span></Item>
           </Revela>
         </motion.div>
       </div>
@@ -217,33 +217,58 @@ export function Hiperparametros() {
 }
 
 // --- Primeros experimentos y sobreajuste ----------------------------------------------------------------------
+const EJE_AP = { min: 0.915, max: 0.95, ticks: [0.92, 0.93, 0.94, 0.95] };
+const fracAp = (v) => (v - EJE_AP.min) / (EJE_AP.max - EJE_AP.min);
+
+const COLUMNAS = 'minmax(230px, 1.15fr) minmax(150px, 1fr) 118px';
+
 function PuntosAjuste() {
-  const ancho = 680;
-  const alto = 330;
-  const m = { l: 30, r: 40, t: 20, b: 50 };
-  const sx = escala([0.915, 0.95], [m.l, ancho - m.r]);
-  const fila = (i) => m.t + 26 + i * 68;
   return (
-    <svg className="grafica" viewBox={`0 0 ${ancho} ${alto}`} style={{ height: 'auto' }} role="img" aria-label="AP@0,5 en validación de los cuatro primeros experimentos">
-      {[0.92, 0.93, 0.94, 0.95].map((t) => (
-        <g key={t} className="rejilla">
-          <line x1={sx(t)} x2={sx(t)} y1={m.t} y2={alto - m.b} />
-          <text x={sx(t)} y={alto - m.b + 26} textAnchor="middle">{coma(t)}</text>
-        </g>
-      ))}
-      {AJUSTE_V1.map((e, i) => (
-        <g key={e.nombre}>
-          <motion.text x={m.l} y={fila(i) - 16} style={{ fill: 'var(--texto)', fontFamily: 'Geist, sans-serif', fontSize: 18 }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 + i * 0.3 }}>{e.nombre}</motion.text>
-          <motion.circle cy={fila(i) + 4} r="9" fill={i === 2 ? 'var(--acento)' : 'var(--texto)'}
-            initial={{ cx: sx(0.915), opacity: 0 }} animate={{ cx: sx(e.ap), opacity: 1 }}
-            transition={{ delay: 0.6 + i * 0.3, duration: 0.9, ease: CURVA }} />
-          <motion.text y={fila(i) + 10} x={sx(e.ap) + 18} className="valor" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ delay: 1.4 + i * 0.3 }}>{coma(e.ap, 3)} · época {e.epoca}</motion.text>
-        </g>
-      ))}
-      <text x={(m.l + ancho - m.r) / 2} y={alto - 4} textAnchor="middle" style={{ fill: 'var(--tenue)' }}>AP@0,5 en validación · Faster R-CNN v1</text>
-    </svg>
+    <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }} role="img" aria-label="AP@0,5 en validación de los cuatro primeros experimentos">
+      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateRows: 'repeat(4, 1fr)' }}>
+        {AJUSTE_V1.map((e, i) => {
+          const elegido = i === 2;
+          const color = elegido ? 'var(--acento)' : 'var(--texto)';
+          return (
+            <div key={e.nombre} style={{ display: 'grid', gridTemplateColumns: COLUMNAS, alignItems: 'center', columnGap: 28,
+              borderTop: i ? '1px solid var(--borde)' : 'none' }}>
+              <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 + i * 0.22, duration: 0.5, ease: CURVA }}
+                style={{ textAlign: 'right', fontSize: 26, fontWeight: 600, lineHeight: 1.15, color }}>
+                {e.nombre}
+              </motion.div>
+              <div style={{ position: 'relative', alignSelf: 'stretch' }}>
+                {EJE_AP.ticks.map((tick) => (
+                  <div key={tick} style={{ position: 'absolute', top: 8, bottom: 8, left: `${fracAp(tick) * 100}%`, borderLeft: '1px dashed var(--borde)' }} />
+                ))}
+                <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', borderTop: '1px solid var(--borde)' }} />
+                <motion.div initial={{ left: '0%', opacity: 0 }} animate={{ left: `${fracAp(e.ap) * 100}%`, opacity: 1 }}
+                  transition={{ delay: 0.5 + i * 0.22, duration: 0.9, ease: CURVA }}
+                  style={{ position: 'absolute', top: '50%', width: 22, height: 22, marginLeft: -11, marginTop: -11, borderRadius: '50%',
+                    background: color, boxShadow: elegido ? '0 0 16px var(--acento)' : 'none' }} />
+              </div>
+              <motion.div className="mono" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.15 + i * 0.22 }}
+                style={{ fontSize: 30, fontWeight: 600, lineHeight: 1, color, fontVariantNumeric: 'tabular-nums' }}>
+                {coma(e.ap, 3)}
+                <div style={{ marginTop: 6, fontSize: 18, fontWeight: 500, color: 'var(--tenue)' }}>época {e.epoca}</div>
+              </motion.div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: COLUMNAS, columnGap: 28, marginTop: 8 }}>
+        <span />
+        <div style={{ position: 'relative', height: 28 }}>
+          {EJE_AP.ticks.map((tick) => (
+            <span key={tick} className="mono" style={{ position: 'absolute', left: `${fracAp(tick) * 100}%`, transform: 'translateX(-50%)',
+              fontSize: 18, color: 'var(--suave)' }}>{coma(tick)}</span>
+          ))}
+        </div>
+        <span />
+      </div>
+      <div className="mono" style={{ textAlign: 'center', fontSize: 16, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--tenue)', marginTop: 2 }}>
+        AP@0,5 en validación · Faster R-CNN v1
+      </div>
+    </div>
   );
 }
 export function Ajuste() {
@@ -252,14 +277,14 @@ export function Ajuste() {
     <div className="diapo">
       <Cabecera fase="Fase 02 · Primeros experimentos" titulo="Qué mejoró al primer modelo, y cuándo dejó de mejorar" />
       <div className="cuerpo dos">
-        <div className="panel" style={{ padding: '20px 24px' }}>
+        <div className="panel" style={{ padding: '22px 28px 20px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           <PuntosAjuste />
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.6 }} style={{ fontSize: 18 }}>
-            El aumento es lo que más mejora (+1,9 pp). Las imágenes de 1280 × 720 entran al modelo a 1333 × 750; a 1820 × 1024 el AP@0,5 apenas cambia, las cajas se ajustan peor y tarda un 62 % más: se queda la imagen normal.
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.6 }} style={{ fontSize: 22, lineHeight: 1.35, marginTop: 16 }}>
+            Lo que más ayuda es el aumento de datos (+1,9 puntos). Darle al modelo una imagen más grande (1820 × 1024 en vez de 1333 × 750) casi no cambia el resultado, ajusta peor las cajas y es un 62 % más lento: nos quedamos con la normal.
           </motion.p>
         </div>
         <div className="panel" style={{ padding: '20px 24px' }}>
-          <div className="etiqueta" style={{ marginBottom: 4 }}>Pérdida por época · con aumento, tasa 10⁻³</div>
+          <div className="etiqueta" style={{ marginBottom: 4 }}>Error (pérdida) por época · con aumento, tasa 10⁻³</div>
           <div style={{ height: 360 }}>
             <Lineas ancho={680} alto={360} dominioX={[1, 30]} dominioY={[0.05, 0.26]} ticksX={[1, 5, 10, 15, 20, 25, 30]}
               ticksY={[0.05, 0.1, 0.15, 0.2, 0.25]} fy={(v) => coma(v)} tituloX="época" m={{ l: 64, r: 120, t: 24, b: 56 }}
@@ -272,14 +297,14 @@ export function Ajuste() {
                   <motion.line x1={sx(5)} x2={sx(5)} y1={m.t} y2={alto - m.b} stroke="var(--acento)" strokeWidth="2"
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.9 }} />
                   <motion.text x={sx(5) + 8} y={m.t + 14} style={{ fill: 'var(--acento)', fontSize: 15 }}
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>mejor checkpoint (época 5)</motion.text>
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>mejor modelo (época 5)</motion.text>
                   <motion.circle cx={sx(4)} cy={sy(0.2212)} r="6" fill="none" stroke="var(--naranja)" strokeWidth="2"
                     initial={{ scale: 0 }} animate={{ scale: [0, 1.6, 1] }} transition={{ delay: 3.1, duration: 0.5 }} />
                 </g>
               )} />
           </div>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.2 }} style={{ fontSize: 18 }}>
-            Mínimo de validación en la época 4: hay sobreajuste, no faltan épocas. Por eso se guarda el mejor checkpoint de validación.
+            Desde la época 4 el error en validación sube aunque en entrenamiento siga bajando: el modelo empieza a memorizar. Por eso guardamos el de la mejor época, no el del final.
           </motion.p>
         </div>
       </div>
@@ -346,10 +371,10 @@ export function Arquitecturas() {
           <Item className="panel">
             <div className="etiqueta" style={{ color: 'var(--azul)' }}>La alternativa rápida</div>
             <h3 style={{ marginTop: 8 }}>Faster R-CNN MobileNet</h3>
-            <p>Seis veces más rápido por 2,3 pp menos. Candidato si el robot necesita más imágenes por segundo.</p>
+            <p>Seis veces más rápido y solo 2,3 puntos menos preciso: la opción si el robot necesita ver más imágenes por segundo.</p>
           </Item>
           <Item as="p" style={{ margin: 0, fontSize: 18, color: 'var(--suave)' }}>
-            Mismas reglas para los siete: mismo aumento, tasa 10⁻³, 12 épocas y el mejor checkpoint de validación. La arquitectura pesa más que la tasa: con tres tasas, los tres mejores cambian menos de 0,3 pp.
+            Los siete se entrenaron igual: mismo aumento, tasa 10⁻³, 12 épocas y su mejor época en validación. Cambiar de arquitectura influye mucho más que cambiar la tasa: con tres tasas distintas, los tres mejores varían menos de 0,3 puntos.
           </Item>
         </Revela>
       </div>
@@ -425,7 +450,7 @@ export function Test() {
               );
             }} />
           </div>
-          <p style={{ margin: 0, fontSize: 17 }}>Cada punto es un umbral: al bajarlo se encuentran más robots, con más falsos positivos. El círculo es el umbral elegido en validación.</p>
+          <p style={{ margin: 0, fontSize: 17 }}>Cada punto es un umbral de confianza: cuanto más bajo, más robots encuentra, pero también más falsas alarmas. El círculo marca el umbral que fijamos en validación.</p>
         </div>
       </div>
     </div>
@@ -445,11 +470,11 @@ export function Cualitativo() {
             transition={{ delay: 0.7, duration: 0.8, ease: CURVA }} style={{ width: '56%', borderRadius: 4, border: '1px solid var(--borde)', background: '#fff' }} />
         </div>
         <Revela as="ul" className="lista" retraso={1.2} paso={0.25} style={{ fontSize: 21 }}>
-          <Item as="li"><span><b>Acierto completo:</b> tres robots, uno difficult con confianza 0,51.</span></Item>
-          <Item as="li"><span><b>Etiquetas incompletas:</b> cuatro robots y una sola caja en el XML; detectar los otros tres cuenta como error.</span></Item>
-          <Item as="li"><span><b>Difficult:</b> 65 de los 83 robots perdidos por Faster R-CNN v1 en validación.</span></Item>
-          <Item as="li"><span><b>Lejanos:</b> AP de objetos pequeños de 0,12 a 0,19; no había cajas de menos de 30 px.</span></Item>
-          <Item as="li"><span><b>Errores reales:</b> una pierna y cajas solapadas sobre un mismo robot.</span></Item>
+          <Item as="li"><span><b>Acierto completo:</b> encuentra los tres robots, incluso uno difícil, aunque con poca seguridad (0,51).</span></Item>
+          <Item as="li"><span><b>Etiquetas incompletas:</b> hay cuatro robots y solo uno estaba anotado, así que detectar los otros tres cuenta como error sin serlo.</span></Item>
+          <Item as="li"><span><b>Robots difíciles:</b> son 65 de los 83 que Faster R-CNN v1 no encuentra en validación.</span></Item>
+          <Item as="li"><span><b>Robots lejanos:</b> los detecta mal (AP de 0,12 a 0,19) porque en nuestros vídeos no había ninguno tan pequeño.</span></Item>
+          <Item as="li"><span><b>Errores de verdad:</b> confunde una pierna con un robot y a veces pone dos cajas al mismo robot.</span></Item>
         </Revela>
       </div>
     </div>
