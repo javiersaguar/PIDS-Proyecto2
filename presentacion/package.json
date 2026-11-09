@@ -1,0 +1,25 @@
+{
+  "name": "pids-presentacion",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Presentación del Proyecto 2 de PIDS (Grupo 2): datos, modelo y robot",
+  "scripts": {
+    "datos": "node scripts/preparar_datos.mjs",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "framer-motion": "11.18.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "4.7.0",
+    "vite": "6.4.6"
+  },
+  "overrides": {
+    "rollup": "npm:@rollup/wasm-node@4.68.1"
+  }
+}
