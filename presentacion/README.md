@@ -1,6 +1,6 @@
 # Presentación del proyecto
 
-Borrador de la presentación final de PIDS (Grupo 2): las tres fases del proyecto (datos, modelo y robot) en 27 diapositivas animadas, hechas con React, Vite y Framer Motion.
+Borrador de la presentación final de PIDS (Grupo 2): las tres fases del proyecto (datos, modelo y robot) en 20 diapositivas animadas, hechas con React, Vite y Framer Motion.
 
 ## Cómo se usa
 
@@ -59,11 +59,10 @@ presentacion/
     ├── datos/                  cifras.js (memoria) y los ficheros generados
     └── diapositivas/
         ├── index.js            orden, fase y notas de cada diapositiva
-        ├── inicio.jsx          portada, reto y equipo
-        ├── fase1.jsx           datos: recogida, anotación, EDA, decisiones y aumento
+        ├── inicio.jsx          portada y el caso
+        ├── fase1.jsx           datos: recogida, anotación, EDA y aumento
         ├── fase2.jsx           modelo: sistema, arquitecturas, ajuste, comparación, test y análisis
-        ├── fase3.jsx           robot: integración, circuito, puntería, ataque en marcha, camuflaje, mando y estado
-        └── cierre.jsx          conclusiones y cierre
+        └── fase3.jsx           robot: integración, circuito, ataque en marcha y mando
 ```
 
 Para añadir una diapositiva: se crea el componente en el fichero de su fase y se añade a `DIAPOSITIVAS` en `diapositivas/index.js` con su `id`, `fase` y `notas`. Si tiene fragmentos, se indica `pasos: N` y el componente recibe `paso` (de 0 a N).
@@ -74,4 +73,4 @@ Para añadir una diapositiva: se crea el componente en el fichero de su fase y s
 
 ## Pendiente
 
-Es un borrador. Las diapositivas de la fase 3 (circuito, ataques en marcha y estado) se actualizarán con los resultados del laboratorio, igual que la memoria del Bloque 3.
+Es un borrador. Las diapositivas de la fase 3 (circuito y ataques en marcha) se actualizarán con los resultados del laboratorio, igual que la memoria del Bloque 3.

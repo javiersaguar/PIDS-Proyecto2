@@ -87,16 +87,3 @@ export const PRESUPUESTO = [
   { que: '«Enemy spotted»', s: 1.4 },
   { que: 'Ráfaga de 20 disparos', s: 6.2 },
 ];
-export const CAMUFLAJE = [
-  { imagen: 'Detective', confianza: [98.8, 99.9], verde: 0.0 },
-  { imagen: 'S1 con bandera', confianza: [99.8, 99.9], verde: 5.7 },
-  { imagen: 'Orugas', confianza: [99.8, 99.9], verde: 11.0 },
-  { imagen: 'Dibujo', confianza: [92.7, 97.9], verde: 7.6 },
-  { imagen: 'Blanco', confianza: [95.4, 98.9], verde: 12.5 },
-];
-export const SOPORTES = [
-  { soporte: 'Papel', tam: '⅓–½ del alto', conf: '0,96–0,99', dispara: true },
-  { soporte: 'Papel', tam: '¼ del alto', conf: '0,87–0,92', dispara: false },
-  { soporte: 'Tableta', tam: '⅓–½ del alto', conf: '0,29–0,63', dispara: false },
-  { soporte: 'Tableta', tam: 'toda la imagen', conf: '0,55–0,95', dispara: null },
-];

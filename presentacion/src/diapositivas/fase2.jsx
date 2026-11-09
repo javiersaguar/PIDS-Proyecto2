@@ -185,7 +185,7 @@ export function Etapas() {
 export function Hiperparametros() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 02 · Hiperparámetros" titulo="Cómo elegimos el lote, la tasa de aprendizaje y el optimizador" />
+      <Cabecera fase="Fase 02 · Hiperparámetros" titulo="Cómo elegimos el lote, la tasa y el optimizador" />
       <div className="cuerpo tres">
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6, ease: CURVA }}>
           <div className="etiqueta">Lote · AP@0,5 tras 3 épocas de prueba</div>
