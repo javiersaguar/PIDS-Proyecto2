@@ -24,11 +24,26 @@ class Rutas(unittest.IsolatedAsyncioTestCase):
         await self.client.close()
 
     async def test_pagina_y_prueba_mando(self):
-        for ruta in ['/', '/prueba_mando.html']:
+        for ruta in ['/', '/prueba_mando.html', '/clasico']:
             r=await self.client.get(ruta)
             self.assertEqual(r.status,200)
         r=await self.client.get('/audio/desconocido.ogg')
         self.assertEqual(r.status,404)
+
+    async def test_cada_pagina_encuentra_sus_ficheros(self):
+        # La interfaz nueva, la clásica y la librería 3D se sirven en local: sin internet en el laboratorio
+        import re
+        for ruta in ['/', '/clasico']:
+            html=await (await self.client.get(ruta)).text()
+            enlaces=re.findall(r'(?:src|href)="(/web/[^"]+)"',html)
+            self.assertTrue(enlaces)
+            self.assertNotIn('http://',html.replace('http://127.0.0.1',''))
+            for enlace in enlaces:
+                r=await self.client.get(enlace)
+                self.assertEqual(r.status,200,enlace)
+        escena=await (await self.client.get('/web/escena3d.js')).text()
+        importado=re.search(r'from "(/web/vendor/[^"]+)"',escena).group(1)
+        self.assertEqual((await self.client.get(importado)).status,200)
 
     async def test_sesion_unica_y_parada_al_cerrar(self):
         w=await self.client.ws_connect('/ws')

@@ -108,6 +108,23 @@ class Correcciones(unittest.TestCase):
         self.assertGreater(len(leds), 5)
         self.assertLess(len(leds), 40)
 
+    def test_waka_pone_la_torreta_y_el_chasis_de_rojo_y_amarillo(self):
+        ahora = [0.]
+        d, r = preparado(ahora)
+        controlar(d, ahora)
+        d.recibir(dict(tipo='emote', nombre='waka'))
+        inicio = len(r.acciones)
+        while ahora[0] < 3:
+            controlar(d, ahora)
+        leds = [a for a in r.acciones[inicio:] if a['tipo'] == 'led' and a['comp'] != 'all']
+        self.assertEqual({a['comp'] for a in leds}, {'top_all', 'bottom_all'})
+        self.assertEqual({a['rgb'] for a in leds}, {(255, 0, 0), (255, 200, 0)})
+        # En cada cambio, la torreta y el chasis llevan colores distintos
+        for arriba, abajo in zip(leds[::2], leds[1::2]):
+            self.assertEqual((arriba['comp'], abajo['comp']), ('top_all', 'bottom_all'))
+            self.assertNotEqual(arriba['rgb'], abajo['rgb'])
+        self.assertLess(len(leds), 20)       # dos órdenes por tiempo de la canción, no 20 por segundo
+
     def test_movimiento_hacia_la_camara_y_giro_del_chasis(self):
         self.assertTrue(all(math.isclose(a, b, abs_tol=1e-9)
                             for a, b in zip(hacia_camara([1, 0], 90), [0, 1])))

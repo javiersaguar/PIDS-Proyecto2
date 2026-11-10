@@ -41,11 +41,12 @@
       this.juego = vacio();
       this.captura = null;
       this.config = {};
+      this.fuente = null;
       this.asignar({});
       document.addEventListener("keydown", e => this.tecla(e, true));
       document.addEventListener("keyup", e => this.tecla(e, false));
       opciones.superficie.addEventListener("mousedown", e => {
-        if (e.button === 0 && opciones.activo()) { this.raton = true; e.preventDefault(); }
+        if (e.button === 0 && opciones.activo()) { this.raton = true; this.usada("teclado"); e.preventDefault(); }
       });
       window.addEventListener("mouseup", () => { this.raton = false; });
       window.addEventListener("gamepaddisconnected", () => opciones.parar("Mando desconectado"));
@@ -56,6 +57,12 @@
       this.config = config;
       this.teclas = Object.assign({}, teclas, config.controles && config.controles.teclado);
       this.botones = Object.assign({}, botones, config.controles && config.controles.mando);
+    }
+    // Último dispositivo usado (teclado o mando), para dibujar sus controles en pantalla.
+    usada(fuente) {
+      if (this.fuente === fuente) return;
+      this.fuente = fuente;
+      if (this.opciones.fuente) this.opciones.fuente(fuente);
     }
     limpiar() {
       this.pulsadas.clear();
@@ -78,6 +85,7 @@
       e.preventDefault();
       if (!abajo) { this.pulsadas.delete(e.code); return; }
       if (e.repeat) return;
+      this.usada("teclado");
       if (e.code === this.teclas.parar) { this.opciones.parar("Parada de emergencia"); return; }
       if (e.code === this.teclas.ajustes) { this.opciones.ajustes(); return; }
       if (!this.opciones.activo()) return;
@@ -95,6 +103,8 @@
         this.anterior = [];
       } else {
         const valores = pad.buttons.map(b => b.value);
+        if (valores.some((v, n) => v > 0.5 && !(this.anterior[n] > 0.5)) ||
+            [...pad.axes].slice(0, 4).some(a => Math.abs(a) > 0.35)) this.usada("mando");
         if (this.captura && this.captura.tipo === "mando") {
           const i = valores.findIndex((v, n) => v > 0.5 && !(this.anterior[n] > 0.5));
           if (i >= 0) {

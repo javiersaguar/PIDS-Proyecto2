@@ -195,12 +195,15 @@ class Conductor(threading.Thread):
             self.senales.estado(nombre, parpadeo=parpadeo)
             self._led = clave
 
-    def color(self, rgb):
+    def color(self, rgb, chasis=None):
+        """Color de todos los LED o, con `chasis`, uno para la torreta y otro para el chasis."""
         from robomaster import led
-        clave = ('rgb', tuple(rgb))
+        clave = ('rgb', tuple(rgb), tuple(chasis) if chasis else None)
         if clave != self._led:
-            self.robot.led.set_led(comp=led.COMP_ALL, r=rgb[0], g=rgb[1], b=rgb[2],
-                                   effect=led.EFFECT_ON)
+            partes = [(led.COMP_ALL, rgb)] if chasis is None else [(led.COMP_TOP_ALL, rgb),
+                                                                 (led.COMP_BOTTOM_ALL, chasis)]
+            for comp, (r, g, b) in partes:
+                self.robot.led.set_led(comp=comp, r=r, g=g, b=b, effect=led.EFFECT_ON)
             self._led = clave
 
     def reposo(self):
@@ -324,7 +327,7 @@ class Conductor(threading.Thread):
         yaw, pitch = self.torreta.leer()
         self.torreta.velocidad(max(-30, min(30, (paso['yaw']-yaw)*4)),
                                max(-30, min(30, (paso['pitch']-pitch)*4)))
-        self.color(paso['color'])
+        self.color(paso['color'], paso.get('color_chasis'))
         self.estado.update(emote=nombre, progreso=max(0, min(1, t/CATALOGO[nombre]['duracion'])))
 
     def run(self):

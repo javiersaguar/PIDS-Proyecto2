@@ -42,6 +42,16 @@ class PruebasCoreografias(unittest.TestCase):
         with self.assertRaises(ValueError):
             c.muestra('risa', float('nan'))
 
+    def test_waka_alterna_rojo_y_amarillo_como_la_bandera(self):
+        tiempo = 60 / 127
+        vistos = set()
+        for i in range(int(c.CATALOGO['waka']['duracion'] / tiempo)):
+            paso = c.muestra('waka', (i + .5) * tiempo)
+            self.assertEqual({paso['color'], paso['color_chasis']}, {c.ROJO, c.AMARILLO})
+            vistos.add(paso['color'])
+        self.assertEqual(vistos, {c.ROJO, c.AMARILLO})
+        self.assertNotIn('color_chasis', c.muestra('risa', 1))
+
     def test_compatibilidad_python38(self):
         ast.parse((MANDO / 'coreografias.py').read_text(encoding='utf-8-sig'), feature_version=(3, 8))
 

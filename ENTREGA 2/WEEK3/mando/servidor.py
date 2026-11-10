@@ -21,6 +21,10 @@ def crear_app(conductor):
     async def indice(request):
         return web.FileResponse(BASE / 'web' / 'index.html')
 
+    async def clasico(request):
+        # Interfaz anterior, por si la nueva falla en el laboratorio
+        return web.FileResponse(BASE / 'web' / 'clasico.html')
+
     async def prueba_mando(request):
         return web.FileResponse(BASE / 'web' / 'prueba_mando.html')
 
@@ -67,7 +71,8 @@ def crear_app(conductor):
         async def estado():
             ultimo_estado = 0
             while not socket.closed:
-                if time.monotonic() - ultimo_estado >= .5:
+                # 5 veces por segundo: el robot 3D y las cajas siguen al robot sin saltos
+                if time.monotonic() - ultimo_estado >= .2:
                     await socket.send_json(dict(tipo='estado', **conductor.instantanea()))
                     ultimo_estado = time.monotonic()
                 while conductor.eventos:
@@ -114,6 +119,7 @@ def crear_app(conductor):
     app.router.add_get('/audio/{nombre}.ogg', audio)
     app.router.add_static('/web/', BASE / 'web')
     app.router.add_get('/prueba_mando.html', prueba_mando)
+    app.router.add_get('/clasico', clasico)
     app.on_cleanup.append(limpiar)
     return app
 
