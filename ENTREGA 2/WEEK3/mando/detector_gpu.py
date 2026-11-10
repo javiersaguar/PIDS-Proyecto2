@@ -1,4 +1,7 @@
-"""Detector local independiente del SDK. Arrancar con Python 3.11 y CUDA 12.8."""
+"""Detector local independiente del SDK. Arrancar con Python 3.11 y CUDA 12.8.
+
+Funciona con la RTX 5070 del portátil y con la RTX 3060 de los ordenadores del laboratorio.
+"""
 import argparse
 import asyncio
 import json
@@ -22,6 +25,8 @@ def main():
     import torch
     if not torch.cuda.is_available():
         parser.exit(1, 'CUDA no está disponible. Comprueba torch con CUDA 12.8 y el controlador.\n')
+    gpu = torch.cuda.get_device_name(0)
+    print('GPU:', gpu, flush=True)
     # Solo se instala el módulo falso de importación. Este proceso no conecta al robot.
     import simulacion
     simulacion.instalar(str(WEEK3))
@@ -39,7 +44,7 @@ def main():
             parser.error('--medir debe ser positivo')
         tiempos = [detectar(model, np.zeros((720, 1280, 3), dtype=np.uint8))[1]
                    for _ in range(args.medir)]
-        print(json.dumps(dict(dispositivo=str(device), arquitectura=args.arquitectura,
+        print(json.dumps(dict(dispositivo=str(device), gpu=gpu, arquitectura=args.arquitectura,
                               imagenes=len(tiempos), ms_media=sum(tiempos)/len(tiempos))))
         return
 

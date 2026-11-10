@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react';
-import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Cabecera, Contador, CURVA, fmt, Item, Revela } from '../componentes/base.jsx';
 import { BarrasH } from '../componentes/graficas.jsx';
 import { Seccion } from '../componentes/seccion.jsx';
@@ -18,110 +18,297 @@ export function Seccion3() {
 }
 
 // --- El circuito ------------------------------------------------------------------------------------
+// Animación de la demo sobre el plano de la Figura B3.1. El tiempo va comprimido (la demo real dura
+// casi dos minutos), pero respeta el orden: dónde avanza, dónde se para, dónde va despacio y a quién dispara.
 const ESC = 112;
 const px = ([x, y]) => [70 + x * ESC, 40 + (y + 2.4) * ESC];
 function longitudes(puntos) {
   const tramos = puntos.slice(1).map((p, i) => Math.hypot(p[0] - puntos[i][0], p[1] - puntos[i][1]));
   return { tramos, total: tramos.reduce((a, b) => a + b, 0) };
 }
-function puntoEn(puntos, { tramos, total }, f) {
-  let d = f * total;
-  for (let i = 0; i < tramos.length; i += 1) {
-    if (d <= tramos[i]) {
-      const t = tramos[i] ? d / tramos[i] : 0;
-      return [puntos[i][0] + (puntos[i + 1][0] - puntos[i][0]) * t, puntos[i][1] + (puntos[i + 1][1] - puntos[i][1]) * t];
-    }
-    d -= tramos[i];
-  }
-  return puntos[puntos.length - 1];
+const lerp = (a, b, f) => a + (b - a) * f;
+const suave = (f) => f * f * (3 - 2 * f);
+const tramoDe = (f, a, b) => Math.min(1, Math.max(0, (f - a) / (b - a)));
+// Interpola ángulos por el camino más corto
+function lerpAng(a, b, f) {
+  const d = ((b - a + 540) % 360) - 180;
+  return a + d * f;
 }
-function Mapa() {
-  const { puntos, ataques, rivales } = CIRCUITO;
-  const largos = useMemo(() => longitudes(puntos), [puntos]);
-  const progreso = useMotionValue(0);
+
+// Guion de la demo: cada paso dura `dur` segundos de animación
+const DISPAROS = 20;
+const GUION = (() => {
+  const g = [];
+  const mover = (i, dur, vel, ataque) => g.push({ tipo: 'mover', i, dur, vel, ataque });
+  const parada = (obj) => g.push({ tipo: 'apuntar', obj, dur: 1 }, { tipo: 'ver', obj, dur: 1.1 }, { tipo: 'disparar', obj, dur: 2.4 });
+  mover(0, 3, 0.5);
+  parada(0);
+  parada(1);
+  mover(1, 2.4, 0.4);
+  mover(2, 1.2, 0.5);
+  mover(3, 8.5, 0.1, 2);
+  mover(4, 1.2, 0.5);
+  mover(5, 2.4, 0.5);
+  mover(6, 1, 0.5);
+  mover(7, 8.5, 0.1, 3);
+  g.push({ tipo: 'baile', dur: 3.6 }, { tipo: 'fin', dur: 1.6 });
+  let t = 0;
+  for (const p of g) { p.desde = t; t += p.dur; }
+  return { pasos: g, total: t };
+})();
+// Dentro de un ataque en marcha: girar, ver, ráfaga
+const MARCHA = { ver: 0.18, disparo: 0.34, fin: 0.9 };
+
+function posicion(p, f) {
+  const { puntos } = CIRCUITO;
+  if (p.tipo !== 'mover') return null;
+  const a = puntos[p.i];
+  const b = puntos[p.i + 1];
+  // Arranca y frena en los extremos de cada tramo
+  const g = p.ataque != null ? f : suave(f);
+  return [lerp(a[0], b[0], g), lerp(a[1], b[1], g)];
+}
+function rivalEn(k, t) {
+  const r = CIRCUITO.rivales[k];
+  if (r.hastaX == null) return [r.x, r.y];
+  const p = GUION.pasos.find((q) => q.ataque === k);
+  const f = tramoDe(t, p.desde, p.desde + p.dur);
+  return [lerp(r.x, r.hastaX, f), r.y];
+}
+const angA = (de, a) => (Math.atan2(a[1] - de[1], a[0] - de[0]) * 180) / Math.PI;
+
+// Estado de la demo en el instante t
+function estado(t) {
+  const { puntos } = CIRCUITO;
+  let pos = puntos[0];
+  let ang = 0;
+  const eliminados = new Set();
+  for (const p of GUION.pasos) {
+    const f = Math.min(1, Math.max(0, (t - p.desde) / p.dur));
+    const actual = t < p.desde + p.dur;
+    const e = { pos, ang, modo: 'avanza', vel: 0, objetivo: null, viendo: false, disparo: null, paso: p, eliminados };
+    if (p.tipo === 'mover') {
+      pos = posicion(p, f);
+      e.pos = pos;
+      e.vel = p.vel;
+      if (p.ataque != null) {
+        const blanco = rivalEn(p.ataque, t);
+        const fin = angA(pos, blanco);
+        e.modo = 'marcha';
+        e.objetivo = p.ataque;
+        if (f < MARCHA.ver) ang = lerpAng(e.ang, fin, suave(f / MARCHA.ver));
+        else ang = fin;
+        e.viendo = f >= MARCHA.ver && f < MARCHA.disparo;
+        if (f >= MARCHA.disparo && f < MARCHA.fin) e.disparo = (f - MARCHA.disparo) / (MARCHA.fin - MARCHA.disparo);
+        if (f >= MARCHA.fin) { eliminados.add(p.ataque); e.objetivo = null; }
+      } else {
+        // Sin objetivo, la torreta vuelve al frente durante el primer tercio del tramo
+        ang = lerpAng(e.ang, 0, suave(tramoDe(f, 0, 0.35)));
+      }
+    } else if (p.tipo === 'apuntar' || p.tipo === 'ver' || p.tipo === 'disparar') {
+      const fin = angA(pos, rivalEn(p.obj, t));
+      ang = p.tipo === 'apuntar' ? lerpAng(e.ang, fin, suave(f)) : fin;
+      e.modo = 'parada';
+      e.objetivo = p.obj;
+      e.viendo = p.tipo === 'ver';
+      if (p.tipo === 'disparar') {
+        e.disparo = f;
+        if (f >= 1) eliminados.add(p.obj);
+      }
+    } else if (p.tipo === 'baile') {
+      e.modo = 'baile';
+      ang = lerpAng(e.ang, 0, 1) + Math.sin(f * Math.PI * 6) * 60;
+      e.pos = [pos[0] + Math.sin(f * Math.PI * 4) * 0.12, pos[1] + Math.sin(f * Math.PI * 8) * 0.08];
+    } else {
+      e.modo = 'fin';
+    }
+    e.ang = ang;
+    if (actual) return e;
+  }
+  return { pos, ang, modo: 'fin', vel: 0, objetivo: null, eliminados, paso: GUION.pasos[GUION.pasos.length - 1] };
+}
+
+function useReloj(activo) {
   const reducido = useReducedMotion();
+  const [t, setT] = useState(reducido ? GUION.total - 0.01 : 0);
   useEffect(() => {
-    if (reducido) { progreso.set(1); return undefined; }
-    const c = animate(progreso, [0, 1], { delay: 2.4, duration: 14, ease: 'linear', repeat: Infinity, repeatDelay: 1.2 });
-    return () => c.stop();
-  }, [progreso, reducido]);
-  const x = useTransform(progreso, (f) => px(puntoEn(puntos, largos, f))[0]);
-  const y = useTransform(progreso, (f) => px(puntoEn(puntos, largos, f))[1]);
+    if (reducido || !activo) return undefined;
+    let id;
+    const inicio = performance.now() + 1200;
+    const bucle = (ahora) => {
+      setT(Math.max(0, ((ahora - inicio) / 1000)) % GUION.total);
+      id = requestAnimationFrame(bucle);
+    };
+    id = requestAnimationFrame(bucle);
+    return () => cancelAnimationFrame(id);
+  }, [reducido, activo]);
+  return t;
+}
+
+const MODOS = {
+  avanza: { texto: 'AVANZA', color: 'var(--azul)' },
+  parada: { texto: 'PARADO · BUSCA Y DISPARA', color: 'var(--rojo)' },
+  marcha: { texto: 'DESPACIO · DISPARA SIN PARAR', color: 'var(--naranja)' },
+  baile: { texto: 'BAILE FINAL', color: 'var(--acento)' },
+  fin: { texto: 'FIN DE LA DEMO', color: 'var(--suave)' },
+};
+// Color de los LED del robot, como en la demo: ámbar buscando, rojo al disparar y verde tras eliminar
+function colorLed(e, t) {
+  if (e.modo === 'baile') return `hsl(${(t * 600) % 360} 85% 65%)`;
+  if (e.disparo != null) return Math.floor(t * 8) % 2 ? 'var(--rojo)' : '#ffd0d0';
+  if (e.objetivo != null) return '#ffc24a';
+  return 'var(--acento)';
+}
+
+// Dónde va el nombre de cada rival y los datos de la detección, para no pisar el recorrido
+const ROTULOS = [
+  { nombre: [[26, 5, 'start', 'Rival 1']], datos: [-32, -6, 'end'] },
+  { nombre: [[0, -24, 'middle', 'Camuflado']], datos: [-32, -4, 'end'] },
+  { nombre: [[0, -24, 'middle', 'Rival 2']], datos: [32, -4, 'start'] },
+  { nombre: [[0, 42, 'middle', 'Rival 3'], [0, 60, 'middle', 'en alto']], datos: [0, -48, 'middle'] },
+];
+
+function Mapa({ e, t }) {
+  const { puntos, ataques, rivales } = CIRCUITO;
   const d = puntos.map((p, i) => `${i ? 'L' : 'M'}${px(p).join(',')}`).join('');
-  const p1 = px([2.85, 0]);
+  const [rx, ry] = px(e.pos);
+  const led = colorLed(e, t);
+  const modo = MODOS[e.modo];
+  const blanco = e.objetivo != null ? px(rivalEn(e.objetivo, t)) : null;
+  const rad = (e.ang * Math.PI) / 180;
+  const boca = [rx + Math.cos(rad) * 24, ry + Math.sin(rad) * 24];
+  // Ráfaga: proyectiles en vuelo entre el cañón y el blanco
+  const balas = [];
+  if (e.disparo != null && blanco) {
+    const fase = e.disparo * DISPAROS;
+    for (let j = 0; j < 4; j += 1) {
+      const f = (fase + j / 4) % 1;
+      balas.push([lerp(boca[0], blanco[0], f), lerp(boca[1], blanco[1], f), f]);
+    }
+  }
+  const impactos = e.disparo != null ? Math.min(DISPAROS, Math.floor(e.disparo * DISPAROS) + 1) : 0;
+  const destello = e.disparo != null && (e.disparo * DISPAROS) % 1 < 0.35;
   return (
-    <svg viewBox="0 0 1000 470" style={{ width: '100%' }} role="img" aria-label="Recorrido de la demo">
-      <g className="rejilla">
-        {Array.from({ length: 9 }, (_, i) => <line key={i} x1={70 + i * ESC} x2={70 + i * ESC} y1="20" y2="450" stroke="var(--borde)" strokeDasharray="2 6" />)}
-      </g>
-      {Array.from({ length: 9 }, (_, i) => <text key={i} x={70 + i * ESC} y="466" textAnchor="middle" style={{ font: '13px var(--mono)', fill: 'var(--tenue)' }}>{i} m</text>)}
-      {/* líneas de tiro desde P1 */}
-      {[rivales[0], rivales[1]].map((r, i) => (
-        <motion.line key={r.nombre} x1={p1[0]} y1={p1[1]} x2={px([r.x, r.y])[0]} y2={px([r.x, r.y])[1]} stroke="var(--rojo)" strokeDasharray="5 5" strokeWidth="1.5"
-          initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 1.8 + i * 0.2, duration: 0.5 }} />
-      ))}
-      <motion.path d={d} fill="none" stroke="var(--azul)" strokeWidth="4" strokeLinejoin="round"
-        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.4, duration: 2, ease: 'easeInOut' }} />
-      {ataques.map((k) => (
-        <motion.path key={k} d={`M${px(puntos[k]).join(',')}L${px(puntos[k + 1]).join(',')}`} stroke="var(--naranja)" strokeWidth="9" strokeLinecap="round"
-          initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.9 }} transition={{ delay: 2.2, duration: 0.6 }} />
-      ))}
-      {rivales.map((r, i) => {
-        const [cx, cy] = px([r.x, r.y]);
-        const mueve = r.hastaX != null;
-        // Rótulo a la derecha si está abajo (no choca con el eje) y desplazado si hay una línea del recorrido cerca
-        const [dx, dy, ancla] = r.y > 0 ? [26, 5, 'start'] : r.nombre.startsWith('Rival 3') ? [-14, -22, 'start'] : [0, -22, 'middle'];
-        return (
-          <motion.g key={r.nombre} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.4 + i * 0.15, type: 'spring', stiffness: 300, damping: 15 }} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
-            <motion.g animate={mueve ? { x: [0, (r.hastaX - r.x) * ESC, 0] } : {}}
-              transition={mueve ? { duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2.4 } : {}}>
-              <rect x={cx - 17} y={cy - 13} width="34" height="26" rx="5" fill={r.camuflado ? 'none' : 'var(--rojo)'} stroke="var(--rojo)" strokeWidth="2.5"
-                strokeDasharray={r.camuflado ? '5 4' : undefined} />
-              <text x={cx + dx} y={cy + dy} textAnchor={ancla} style={{ font: '600 15px var(--mono)', fill: 'var(--rojo)' }}>{r.nombre}</text>
-            </motion.g>
-          </motion.g>
-        );
-      })}
-      {[[[0, 0], 'salida', 0, 24, 'middle'], [[2.85, 0], 'P1', 0, 30, 'middle'], [[8, -0.7], 'baile final', 4, -20, 'end']].map(([p, t, dx, dy, ancla]) => (
-        <g key={t}>
-          <circle cx={px(p)[0]} cy={px(p)[1]} r="6" fill="var(--texto)" />
-          <text x={px(p)[0] + dx} y={px(p)[1] + dy} textAnchor={ancla} style={{ font: '600 15px var(--mono)', fill: 'var(--texto)' }}>{t}</text>
+    <svg viewBox="0 0 1000 470" style={{ width: '100%', display: 'block' }} role="img"
+      aria-label="Animación del recorrido: el robot avanza, se para en P1 para disparar a dos objetivos, retrocede despacio disparando al rival 2 y acaba disparando hacia atrás al rival 3">
+      {Array.from({ length: 9 }, (_, i) => (
+        <g key={i}>
+          <line x1={70 + i * ESC} x2={70 + i * ESC} y1="20" y2="450" stroke="var(--borde)" strokeDasharray="2 6" />
+          <text x={70 + i * ESC} y="466" textAnchor="middle" style={{ font: '13px var(--mono)', fill: 'var(--tenue)' }}>{i} m</text>
         </g>
       ))}
-      {/* Leyenda: azul, desplazamientos; naranja, ataques sin parar */}
-      <g style={{ font: '600 15px var(--mono)' }}>
-        <line x1="80" x2="116" y1="372" y2="372" stroke="var(--azul)" strokeWidth="4" />
-        <text x="126" y="377" style={{ fill: 'var(--suave)' }}>desplazamiento</text>
-        <line x1="80" x2="116" y1="402" y2="402" stroke="var(--naranja)" strokeWidth="9" strokeLinecap="round" />
-        <text x="126" y="407" style={{ fill: 'var(--suave)' }}>ataque sin parar</text>
+      <path d={d} fill="none" stroke="var(--azul)" strokeWidth="4" strokeLinejoin="round" opacity="0.85" />
+      {ataques.map((k) => (
+        <path key={k} d={`M${px(puntos[k]).join(',')}L${px(puntos[k + 1]).join(',')}`} stroke="var(--naranja)" strokeWidth="9" strokeLinecap="round" opacity="0.9" />
+      ))}
+      {/* Parada en P1 */}
+      <g transform={`translate(${px([2.85, 0]).join(',')})`}>
+        <polygon points="-9,-22 9,-22 22,-9 22,9 9,22 -9,22 -22,9 -22,-9" fill="none" stroke="var(--rojo)" strokeWidth="2.5" opacity="0.8" />
+        <text y="44" textAnchor="middle" style={{ font: '600 15px var(--mono)', fill: 'var(--texto)' }}>P1 · parada</text>
       </g>
-      <motion.g style={{ x, y }}>
-        <rect x="-14" y="-11" width="28" height="22" rx="5" fill="var(--acento)" />
-        <circle r="18" fill="none" stroke="var(--acento)" strokeOpacity="0.4" strokeWidth="2" />
-      </motion.g>
+      {[[[0, 0], 'salida', 0, 30, 'middle'], [[8, -0.7], 'baile final', 4, 32, 'end']].map(([p, txt, dx, dy, ancla]) => (
+        <g key={txt}>
+          <circle cx={px(p)[0]} cy={px(p)[1]} r="6" fill="var(--texto)" />
+          <text x={px(p)[0] + dx} y={px(p)[1] + dy} textAnchor={ancla} style={{ font: '600 15px var(--mono)', fill: 'var(--texto)' }}>{txt}</text>
+        </g>
+      ))}
+      {/* Plataforma del rival 3 */}
+      {(() => { const [cx, cy] = px([rivales[3].x, rivales[3].y]); return <rect x={cx - 26} y={cy - 22} width="52" height="44" rx="4" fill="var(--panel-2)" stroke="var(--borde)" />; })()}
+      {/* Campo de visión de la cámara de la torreta */}
+      <path d={`M${rx},${ry} L${rx + Math.cos(rad - 0.55) * 150},${ry + Math.sin(rad - 0.55) * 150} A150,150 0 0 1 ${rx + Math.cos(rad + 0.55) * 150},${ry + Math.sin(rad + 0.55) * 150} Z`}
+        fill="var(--acento)" opacity={e.modo === 'baile' || e.modo === 'fin' ? 0 : e.viendo ? 0.22 : 0.07} />
+      {rivales.map((r, k) => {
+        const [cx, cy] = px(rivalEn(k, t));
+        const fuera = e.eliminados.has(k);
+        const atacado = e.objetivo === k;
+        const rot = ROTULOS[k];
+        return (
+          <g key={r.nombre} opacity={fuera ? 0.45 : 1}>
+            {atacado && destello && <circle cx={cx} cy={cy} r="26" fill="var(--rojo)" opacity="0.35" />}
+            <rect x={cx - 17} y={cy - 13} width="34" height="26" rx="5" fill={r.camuflado ? 'none' : 'var(--rojo)'} stroke="var(--rojo)" strokeWidth="2.5"
+              strokeDasharray={r.camuflado ? '5 4' : undefined} />
+            {fuera && <path d={`M${cx - 12},${cy - 9}L${cx + 12},${cy + 9}M${cx + 12},${cy - 9}L${cx - 12},${cy + 9}`} stroke="var(--texto)" strokeWidth="3" />}
+            {rot.nombre.map(([dx, dy, ancla, txt]) => (
+              <text key={txt} x={cx + dx} y={cy + dy} textAnchor={ancla} style={{ font: '600 15px var(--mono)', fill: 'var(--rojo)' }}>{txt}</text>
+            ))}
+            {/* Caja de detección al verlo y contador de la ráfaga */}
+            {atacado && (e.viendo || e.disparo != null) && (
+              <g style={{ font: '600 13px var(--mono)' }} textAnchor={rot.datos[2]}>
+                <rect x={cx - 25} y={cy - 21} width="50" height="42" fill="none" stroke="var(--acento)" strokeWidth="2" />
+                <text x={cx + rot.datos[0]} y={cy + rot.datos[1]} style={{ fill: 'var(--acento)' }}>robot 0,99</text>
+                {e.disparo != null && (
+                  <text x={cx + rot.datos[0]} y={cy + rot.datos[1] + 16} style={{ fill: 'var(--texto)' }}>impactos {impactos}/{DISPAROS}</text>
+                )}
+              </g>
+            )}
+          </g>
+        );
+      })}
+      {balas.map(([bx, by, f], j) => <circle key={j} cx={bx} cy={by} r="4" fill="var(--rojo)" opacity={1 - f * 0.4} />)}
+      {/* Robot: chasis con el color de los LED y torreta girada hacia el blanco */}
+      <g transform={`translate(${rx},${ry})`}>
+        {e.viendo && <text y="-30" textAnchor="middle" style={{ font: '700 14px var(--mono)', fill: '#ffc24a' }}>«Enemy spotted»</text>}
+        <rect x="-16" y="-13" width="32" height="26" rx="5" fill={led} />
+        <g transform={`rotate(${e.ang})`}>
+          <circle r="8" fill="var(--fondo)" />
+          <rect x="4" y="-3" width="20" height="6" rx="2" fill="var(--fondo)" />
+        </g>
+        {e.disparo != null && destello && <circle cx={boca[0] - rx} cy={boca[1] - ry} r="7" fill="#fff3c4" />}
+      </g>
+      {e.modo === 'baile' && [0, 1, 2].map((j) => (
+        <text key={j} x={rx - 30 + j * 30} y={ry - 30 - ((t * 60 + j * 20) % 40)} style={{ font: '700 20px var(--mono)', fill: led }}>♪</text>
+      ))}
+      {/* Estado actual */}
+      <g transform="translate(80,18)">
+        <rect width="380" height="76" rx="6" fill="var(--panel-2)" stroke={modo.color} strokeWidth="1.5" />
+        <text x="16" y="30" style={{ font: '700 17px var(--mono)', fill: modo.color }}>{modo.texto}</text>
+        <text x="16" y="58" style={{ font: '600 15px var(--mono)', fill: 'var(--suave)' }}>
+          {e.paso.tipo === 'mover' ? `${fmt(e.vel, 1)} m/s` : '0 m/s'}
+        </text>
+        <rect x="100" y="48" width="260" height="10" rx="5" fill="var(--borde)" />
+        <rect x="100" y="48" width={260 * (e.paso.tipo === 'mover' ? e.vel / 0.5 : 0)} height="10" rx="5" fill={modo.color} />
+      </g>
+      {/* Leyenda */}
+      <g style={{ font: '600 15px var(--mono)' }}>
+        <line x1="80" x2="116" y1="380" y2="380" stroke="var(--azul)" strokeWidth="4" />
+        <text x="126" y="385" style={{ fill: 'var(--suave)' }}>avanza deprisa</text>
+        <line x1="80" x2="116" y1="408" y2="408" stroke="var(--naranja)" strokeWidth="9" strokeLinecap="round" />
+        <text x="126" y="413" style={{ fill: 'var(--suave)' }}>despacio, disparando</text>
+      </g>
     </svg>
   );
 }
+
+const ETAPAS = [
+  { modo: 'parada', etiqueta: 'P1 · se para', texto: 'Tras 2,85 m a 0,5 m/s se detiene, gira la torreta a la derecha contra el rival 1 y a la izquierda contra el robot camuflado: 20 disparos a cada uno.' },
+  { modo: 'marcha', ataque: 2, etiqueta: 'R1 · retrocede a 0,1 m/s', texto: 'Recorre 1,25 m marcha atrás sin pararse mientras sigue y dispara al rival 2, que también avanza.' },
+  { modo: 'marcha', ataque: 3, etiqueta: 'R2 · avanza a 0,1 m/s', texto: 'En los 2 m finales gira la torreta hacia atrás e inclinada para alcanzar al rival 3, que está en alto.' },
+  { modo: 'baile', etiqueta: 'Final', texto: 'Baile con música y los LED cambiando de color.' },
+];
+function etapaActiva(e) {
+  if (e.modo === 'parada') return 0;
+  if (e.modo === 'marcha') return e.objetivo === 3 || e.paso.ataque === 3 ? 2 : 1;
+  if (e.modo === 'baile') return 3;
+  return -1;
+}
+
 export function Circuito() {
+  const t = useReloj(true);
+  const e = estado(t);
+  const activa = etapaActiva(e);
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Circuito" titulo="El recorrido que tiene que hacer el robot" />
-      <div className="cuerpo" style={{ gridTemplateColumns: '1.55fr 1fr', alignItems: 'start' }}>
-        <div className="panel" style={{ padding: '14px 18px' }}><Mapa /></div>
-        <Revela style={{ display: 'grid', gap: 14 }} retraso={0.8} paso={0.18}>
-          <Item className="panel" style={{ padding: '18px 22px' }}>
-            <div className="etiqueta">Primera recta (P1) · medida el 05/11</div>
-            <p style={{ color: 'var(--texto)', marginTop: 6 }}>Avanza 2,85 m a 0,5 m/s (unos 6 s), se para y gira la torreta: a la derecha está el rival 1 y a la izquierda, el robot camuflado.</p>
-          </Item>
-          <Item className="panel" style={{ padding: '18px 22px' }}>
-            <div className="etiqueta">R1 y R2 · ataques en marcha</div>
-            <p style={{ color: 'var(--texto)', marginTop: 6 }}>Ataca sin pararse dos veces: retrocede 1,25 m disparando al rival 2, que también se mueve, y en los 2 m finales ataca al rival 3, colocado en alto. Las ruedas mecanum le dejan ir hacia atrás o de lado sin girar.</p>
-          </Item>
-          <Item className="panel" style={{ padding: '18px 22px', borderColor: 'var(--acento-oscuro)' }}>
-            <div className="etiqueta acento">Primer problema del laboratorio</div>
-            <p style={{ marginTop: 6 }}>La orden del SDK de «avanzar tantos metros» no respetaba la velocidad pedida: el robot iba a 0,06 m/s. Ahora le mandamos la velocidad 20 veces por segundo y medimos lo recorrido con la odometría: frena en los últimos 17 cm y se para con 1 cm de error.</p>
-          </Item>
+      <Cabecera fase="Fase 03 · Circuito" titulo="Dónde se para, dónde va despacio y a quién dispara" />
+      <div className="cuerpo" style={{ gridTemplateColumns: '1.6fr 1fr', alignItems: 'start' }}>
+        <div className="panel" style={{ padding: '14px 18px' }}><Mapa e={e} t={t} /></div>
+        <Revela style={{ display: 'grid', gap: 12 }} retraso={0.5} paso={0.14}>
+          {ETAPAS.map((s, i) => (
+            <Item key={s.etiqueta} className="panel" style={{ padding: '16px 20px', transition: 'border-color 0.3s, background 0.3s',
+              borderColor: i === activa ? MODOS[s.modo].color : undefined, background: i === activa ? 'var(--panel-2)' : undefined }}>
+              <div className="etiqueta" style={{ color: i === activa ? MODOS[s.modo].color : undefined }}>{s.etiqueta}</div>
+              <p style={{ color: 'var(--texto)', marginTop: 6, fontSize: 20 }}>{s.texto}</p>
+            </Item>
+          ))}
         </Revela>
       </div>
     </div>

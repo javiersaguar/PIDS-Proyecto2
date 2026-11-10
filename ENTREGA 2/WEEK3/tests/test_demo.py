@@ -2,7 +2,7 @@
 
 El detector falso "ve" robots colocados en ángulos fijos alrededor de la parada:
 devuelve una caja donde caería cada robot según el yaw actual del gimbal. Así se
-comprueba la puntería, los 12 disparos, que un robot no se ataca dos veces, las
+comprueba la puntería, la ráfaga de DISPAROS_POR_ROBOT disparos, que un robot no se ataca dos veces, las
 velocidades y la parada segura con Ctrl+C, sin robot ni pesos del modelo.
 
     python -m unittest discover -s "ENTREGA 2/WEEK3/tests"
@@ -34,6 +34,9 @@ simulacion.instalar(CARPETA)
 
 import demo  # noqa: E402
 import circuito as C  # noqa: E402
+
+# Disparos de cada ráfaga (circuito.py): las pruebas no fijan el número para no quedarse atrás si cambia
+N = C.DISPAROS_POR_ROBOT
 
 
 def pixel_de(alpha, ancho=1280):
@@ -141,14 +144,14 @@ class PruebasDemo(unittest.TestCase):
         C.BARRIDO_CONTINUO = False
         p = [dict(nombre='P1', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([70], p)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         self.assertEqual(len(r['ataques']), 1)
         self.assertAlmostEqual(r['ataques'][0]['yaw'], 70, delta=1)
         # Lo ve con yaw 60 y deja de barrer: imágenes con yaw 0 y 60, y luego las del seguimiento
         fases = [f['fase'] for f in d.registro.filas]
         self.assertEqual(fases[:2], ['barrido', 'barrido'])
         self.assertEqual(set(fases[2:]), {'seguimiento'})
-        self.assertEqual(d.registro.filas[-1]['disparos'], 12)
+        self.assertEqual(d.registro.filas[-1]['disparos'], N)
 
     def test_por_defecto_es_la_demo_de_main(self):
         # Las mejoras vienen desactivadas en circuito.py: se activan una a una en el laboratorio
@@ -162,27 +165,27 @@ class PruebasDemo(unittest.TestCase):
         open(C.AUDIO_DISPARO, 'wb').close()
         p = [dict(nombre='P1', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([70], p)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         self.assertEqual([f['fase'] for f in d.registro.filas], ['barrido', 'barrido', 'confirmado'])
         tipos = [a['tipo'] for a in ep.acciones]
         self.assertNotIn('gimbal.drive_speed', tipos)       # sin seguimiento ni barrido continuo
         self.assertEqual([a for a in ep.acciones if a['tipo'] == 'chasis.move'][0]['x'], 0.5)   # sin tramos
         audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
-        self.assertEqual(audios.count('scar.wav'), 12)       # la SCAR en cada disparo
+        self.assertEqual(audios.count('scar.wav'), N)       # la SCAR en cada disparo
         self.assertFalse(d.torreta.suscrito)                 # sin leer el ángulo del gimbal
 
     def test_sin_seguimiento_confirma_una_vez_y_dispara_la_rafaga(self):
         C.SEGUIMIENTO = False
         p = [dict(nombre='P1', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([70], p)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         self.assertEqual([f['fase'] for f in d.registro.filas], ['barrido', 'barrido', 'confirmado'])
 
     # --- seguimiento de robots que se mueven ------------------------------------------
-    def test_sigue_a_un_robot_que_se_mueve_y_le_dispara_12_veces(self):
+    def test_sigue_a_un_robot_que_se_mueve_y_le_dispara_la_rafaga(self):
         p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([lambda t: 5 + 6 * t], p)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         ataque = r['ataques'][0]
         self.assertTrue(ataque['completo'])
         self.assertAlmostEqual(ataque['velocidad_robot'], 6, delta=2)
@@ -194,12 +197,14 @@ class PruebasDemo(unittest.TestCase):
         # Con CPU cada imagen tarda ~1,1 s y la torreta sigue girando mientras se analiza: con la
         # ganancia de GPU se pasaba de largo y oscilaba (3/12 disparos a 3 º/s). Ahora la ganancia
         # se adapta al tiempo medido por imagen.
+        # La ráfaga dura unos N × 1,1 s: a 10 º/s el robot recorre unos 250º. Empieza en −115º para
+        # que toda la ráfaga quede dentro del giro de la torreta (±240º).
         simulacion.PASO_IMAGEN = 1.1
-        C.PARADAS = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
+        C.PARADAS = [dict(nombre='P1', movimientos=[], barrido=[-120], pitch=0, objetivos=1)]
         C.RETARDO_CAMARA = 0.3
         for v in (0, 3, 6, 10):
             ep = demo.connect('wifi')
-            robot = lambda t, v=v: 5 + v * t   # noqa: E731
+            robot = lambda t, v=v: -115 + v * t   # noqa: E731
             detector = DetectorFalso([robot], retardo=0.3)
             d = demo.Demo(ep, detector, Args(self.salida))
             errores = []
@@ -212,10 +217,11 @@ class PruebasDemo(unittest.TestCase):
             d.ejecutar()
             ataque = d.ataques[0]
             self.assertTrue(ataque['completo'], f'{v} º/s')
-            self.assertEqual(len(errores), 12)
+            self.assertEqual(len(errores), N)
             self.assertLess(max(errores), 7, f'{v} º/s')
             self.assertAlmostEqual(ataque['s_por_imagen'], 1.1, delta=0.15)
-            self.assertLess(ataque['segundos'], 20)
+            # Como mucho un disparo por imagen: la ráfaga dura unos N × 1,1 s, más el margen de fijarlo
+            self.assertLess(ataque['segundos'], N * 1.1 + 8)
 
     def test_no_dispara_hasta_ver_dos_veces_al_robot(self):
         # Con una sola imagen no se conoce la velocidad del robot y el disparo saldría detrás
@@ -242,7 +248,7 @@ class PruebasDemo(unittest.TestCase):
             return disparar(**kw)
         ep.blaster.fire = disparar_y_medir
         d.ejecutar()
-        self.assertEqual(len(errores), 12)
+        self.assertEqual(len(errores), N)
         self.assertLess(max(errores), 7)
         self.assertLess(np.mean(errores), 3)
 
@@ -276,7 +282,7 @@ class PruebasDemo(unittest.TestCase):
     def test_barrido_continuo_ataca_en_cuanto_lo_ve_y_para(self):
         p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_360, pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([100], p)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         self.assertAlmostEqual(r['ataques'][0]['yaw'], 100, delta=1)
         barrido = [f for f in d.registro.filas if f['fase'] == 'barrido']
         self.assertLess(max(f['yaw'] for f in barrido), 100)       # no sigue girando hasta 145
@@ -286,7 +292,7 @@ class PruebasDemo(unittest.TestCase):
         p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_FRONTAL, pitch=0, objetivos=None),
              dict(nombre='P2', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
         ep, d, r = self.lanzar([(2.0, 0.3)], p)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         self.assertEqual([x['atacados'] for x in r['paradas']], [1, 0])
         self.assertAlmostEqual(r['memoria'][0]['x'], 2.0, delta=0.2)
         self.assertAlmostEqual(r['memoria'][0]['y'], 0.3, delta=0.2)
@@ -297,7 +303,7 @@ class PruebasDemo(unittest.TestCase):
         p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_FRONTAL, pitch=0, objetivos=None),
              dict(nombre='P2', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
         ep, d, r = self.lanzar([(2.0, 0.3)], p)
-        self.assertEqual(ep.disparos(), 24)
+        self.assertEqual(ep.disparos(), 2 * N)
 
     def test_sin_memoria_cada_parada_empieza_de_cero(self):
         # MEMORIA = False (por defecto): como en main, el robot se ataca desde las dos paradas
@@ -305,7 +311,7 @@ class PruebasDemo(unittest.TestCase):
         p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_FRONTAL, pitch=0, objetivos=None),
              dict(nombre='P2', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
         ep, d, r = self.lanzar([(2.0, 0.3)], p)
-        self.assertEqual(ep.disparos(), 24)
+        self.assertEqual(ep.disparos(), 2 * N)
         self.assertEqual([x['atacados'] for x in r['paradas']], [1, 1])
         self.assertEqual(len(r['memoria']), 2)   # se anotan igualmente, para las evidencias
 
@@ -313,14 +319,16 @@ class PruebasDemo(unittest.TestCase):
         # A 2 m y separados 0,6 m (unos 17 grados): son dos robots
         p = [dict(nombre='P1', movimientos=[], barrido=C.BARRIDO_FRONTAL, pitch=0, objetivos=None)]
         ep, d, r = self.lanzar([(2.0, 0.3), (2.0, -0.3)], p)
-        self.assertEqual(ep.disparos(), 24)
+        self.assertEqual(ep.disparos(), 2 * N)
 
     def test_robot_atacado_que_se_aleja_se_vuelve_a_atacar(self):
-        # Atacado en P1; cuando el robot llega a P2, se ha ido 1,5 m a un lado
+        # Atacado en P1; cuando el robot llega a P2, se ha ido 1,5 m a un lado. Se va al
+        # acabar la ráfaga de P1 (N disparos cada INTERVALO_DISPARO s, más 3 s de margen)
+        se_va = N * C.INTERVALO_DISPARO + 3
         p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1),
              dict(nombre='P2', movimientos=[(0.5, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
-        ep, d, r = self.lanzar([lambda t: (2.0, 0.0) if t < 6 else (2.0, 1.5)], p)
-        self.assertEqual(ep.disparos(), 24)
+        ep, d, r = self.lanzar([lambda t: (2.0, 0.0) if t < se_va else (2.0, 1.5)], p)
+        self.assertEqual(ep.disparos(), 2 * N)
 
     def test_robots_totales_salta_los_barridos_restantes(self):
         C.ROBOTS_TOTALES = 1
@@ -381,7 +389,7 @@ class PruebasDemo(unittest.TestCase):
         C.VIGILANCIA = True
         p = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=C.BARRIDO_360, pitch=0, objetivos=None)]
         ep, d, r = self.lanzar([(1.2, 0.8)], p)
-        self.assertEqual(ep.disparos(), 12)                 # en el recorrido, y en la parada ya no se repite
+        self.assertEqual(ep.disparos(), N)                 # en el recorrido, y en la parada ya no se repite
         self.assertEqual(r['ataques'][0]['parada'], 'P1-ruta')
         self.assertEqual([e['tipo'] for e in r['eventos_ruta']], ['ataque'])
         self.assertEqual(r['paradas'][0]['atacados'], 0)
@@ -391,7 +399,7 @@ class PruebasDemo(unittest.TestCase):
         p = [dict(nombre='P1', movimientos=[(1.0, 0, 0)], barrido=[0], pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([lambda t: None if t < 0.8 else (1.8, 0.9)], p)
         self.assertEqual(r['ataques'][0]['parada'], 'P1-ruta')
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         # El ataque es entre los dos tramos: después del primero y antes del segundo
         tipos = [a['tipo'] for a in ep.acciones]
         primero = tipos.index('chasis.move')
@@ -457,13 +465,13 @@ class PruebasDemo(unittest.TestCase):
             if f['fase'] == 'seguimiento' and f['disparos'] > disparos_previos:
                 self.assertLess(abs(f['objetivo_yaw'] - f['yaw']), 7)   # 0,4 del ancho de la caja falsa
                 disparos_previos = f['disparos']
-        self.assertEqual(disparos_previos, 12)
+        self.assertEqual(disparos_previos, N)
 
     def test_fija_al_robot_aunque_se_haya_movido_desde_el_barrido(self):
         # En el barrido está en 0; al ir a confirmarlo ya está en 18 (la versión anterior no disparaba)
         p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([lambda t: 0 if t < 0.05 else 18], p)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         self.assertAlmostEqual(r['ataques'][0]['yaw'], 18, delta=1)
 
     def test_no_fija_un_robot_demasiado_lejos_de_donde_se_vio(self):
@@ -478,7 +486,7 @@ class PruebasDemo(unittest.TestCase):
         ep, d, r = self.lanzar([lambda t: 0 if t < 1.0 else None], p)
         ataque = r['ataques'][0]
         self.assertFalse(ataque['completo'])
-        self.assertTrue(0 < ataque['disparos'] < 12)
+        self.assertTrue(0 < ataque['disparos'] < N)
         self.assertEqual(r['paradas'][0]['atacados'], 0)
         self.assertEqual(ep.acciones[-1]['rgb'], (0, 0, 0))
 
@@ -497,14 +505,14 @@ class PruebasDemo(unittest.TestCase):
             ep, d, r = self.lanzar([lambda t: 5 + 6 * t], p)
         self.assertTrue(d.torreta.usar_medida)
         self.assertEqual(d.torreta.signos, (1, -1))
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
 
     def test_sin_lectura_del_gimbal_estima_el_angulo(self):
         C.LEER_ANGULO_GIMBAL = False
         p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([lambda t: 5 + 6 * t], p)
         self.assertFalse(d.torreta.usar_medida)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
 
     def test_ctrl_c_al_seguir_para_la_torreta(self):
         C.PARADAS = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
@@ -531,7 +539,7 @@ class PruebasDemo(unittest.TestCase):
         C.BARRIDO_COMPLETO = True
         p = [dict(nombre='P1', movimientos=[], barrido=[0, 20, 40], pitch=0, objetivos=None)]
         ep, d, r = self.lanzar([20], p)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         self.assertEqual(len(r['ataques']), 1)
 
     def test_blaster_sin_respuesta_detiene_la_demo_y_registra_la_rafaga_parcial(self):
@@ -553,14 +561,14 @@ class PruebasDemo(unittest.TestCase):
         for continuo in (True, False):
             C.BARRIDO_CONTINUO = continuo
             ep, d, r = self.lanzar([-100, 10, 30, 175], p)
-            self.assertEqual(ep.disparos(), 48, f'continuo={continuo}')
+            self.assertEqual(ep.disparos(), 4 * N, f'continuo={continuo}')
             self.assertEqual(sorted(round(a['yaw']) for a in r['ataques']), [-100, 10, 30, 175])
 
     def test_solo_la_mejor_si_no_se_dispara_a_todos(self):
         C.DISPARAR_A_TODOS = False
         p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=None)]
         ep, d, r = self.lanzar([10, 30], p)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
 
     def test_sin_detecciones_no_dispara_y_guarda_todo(self):
         C.BARRIDO_CONTINUO = False
@@ -635,10 +643,13 @@ class PruebasDemo(unittest.TestCase):
         d.camara = demo.Camara(ep, espera=0)
         return ep, d.apuntar_y_disparar('P1', angulo, 0.99, ya_atacados)
 
-    def test_no_dispara_si_al_confirmar_el_robot_no_esta_centrado(self):
-        ep, atacado = self.confirmar([30], 0, [])     # se esperaba en 0 y está en 30
-        self.assertFalse(atacado)
-        self.assertEqual(ep.disparos(), 0)
+    def test_al_confirmar_centra_por_pasos_un_robot_desplazado(self):
+        # Se esperaba en 0 y está en 30. Desde la puntería por pasos (05/11) ya no se descarta:
+        # la torreta lo centra con cada imagen y dispara, si no es un robot ya atacado
+        ep, atacado = self.confirmar([30], 0, [])
+        self.assertTrue(atacado)
+        self.assertEqual(ep.disparos(), N)
+        self.assertAlmostEqual(ep.gimbal.yaw, 30, delta=1)
 
     def test_no_dispara_dos_veces_al_mismo_robot_al_confirmar(self):
         ep, atacado = self.confirmar([5], 0, [5])     # el más centrado ya se atacó
@@ -648,7 +659,7 @@ class PruebasDemo(unittest.TestCase):
     def test_confirma_y_corrige_la_punteria(self):
         ep, atacado = self.confirmar([8], 0, [])
         self.assertTrue(atacado)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         self.assertAlmostEqual(ep.gimbal.yaw, 8, delta=0.5)
 
     def test_no_arranca_con_la_bateria_critica(self):
@@ -721,7 +732,7 @@ class PruebasDemo(unittest.TestCase):
             ep, d, r = self.lanzar([0], p)
             audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
             self.assertEqual(audios.count('scar.wav'), 1)
-            self.assertEqual(ep.disparos(), 12)
+            self.assertEqual(ep.disparos(), N)
 
     def test_cada_disparo_suena_con_su_audio_si_se_pide(self):
         C.AUDIO_DISPARO = os.path.join(CARPETA, 'scar.wav')
@@ -732,8 +743,8 @@ class PruebasDemo(unittest.TestCase):
             C.SEGUIMIENTO = seguimiento
             ep, d, r = self.lanzar([0], p)
             audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
-            self.assertEqual(audios.count('scar.wav'), 12)
-            self.assertEqual(ep.disparos(), 12)
+            self.assertEqual(audios.count('scar.wav'), N)
+            self.assertEqual(ep.disparos(), N)
 
     def test_rafaga_suena_una_vez_y_dispara_a_su_ritmo(self):
         C.SEGUIMIENTO = False
@@ -746,7 +757,7 @@ class PruebasDemo(unittest.TestCase):
         audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
         self.assertEqual(audios.count('rafaga.wav'), 1)
         self.assertNotIn('scar.wav', audios)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
 
     def test_sin_audio_de_rafaga_suena_cada_disparo(self):
         C.SEGUIMIENTO, C.SONIDO_CADA_DISPARO = False, True
@@ -756,7 +767,7 @@ class PruebasDemo(unittest.TestCase):
         p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([0], p)
         audios = [a['fichero'] for a in ep.acciones if a['tipo'] == 'audio']
-        self.assertEqual(audios.count('scar.wav'), 12)
+        self.assertEqual(audios.count('scar.wav'), N)
 
     def test_baile_con_cancion_y_luces(self):
         C.BAILE_FINAL = True
@@ -771,7 +782,7 @@ class PruebasDemo(unittest.TestCase):
         C.AUDIO_DISPARO, C.AUDIO_FINAL = 'audio/propios/no_existe.wav', None
         p = [dict(nombre='P1', movimientos=[], barrido=[0], pitch=0, objetivos=1)]
         ep, d, r = self.lanzar([0], p)
-        self.assertEqual(ep.disparos(), 12)
+        self.assertEqual(ep.disparos(), N)
         self.assertIn(C.SONIDOS['disparo'], [a.get('id') for a in ep.acciones if a['tipo'] == 'sonido'])
 
     def test_detect_and_shoot_de_la_plantilla(self):
