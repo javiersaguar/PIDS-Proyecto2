@@ -1,5 +1,11 @@
 @echo off
 cd /d "%~dp0.."
+".venv\Scripts\python.exe" -c "" 2>nul
+if errorlevel 1 (
+  echo Windows no deja ejecutar .venv\Scripts\python.exe. Ejecuta mando\reparar_lanzador.cmd y vuelve a probar.
+  pause
+  exit /b 1
+)
 ".venv\Scripts\python.exe" mando\preparar.py
 if errorlevel 1 (
   echo Corrige los errores anteriores antes de conectar.

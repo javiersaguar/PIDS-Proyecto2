@@ -10,7 +10,8 @@ Desde ENTREGA 2/WEEK3, con una carpeta de imágenes propias o sintéticas:
 
     .venv\Scripts\python.exe mando\servidor.py --simulacion CARPETA --sin-mover
 
-Abre http://127.0.0.1:8765 y pulsa Activar controles. La simulación muestra imágenes,
+Abre http://127.0.0.1:8765 y pulsa Activar controles. La interfaz anterior sigue en
+http://127.0.0.1:8765/clasico, por si la nueva falla. La simulación muestra imágenes,
 batería simulada y ejecuta las órdenes con simulacion.py. Su detector devuelve cajas
 vacías para distinguirla de una inferencia real. Las pruebas usan imágenes sintéticas.
 
@@ -30,6 +31,22 @@ demo_utils.connect, sin modificar la red ni connect.py:
 El servidor escucha solo en 127.0.0.1. Se permite una sesión de control. La vista de
 conexión muestra el error y el modo intentado si connect falla. Carga la batería antes de
 usar el robot. Por debajo del 10 % se rechaza el arranque y bajo el 20 % hay aviso.
+
+### Si Windows bloquea .venv\Scripts\python.exe
+
+En Windows 11 con Smart App Control activo puede aparecer «Una directiva de Control de
+aplicaciones bloqueó este archivo» al ejecutar `.venv\Scripts\python.exe` o
+`.venv-gpu\Scripts\python.exe`. uv crea los entornos con un lanzador propio sin firma
+digital, y Windows decide por su reputación en la nube, por eso unos días funciona y
+otros no. El intérprete de base y el lanzador estándar de CPython sí se ejecutan.
+
+    mando\reparar_lanzador.cmd
+
+El script sustituye `python.exe` y `pythonw.exe` de los dos entornos por el lanzador
+de CPython del mismo intérprete y guarda los originales como `*.uv-original`. Los
+paquetes instalados no cambian. No modifica ninguna directiva de seguridad. Hay que
+repetirlo si se vuelve a crear el entorno con `uv venv`. `arrancar.cmd` comprueba el
+lanzador antes de empezar y remite a este script si está bloqueado.
 
 ## Detector independiente
 
@@ -166,6 +183,40 @@ alternativa CPU. Se añadieron cuatro coreografías cancelables y audio local. L
 latencia wifi, los falsos positivos sobre imágenes de robots y la sincronía física
 requieren comprobación experimental.
 
+### Interfaz a pantalla completa con controles en 3D · 10/11/2026
+
+La cámara ocupa toda la ventana y lo demás va encima, semitransparente:
+
+- **Tira superior:** conexión, batería y vídeo. La batería pasa a ámbar por debajo del 20 % y a
+  rojo por debajo del 10 %; el vídeo, por debajo de 10 y de 4 imágenes por segundo. La edad de la
+  detección solo aparece si pasa de 1 s. El resto de la telemetría está en Ajustes → Telemetría.
+- **Mando o teclado en 3D** (abajo a la izquierda). Con el mando, los joysticks se inclinan en
+  tiempo real y los botones se hunden y se iluminan; R2 y L2 bajan según cuánto se aprietan. Con
+  el teclado se dibujan las teclas asignadas, colocadas como en el mando (mover a la izquierda,
+  mirar en el centro, emotes en rombo) y el ratón, que dispara con el botón izquierdo.
+- **Qué se dibuja:** cambia solo según lo último que se use, y hay un botón en Ajustes →
+  Controles. Solo cambia el dibujo: teclado y mando funcionan siempre los dos.
+- **Carteles:** al lanzar un emote sale su botón o tecla, su nombre y el progreso; a los 2,6 s se
+  encoge arriba hasta que termina. Al disparar aparece «R2 DISPARO ×n» bajo el punto de mira, y la
+  parada muestra su propio cartel. Los emotes ya no se lanzan con el ratón.
+- **Robot en 3D** (abajo a la derecha): la torreta gira con el yaw y el pitch reales, se ve el
+  campo de visión de la cámara y una flecha con el movimiento del chasis. Sus LED siguen al robot:
+  verdes con los controles activos, rojos al disparar y la bandera en el Waka Waka.
+- **Extras:** el mando vibra al disparar, al terminar un emote y en la parada; los dibujos se
+  atenúan a los 4 s sin tocar nada. Los dos se desactivan en Ajustes → Controles.
+- **Waka Waka con la bandera de España:** la torreta y el chasis alternan rojo y amarillo en cada
+  tiempo de la canción (LED de arriba y de abajo por separado).
+
+Ficheros: `web/index.html`, `web/hud.css`, `web/app.js` y `web/escena3d.js`. Three.js 0.160.1 va
+copiado en `web/vendor/` con su licencia MIT, porque con el portátil en la wifi del robot no hay
+internet. Sin WebGL la página funciona igual, sin los dibujos. La interfaz anterior queda en
+`web/clasico.html` y `web/clasico.js`. El servidor manda el estado 5 veces por segundo (antes 2)
+para que el robot 3D y las cajas no vayan a saltos.
+
+Comprobado en simulación con Chrome: mando simulado (ejes, botones y gatillos), los cuatro emotes
+con su cartel, disparos, parada, ajustes desde OPTIONS, teclado y versión clásica, sin errores en
+la consola. Falta probarlo con el DualShock y el robot reales, y medir si la vibración se nota.
+
 ### Rediseño y diagnóstico Bluetooth · 08/11/2026
 
 La interfaz adopta la paleta negro verdoso y verde #5ce483, los bordes rectos y
@@ -236,7 +287,7 @@ Las comprobaciones de altavoz, ruedas, impactos, wifi y deriva requieren hardwar
 
 ### Resultado actual de las pruebas locales
 
-31 pruebas Python y dos pruebas JavaScript correctas (siete nuevas en test_correcciones.py:
+34 pruebas Python y dos pruebas JavaScript correctas (siete nuevas en test_correcciones.py:
 rearme tras el baile, aviso de desarme, disparo sin confirmar, puntería automática, LED,
 movimiento hacia la cámara con giro del chasis y plantilla de ajustes). Se comprueban reproducción y
 parada con el formato binario real del SDK, rechazo de órdenes y falta de ACK,
