@@ -154,6 +154,8 @@ def paradas_desde_plano(rumbo_inicial, paradas, girar=True, abanico=30, barrido_
         salida.append(dict(nombre=p['nombre'], movimientos=movimientos, barrido=barrido,
                            pitch=p.get('pitch', 0), objetivos=objetivos,
                            punto=tuple(actual), rumbo=round(normalizar(rumbo), 1)))
+        if p.get('umbral_zona'):
+            salida[-1]['umbral_zona'] = dict(p['umbral_zona'])
     return salida
 
 

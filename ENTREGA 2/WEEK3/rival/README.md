@@ -1,8 +1,8 @@
 # Kit del rival 2 en movimiento
 
-En la rotonda (tramo R1), nuestro robot retrocede 1,25 m a 0,1 m/s disparando hacia su
+En la rotonda (tramo R1), nuestro robot retrocede 1,44 m a 0,1 m/s disparando hacia su
 izquierda. El **rival 2** es un segundo RoboMaster que avanza en paralelo, 1,2 m a su
-izquierda: 0,75 m a 0,05 m/s, unos 15 s.
+izquierda: 0,86 m a 0,05 m/s, unos 17 s.
 
 Lo maneja Alejandro desde su portátil con `rival_movil.py`. El rival espera quieto y arranca
 de una de estas dos formas:
@@ -111,12 +111,12 @@ Si no llega:
 
 ## 5. Colocar el rival
 
-- **Posición:** (4,6; −2,2) en el plano del circuito. Es 1,2 m a la izquierda del tramo en
+- **Posición:** (4,86; −2,2) en el plano del circuito. Es 1,2 m a la izquierda del tramo en
   el que retrocede nuestro robot (y = −1), cerca del punto donde empieza a retroceder
-  (x = 4,75).
+  (x = 5,04).
 - **Orientación:** mirando hacia la salida (hacia −x), es decir, en el mismo sentido en el
   que retrocede nuestro robot. Avanza hacia delante.
-- **Espacio:** dejar libres al menos 0,75 m por delante, hasta (3,85; −2,2), y medio metro a
+- **Espacio:** dejar libres al menos 0,86 m por delante, hasta (4,0; −2,2), y medio metro a
   los lados.
 - **Torreta:** centrada. El script no la mueve.
 
@@ -137,13 +137,13 @@ Si no llega:
 5. **Si el aviso no llega**, la consola de la demo muestra `ARRANCAR RIVAL 2 AHORA` y Alejandro
    pulsa **Enter**. El momento es cuando nuestro robot, ya 1 m a la izquierda, empieza a
    retroceder y su torreta gira hacia el rival con la luz ámbar.
-6. El rival avanza 0,75 m en unos 15 s, se para solo y el script termina.
+6. El rival avanza 0,86 m en unos 17 s, se para solo y el script termina.
 
 ## 7. Opciones
 
 | Opción | Por defecto | Qué hace |
 |---|---|---|
-| `--distancia M` | 0,75 | Metros que avanza; negativo, hacia atrás |
+| `--distancia M` | 0,86 | Metros que avanza; negativo, hacia atrás |
 | `--velocidad V` | 0,05 | m/s; nunca más de 0,1 |
 | `--retraso S` | 0 | Segundos de espera tras el aviso antes de arrancar |
 | `--modo aviso` | sí | Arranca con el aviso de la demo o con Enter |

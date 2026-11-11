@@ -20,10 +20,10 @@ La configuración está en [`circuito.py`](circuito.py) y el recorrido dibujado,
 | 0 | Salida | Comprobaciones, cuenta atrás y sonido de Fórmula 1 | 5 s |
 | 1 | P1 | Recta de 2,85 m con el sonido de F1 | 6,4 s |
 | 2 | P1 | Parada: rival 1 a la derecha y robot camuflado a la izquierda | 45 s |
-| 3 | R1 | Rotonda: adelante, izquierda, atrás disparando al rival 2, que se mueve en paralelo, derecha | 26 s |
-| 4 | R2 | Recta final: adelante, izquierda y adelante disparando hacia atrás al rival 3, en alto | 33 s |
+| 3 | R1 | Rotonda: adelante, izquierda, atrás disparando al rival 2, que se mueve en paralelo, derecha | 28 s |
+| 4 | R2 | Recta final: adelante, izquierda y adelante disparando hacia atrás al rival 3, en alto | 37 s |
 | 5 | Final | Super Estrella y baile | 27 s |
-| | | **Total** | **unos 2 min 20 s** |
+| | | **Total** | **unos 2 min 26 s** |
 
 Los tiempos de la parada dependen de cuántas correcciones de puntería haga el robot.
 
@@ -38,8 +38,8 @@ negativa hacia la izquierda.
 | Nuestro robot | (0; 0) | — | Mirando hacia +x |
 | Rival 1 | (2,85; 1,2) | 1,2 m a la derecha de P1 | Quieto |
 | Robot camuflado | (2,85; −1,2) | 1,2 m a la izquierda de P1 | Detective impreso en A3, de pie |
-| Rival 2 | De (4,6; −2,2) a (3,85; −2,2) | 1,2 m a la izquierda del retroceso de R1 | Se mueve 0,75 m a 0,05 m/s (15 s), en el mismo sentido que nuestro robot |
-| Rival 3 | (5,35; −0,7), en alto | De 0,65 a 2,65 m por detrás en el último tramo | Plataforma de 20–40 cm de alto y 40 × 40 cm como mucho |
+| Rival 2 | De (4,86; −2,2) a (4,0; −2,2) | 1,2 m a la izquierda del retroceso de R1 | Se mueve 0,86 m a 0,05 m/s (17 s), en el mismo sentido que nuestro robot |
+| Rival 3 | (5,73; −0,7), en alto | De 0,75 a 3,05 m por detrás en el último tramo | Plataforma de 20–40 cm de alto y 40 × 40 cm como mucho |
 
 Todas las posiciones dejan al menos 0,6 m entre el centro de cada rival y el camino de
 nuestro robot. Están en `RIVALES` de [`circuito.py`](circuito.py) y en la figura.
@@ -126,15 +126,19 @@ del SDK. Se preparan con `audio/preparar_disparo.py`, `audio/preparar_motor.py` 
 - Detective impreso en A3 (`docs/informes/figuras/senuelo/detective_imprimir.jpg`) a la
   izquierda, a 1–1,5 m (hacia (2,85; −1,2)), de pie y bien iluminado.
 
-## 3. Rotonda R1 (unos 26 s)
+## 3. Rotonda R1 (unos 28 s)
+
+Desde aquí, después del túnel, las medidas a lo largo (x) son un 15 % más largas que las
+medidas el 05/11, porque el final quedaba sin espacio (pruebas del 11/11). Las de lo ancho
+(y) no cambian.
 
 | Paso | Movimiento | Velocidad | Tiempo | Torreta y disparos |
 |---|---|---|---|---|
-| 3.1 | 1,9 m adelante, hasta (4,75; 0) | 0,4 m/s | 5,2 s | Centrada |
-| 3.2 | 1 m a la izquierda, hasta (4,75; −1) | 0,5 m/s | 2,5 s | Centrada |
-| 3.3 | 1,25 m atrás, hasta (3,5; −1) | 0,1 m/s | 12,5 s | Gira a la izquierda (−90º) y ataca al rival 2 sin parar |
+| 3.1 | 2,19 m adelante, hasta (5,04; 0) | 0,4 m/s | 5,9 s | Gira a la izquierda (−90º) |
+| 3.2 | 1 m a la izquierda, hasta (5,04; −1) | 0,5 m/s | 2,5 s | Ya mira a la izquierda |
+| 3.3 | 1,44 m atrás, hasta (3,6; −1) | 0,1 m/s | 14,4 s | Gira a la izquierda (−90º) y ataca al rival 2 sin parar |
 | 3.4 | Centra la torreta, parado | — | 3 s | Vuelve al centro |
-| 3.5 | 1 m a la derecha, hasta (3,5; 0) | 0,5 m/s | 2,5 s | Centrada |
+| 3.5 | 1 m a la derecha, hasta (3,6; 0) | 0,5 m/s | 2,5 s | Centrada |
 
 **Ataque en marcha a un rival que también se mueve (3.3).**
 
@@ -157,10 +161,10 @@ paralelo a nuestro robot, 1,2 m a su izquierda y en el mismo sentido, pero más 
 
 Va a 0,1 m/s porque necesita unos 12 s: 3 s de giro, 2–4 s para verlo, 1,4 s de voz y 6,2 s
 de ráfaga. La ráfaga puede acabar 1–2 s después de que se pare nuestro robot. El rival se
-mueve durante 15 s, así que sigue en marcha hasta el último disparo.
+mueve durante 17 s, así que sigue en marcha hasta el último disparo.
 
 **Montaje y arranque del rival 2:**
-- Rival 2 en (4,6; −2,2), mirando hacia la salida (hacia −x), para que avance en paralelo al
+- Rival 2 en (4,86; −2,2), mirando hacia la salida (hacia −x), para que avance en paralelo al
   retroceso de nuestro robot.
 - Alejandro lanza `python rival/rival_movil.py` antes de empezar la demo. El rival espera
   quieto.
@@ -171,28 +175,30 @@ mueve durante 15 s, así que sigue en marcha hasta el último disparo.
   la izquierda.
 - Instrucciones de conexión en [`rival/README.md`](rival/README.md).
 
-## 4. Recta final R2 (unos 33 s)
+## 4. Recta final R2 (unos 37 s)
 
 | Paso | Movimiento | Velocidad | Tiempo | Torreta y disparos |
 |---|---|---|---|---|
-| 4.1 | 2,5 m adelante, hasta (6,0; 0) | 0,5 m/s | 5,5 s | Centrada |
-| 4.2 | 0,7 m a la izquierda, hasta (6,0; −0,7) | 0,5 m/s | 1,9 s | Centrada |
-| 4.3 | 2 m adelante, hasta (8,0; −0,7) | 0,1 m/s | 20 s | Gira 180º, inclinada 10º hacia arriba, y ataca al rival 3, en alto, sin parar |
+| 4.1 | 2,88 m adelante, hasta (6,48; 0) | 0,5 m/s | 6,3 s | Empieza a girar hacia atrás (180º, inclinada 10º) |
+| 4.2 | 0,7 m a la izquierda, hasta (6,48; −0,7) | 0,5 m/s | 1,9 s | Acaba de girar: ya mira hacia atrás |
+| 4.3 | 2,3 m adelante, hasta (8,78; −0,7) | 0,1 m/s | 23 s | Gira 180º, inclinada 10º hacia arriba, y ataca al rival 3, en alto, sin parar |
 | 4.4 | Centra la torreta, parado | — | 6 s | Vuelve al centro desde 180º |
 
 **Ataque hacia atrás y hacia arriba (4.3).** Es como el de la rotonda, pero con la torreta
-mirando hacia atrás (180º, 6 s de giro) e inclinada 10º. Al ver al rival 3, corrige también
+mirando hacia atrás (180º) e inclinada 10º. Girar 180º lleva 6 s a 30 º/s, que el enunciado
+no deja subir: desde el 11/11 la torreta gira durante 4.1 y 4.2 (`GIRAR_TORRETA_ANTES`), así
+que el ataque empieza ya mirando al rival 3. En la rotonda pasa lo mismo con los −90º. Al ver al rival 3, corrige también
 la inclinación para apuntar al centro del robot y la sigue ajustando mientras se aleja.
 
 Como referencia, un robot 30 cm más alto que el cañón queda a unos 17º a 1 m y a unos 9º a
 2 m. La torreta sube como mucho 30º.
 
 **Montaje:**
-- Rival 3 sobre una plataforma de 20–40 cm de alto, en (5,35; −0,7): 0,65 m por detrás del
-  punto donde empieza 4.3. Antes estaba en (5,0; −0,7), pero quedaba a 25 cm del tramo 3.2
-  de la rotonda (x = 4,75) y nuestro robot chocaba con él.
+- Rival 3 sobre una plataforma de 20–40 cm de alto, en (5,73; −0,7): 0,75 m por detrás del
+  punto donde empieza 4.3 y a 0,69 m del tramo 3.2 de la rotonda (x = 5,04). Antes del
+  15 % estaba en (5,35; −0,7), y antes aún en (5,0; −0,7), donde nuestro robot chocaba con él.
 - La plataforma no debe medir más de 40 × 40 cm, para dejar paso a los tramos 3.2 y 4.2.
-- El robot se aleja de él de 0,65 a 2,65 m. Cuando lo ve por primera vez, tras girar la
+- El robot se aleja de él de 0,75 a 3,05 m. Cuando lo ve por primera vez, tras girar la
   torreta, ya está a unos 1,3–1,5 m.
 
 ## 5. Final: Super Estrella y baile (27 s)
