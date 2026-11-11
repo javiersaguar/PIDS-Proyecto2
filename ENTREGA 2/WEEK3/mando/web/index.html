@@ -83,11 +83,11 @@
   </div>
   <div class="panel-ajustes" id="panel-disparo" hidden>
     <label class="fila">Disparo automático<input data-config="automatico" type="checkbox"></label>
-    <label class="fila">Asistente de puntería · pendiente de calibración<input data-config="asistente" type="checkbox" disabled></label>
+    <label class="fila">Asistente de puntería · la torreta sigue al robot detectado<input data-config="asistente" type="checkbox"></label>
     <label class="fila">Confianza mínima<input data-config="umbral" type="number" min="0.95" max="1" step="0.01"></label>
     <label class="fila">Intervalo entre disparos (s)<input data-config="intervalo" type="number" min="0.3" max="5" step="0.1"></label>
     <p class="advertencia">El detector reconoce también imágenes de robots, como el señuelo del proyecto. Supervisa siempre el modo automático. La parada lo desactiva.</p>
-    <p class="ayuda">La marca del punto de mira indica una orden de disparo confirmada. Los impactos en el rival requieren su propia comprobación.</p>
+    <p class="ayuda">Con el asistente, la torreta gira sola hacia el robot detectado más centrado mientras no muevas el joystick derecho ni las flechas. Con el asistente y el disparo automático, le dispara cuando queda centrado. La marca del punto de mira indica una orden de disparo confirmada. Los impactos en el rival requieren su propia comprobación.</p>
   </div>
   <div class="panel-ajustes" id="panel-movimiento" hidden>
     <label class="fila">Modo<select data-config="modo"><option value="free">Libre · torreta independiente</option><option value="fps" id="opcion-fps" disabled>FPS · pendiente de laboratorio</option></select></label>

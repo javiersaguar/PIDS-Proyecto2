@@ -422,15 +422,23 @@
       el("conexion-luz").className = "luz conectada";
       el("activar").disabled = false;
       enviar({ tipo: "parar" });
+      if (!el("video").naturalWidth) recargarVideo();
     });
     ws.addEventListener("message", e => {
       try { recibir(JSON.parse(e.data)); } catch (_) { avisar("Mensaje de estado no válido"); }
     });
-    ws.addEventListener("close", () => {
+    ws.addEventListener("close", e => {
       conexionAbierta = false;
+      el("conexion-luz").className = "luz error";
+      if (e.code === 4001) {
+        // Otra pestaña ha tomado el control: esta no reconecta, para no quitárselo
+        parar("Otra pestaña tiene el control. Recarga esta para recuperarlo");
+        el("conexion").textContent = "Control en otra pestaña";
+        el("activar").disabled = true;
+        return;
+      }
       parar("Conexión perdida");
       el("conexion").textContent = "Sin conexión · reintentando";
-      el("conexion-luz").className = "luz error";
       // Una página que se está cerrando no reconecta: le quitaría la sesión a la nueva
       if (!saliendo) setTimeout(conectar, 2000);
     });
@@ -496,7 +504,13 @@
   window.addEventListener("pagehide", () => { saliendo = true; parar("Página cerrada"); if (ws) ws.close(); });
   // Si el navegador recupera la página (botón Atrás), vuelve a conectar
   window.addEventListener("pageshow", e => { if (e.persisted && saliendo) { saliendo = false; conectar(); } });
-  el("video").addEventListener("error", () => avisar("Esperando vídeo del robot", 5000));
+  // Si el servidor aún no estaba listo al abrir la página, el vídeo falla y el navegador
+  // no lo vuelve a pedir: se reintenta cada 2 s y también al reconectar.
+  function recargarVideo() { el("video").src = "/video?t=" + Date.now(); }
+  el("video").addEventListener("error", () => {
+    avisar("Esperando vídeo del robot", 5000);
+    setTimeout(recargarVideo, 2000);
+  });
   setInterval(() => {
     const ahora = performance.now();
     if (activo && ahora - ultimoMensaje > 1500) parar("Sin estado del servidor");

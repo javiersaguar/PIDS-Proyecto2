@@ -150,5 +150,74 @@ class Correcciones(unittest.TestCase):
         self.assertTrue(configuracion(datos)['relativo_camara'])
 
 
+# --- Asistente de puntería: la torreta sigue al robot detectado y, con AUTO, le dispara ---
+ANCHO, ALTO = 960, 540
+
+
+def caja_en(angulo, instante, score=.99, ancho=120, alto=110):
+    """Detección de un robot que está `angulo` grados a la derecha del centro de la imagen."""
+    focal = ANCHO / (2 * math.tan(math.pi / 3))
+    x = ANCHO / 2 + focal * math.tan(math.radians(angulo * 120 / 90))
+    return dict(boxes=[[x - ancho / 2, ALTO / 2 - alto / 2, x + ancho / 2, ALTO / 2 + alto / 2]],
+                scores=[score], width=ANCHO, height=ALTO, instante=instante, image=None)
+
+
+def ultima_torreta(r):
+    return [a for a in r.acciones if a['tipo'] == 'gimbal.drive_speed'][-1]
+
+
+class Asistente(unittest.TestCase):
+    def test_se_puede_activar(self):
+        self.assertEqual(configuracion({'asistente': True}), {'asistente': True})
+
+    def test_gira_hacia_el_robot_y_marca_centrado(self):
+        ahora = [10.]
+        d, r = preparado(ahora)
+        d.torreta.leer()
+        v_yaw, _, centrado = d.apuntar(caja_en(15, ahora[0]), ahora[0] + .1)
+        self.assertGreater(v_yaw, 20)
+        self.assertFalse(centrado)
+        v_yaw, _, centrado = d.apuntar(caja_en(-10, ahora[0]), ahora[0] + .1)
+        self.assertLess(v_yaw, -15)
+        self.assertTrue(d.apuntar(caja_en(.5, ahora[0]), ahora[0] + .1)[2])
+
+    def test_ignora_detecciones_flojas_o_viejas(self):
+        ahora = [10.]
+        d, r = preparado(ahora)
+        d.torreta.leer()
+        self.assertIsNone(d.apuntar(caja_en(15, ahora[0], score=.9), ahora[0] + .1))
+        self.assertIsNone(d.apuntar(caja_en(15, ahora[0]), ahora[0] + 1.5))
+        self.assertIsNone(d.apuntar(None, ahora[0]))
+
+    def test_mueve_la_torreta_y_dispara_solo_con_auto(self):
+        ahora = [10.]
+        d, r = preparado(ahora)
+        d.config['asistente'] = True
+        d.resultado = caja_en(15, ahora[0])
+        controlar(d, ahora)
+        self.assertGreater(ultima_torreta(r)['yaw_speed'], 20)
+        self.assertEqual(d.estado['disparos'], 0)              # sin AUTO solo apunta
+        d.config['automatico'] = True
+        d.resultado = caja_en(.5, ahora[0])
+        controlar(d, ahora)
+        self.assertEqual(d.estado['disparos'], 1)
+
+    def test_el_joystick_manda_sobre_el_asistente(self):
+        ahora = [10.]
+        d, r = preparado(ahora)
+        d.config['asistente'] = True
+        d.resultado = caja_en(15, ahora[0])
+        controlar(d, ahora, mirar=[-1, 0])
+        self.assertLess(ultima_torreta(r)['yaw_speed'], 0)
+
+    def test_sin_asistente_la_torreta_no_se_mueve_sola(self):
+        ahora = [10.]
+        d, r = preparado(ahora)
+        d.config['asistente'] = False
+        d.resultado = caja_en(15, ahora[0])
+        controlar(d, ahora)
+        self.assertEqual(ultima_torreta(r)['yaw_speed'], 0)
+
+
 if __name__ == '__main__':
     unittest.main()

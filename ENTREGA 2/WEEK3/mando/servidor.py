@@ -13,6 +13,8 @@ sys.path.insert(0, str(BASE))
 from aiohttp import web
 import cv2
 
+CIERRE_OTRA_PESTANA = 4001   # código de cierre del WebSocket cuando otra pestaña toma el control
+
 
 def crear_app(conductor):
     app = web.Application(client_max_size=16384)
@@ -61,12 +63,15 @@ def crear_app(conductor):
         origen = request.headers.get('Origin')
         if origen and origen != request.scheme + '://' + request.host:
             raise web.HTTPForbidden()
-        if propietario is not None:
-            raise web.HTTPConflict(text='Ya hay una sesión de control')
+        # Sigue habiendo una sola sesión de control, pero la última pestaña que se abre se la
+        # quita a la anterior: antes, una pestaña olvidada (o la versión clásica abierta a la
+        # vez) se quedaba el control y la que se usaba veía las teclas sin mover el robot.
         socket = web.WebSocketResponse(max_msg_size=16384, heartbeat=5)
         await socket.prepare(request)
-        propietario = socket
+        anterior, propietario = propietario, socket
         conductor.parar()
+        if anterior is not None and not anterior.closed:
+            await anterior.close(code=CIERRE_OTRA_PESTANA, message=b'Otra pestana ha tomado el control')
 
         async def estado():
             ultimo_estado = 0
@@ -92,8 +97,9 @@ def crear_app(conductor):
                         conductor.parar()
                         await socket.send_json(dict(tipo='error', mensaje=str(e)))
         finally:
-            conductor.parar()
-            propietario = None
+            if propietario is socket:   # si otra pestaña tomó el control, la sesión ya es suya
+                conductor.parar()
+                propietario = None
             envio.cancel()
             await asyncio.gather(envio, return_exceptions=True)
         return socket

@@ -75,7 +75,15 @@ AUTO exige confianza >=0,95, mira dentro de la caja encogida un 20 %, resultado 
 menos de 0,3 s y controles recientes. Guarda cada imagen de disparo con Registro en
 evidencias/mando/. Un resultado CPU lento se rechaza por antigüedad. El detector puede
 disparar a fotografías de robots. Se activa con vigilancia y se desarma al parar.
-El asistente de puntería opcional queda deshabilitado hasta calibrarlo.
+
+Asistente de puntería (Ajustes → Disparo, desde el 11/11/2026): la torreta gira sola hacia
+la detección más centrada que supera el umbral, a 2 º/s por grado de error y como mucho
+30 º/s. Calcula el ángulo con el que tenía la torreta al tomar la imagen
+(`RETARDO_CAMARA` de circuito.py), así que una detección de hace 0,1-0,2 s sigue sirviendo.
+Mover el joystick derecho o las flechas le quita el control mientras se usan. Con el
+asistente y el disparo automático, dispara cuando el robot queda centrado (error menor que
+`TOLERANCIA_DISPARO` o que el 30 % del tamaño de la caja). Una detección de más de 1 s no
+mueve la torreta.
 
 ## Controles
 

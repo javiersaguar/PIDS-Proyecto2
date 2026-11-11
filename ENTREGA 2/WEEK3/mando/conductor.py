@@ -16,6 +16,10 @@ CADUCIDAD = .3      # s sin órdenes del navegador antes de parar y desarmar
 EDAD_AUTO = .5      # s como mucho entre la imagen y el disparo automático
 GIRO_AUTO = 2.0     # º que puede haberse movido la torreta desde esa imagen
 GIRO_CHASIS = 30    # º/s del chasis con L1/R1 o Z/X (límite del proyecto)
+# Asistente de puntería: la torreta sigue al robot detectado (con disparo automático, le dispara)
+EDAD_APUNTAR = 1.0  # s: una detección más antigua ya no mueve la torreta
+GANANCIA_APUNTAR = 2.0  # º/s de giro por grado de error, como GANANCIA_SEGUIMIENTO de la demo
+MIRA_MANUAL = .15   # con el joystick derecho por encima de esto manda el usuario, no el asistente
 REPOSO = ([0, 0], [0, 0], False, 0)
 
 
@@ -65,8 +69,6 @@ def configuracion(datos):
             salida[k] = v
     if salida.get('modo') == 'fps':
         raise ValueError('GIMBAL_LEAD pendiente de medir en laboratorio')
-    if salida.get('asistente'):
-        raise ValueError('Asistente de puntería pendiente de calibración')
     return salida
 
 
@@ -174,7 +176,8 @@ class Conductor(threading.Thread):
             return salida
 
     # --- órdenes al robot (solo desde este hilo y sin el cerrojo) -----------------------
-    def velocidades(self, mover, mirar, girar=0):
+    def velocidades(self, mover, mirar, girar=0, torreta=None):
+        """Chasis y torreta según los controles. `torreta` (º/s de yaw y pitch) sustituye a `mirar`."""
         from demo_utils import limitar
         x, y = [v * self.config['velocidad'] for v in mover]
         if self.config.get('relativo_camara', True) and (x or y):
@@ -184,8 +187,9 @@ class Conductor(threading.Thread):
         if self.sin_mover:
             x = y = z = 0
         self.robot.chassis.drive_speed(x=x, y=y, z=z, timeout=.5)
-        self.torreta.velocidad(limitar(mirar[0] * self.config['angular'], 30),
-                               limitar(mirar[1] * self.config['angular'], 30))
+        if torreta is None:
+            torreta = (mirar[0] * self.config['angular'], mirar[1] * self.config['angular'])
+        self.torreta.velocidad(limitar(torreta[0], 30), limitar(torreta[1], 30))
         self.estado['velocidad'] = [x, y]
 
     def senal(self, nombre, parpadeo=False):
@@ -235,6 +239,33 @@ class Conductor(threading.Thread):
         yaw0, pitch0 = self.torreta.angulo_en(resultado['instante'] - C.RETARDO_CAMARA)
         yaw, pitch = self.torreta.leer()
         return abs(yaw - yaw0) <= GIRO_AUTO and abs(pitch - pitch0) <= GIRO_AUTO
+
+    def apuntar(self, resultado, ahora):
+        """Asistente de puntería: (º/s de yaw, º/s de pitch, centrado) hacia el robot detectado, o None.
+
+        Toma la detección más centrada que supera el umbral y calcula a qué ángulo absoluto
+        está, con el ángulo que tenía la torreta al tomar la imagen (RETARDO_CAMARA). Así una
+        detección de hace 0,1-0,2 s sigue sirviendo aunque la torreta se haya movido después.
+        """
+        if not resultado or ahora - resultado.get('instante', -float('inf')) >= EDAD_APUNTAR:
+            return None
+        import types
+        import circuito as C
+        from demo_utils import auto_aim, auto_pitch, tamano_angular
+        imagen = types.SimpleNamespace(shape=(resultado['height'], resultado['width'], 3))
+        candidatos = [(caja, s) for caja, s in zip(resultado['boxes'], resultado['scores'])
+                      if s >= self.config['umbral'] and len(caja) == 4]
+        if not candidatos:
+            return None
+        caja, _ = min(candidatos, key=lambda c: abs(auto_aim(imagen, c[0])))
+        yaw0, pitch0 = self.torreta.angulo_en(resultado['instante'] - C.RETARDO_CAMARA)
+        yaw, pitch = self.torreta.leer()
+        error_yaw = yaw0 + C.SIGNO_YAW * auto_aim(imagen, caja) - yaw
+        error_pitch = pitch0 + auto_pitch(imagen, caja, C.ALTURA_PUNTERIA) - pitch
+        ancho, alto = tamano_angular(imagen, caja)
+        centrado = (abs(error_yaw) <= max(C.TOLERANCIA_DISPARO, .3 * ancho)
+                    and abs(error_pitch) <= max(C.TOLERANCIA_DISPARO, .3 * alto))
+        return GANANCIA_APUNTAR * error_yaw, GANANCIA_APUNTAR * error_pitch, centrado
 
     def disparar(self, ahora, auto, resultado):
         from robomaster import blaster
@@ -298,8 +329,11 @@ class Conductor(threading.Thread):
         if self.baile:
             self.paso_baile(ahora)
             return
-        self.velocidades(mover, mirar, girar)
-        auto = automatico and self.blanco(resultado, ahora)
+        guia = None
+        if self.config.get('asistente') and max(abs(v) for v in mirar) < MIRA_MANUAL:
+            guia = self.apuntar(resultado, ahora)
+        self.velocidades(mover, mirar, girar, torreta=guia[:2] if guia else None)
+        auto = automatico and ((guia is not None and guia[2]) or self.blanco(resultado, ahora))
         if (disparo or auto) and ahora - self.ultimo_disparo >= intervalo:
             self.disparar(ahora, auto, resultado)
         elif any(mover) or girar:
