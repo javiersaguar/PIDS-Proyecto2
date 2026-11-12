@@ -1,0 +1,58 @@
+{
+ "ssd_v2_aug_robusto_v1_lr001": {
+  "fecha": "2026-10-24T08:40:51",
+  "umbral": 0.2,
+  "commit": "6434d8a",
+  "veces": 1,
+  "ap50_todos": 0.6412,
+  "ap50_difficult": 0.2742
+ },
+ "ssd_v1_aug_robusto_v1_lr001": {
+  "fecha": "2026-10-24T08:41:36",
+  "umbral": 0.25,
+  "commit": "6434d8a",
+  "veces": 1,
+  "ap50_todos": 0.8797,
+  "ap50_difficult": 0.4316
+ },
+ "faster_rcnn_v3_aug_robusto_v1_lr001": {
+  "fecha": "2026-10-24T08:42:01",
+  "umbral": 0.55,
+  "commit": "6434d8a",
+  "veces": 1,
+  "ap50_todos": 0.924,
+  "ap50_difficult": 0.5744
+ },
+ "faster_rcnn_v1_aug_robusto_v1_lr001": {
+  "fecha": "2026-10-24T08:43:13",
+  "umbral": 0.9,
+  "commit": "6434d8a",
+  "veces": 1,
+  "ap50_todos": 0.9355,
+  "ap50_difficult": 0.6057
+ },
+ "retinanet_v1_aug_robusto_v1_lr001": {
+  "fecha": "2026-10-24T08:44:18",
+  "umbral": 0.65,
+  "commit": "6434d8a",
+  "veces": 1,
+  "ap50_todos": 0.9362,
+  "ap50_difficult": 0.6273
+ },
+ "faster_rcnn_v2_aug_robusto_v1_lr001": {
+  "fecha": "2026-10-24T08:45:48",
+  "umbral": 0.95,
+  "commit": "6434d8a",
+  "veces": 1,
+  "ap50_todos": 0.9523,
+  "ap50_difficult": 0.6921
+ },
+ "retinanet_v2_aug_robusto_v1_lr001": {
+  "fecha": "2026-10-24T08:46:51",
+  "umbral": 0.65,
+  "commit": "6434d8a",
+  "veces": 1,
+  "ap50_todos": 0.9457,
+  "ap50_difficult": 0.6313
+ }
+}

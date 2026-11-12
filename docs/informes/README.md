@@ -1,89 +1,182 @@
 # Informes sobre la plantilla oficial
 
-Contenido actualizado el **16/10/2026**, después de finalizar entrenamiento y
-validación de `faster_rcnn_v1_aug_lr001_res1024`.
+Contenido actualizado el **09/11/2026**.
 
-| Versión | Word editable | PDF | Contenido |
-|---|---|---|---|
-| Completa | [Word](informe_completo_fases_1_2.docx) | [PDF](informe_completo_fases_1_2.pdf) | Fases 1 y 2 con lo medido; conserva la estructura pendiente de fase 3 |
-| Solo fase 1 | [Word](informe_fase1.docx) | [PDF](informe_fase1.pdf) | Datos, anotación, EDA, aumento y depuración; siete páginas de cuerpo |
-| Solo fase 2 | [Word](informe_fase2.docx) | [PDF](informe_fase2.pdf) | Pipeline, modelo, hiperparámetros, métricas, experimentos y análisis cualitativo; diez páginas de cuerpo |
+| Documento | Contenido |
+|---|---|
+| [`informe_entrega3.docx`](informe_entrega3.docx) | **Borrador de la memoria de la entrega 3**: la de la entrega 2 más el Bloque 3 (apartados 13 a 19), creada con `herramientas/generar_entrega3.py` a partir de [`../informe_bloque3_borrador.md`](../informe_bloque3_borrador.md). Incluye las correcciones de la revisión de la entrega 2 (`herramientas/correcciones_entrega2.py`). Lo marcado en amarillo como [PENDIENTE] falta por medir o decidir. Ahora tiene 42 páginas, 28 de cuerpo (de la 4 a la 31, esta solo hasta un cuarto): quedan casi 3 páginas para los resultados del laboratorio. El límite de la entrega 3 es 30 (Bloques 1 a 3, sin portada, índice, respuesta a la revisión, reparto, referencias ni anexos). Se entrega como `PIDS_grupo2_entrega3.pdf`. |
+| [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (34 páginas, 20 de cuerpo, de la 4 a la 23; el límite es 20). |
+| [`informe_fase1.docx`](informe_fase1.docx) | Fuente de la memoria de la entrega 1 (Bloque 1), base de `generar_entrega2.py`. El PDF entregado está en `docs/entregas/PIDS_grupo2_entrega1.pdf` y difiere en algo de redacción. |
+| `docs/entregas/` | PDF entregados (`PIDS_grupo2_entrega1.pdf`, `PIDS_grupo2_entrega2.pdf`), la entrega 2 con los comentarios del profesor (`PIDS_grupo2_entrega2_revisada.pdf`, 34 páginas, 14 con anotaciones) y los enunciados de los Bloques 2 y 3 (`PIDS2026-2_enunciado_bloque2.pdf`, `PIDS2026-3_enunciado_bloque3.pdf`). |
+| `figuras/` | Figuras de maquetación que no están en `ENTREGA 1/WEEK1/` ni en `WEEK2/`, incluidas las añadidas por la revisión. |
 
-La copia de fase 2 es una extracción de trabajo solicitada para revisar ese bloque.
-La segunda entrega oficial es **incremental** y debe incluir también la fase 1
-corregida. Los PDF contienen 13, 14 y 23 páginas totales respectivamente para fase 1,
-fase 2 y completa (portada, reparto, índice y referencias no cuentan como cuerpo).
-Comprobar antes de entregar que el cuerpo sigue dentro del máximo de 10 páginas de T17.
+Se conserva Calibri 11, interlineado 1,15, geometría, cabecera y pie de la plantilla
+(`docs/PIDS-template.docx`, que permanece sin modificar). Las figuras van incrustadas.
 
-Se conserva Calibri 11, interlineado 1,15, geometría, cabecera y pie de la plantilla.
-Las figuras van incrustadas; no requieren archivos externos para abrir el Word.
-El índice y la paginación se verifican en el PDF. En Word se pueden actualizar con
-F9 si se cambia el contenido. La plantilla original permanece sin modificar.
+## Entrega 2: versión final editada a mano
 
-**19/10/2026:** se añadieron hyperlinks reales (clicables) a los notebooks ejecutados
-y a las figuras interactivas de GitHub Pages, editando los `.docx` directamente (no
-con `generar_informes.py`, ver aviso debajo). Los notebooks se citan como una vista
-HTML estática (`ENTREGA 1/WEEK1/eda.html` y `data_aug.html`, generados con
-`jupyter nbconvert --to html --embed-images` y commiteados junto a los `.ipynb`),
-abierta con `htmlpreview.github.io` — igual que ya se hace con los HTML del EDA en
-`docs/plan_entrega.md` — porque **nbviewer.org no es fiable**: depende del límite de
-peticiones de la API de GitHub, compartido entre todos sus usuarios, y falla con
-"GitHub API rate limit" de forma intermitente:
+`informe_entrega2.docx` partió de `herramientas/generar_entrega2.py` (Bloque 1 de `informe_fase1.docx` con la redacción del
+PDF entregado, más el Bloque 2 de `generar_informes.py`), pero **la versión final se ha editado a mano en Word**.
+Por eso el script ya no sobrescribe ese fichero: sin argumentos se niega, y con una ruta de salida genera una copia.
+Los cambios posteriores se hacen en el `.docx`; después hay que actualizar el índice (F9) y exportar a PDF
+como `docs/entregas/PIDS_grupo2_entrega2.pdf`.
 
-- EDA ejecutado: https://htmlpreview.github.io/?https://github.com/javiersaguar/PIDS-Proyecto2/blob/main/ENTREGA%201/WEEK1/eda.html
-- Aumento de datos ejecutado: https://htmlpreview.github.io/?https://github.com/javiersaguar/PIDS-Proyecto2/blob/main/ENTREGA%201/WEEK1/data_aug.html
-- Figuras de EDA y de entrenamiento: anclas `#mapas-video`, `#mapas-tiempo`,
-  `#robots-fotograma`, `#curvas`, `#grupos` y `#secuencias` en https://javiersaguar.github.io/PIDS-Proyecto2/
+`generar_informes.py` no genera nada sin argumentos. `fase1` y `completo` sobrescriben los
+`.docx` con el texto del script; `informe_fase1.docx` tiene correcciones manuales (título,
+numeración de figuras, apartados 5.1–5.5, referencias [6]–[8]) que el script no reproduce,
+así que no se debe regenerar.
 
-Si se regeneran los notebooks, hay que volver a exportarlos con el mismo comando y
-commitear los `.html` de nuevo; no se generan solos.
+## Entrega 3: borrador del Bloque 3
 
-## Aviso: `informe_fase1.docx` (y partes de la completa) ya no coincide con el generador
+El texto del Bloque 3 se escribe en `docs/informe_bloque3_borrador.md`, que se puede revisar en las PR.
+`herramientas/generar_entrega3.py` copia `informe_entrega2.docx` (que no se toca) y le añade:
+- en la portada, «Fases 1, 2 y 3» y «Entrega 3 · Bloques 1, 2 y 3», con la fecha pendiente;
+- el borrador antes de «Referencias», con los mismos estilos de títulos, pies, tablas y figuras;
+- lo que sigue a un título «# Anexo ...» del borrador, al final de los anexos;
+- la referencia [21] al estudio del robot camuflado (`docs/senuelo_aliado.md`).
 
-`informe_fase1.docx` tiene correcciones manuales en Word (título, numeración de
-figuras, secciones 5.1–5.5, referencia [6] a la web) que **no están reflejadas en
-`herramientas/generar_informes.py`**. Ejecutar ese script sobrescribe el `.docx`
-entero con su propio texto y **borra esas correcciones**, que no se recuperan salvo
-con `git checkout` a un commit anterior. `informe_fase2.docx` sí coincide con el
-script. Antes de volver a generar nada, comprobar con `git diff` si el `.docx` que se
-va a sobrescribir tiene cambios que el script no reproduce; si los tiene, hay que
-llevar esos mismos cambios al script primero, o editar el `.docx` a mano.
+Tablas y figuras nuevas llevan el prefijo B3 (Tabla B3.1, Figura B3.1) hasta numerar toda la memoria al
+cerrarla. El script no sobrescribe el `.docx` sin `--forzar`: cuando se empiece a editar a mano en Word, los
+cambios del borrador se pasan a mano. Después de generarlo, actualizar el índice (F9).
 
-También se proporcionan [versión Markdown completa](informe_completo_fases_1_2.md),
-[fase 1](informe_fase1.md) y [fase 2](informe_fase2.md), para revisar diferencias en Git.
+## Historial
 
-## Resultados incorporados
+**09/11/2026 (quinta tanda)** — robot camuflado completo y demo en GPU:
+- Pasan al borrador los cambios a mano de Javier en Word: fuera el 13.1 y el párrafo de la primera prueba de la recta.
+- El 16 vuelve entero, con el 16.1 de la prueba impresa, y empieza explicando la idea inicial (un señuelo al que
+  no disparar) y en qué se convirtió (el robot camuflado como objetivo y los aliados como trabajo futuro).
+- Anexo F nuevo con las imágenes: los robots generados con IA (Figura F.1) y las capturas de la webcam con el
+  robot impreso y en la tableta (Figura F.2).
+- El 13 explica la segunda versión de la demo con el detector en la GPU (RTX 5070 del portátil o RTX 3060 del
+  laboratorio) y la CPU de respaldo; se añade al reparto de Javier.
+- 44 páginas; el cuerpo ocupa de la 4 a la 31.
 
-- `lr001`: mejor época 5, AP@0,5 de 0,9433 y AP 0,50:0,95 de 0,6302 en evaluación
-  final de validación. AP@0,5 de difficult 0,6462; 190 FP y 83 FN a confianza 0,5.
-- `res1024`: mejor época por AP50 2; AP50 0,9465, AP 0,50:0,95 0,6047,
-  AP small 0,1886, AP50 difficult 0,6282, 324 FP y 68 FN (56 difficult).
-- Curvas de resolución, selección del checkpoint, secuencias y latencia individual
-  121,6 ms frente a 75,1 ms. Se documenta microbatch 4 con acumulación 2.
-- La referencia provisional sigue siendo lr001 800 por su equilibrio; no se presenta
-  la mayor resolución como una mejora uniforme. Se distingue AP50 de AP promedio.
-- Curvas comparadas, cambios por secuencia, búsqueda del umbral y latencia.
-- Anotación incompleta confirmada en `PIDS2024_GR02_0001/frame_0444.jpg`:
-  cuatro robots visibles y una sola caja XML. No se alteran esas etiquetas.
-- Perfiles nuevos de aumento distinguidos de los resultados del aumento base.
+**09/11/2026 (cuarta tanda)** — revisión de Javier y espacio para los resultados del laboratorio:
+- Lo corregido a mano en Word pasa a los scripts: fecha de entrega 15/11/2026 en la portada, tareas del Bloque 3
+  de Mónica, Pedro José y Daniel en el reparto, y el 12.1 se queda en «Conclusiones», sin el párrafo de trabajo
+  pendiente ni la fila 17 de la tabla de respuesta.
+- Bloque 3 resumido de 8 a 5,25 páginas: misma información con menos texto, el 14.1 se une al 14 y el 16.1 al 16,
+  y se quita la figura del robot camuflado (está en [21]); la del mando pasa a ser la Figura B3.3. Se mantienen
+  las tablas y las figuras del circuito y del laboratorio, que se rellenarán con los datos reales.
+- 42 páginas; el cuerpo acaba al principio de la página 31.
 
-La fase 2 **no está cerrada**: falta comparar arquitecturas y evaluar el modelo
-definitivo en test. La resolución ya está medida; lluvia, sombras y oclusión
-texturada siguen pendientes de entrenamiento. Falta confirmar fecha de entrega, número
-administrativo del grupo y reparto final con todos los integrantes.
+**09/11/2026 (tercera tanda)** — la revisión a mano del Bloque 3 pasa al borrador:
+- Alejandro revisó en Word la redacción de los apartados 13 a 19. Esos cambios estaban solo en el `.docx` (7 con
+  control de cambios y el resto sin marcar) y se habrían perdido al regenerarlo; ahora están en
+  `informe_bloque3_borrador.md` y la memoria se ha regenerado con `--forzar`, sin control de cambios pendiente.
+- Al pasarlos se corrigen el apartado 15.2 (el rival 2 está en el retroceso de R1, no en el último tramo) y dos
+  frases del 14 y el 14.1. Se mantienen la leyenda de colores de la Figura B3.1, los paneles a), b) y c) de la B3.2
+  y la frase de los 12 impactos que pide el enunciado.
+- El enunciado del Bloque 3 estaba corrupto en `docs/PIDS2026-3.pdf`; se sustituye por el original en
+  `docs/entregas/PIDS2026-3_enunciado_bloque3.pdf`. La entrega 2 anotada pasa a
+  `docs/entregas/PIDS_grupo2_entrega2_revisada.pdf`.
+- Sigue en 45 páginas, 30 de cuerpo (de la 4 a la 33).
 
-## Regeneración
+**09/11/2026 (segunda tanda)** — lo que faltaba de la revisión de la entrega 2, comprobado con el PDF anotado:
+- El comentario del apartado 12.1 («trabajo pendiente» sin decir cuál) no estaba respondido: ahora se enumeran los
+  tres trabajos que quedaban al cerrar el Bloque 2 (latencia en el robot, difficult y robots lejanos, y repetir con
+  varias semillas las comparaciones de menos de 1 pp). Es la fila 17 de la tabla de respuesta.
+- 12.1 decía que la arquitectura influye más que el aumento de datos, en contra del 11.1: lo que influye menos es
+  el perfil de aumento.
+- En el apartado 12, los difficult eran «el 26,4 % de las cajas anotadas», que es la proporción en nuestras
+  imágenes; en validación y test son el 16 %.
+- «AP50» y «AP75» de pies y tablas pasan a AP@0,5 y AP@0,75, como en el texto, y la latencia a 1820 × 1024 se
+  redondea a un 62 % más (+61,9 % en la Tabla 15).
+- El cuerpo sigue en 30 páginas; el total pasa a 45 por la fila nueva de la tabla de respuesta.
 
-Con `python-docx`, `lxml`, Pillow y las figuras disponibles:
+**09/11/2026** — correcciones de la revisión de la entrega 2 y borrador de la presentación:
+- `herramientas/correcciones_entrega2.py`, llamado desde `generar_entrega3.py`, responde a los comentarios
+  obligatorios C2.1 a C2.8 y a los opcionales sobre los Bloques 1 y 2, sin tocar `informe_entrega2.docx`.
+  También cambia la Figura 9 por un esquema de bloques (`figuras/sistema_entrenamiento.png`) y añade la curva
+  precisión-exhaustividad en test como Figura 10 (`figuras/curva_pr.png`); las dos salen de
+  `herramientas/figuras_revision_entrega2.py`. Además pasa las tasas a notación científica, añade la columna
+  del Bloque 3 al reparto, las referencias [22] a [28] y la tabla de respuesta a la revisión de la entrega 2.
+- El cuerpo ocupa ahora las 30 páginas del límite: cualquier texto nuevo del Bloque 3 tiene que compensarse.
+- Borrador de la presentación de las tres fases en `presentacion/` (React), con las cifras y las imágenes de
+  esta memoria; ver su README.
 
-```bash
-python herramientas/comparar_entrenamientos.py
-python herramientas/comparar_resolucion.py
-python herramientas/generar_informes.py
-```
+**08/11/2026** — el rival 2 se mueve en paralelo a nuestro robot durante la rotonda:
+- nuevo texto en el apartado 15.2 (imagen nítida, velocidad prevista y parada de nuestro robot);
+- la Figura B3.1 lleva la longitud y la velocidad de cada tramo, dónde va cada rival y a qué
+  distancia queda;
+- el rival 3 pasa a (5,35; −0,7): en (5,0; −0,7) chocaba con la rotonda.
 
-El último comando crea las tres copias Word y Markdown; no sobreescribe la
-plantilla ni exporta por sí solo PDF. Para obtener los PDF, actualizar los campos
-y exportar desde Word, comprobando otra vez todas las páginas. Las figuras
-específicas de maquetación están en `figuras/`; las curvas y los resultados del
-laboratorio conservan sus rutas en `ENTREGA 1/WEEK2/`.
+**06/11/2026** — borrador de la entrega 3: Bloque 3 (integración en el robot, circuito, puntería y
+disparo, ataque en marcha, robot camuflado y aliados, pruebas), con la Figura B3.1
+(`figuras/circuito_demo.png`, de `herramientas/figura_circuito.py`) y las imágenes del estudio del
+señuelo (`figuras/senuelo/`).
+
+**03/11/2026** — métricas de test de todos los modelos y fecha de entrega:
+- El Anexo E (ahora «Métricas de test») añade las Tablas 26 y 27 con los siete modelos y, para cada uno, todos,
+  normales y difficult: AP 0,50:0,95, AP@0,5, AP@0,75, AP por tamaño, AR@100, TP, FP, FN, TN, precisión,
+  exhaustividad, F1 y exactitud. TN = 0 porque en detección el fondo no se cuenta y el test no tiene imágenes sin
+  robots; la exactitud queda en TP/(TP+FP+FN). FP, precisión, F1 y exactitud solo se dan para todos los robots.
+- Los datos están en `ENTREGA 1/WEEK2/cadena/metricas_test_modelos.csv`. Los de cinco modelos se copiaron de
+  `~/pids_main/ENTREGA 1/WEEK2/resultados_test/<experimento>_test/` en el laboratorio y se comprobaron con la
+  huella sha256 de cada `map.csv` y de la fila `Total` de `errores_por_video.csv`; no se ha vuelto a evaluar nada.
+- La tabla de respuesta a la revisión pasa a ser la Tabla 28.
+- Fecha de entrega de la portada: 03/11/2026.
+
+**02/11/2026** — números de test en el apartado de métricas:
+- El apartado 10 da, para el modelo final en test, los TP, FP y FN, la precisión, la exhaustividad, el F1, la AP@0,5,
+  la AP@0,75 y la AP 0,50:0,95. El nuevo Anexo E desglosa esas métricas en robots normales y difficult, añade la AP
+  por tamaño y la AR@100 (Tabla 24) y muestra el efecto del umbral de confianza (Tabla 25). Los datos salen de
+  `ENTREGA 1/WEEK2/resultados_test/faster_rcnn_v2_aug_robusto_v1_lr001_test/`; no se ha vuelto a evaluar nada.
+- La tabla de respuesta a la revisión pasa a ser la Tabla 26.
+- Para seguir en 20 páginas de cuerpo se han reducido las Figuras 14 a 17 y acortado el párrafo de pruebas sin
+  aumento del 11.3 y las cifras del 11.6 que ya están en el apartado 10; el detalle sigue en los Anexos D y E.
+
+**01/11/2026 (segunda tanda)** — lo que el enunciado pedía y faltaba:
+- Pruebas cortas del orden de los experimentos (siete arquitecturas sin aumento), del lote (1, 2, 8, 16 y 32) y de
+  la tasa de aprendizaje (1e−5, 0,001, 0,01 y 0,1), solo en validación. Resultados en `docs/pruebas_cortas.md` y en
+  el nuevo Anexo D de la memoria; las ejecuta `herramientas/pruebas_cortas.py`. Un párrafo nuevo al final del 11.3
+  los resume y el 9 enlaza con él.
+- Tablas reenumeradas por orden de aparición (la de respuesta a la revisión queda al final, como Tabla 24) y los
+  pies de las figuras interactivas enlazan con su fila del Anexo A.
+- EDA: análisis de nitidez y dificultad (dentro de cada vídeo, el 55 % de las cajas de las imágenes menos nítidas
+  son difficult, frente al 11 % en las más nítidas) con la Figura 21 en el Anexo C
+  (`figuras/nitidez_dificultad.png`, de `herramientas/figura_nitidez.py` sobre `metricas_imagenes.csv`), y una
+  frase que remite al notebook del EDA para el resto de análisis.
+
+**01/11/2026** — correcciones de la revisión de la entrega 1 (todas recogidas en la tabla «Respuesta a la
+revisión anterior» del documento):
+- Descripción del RoboMaster EP con figura (`figuras/robot_partes.png`) y referencias [19] DJI y [20] PASCAL VOC.
+- Justificación del intervalo de 24 fotogramas con una tabla de redundancia para intervalos de 6 a 96.
+- Sin nombres de variables, funciones ni experimentos internos en el texto.
+- EDA ampliado: tamaño frente a posición, solapamiento frente a la NMS y comparación con validación y test
+  (4.4 y 4.5), y tabla de consecuencias para el entrenamiento (4.6).
+- Tablas de aumento con rango y probabilidad por separado; justificación del desplazamiento RGB.
+- Anexos: A (enlaces a todas las gráficas interactivas), B (transformaciones descartadas) y C (figuras
+  complementarias). Nuevo apartado 11.5 con SSD300 a 40 épocas.
+
+Figuras y datos nuevos: `herramientas/analisis_revision.py` (intervalo, dominio y perspectiva; necesita los
+vídeos de `DATASET PIDS`), `herramientas/figura_transformaciones.py` (entorno con Albumentations 1.4.18) y
+`herramientas/figura_ssd300_40_epocas.py`. Se ejecutan con la ruta del repositorio y la carpeta (o, en el de SSD300, el PNG) de salida.
+Las tareas del Bloque 2 de Mónica y Daniel en el reparto quedan marcadas para completar.
+
+**25/10/2026** — se comprueba si las doce épocas se quedaban cortas, tras el comentario de que había
+infraajuste. No era así: SSD300 VGG16, la única que seguía mejorando al final, repetida con 40 épocas
+(`cadena/resumen_largo.csv`, acción `largo`) pasa de 0,9008 a 0,9009 de AP@0,5 y la pérdida de
+validación sube mientras la de entrenamiento baja. Se corrigen en `informe_entrega2.docx` (a mano, sin
+regenerarlo) la tabla de hiperparámetros («30 épocas»), el párrafo de épocas, la frase sobre SSD300 y la
+de la tasa 0,002 («entrenamiento insuficiente», que era inestabilidad y sobreajuste). El PDF se
+exporta de nuevo y sigue en 23 páginas.
+
+**24/10/2026** — cadena de entrenamientos y test (detalle en `ENTREGA 1/WEEK2/cadena/`):
+siete arquitecturas con lr 0,001 y perfil `robusto_v1`, tres tasas con las tres mejores y
+test evaluado una sola vez por modelo con el umbral fijado antes en validación
+(`docs/seleccion_modelo_final.md`). Modelo final: `faster_rcnn_v2`, AP@0,5 de 0,9523 en test
+y F1 de 0,9389 con umbral 0,95. Opción rápida: `faster_rcnn_v3`, 0,9240 en test y 16,0 ms
+por imagen frente a 96,3.
+
+**20/10/2026** — `informe_fase1.docx`, editado a mano: fecha de entrega, reparto del trabajo
+acordado, «2. Recolección de datos» como encabezado de primer nivel, «Tabla 9» en la
+depuración y referencia [9] a `video2frames.ipynb`. A Moodle se subió solo el PDF
+`PIDS_grupo2_entrega1.pdf`.
+
+**19/10/2026** — enlaces a los notebooks ejecutados (`eda.html`, `data_aug.html`, generados
+con `jupyter nbconvert --to html --embed-images`; no se usa nbviewer.org porque falla por el
+límite de la API de GitHub) y a las figuras interactivas de GitHub Pages.
+
+**Hasta el 16/10/2026** — experimentos `lr001` y `res1024`, curvas, secuencias, umbral de
+confianza y latencia; anotación incompleta confirmada en `PIDS2024_GR02_0001/frame_0444.jpg`.

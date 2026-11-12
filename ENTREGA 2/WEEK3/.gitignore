@@ -4,3 +4,17 @@ serial_number.txt
 # Salidas de demo.py y de los ejemplos de cámara
 predictions/
 recording.mp4
+# Salidas de la demo del Bloque 3 y checkpoints copiados desde JupyterHub
+evidencias/
+models/
+*.pt
+__pycache__/
+.venv/
+# Audios propios con derechos de autor (canciones, sonidos de juegos): solo en local
+audio/propios/
+# Datos de conexión del robot rival (rival/config_rival.ejemplo.json): wifi y número de serie
+rival/config_rival.json
+.venv-gpu/
+# Ajustes locales del mando (los reescribe el servidor); la plantilla es mando/config_mando.ejemplo.json
+mando/config_mando.json
+mando/config_mando.tmp

@@ -171,7 +171,7 @@ textos, no los Word a mano.
 |---|---|---|
 | **Fase 1** (entrega 1, máximo 10 páginas de cuerpo): describir los perfiles nuevos de aumento solo como parte del Bloque 1, y su efecto medido si se adopta alguno | | Pendiente |
 | **Fase 1:** cerrar en grupo T01 (borde superior del robot, antenas) y reflejar el acuerdo | | Pendiente |
-| **Fase 1:** confirmar el número de grupo (2, por el usuario `pids2`), las fechas y el reparto del trabajo | | Pendiente |
+| **Fase 1:** confirmar el número de grupo (2, por el usuario `pids2`), las fechas y el reparto del trabajo | Alejandro Cuevas | Hecho (20/10/2026) |
 | **Fase 2** (entrega 2, incremental, con la fase 1 corregida): sección de experimentos con E1–E4 y la tabla completa | | Pendiente |
 | **Fase 2:** la elección del modelo definitivo con el criterio de la sección 1 | | Pendiente |
 | **Fase 2:** el resultado en test y el umbral de la *demo* | | Pendiente |
@@ -179,7 +179,7 @@ textos, no los Word a mano.
 | Enlaces a las gráficas interactivas (sección 4) en los pies y en el anexo | | Pendiente |
 | Pasar `docs/informe_borrador.md` a los informes o marcarlo como histórico, para que no haya dos versiones con cifras distintas | | Pendiente |
 | Regenerar Word y Markdown y exportar el PDF desde Word: actualizar el índice con F9, revisar todas las páginas y contar las páginas de cuerpo | | Pendiente |
-| Nombres finales: `PIDS_grupo2_entrega1.pdf` y `PIDS_grupo2_entrega2.pdf` | | Pendiente |
+| Nombres finales: `PIDS_grupo2_entrega1.pdf` y `PIDS_grupo2_entrega2.pdf` | Alejandro Cuevas | Entrega 1 hecha; falta la 2 |
 | Revisión final de las cifras: todas las de la memoria salen de los CSV de `resultados_*` y `comparaciones/` | | Pendiente |
 
 ## Orden recomendado

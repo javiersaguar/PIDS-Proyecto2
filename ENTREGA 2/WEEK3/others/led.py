@@ -1,3 +1,4 @@
+import os
 import time
 from robomaster import robot, led
 
@@ -11,6 +12,10 @@ def connect(connection='networking'):
     :param connection: 'networking' (router), 'wifi' (direct Wi-Fi) or 'usb'.
     :return: ep_robot, a connected RoboMaster object.
     """
+    # Sin serial_number.txt (no se ha usado connect.py) se conecta por wifi directo al robot
+    if connection == 'networking' and not os.path.isfile('serial_number.txt'):
+        connection = 'wifi'
+    print(f'Conexion: {connection}')
     conn_types = {'networking': 'sta', 'wifi': 'ap', 'usb': 'rndis'}
 
     # In networking mode the robot is identified by its serial number
@@ -28,7 +33,7 @@ def connect(connection='networking'):
 if __name__ == '__main__':
     
     # Connect the robot
-    ep_robot = connect()
+    ep_robot = connect("wifi")
 
     # Led module
     ep_led = ep_robot.led

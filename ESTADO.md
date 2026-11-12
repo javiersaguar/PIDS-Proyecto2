@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 15/10/2026, desde la rama `javier-saguar`.
+Última actualización: 04/11/2026, desde la rama `javier-saguar`.
 
 **Fase actual:** Bloque 1 (recolección, anotación, análisis y depuración de datos), de cara a la **primera entrega** de la memoria. **Bloque 1 terminado salvo los acuerdos de grupo (T01, T18)**: 808 imágenes anotadas y revisadas, 796 tras la depuración, con EDA y aumento hechos. Los datos están listos para entrenar en JupyterHub.
 
@@ -11,8 +11,8 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 | Bloque | Estado | Hito |
 |---|---|---|
 | 1. Datos | 808 imágenes anotadas y revisadas, 796 tras la depuración; falta cerrar T01 en grupo | Dataset de ~800 imágenes anotadas |
-| 2. Entrenamiento | Entrenado con y sin aumento; mAP@0,5 en validación de 0,942 (0,634 en `difficult`). Falta una mejora para los `difficult` y el test (T20) | Modelo que detecta RoboMasters |
-| 3. Integración en el robot | Sin empezar | *Demo* en circuito |
+| 2. Entrenamiento | Siete arquitecturas comparadas y test evaluado una vez. Modelo final `faster_rcnn_v2`: AP@0,5 de 0,9523 en test (0,6921 en `difficult`). Falta mejorar los `difficult` | Modelo que detecta RoboMasters |
+| 3. Integración en el robot | Demo programada y probada en simulación; falta medir el circuito y ejecutarla en el laboratorio | *Demo* en circuito |
 
 ## Hecho
 
@@ -34,7 +34,11 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
   Código y ejemplos en la sección 9 de `data_aug.ipynb`; el perfil `base` conserva
   los datos actuales y los nuevos escriben en destinos separados. Pendiente medir
   su efecto en validación; no se ha lanzado otro entrenamiento. PR #17.
-- Bloque 3: material de la semana 3 en `ENTREGA 2/WEEK3/` (SDK del robot y demo por completar).
+- Bloque 3 (04/11): demo completa en `ENTREGA 2/WEEK3/` (`demo.py`, `circuito.py`). Recorre las paradas, barre con el gimbal, confirma la puntería, dispara 12 veces por robot, guarda cada imagen analizada con sus cajas y usa los seis módulos. Probada con un robot simulado y 15 pruebas. Pasos del laboratorio en su `README.md`.
+- Bloque 3 (04/11, `alejandro-cuevas`): seguimiento de rivales en movimiento. La torreta sigue al robot fijado fotograma a fotograma y solo dispara cuando está centrado, compensando el retardo del vídeo; ángulo real del gimbal con `sub_angle` y ráfaga sin esperas de audio. 37 pruebas en simulación; falta ajustarlo en el laboratorio.
+- Bloque 3 (04/11, `alejandro-cuevas`, PR #36): barrido continuo con la torreta girando y memoria de robots atacados en metros sobre el circuito, para no repetir ráfagas contra el mismo robot ni desde otra parada. 48 pruebas en simulación; falta calibrar `ALTURA_ROBOT` en el laboratorio.
+- Bloque 3 (04/11, `alejandro-cuevas`, PR #36): vigilancia durante el recorrido. Avanza por tramos mirando hacia donde va, ataca a los rivales que encuentra y espera si un robot le bloquea el camino. 56 pruebas en simulación; falta probarlo en el laboratorio.
+- Bloque 3 (05/11, `alejandro-cuevas`, PR #36): respuesta a la revisión. Las mejoras vienen desactivadas (la demo por defecto es la de `main`, con la SCAR en cada disparo) y se activan una a una en el laboratorio. El seguimiento adapta la ganancia al tiempo por imagen y completa la ráfaga con CPU (1,1 s por imagen) en simulación. Un robot que no se aparta del camino ya no detiene la demo. 61 pruebas en simulación.
 - T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
 ## Datos de los vídeos
@@ -97,12 +101,13 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
   PR #14 y #17 ya fusionadas; esta actualización se presenta en una nueva PR personal.
 
 - T19: entrenados en JupyterHub `faster_rcnn_v1` con y sin aumento. El aumento sube el mAP@0,5 en validación de 0,923 a **0,942**, y en los `difficult` de 0,552 a **0,634**. Se toma como base el modelo con aumento.
+- T19/T20 (24/10): cadena de 13 entrenamientos en JupyterHub (siete arquitecturas y tres tasas) y evaluación en test, una vez por modelo y con el umbral fijado en validación. Resultados en `ENTREGA 1/WEEK2/cadena/` y `resultados_test/`; regla de selección en [`docs/seleccion_modelo_final.md`](docs/seleccion_modelo_final.md).
 - T20: evaluación en validación por grupos y por secuencia hecha. Resultados en `ENTREGA 1/WEEK2/resultados_train/` y `resultados_test/`, y su análisis en [`docs/informe_borrador.md`](docs/informe_borrador.md).
 
 ## Pendiente
 
 - **T01:** cerrar los criterios en grupo. El borde superior del robot (gimbal y antenas) es donde más discrepamos.
-- **Bloque 2:** una mejora dirigida a los `difficult` y, con el modelo definitivo, la evaluación en test una sola vez (T20).
+- **Bloque 2:** una mejora dirigida a los `difficult` (0,57–0,69 en test), repetir con varias semillas (más épocas no ayudan: comprobado con SSD300 a 40 épocas, el único caso dudoso) y decidir con la latencia medida en el robot entre el modelo final (96 ms por imagen) y el rápido `faster_rcnn_v3` (16 ms, 0,9240 en test). El test ya se ha usado una vez por modelo; no debe volver a usarse para elegir.
 - **Memoria (T15–T17):** versiones Word/PDF sobre la plantilla oficial en
   `docs/informes/`: completa, fase 1 y fase 2. Falta revisión del grupo y confirmar
   fecha de entrega y número administrativo del grupo.
