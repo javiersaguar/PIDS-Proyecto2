@@ -41,6 +41,13 @@ cambios del borrador se pasan a mano. Después de generarlo, actualizar el índi
 
 ## Historial
 
+**12/11/2026** — imágenes reales del laboratorio en el Bloque 3:
+- Figura B3.4 en el 17: la interfaz del mando con el robot real (`figuras/bloque3/interfaz_real.jpg`), con capturas de
+  las grabaciones de pantalla del 11/11 (las ocho están en `figuras/interfaz/`).
+- Figura B3.5 en el 18: la cámara del robot en cada objetivo de la demo del 11/11 (`figuras/bloque3/demo_fases.jpg`,
+  con las imágenes sueltas en `figuras/bloque3/demo/`). El túnel y el baile no tienen foto: la demo solo guarda lo que analiza.
+- 45 páginas; el cuerpo acaba en la 32. Hay que volver a actualizar el índice (F9).
+
 **09/11/2026 (quinta tanda)** — robot camuflado completo y demo en GPU:
 - Pasan al borrador los cambios a mano de Javier en Word: fuera el 13.1 y el párrafo de la primera prueba de la recta.
 - El 16 vuelve entero, con el 16.1 de la prueba impresa, y empieza explicando la idea inicial (un señuelo al que

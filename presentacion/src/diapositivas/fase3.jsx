@@ -7,6 +7,14 @@ import { CIRCUITO, PRESUPUESTO } from '../datos/cifras.js';
 import laboratorioJpg from '@repo/docs/informes/figuras/bloque3/laboratorio.jpg';
 import mandoJpg from '@repo/docs/informes/figuras/bloque3/mando.jpg';
 import circuitoPng from '@repo/docs/informes/figuras/circuito_demo.png';
+import rival1Jpg from '@repo/docs/informes/figuras/bloque3/demo/rival1.jpg';
+import camufladoJpg from '@repo/docs/informes/figuras/bloque3/demo/camuflado.jpg';
+import rival2Jpg from '@repo/docs/informes/figuras/bloque3/demo/rival2_movimiento.jpg';
+import rival3Jpg from '@repo/docs/informes/figuras/bloque3/demo/rival3_detras.jpg';
+import disparoJpg from '@repo/docs/informes/figuras/interfaz/v1_deteccion_lejana_disparo.jpg';
+import dosRobotsJpg from '@repo/docs/informes/figuras/interfaz/v2_dos_robots.jpg';
+import trasCajaJpg from '@repo/docs/informes/figuras/interfaz/v1_deteccion_tras_caja.jpg';
+import wakaJpg from '@repo/docs/informes/figuras/interfaz/v2_emote_waka_dos_robots.jpg';
 
 // --- Separador ---------------------------------------------------------------------------------
 export function Seccion3() {
@@ -362,6 +370,81 @@ export function Marcha() {
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.4 }} style={{ margin: '18px 0 0', fontSize: 22 }}>
         Cada ráfaga son <span className="acento mono">20</span> disparos: el enunciado pide 12 impactos y dejamos 8 de margen por si alguno no se registra.
       </motion.p>
+    </div>
+  );
+}
+
+// --- La demo en el laboratorio, fase a fase ----------------------------------------------------------------
+// Imágenes de la cámara del robot del 11/11 (ejecuciones de las 16:26 y las 16:33). La demo solo guarda las
+// imágenes que analiza, así que el túnel y el baile no tienen foto.
+const FASES_DEMO = [
+  { n: '01', titulo: 'Túnel', texto: 'Recta de 2,85 m bajo las mesas a 0,5 m/s, con el Fórmula 1 sonando', color: 'var(--azul)' },
+  { n: '02', titulo: 'Rival 1', texto: 'P1, torreta a la derecha · 1,00', foto: rival1Jpg, color: 'var(--rojo)' },
+  { n: '03', titulo: 'Señuelo camuflado', texto: 'P1, torreta a la izquierda · 0,97', foto: camufladoJpg, color: 'var(--rojo)' },
+  { n: '04', titulo: 'Rival 2 en movimiento', texto: 'R1, retrocediendo a 0,1 m/s sin parar · 1,00', foto: rival2Jpg, color: 'var(--naranja)' },
+  { n: '05', titulo: 'Rival 3 detrás, escondido', texto: 'R2, torreta girada 180º entre las sillas · 1,00', foto: rival3Jpg, color: 'var(--naranja)' },
+  { n: '06', titulo: 'Baile final', texto: 'Super Estrella, torreta y chasis bailando y LED de colores', color: 'var(--acento)' },
+];
+export function DemoReal() {
+  return (
+    <div className="diapo">
+      <Cabecera fase="Fase 03 · Demo en el laboratorio" titulo="Lo que vio el robot en cada fase de la demo" />
+      <Revela style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }} retraso={0.3} paso={0.16}>
+        {FASES_DEMO.map((f) => (
+          <Item key={f.n} style={{ position: 'relative', aspectRatio: '16 / 9', borderRadius: 4, overflow: 'hidden',
+            border: `1px solid ${f.foto ? 'var(--borde)' : f.color}`, background: 'var(--panel-2)' }}>
+            {f.foto && <img src={f.foto} alt={`${f.titulo}: ${f.texto}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
+            {!f.foto && (
+              <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', padding: '0 34px', textAlign: 'center' }}>
+                <p style={{ fontSize: 22, color: 'var(--suave)', margin: 0 }}>{f.texto}</p>
+              </div>
+            )}
+            <div className="mono" style={{ position: 'absolute', left: 0, top: 0, padding: '6px 12px', background: f.color, color: 'var(--fondo)', fontSize: 16, fontWeight: 700 }}>
+              {f.n} · {f.titulo.toUpperCase()}
+            </div>
+            {f.foto && (
+              <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '22px 14px 9px', fontSize: 17,
+                background: 'linear-gradient(transparent, rgba(0,0,0,0.85))', color: '#fff' }}>{f.texto}</div>
+            )}
+          </Item>
+        ))}
+      </Revela>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6 }} style={{ margin: '16px 0 0', fontSize: 19, color: 'var(--tenue)' }}>
+        Cámara del robot el 11/11, con el detector en la GPU. Verde: supera el umbral y se dispara; naranja: no lo supera.
+      </motion.p>
+    </div>
+  );
+}
+
+// --- El mando con el robot real ---------------------------------------------------------------------------
+const CAPTURAS_MANDO = [
+  { foto: disparoJpg, texto: 'Rival lejano bajo una mesa, con el aviso de disparo' },
+  { foto: dosRobotsJpg, texto: 'Dos robots detectados a la vez' },
+  { foto: trasCajaJpg, texto: 'Robot detrás de una caja; el radar marca hacia dónde mira la torreta' },
+  { foto: wakaJpg, texto: 'Baile «Waka waka» lanzado desde el mando' },
+];
+export function MandoReal() {
+  return (
+    <div className="diapo">
+      <Cabecera fase="Fase 03 · Control manual" titulo="La interfaz con el robot real" />
+      <div className="cuerpo" style={{ gridTemplateColumns: '2.5fr 0.9fr', alignItems: 'start', gap: 28 }}>
+        <Revela style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }} retraso={0.3} paso={0.16}>
+          {CAPTURAS_MANDO.map((c) => (
+            <Item key={c.texto} style={{ position: 'relative', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--borde)', aspectRatio: '16 / 9' }}>
+              <img src={c.foto} alt={c.texto} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              <div style={{ position: 'absolute', left: 0, right: 0, top: 0, padding: '8px 12px 20px', fontSize: 16,
+                background: 'linear-gradient(rgba(0,0,0,0.85), transparent)', color: '#fff' }}>{c.texto}</div>
+            </Item>
+          ))}
+        </Revela>
+        <Revela as="ul" className="lista" retraso={1.2} paso={0.14} style={{ fontSize: 21 }}>
+          <Item as="li"><span><b>11/11</b>, en el suelo del laboratorio con el mando de PS4</span></Item>
+          <Item as="li"><span><b>Vídeo</b> a 8–16 imágenes por segundo</span></Item>
+          <Item as="li"><span><b>Confianza</b> de 0,97 a 1,00, también con varios robots y detrás de obstáculos</span></Item>
+          <Item as="li"><span><b>Radar</b> con la orientación de la torreta y el chasis</span></Item>
+          <Item as="li"><span><b>Bailes</b> desde los botones, con aviso en pantalla</span></Item>
+        </Revela>
+      </div>
     </div>
   );
 }

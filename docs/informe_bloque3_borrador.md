@@ -108,11 +108,19 @@ Además del circuito, se ha hecho una interfaz web para manejar el robot desde e
 
 ![Figura B3.3. Interfaz del mando con una imagen de nuestra cámara en el laboratorio (robot simulado).](informes/figuras/bloque3/mando.jpg)
 
-[PENDIENTE: probarlo con el robot real, primero sobre una caja y después en el suelo, y medir el retardo del vídeo.]
+El 11/11 se probó con el robot real en el suelo del laboratorio, manejándolo con el mando de PS4 (Figura B3.4). El vídeo llegó a la interfaz a entre 8 y 16 imágenes por segundo y el detector marcó a los robots con confianzas de 0,97 a 1,00, también con varios a la vez y detrás de obstáculos. Los bailes se lanzan desde el mando y se avisan en pantalla.
+
+![Figura B3.4. Interfaz del mando con el robot real en el laboratorio el 11 de noviembre: a) rival lejano bajo una mesa, con el aviso de disparo; b) dos robots detectados a la vez; c) robot detrás de una caja, con el radar indicando hacia dónde mira la torreta; d) baile «Waka waka» lanzado desde el mando, con dos robots a la vista.](informes/figuras/bloque3/interfaz_real.jpg)
+
+[PENDIENTE: medir el retardo del vídeo.]
 
 # 18. Pruebas y estado
 
 Cada ejecución guarda las imágenes analizadas con sus detecciones, los movimientos de la torreta, los tiempos de inferencia, los disparos y un resumen por tramo. En el laboratorio se comprobaron la conexión, la recta de 2,85 m en unos 6 s y la detección del rival de P1, con confianzas de 0,96 a 1,00; el problema de la cámara impidió disparar. Tras corregirlo, la demo completa se ha ejecutado en simulación: ataca a los dos objetivos de P1 con 20 disparos cada uno, sigue a los rivales de R1 y R2 y termina con el baile. Las mejoras para seguir objetivos móviles, evitar ataques repetidos y vigilar el recorrido están probadas en simulación y se activarán una a una en el laboratorio.
+
+El 11/11 se montó el circuito en el laboratorio y la demo se ejecutó varias veces completa con el detector en la GPU: la recta del túnel hasta P1, los dos objetivos de P1, el retroceso de R1 contra el rival 2 en movimiento, el último tramo disparando hacia atrás al rival 3 y el baile final. La Figura B3.5 muestra la imagen analizada al encontrar cada objetivo; en verde, las cajas que superan el umbral y, en naranja, las que no.
+
+![Figura B3.5. Cámara del robot en la demo del 11 de noviembre, de dos ejecuciones: a) rival 1, la foto de la caja de un RoboMaster, a la derecha de P1 (confianza 1,00); b) robot camuflado impreso, a la izquierda de P1 (0,97); c) rival 2 en movimiento, durante el retroceso de R1 (1,00); d) rival 3 escondido entre las sillas, detrás de nuestro robot, con la torreta girada 180º (1,00). No hay imágenes del túnel ni del baile: la demo solo guarda las que analiza.](informes/figuras/bloque3/demo_fases.jpg)
 
 [PENDIENTE: resultados del laboratorio con el circuito montado, con la demo en GPU y, si falla, en CPU (aciertos, falsos positivos, robots no vistos, impactos registrados por cada rival y tiempos), numeración final de tablas y figuras e índice.]
 

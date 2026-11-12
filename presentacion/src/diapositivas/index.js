@@ -3,7 +3,7 @@
 import { Portada, Reto } from './inicio.jsx';
 import { Anotacion, Aumento, Eda, Recogida, Seccion1 } from './fase1.jsx';
 import { Ajuste, Arquitecturas, Cualitativo, Etapas, Hiperparametros, Seccion2, Sistema, Test } from './fase2.jsx';
-import { Circuito, Mando, Marcha, Seccion3 } from './fase3.jsx';
+import { Circuito, DemoReal, Mando, MandoReal, Marcha, Seccion3 } from './fase3.jsx';
 import { Gracias } from './cierre.jsx';
 
 export const FASES = [
@@ -53,8 +53,12 @@ export const DIAPOSITIVAS = [
     notas: 'La animación recorre la demo con el tiempo comprimido (la real dura casi dos minutos). Azul: tramos rápidos, a 0,4–0,5 m/s. P1: se para, gira la torreta a la derecha (rival 1) y a la izquierda (robot camuflado); en cada uno, detección y ráfaga de 20 disparos (el enunciado pide 12 impactos). Naranja: los dos ataques sin parar a 0,1 m/s, al rival 2, que se mueve, durante el retroceso de R1, y al rival 3, en alto y detrás, en los 2 m finales de R2. Los LED van como en el robot: ámbar buscando, rojo al disparar. Solo P1 está medido en el laboratorio. Primer problema: la orden por distancia del SDK no respetaba la velocidad (0,06 m/s), así que mandamos la velocidad 20 veces por segundo con la odometría.' },
   { id: 'marcha', fase: 3, titulo: 'Disparar sin detener el robot', Componente: Marcha,
     notas: 'Presupuesto de tiempo del retroceso de 1,25 m a 0,1 m/s: girar la torreta, ver al rival, avisar y la ráfaga. El chasis no espera a la inferencia. Imagen nítida: con el robot en marcha algunas salen movidas; de las de los últimos 0,2 s se analiza la más nítida (varianza del laplaciano). Velocidad prevista: con el plano y las velocidades, el rival 2 se queda atrás unos 2,4 °/s; la torreta gira a esa velocidad y corrige con cada imagen. Rival en alto: a 1 m queda a unos 17° y a 2 m a 9°; la torreta lo busca inclinada 10° y corrige con la caja. Ráfaga: 20 disparos, uno cada 0,3 s, sincronizados con el sonido; el enunciado pide 12 impactos y los 8 de más cubren los que no registre.' },
+  { id: 'demo-real', fase: 3, titulo: 'Lo que vio el robot en cada fase de la demo', Componente: DemoReal,
+    notas: 'La demo en el laboratorio el 11/11, con el detector en la GPU (imágenes de las ejecuciones de las 16:26 y las 16:33). Túnel: la recta de 2,85 m bajo las mesas. P1: rival 1 a la derecha (la foto de la caja de un RoboMaster, 1,00) y el señuelo, el robot camuflado impreso, a la izquierda (0,97). R1: el rival 2 avanza mientras nuestro robot retrocede a 0,1 m/s y le dispara sin parar. R2: con la torreta girada 180º encuentra al rival 3 escondido entre las sillas. Termina con el baile. El túnel y el baile no tienen foto porque la demo solo guarda las imágenes que analiza.' },
   { id: 'mando', fase: 3, titulo: 'La interfaz que hicimos para manejar el robot', Componente: Mando,
     notas: 'Interfaz del mando en el navegador. El detector va en un proceso aparte con la GPU: unas 10 imágenes por segundo con Faster R-CNN v2 y unas 31 con MobileNet. El joystick mueve el robot hacia donde mira la cámara. Si dejan de llegar órdenes durante 0,3 s, el robot se para; mismos topes que la demo. Disparo automático opcional: el centro de la imagen dentro de una caja de confianza ≥ 0,95, de menos de 0,5 s y con la torreta quieta. 31 pruebas automáticas y probado con el robot simulado.' },
+  { id: 'mando-real', fase: 3, titulo: 'La interfaz con el robot real', Componente: MandoReal,
+    notas: 'Capturas de la interfaz grabadas el 11/11 con el robot en el suelo del laboratorio y el mando de PS4. Vídeo a 8–16 imágenes por segundo; detecciones de 0,97 a 1,00, con varios robots a la vez y detrás de obstáculos. Abajo a la derecha, el radar con la orientación de la torreta; arriba, el aviso del baile lanzado desde el mando.' },
 
   { id: 'gracias', fase: 4, tipo: 'portada', titulo: 'Gracias', Componente: Gracias, notas: 'Turno de preguntas.' },
 ];
