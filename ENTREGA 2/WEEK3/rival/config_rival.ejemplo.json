@@ -1,7 +1,7 @@
 {
   "conexion": "networking",
-  "serial": "<numero-de-serie-del-robot-rival>",
-  "ssid": "<wifi-del-laboratorio>",
-  "password": "<contrasena-de-la-wifi>",
+  "serial": "159CL170070G1X",
+  "ssid": "RMS1-78d3ec",
+  "password": "12341234",
   "puerto": 50555
 }
