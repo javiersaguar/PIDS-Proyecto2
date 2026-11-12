@@ -41,6 +41,17 @@ cambios del borrador se pasan a mano. Después de generarlo, actualizar el índi
 
 ## Historial
 
+**12/11/2026 (tarde)** — demo oficial en clase y prueba sorpresa del profesor:
+- La Figura B3.5 pasa a ser la demo oficial en clase, en seis fases: túnel, rival 1, robot camuflado, rival 2, rival 3
+  y baile (`figuras/bloque3/demo_oficial.jpg`, imágenes sueltas en `figuras/bloque3/demo_clase/`).
+- Figura B3.6 nueva con el intento sorpresa del profesor: robot tapado con una tela y foto de un robot entre humo,
+  sin disparar, y un robot distinto en la recta final, detectado y atacado (`figuras/bloque3/intento_profesor.jpg`).
+- Las pruebas del 11/11 pasan al Anexo G (Figura G.1). Se resuelven los pendientes del 15.1, 15.2, 16.1, 18 y 19
+  con estos resultados.
+- Tabla B3.1, apartados 14 y 15.2 y Figura B3.1 con las distancias medidas en el laboratorio (2,19 m, 1,44 m,
+  2,88 m y 2,3 m tras el túnel). Los cuatro rivales recibieron 20 disparos cada uno: 80 en total.
+- 46 páginas; el cuerpo acaba en la 32. Índice actualizado en Word.
+
 **12/11/2026** — imágenes reales del laboratorio en el Bloque 3:
 - Figura B3.4 en el 17: la interfaz del mando con el robot real (`figuras/bloque3/interfaz_real.jpg`), con capturas de
   las grabaciones de pantalla del 11/11 (las ocho están en `figuras/interfaz/`).

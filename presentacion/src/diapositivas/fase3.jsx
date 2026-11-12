@@ -7,10 +7,16 @@ import { CIRCUITO, PRESUPUESTO } from '../datos/cifras.js';
 import laboratorioJpg from '@repo/docs/informes/figuras/bloque3/laboratorio.jpg';
 import mandoJpg from '@repo/docs/informes/figuras/bloque3/mando.jpg';
 import circuitoPng from '@repo/docs/informes/figuras/circuito_demo.png';
-import rival1Jpg from '@repo/docs/informes/figuras/bloque3/demo/rival1.jpg';
-import camufladoJpg from '@repo/docs/informes/figuras/bloque3/demo/camuflado.jpg';
-import rival2Jpg from '@repo/docs/informes/figuras/bloque3/demo/rival2_movimiento.jpg';
-import rival3Jpg from '@repo/docs/informes/figuras/bloque3/demo/rival3_detras.jpg';
+import tunelJpg from '@repo/docs/informes/figuras/bloque3/demo_clase/1_tunel.jpg';
+import rival1Jpg from '@repo/docs/informes/figuras/bloque3/demo_clase/2_rival1.jpg';
+import camufladoJpg from '@repo/docs/informes/figuras/bloque3/demo_clase/3_camuflado.jpg';
+import rival2Jpg from '@repo/docs/informes/figuras/bloque3/demo_clase/4_rival2_movimiento.jpg';
+import rival3Jpg from '@repo/docs/informes/figuras/bloque3/demo_clase/5_rival3_escondido.jpg';
+import baileJpg from '@repo/docs/informes/figuras/bloque3/demo_clase/6_baile.jpg';
+import humoJpg from '@repo/docs/informes/figuras/bloque3/profesor/1_foto_humo.jpg';
+import tapadoJpg from '@repo/docs/informes/figuras/bloque3/profesor/2_robot_tapado.jpg';
+import profeRival2Jpg from '@repo/docs/informes/figuras/bloque3/profesor/3_rival2.jpg';
+import distintoJpg from '@repo/docs/informes/figuras/bloque3/profesor/4_robot_distinto.jpg';
 import disparoJpg from '@repo/docs/informes/figuras/interfaz/v1_deteccion_lejana_disparo.jpg';
 import dosRobotsJpg from '@repo/docs/informes/figuras/interfaz/v2_dos_robots.jpg';
 import trasCajaJpg from '@repo/docs/informes/figuras/interfaz/v1_deteccion_tras_caja.jpg';
@@ -28,7 +34,7 @@ export function Seccion3() {
 // --- El circuito ------------------------------------------------------------------------------------
 // Animación de la demo sobre el plano de la Figura B3.1. El tiempo va comprimido (la demo real dura
 // casi dos minutos), pero respeta el orden: dónde avanza, dónde se para, dónde va despacio y a quién dispara.
-const ESC = 112;
+const ESC = 102;   // el recorrido llega a 8,78 m: 70 + 8,78 × 102 cabe en los 1000 del dibujo
 const px = ([x, y]) => [70 + x * ESC, 40 + (y + 2.4) * ESC];
 function longitudes(puntos) {
   const tramos = puntos.slice(1).map((p, i) => Math.hypot(p[0] - puntos[i][0], p[1] - puntos[i][1]));
@@ -173,7 +179,7 @@ const ROTULOS = [
   { nombre: [[26, 5, 'start', 'Rival 1']], datos: [-32, -6, 'end'] },
   { nombre: [[0, -24, 'middle', 'Camuflado']], datos: [-32, -4, 'end'] },
   { nombre: [[0, -24, 'middle', 'Rival 2']], datos: [32, -4, 'start'] },
-  { nombre: [[0, 42, 'middle', 'Rival 3'], [0, 60, 'middle', 'en alto']], datos: [0, -48, 'middle'] },
+  { nombre: [[0, 42, 'middle', 'Rival 3'], [0, 60, 'middle', 'escondido']], datos: [0, -48, 'middle'] },
 ];
 
 function Mapa({ e, t }) {
@@ -214,13 +220,13 @@ function Mapa({ e, t }) {
         <polygon points="-9,-22 9,-22 22,-9 22,9 9,22 -9,22 -22,9 -22,-9" fill="none" stroke="var(--rojo)" strokeWidth="2.5" opacity="0.8" />
         <text y="44" textAnchor="middle" style={{ font: '600 15px var(--mono)', fill: 'var(--texto)' }}>P1 · parada</text>
       </g>
-      {[[[0, 0], 'salida', 0, 30, 'middle'], [[8, -0.7], 'baile final', 4, 32, 'end']].map(([p, txt, dx, dy, ancla]) => (
+      {[[[0, 0], 'salida', 0, 30, 'middle'], [[8.78, -0.7], 'baile final', 4, 32, 'end']].map(([p, txt, dx, dy, ancla]) => (
         <g key={txt}>
           <circle cx={px(p)[0]} cy={px(p)[1]} r="6" fill="var(--texto)" />
           <text x={px(p)[0] + dx} y={px(p)[1] + dy} textAnchor={ancla} style={{ font: '600 15px var(--mono)', fill: 'var(--texto)' }}>{txt}</text>
         </g>
       ))}
-      {/* Plataforma del rival 3 */}
+      {/* Caja del rival 3 */}
       {(() => { const [cx, cy] = px([rivales[3].x, rivales[3].y]); return <rect x={cx - 26} y={cy - 22} width="52" height="44" rx="4" fill="var(--panel-2)" stroke="var(--borde)" />; })()}
       {/* Campo de visión de la cámara de la torreta */}
       <path d={`M${rx},${ry} L${rx + Math.cos(rad - 0.55) * 150},${ry + Math.sin(rad - 0.55) * 150} A150,150 0 0 1 ${rx + Math.cos(rad + 0.55) * 150},${ry + Math.sin(rad + 0.55) * 150} Z`}
@@ -278,10 +284,10 @@ function Mapa({ e, t }) {
       </g>
       {/* Leyenda */}
       <g style={{ font: '600 15px var(--mono)' }}>
-        <line x1="80" x2="116" y1="380" y2="380" stroke="var(--azul)" strokeWidth="4" />
-        <text x="126" y="385" style={{ fill: 'var(--suave)' }}>avanza deprisa</text>
-        <line x1="80" x2="116" y1="408" y2="408" stroke="var(--naranja)" strokeWidth="9" strokeLinecap="round" />
-        <text x="126" y="413" style={{ fill: 'var(--suave)' }}>despacio, disparando</text>
+        <line x1="620" x2="656" y1="380" y2="380" stroke="var(--azul)" strokeWidth="4" />
+        <text x="666" y="385" style={{ fill: 'var(--suave)' }}>avanza deprisa</text>
+        <line x1="620" x2="656" y1="408" y2="408" stroke="var(--naranja)" strokeWidth="9" strokeLinecap="round" />
+        <text x="666" y="413" style={{ fill: 'var(--suave)' }}>despacio, disparando</text>
       </g>
     </svg>
   );
@@ -289,8 +295,8 @@ function Mapa({ e, t }) {
 
 const ETAPAS = [
   { modo: 'parada', etiqueta: 'P1 · se para', texto: 'Tras 2,85 m a 0,5 m/s se detiene, gira la torreta a la derecha contra el rival 1 y a la izquierda contra el robot camuflado: 20 disparos a cada uno.' },
-  { modo: 'marcha', ataque: 2, etiqueta: 'R1 · retrocede a 0,1 m/s', texto: 'Recorre 1,25 m marcha atrás sin pararse mientras sigue y dispara al rival 2, que también avanza.' },
-  { modo: 'marcha', ataque: 3, etiqueta: 'R2 · avanza a 0,1 m/s', texto: 'En los 2 m finales gira la torreta hacia atrás e inclinada para alcanzar al rival 3, que está en alto.' },
+  { modo: 'marcha', ataque: 2, etiqueta: 'R1 · retrocede a 0,1 m/s', texto: 'Recorre 1,44 m marcha atrás sin pararse mientras sigue y dispara al rival 2, que también avanza.' },
+  { modo: 'marcha', ataque: 3, etiqueta: 'R2 · avanza a 0,1 m/s', texto: 'En los 2,3 m finales gira la torreta hacia atrás para alcanzar al rival 3, escondido detrás.' },
   { modo: 'baile', etiqueta: 'Final', texto: 'Baile con música y los LED cambiando de color.' },
 ];
 function etapaActiva(e) {
@@ -338,8 +344,8 @@ export function Marcha() {
           <div style={{ position: 'absolute', left: 0, right: 0, top: 30, height: 2, background: 'var(--borde)' }} />
           <motion.div style={{ position: 'absolute', top: 14, width: 44, height: 34, marginLeft: -22, borderRadius: 6, background: 'var(--acento)' }}
             initial={{ left: '0%' }} animate={{ left: '100%' }} transition={{ delay: 0.8, duration: total / VEL, ease: 'linear' }} />
-          <span className="mono" style={{ position: 'absolute', left: 0, top: 56, fontSize: 14, color: 'var(--tenue)' }}>retroceso de 1,25 m a 0,1 m/s: unos 12,5 s, sin parar el chasis</span>
-          <span className="mono" style={{ position: 'absolute', right: 0, top: 56, fontSize: 14, color: 'var(--tenue)' }}>1,25 m después</span>
+          <span className="mono" style={{ position: 'absolute', left: 0, top: 56, fontSize: 14, color: 'var(--tenue)' }}>retroceso de 1,44 m a 0,1 m/s: unos 14,5 s, sin parar el chasis</span>
+          <span className="mono" style={{ position: 'absolute', right: 0, top: 56, fontSize: 14, color: 'var(--tenue)' }}>1,44 m después</span>
         </div>
         <div style={{ display: 'flex', height: 64, gap: 3 }}>
           {PRESUPUESTO.map((p, i) => {
@@ -374,44 +380,65 @@ export function Marcha() {
   );
 }
 
-// --- La demo en el laboratorio, fase a fase ----------------------------------------------------------------
-// Imágenes de la cámara del robot del 11/11 (ejecuciones de las 16:26 y las 16:33). La demo solo guarda las
-// imágenes que analiza, así que el túnel y el baile no tienen foto.
+// --- La demo oficial en clase, fase a fase -------------------------------------------------------------------
+// Cámara del robot en la demo en clase del 12/11 (evidencias/20261112_155726). El túnel y el baile salen de las
+// fotos de todo el recorrido (FOTOS_RECORRIDO); el resto, de las imágenes analizadas.
 const FASES_DEMO = [
-  { n: '01', titulo: 'Túnel', texto: 'Recta de 2,85 m bajo las mesas a 0,5 m/s, con el Fórmula 1 sonando', color: 'var(--azul)' },
-  { n: '02', titulo: 'Rival 1', texto: 'P1, torreta a la derecha · 1,00', foto: rival1Jpg, color: 'var(--rojo)' },
-  { n: '03', titulo: 'Señuelo camuflado', texto: 'P1, torreta a la izquierda · 0,97', foto: camufladoJpg, color: 'var(--rojo)' },
-  { n: '04', titulo: 'Rival 2 en movimiento', texto: 'R1, retrocediendo a 0,1 m/s sin parar · 1,00', foto: rival2Jpg, color: 'var(--naranja)' },
-  { n: '05', titulo: 'Rival 3 detrás, escondido', texto: 'R2, torreta girada 180º entre las sillas · 1,00', foto: rival3Jpg, color: 'var(--naranja)' },
-  { n: '06', titulo: 'Baile final', texto: 'Super Estrella, torreta y chasis bailando y LED de colores', color: 'var(--acento)' },
+  { n: '01', titulo: 'Túnel', texto: 'Recta de 2,85 m entre las sillas a 0,5 m/s', foto: tunelJpg, color: 'var(--azul)' },
+  { n: '02', titulo: 'Rival 1', texto: 'P1, torreta a la derecha · 1,00 · 20 disparos', foto: rival1Jpg, color: 'var(--rojo)' },
+  { n: '03', titulo: 'Señuelo camuflado', texto: 'P1, torreta a la izquierda · 0,99 · 20 disparos', foto: camufladoJpg, color: 'var(--rojo)' },
+  { n: '04', titulo: 'Rival 2 en movimiento', texto: 'R1, los dos en marcha · 1,00 · 20 disparos', foto: rival2Jpg, color: 'var(--naranja)' },
+  { n: '05', titulo: 'Rival 3 escondido', texto: 'R2, torreta girada 180º, en una caja · 1,00 · 20 disparos', foto: rival3Jpg, color: 'var(--naranja)' },
+  { n: '06', titulo: 'Baile final', texto: 'Super Estrella, con la clase mirando', foto: baileJpg, color: 'var(--acento)' },
 ];
+function Mosaico({ fotos, columnas }) {
+  return (
+    <Revela style={{ display: 'grid', gridTemplateColumns: `repeat(${columnas}, 1fr)`, gap: 18 }} retraso={0.3} paso={0.16}>
+      {fotos.map((f) => (
+        <Item key={f.titulo} style={{ position: 'relative', aspectRatio: '16 / 9', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--borde)' }}>
+          <img src={f.foto} alt={`${f.titulo}: ${f.texto}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          <div className="mono" style={{ position: 'absolute', left: 0, top: 0, padding: '6px 12px', background: f.color, color: 'var(--fondo)', fontSize: 16, fontWeight: 700 }}>
+            {f.n} · {f.titulo.toUpperCase()}
+          </div>
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '22px 14px 9px', fontSize: 17,
+            background: 'linear-gradient(transparent, rgba(0,0,0,0.85))', color: '#fff' }}>{f.texto}</div>
+        </Item>
+      ))}
+    </Revela>
+  );
+}
 export function DemoReal() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Demo en el laboratorio" titulo="Lo que vio el robot en cada fase de la demo" />
-      <Revela style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }} retraso={0.3} paso={0.16}>
-        {FASES_DEMO.map((f) => (
-          <Item key={f.n} style={{ position: 'relative', aspectRatio: '16 / 9', borderRadius: 4, overflow: 'hidden',
-            border: `1px solid ${f.foto ? 'var(--borde)' : f.color}`, background: 'var(--panel-2)' }}>
-            {f.foto && <img src={f.foto} alt={`${f.titulo}: ${f.texto}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
-            {!f.foto && (
-              <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', padding: '0 34px', textAlign: 'center' }}>
-                <p style={{ fontSize: 22, color: 'var(--suave)', margin: 0 }}>{f.texto}</p>
-              </div>
-            )}
-            <div className="mono" style={{ position: 'absolute', left: 0, top: 0, padding: '6px 12px', background: f.color, color: 'var(--fondo)', fontSize: 16, fontWeight: 700 }}>
-              {f.n} · {f.titulo.toUpperCase()}
-            </div>
-            {f.foto && (
-              <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '22px 14px 9px', fontSize: 17,
-                background: 'linear-gradient(transparent, rgba(0,0,0,0.85))', color: '#fff' }}>{f.texto}</div>
-            )}
-          </Item>
-        ))}
-      </Revela>
+      <Cabecera fase="Fase 03 · Demo en clase" titulo="La demo oficial, fase a fase" />
+      <Mosaico fotos={FASES_DEMO} columnas={3} />
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6 }} style={{ margin: '16px 0 0', fontSize: 19, color: 'var(--tenue)' }}>
-        Cámara del robot el 11/11, con el detector en la GPU. Verde: supera el umbral y se dispara; naranja: no lo supera.
+        Cámara del robot el 12/11, con el detector en la GPU. Los cuatro rivales registraron los 80 disparos.
       </motion.p>
+    </div>
+  );
+}
+
+// --- El intento sorpresa del profesor ----------------------------------------------------------------------
+// evidencias/20261112_160426: imágenes del profesor, robots tapados y un robot distinto en la recta final.
+const SORPRESA = [
+  { n: 'P1', titulo: 'Foto entre humo', texto: '0,59: por debajo del umbral, no dispara', foto: humoJpg, color: 'var(--naranja)' },
+  { n: 'P1', titulo: 'Robot tapado', texto: 'Con una tela: 0,85 a 0,91, no dispara', foto: tapadoJpg, color: 'var(--naranja)' },
+  { n: 'R1', titulo: 'Rival 2', texto: '1,00: lo sigue y le dispara', foto: profeRival2Jpg, color: 'var(--acento)' },
+  { n: 'R2', titulo: 'Robot distinto', texto: 'Otro modelo, con partes rojas: 0,99, le dispara', foto: distintoJpg, color: 'var(--acento)' },
+];
+export function Sorpresa() {
+  return (
+    <div className="diapo">
+      <Cabecera fase="Fase 03 · Prueba sorpresa" titulo="El profesor cambió los robots" />
+      <div className="cuerpo" style={{ gridTemplateColumns: '2.3fr 1fr', alignItems: 'start', gap: 28 }}>
+        <Mosaico fotos={SORPRESA} columnas={2} />
+        <Revela as="ul" className="lista" retraso={1.2} paso={0.16} style={{ fontSize: 22 }}>
+          <Item as="li"><span><b>Generaliza:</b> detecta y ataca a un robot que no estaba en nuestros datos</span></Item>
+          <Item as="li"><span><b>No se deja engañar:</b> un robot tapado o una foto borrosa no llegan al umbral de 0,95</span></Item>
+          <Item as="li"><span><b>El precio:</b> esos dos robots se quedan sin disparar; el umbral prioriza no atacar a lo que no es un robot</span></Item>
+        </Revela>
+      </div>
     </div>
   );
 }
@@ -478,7 +505,7 @@ export function Mando() {
             <Item as="li"><span><b>Teclado, ratón o mando de PS4</b></span></Item>
             <Item as="li"><span><b>Seguro:</b> si deja de recibir órdenes, se para solo</span></Item>
             <Item as="li"><span><b>Disparo automático</b> al ver un rival (opcional)</span></Item>
-            <Item as="li"><span><b><Contador valor={31} retraso={2.4} /> pruebas automáticas</b> del código</span></Item>
+            <Item as="li"><span><b><Contador valor={42} retraso={2.4} /> pruebas automáticas</b> del código</span></Item>
           </Revela>
         </div>
       </div>
