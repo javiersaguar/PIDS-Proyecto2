@@ -16,11 +16,16 @@ class ReglaAuto(unittest.TestCase):
         self.assertIsNone(regla_auto([[49, 40, 80, 60]], [.99], 100, 100))
         self.assertIsNone(regla_auto([[0, 0, 20, 20]], [.99], 100, 100))
 
+    def test_silla_cercana_no_dispara(self):
+        # 087_R2-marcha_fijado del 11/11: silla de 0,99 que ocupa casi todo el alto de la imagen
+        self.assertIsNone(regla_auto([[400, 35, 900, 707]], [.993], 1280, 720))
+        self.assertEqual(regla_auto([[560, 290, 720, 430]], [.99], 1280, 720), 0)
+
     def test_sin_cajas_y_datos_invalidos(self):
         for box in ([float('nan'), 0, 100, 100], [70, 0, 20, 100], [0, 0, float('inf'), 100]):
             self.assertIsNone(regla_auto([box], [1], 100, 100))
         self.assertIsNone(regla_auto([], [], 100, 100))
-        self.assertIsNone(regla_auto([[0, 0, 100, 100]], [float('nan')], 100, 100))
+        self.assertIsNone(regla_auto([[0, 0, 40, 40]], [float('nan')], 100, 100))
 
     def test_inferencia_pendiente_no_acumula_imagenes(self):
         class Imagen:

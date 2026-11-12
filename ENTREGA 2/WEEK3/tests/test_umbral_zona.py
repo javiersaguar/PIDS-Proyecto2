@@ -34,8 +34,8 @@ def prediccion(*detecciones):
                 scores=np.array([s for _, s in detecciones], dtype=float))
 
 
-def seleccionar(zona, yaw, *detecciones):
-    falso = types.SimpleNamespace(zona=zona)
+def seleccionar(zona, yaw, *detecciones, distancia_max=None):
+    falso = types.SimpleNamespace(zona=zona, distancia_max=distancia_max)
     return [round(s, 3) for _, s in demo.Demo.seleccionar_parada(falso, IMAGEN, prediccion(*detecciones), yaw)]
 
 
@@ -68,7 +68,50 @@ class UmbralZona(unittest.TestCase):
                                      ([973.5, 279.8, 1164.5, 444.5], 0.741)), [0.741])
 
     def test_por_encima_del_umbral_general_cuenta_en_cualquier_lado(self):
-        self.assertEqual(seleccionar(ZONA, 90, ([0, 0, 1280, 720], 0.99)), [0.99])
+        self.assertEqual(seleccionar(ZONA, 90, ([502, 340, 651, 466], 0.997)), [0.997])
+
+    def test_silla_de_la_recta_final_no_es_un_robot_aunque_supere_el_umbral(self):
+        # 087_R2-marcha_fijado_yaw+180 (16:42): dos sillas de 0,99 y 0,95 y el rival de 0,93
+        silla_dcha, silla_izq, rival = ([804.1, 35.2, 1280.0, 706.9], 0.993), ([4.1, 0.0, 494.5, 682.1], 0.955), \
+            ([848.4, 459.6, 1034.3, 614.2], 0.931)
+        self.assertEqual(seleccionar(None, 180, silla_dcha, silla_izq, rival), [])
+        pred = prediccion(silla_dcha, silla_izq, rival)
+        self.assertEqual([round(s, 3) for _, s in demo.robots(IMAGEN, pred, 0.8)], [0.931])
+
+    def test_robots_reales_no_se_descartan_por_su_tamano(self):
+        # El más cercano del 11/11: el de la caja de P1 a 0,96 m (197 px de alto)
+        pred = prediccion(([422.4, 372.2, 640.0, 569.2], 0.999))
+        self.assertEqual(len(demo.robots(IMAGEN, pred, C.UMBRAL)), 1)
+
+
+class DistanciaMaxima(unittest.TestCase):
+    """En P1 no cuenta el robot del fondo que se ve a la izquierda (prueba de las 16:33)."""
+
+    def test_p1_lleva_distancia_maxima(self):
+        p1 = next(p for p in C.PARADAS if p['nombre'] == 'P1')
+        self.assertEqual(p1['distancia_max'], 2.0)
+        self.assertTrue(all('distancia_max' not in p for p in C.PARADAS if p['nombre'] != 'P1'))
+
+    def test_el_robot_del_fondo_no_cuenta_y_el_camuflado_si(self):
+        # 004_P1_corrigiendo_yaw-60: robot del fondo 1,00 (63 px de alto) y camuflado 0,95
+        fondo, camuflado = ([563.1, 302.3, 639.8, 365.3], 0.997), ([205.0, 291.7, 395.0, 460.5], 0.946)
+        self.assertEqual(seleccionar(ZONA, -60, fondo, camuflado, distancia_max=2.0), [0.946])
+        # 003_P1_barrido_yaw-90: el del fondo a 2,6 m (66 px) junto al camuflado (156 px)
+        self.assertEqual(seleccionar(ZONA, -90, ([917.7, 331.9, 988.4, 397.9], 0.995),
+                                     ([610.4, 319.2, 768.3, 475.0], 0.933), distancia_max=2.0), [0.933])
+
+    def test_los_dos_robots_de_p1_estan_dentro(self):
+        caja = ([422.4, 372.2, 640.0, 569.2], 0.999)   # 001_P1_barrido_yaw+90 (16:42)
+        self.assertEqual(seleccionar(ZONA, 90, caja, distancia_max=2.0), [0.999])
+        camuflado = ([598.2, 289.4, 725.6, 414.1], 0.956)   # 005_P1_confirmado_yaw-80 (16:42)
+        self.assertEqual(seleccionar(ZONA, -80, camuflado, distancia_max=2.0), [0.956])
+
+    def test_sin_distancia_maxima_el_del_fondo_cuenta(self):
+        self.assertEqual(seleccionar(None, -60, ([563.1, 302.3, 639.8, 365.3], 0.997)), [0.997])
+
+    def test_recorrido_conserva_la_distancia_maxima(self):
+        p = paradas_desde_plano(0, [dict(nombre='A', punto=(1, 0), barrido=[0], distancia_max=2.0)])[0]
+        self.assertEqual(p['distancia_max'], 2.0)
 
     def test_recorrido_conserva_la_zona(self):
         p = paradas_desde_plano(0, [dict(nombre='A', punto=(1, 0), barrido=[0], umbral_zona=ZONA)])[0]

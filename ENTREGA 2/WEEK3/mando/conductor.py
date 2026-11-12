@@ -252,9 +252,10 @@ class Conductor(threading.Thread):
         import types
         import circuito as C
         from demo_utils import auto_aim, auto_pitch, tamano_angular
+        from deteccion import es_robot
         imagen = types.SimpleNamespace(shape=(resultado['height'], resultado['width'], 3))
         candidatos = [(caja, s) for caja, s in zip(resultado['boxes'], resultado['scores'])
-                      if s >= self.config['umbral'] and len(caja) == 4]
+                      if s >= self.config['umbral'] and len(caja) == 4 and es_robot(caja, resultado['height'])]
         if not candidatos:
             return None
         caja, _ = min(candidatos, key=lambda c: abs(auto_aim(imagen, c[0])))

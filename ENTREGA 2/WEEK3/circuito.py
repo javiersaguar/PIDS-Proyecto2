@@ -39,6 +39,14 @@ ALTO_MAX_ZONA = 0.5
 # El robot camuflado impreso en A3 dio 0,72-0,97 en el laboratorio el 11/11 (casi siempre
 # por debajo de UMBRAL) y una caja de RoboMaster al otro lado, 0,84: por eso se baja solo hacia la izquierda.
 UMBRAL_CAMUFLADO = 0.7
+# Ninguna detección cuenta como robot si su caja pasa de este alto de la imagen, aunque tenga
+# mucha confianza: el robot estaría a menos de 0,5 m. En la recta final del 11/11 las sillas
+# azules cercanas dieron 0,95-0,99 con cajas de 650-720 px de alto; los robots, 100-200 px.
+ALTO_MAX_ROBOT = 0.5
+# Fotos de la cámara durante toda la demo (túnel, paradas, ataques y baile), en
+# evidencias/<ejecución>/recorrido/, aparte de las imágenes analizadas. Segundos entre fotos;
+# None o 0 para no sacarlas. A 0,5 s, una demo de 3 min son unas 360 fotos (unos 50 MB).
+FOTOS_RECORRIDO = 0.5
 
 # --- Mejoras de la PR 36: todas desactivadas por defecto ------------------------------
 # Con SEGUIMIENTO, BARRIDO_CONTINUO, MEMORIA, VIGILANCIA y LEER_ANGULO_GIMBAL a False la demo
@@ -170,8 +178,10 @@ PLANO = [
     # al robot camuflado (docs/senuelo_aliado.md). Si no ve a alguno, prueba a ±60º y ±120º.
     # Con objetivos=2, deja de barrer en cuanto ha atacado a los dos.
     # Hacia la izquierda (yaw -150 a -30) basta UMBRAL_CAMUFLADO para el robot camuflado.
+    # distancia_max: los dos robots de P1 están a 1,0 y 1,3 m; el del fondo, que se ve a la
+    # izquierda a unos 2,6 m (le disparó el 11/11), se deja para más adelante.
     dict(nombre='P1', punto=(2.85, 0.0), barrido=[90, -90, 60, -60, 120, -120], pitch=0, objetivos=2,
-         umbral_zona=dict(yaw=(-150, -30), umbral=UMBRAL_CAMUFLADO)),
+         umbral_zona=dict(yaw=(-150, -30), umbral=UMBRAL_CAMUFLADO), distancia_max=2.0),
     # Desde aquí (después del túnel) las medidas a lo largo (x) son un 15 % más largas que
     # las medidas el 05/11, porque el final quedaba muy justo de espacio. Las de lo ancho (y), igual.
     # paso 3: la rotonda, con movimientos relativos del chasis sin girarlo (x adelante,

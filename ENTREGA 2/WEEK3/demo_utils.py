@@ -5,6 +5,7 @@ import os
 import pickle
 import queue
 import random
+import re
 import socket
 import threading
 import time
@@ -509,11 +510,61 @@ class Camara:
         valor, t, frame = max(((nitidez(f), t, f) for t, f in candidatos), key=lambda e: e[0])
         return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), t, valor
 
+    def ultimo(self):
+        """(fotograma BGR, instante de llegada) del último recibido, sin esperar. (None, 0) si aún no hay."""
+        with self._cond:
+            return self._ultimo, self._t_ultimo
+
     def cerrar(self):
         self._activa = False
         if self._en_hilo:
             self._hilo.join(timeout=2)
         self.ep_camera.stop_video_stream()
+
+
+class Fotografo:
+    """Guarda una foto de la cámara cada `intervalo` s durante toda la demo, en <evidencias>/recorrido/.
+
+    La demo solo guarda las imágenes que analiza, así que la recta del túnel o el baile
+    no quedaban registrados. Este hilo copia a disco el último fotograma que ya tiene la
+    Camara, sin analizarlo ni esperar a ninguno nuevo: no frena la demo. El nombre lleva el
+    orden, la fase que diga `fase()` (P1-ruta, R1-marcha, baile...) y la hora.
+    """
+
+    def __init__(self, camara, carpeta, intervalo=0.5, fase=lambda: '', calidad=85):
+        self.camara, self.intervalo, self.fase, self.calidad = camara, intervalo, fase, calidad
+        self.carpeta = os.path.join(carpeta, 'recorrido')
+        os.makedirs(self.carpeta, exist_ok=True)
+        self.n, self._t_guardado = 0, None
+        self._parar = threading.Event()
+        self._hilo = threading.Thread(target=self._bucle, daemon=True)
+        self._hilo.start()
+
+    def foto(self):
+        """Guarda el último fotograma si es nuevo; devuelve la ruta o None."""
+        frame, t = self.camara.ultimo()
+        if frame is None or t == self._t_guardado:
+            return None
+        self._t_guardado = t
+        self.n += 1
+        fase = re.sub(r'[^\w-]+', '_', str(self.fase() or 'demo'))
+        ruta = os.path.join(self.carpeta, f'{self.n:04d}_{fase}_{time.strftime("%H-%M-%S")}.jpg')
+        try:
+            cv2.imwrite(ruta, frame, [cv2.IMWRITE_JPEG_QUALITY, self.calidad])
+        except Exception as e:   # una foto perdida no detiene la demo
+            print(f'[aviso] no se pudo guardar {ruta}: {e!r}')
+            return None
+        return ruta
+
+    def _bucle(self):
+        while not self._parar.wait(self.intervalo):
+            self.foto()
+
+    def cerrar(self):
+        self._parar.set()
+        self._hilo.join(timeout=2)
+        self.foto()   # la última, con la demo ya parada
+        return self.n
 
 
 def nitidez(image):
