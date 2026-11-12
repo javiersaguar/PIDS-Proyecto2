@@ -4,7 +4,7 @@ Lo lanza Alejandro en su portátil, conectado al robot RIVAL (no al nuestro). El
 espera quieto hasta recibir el aviso de la demo (UDP por la red del laboratorio) o hasta
 que se pulse Enter; entonces avanza `--distancia` m a `--velocidad` m/s y se para.
 
-    python rival/rival_movil.py                       # espera el aviso o Enter y avanza 0,75 m a 0,05 m/s
+    python rival/rival_movil.py                       # espera el aviso o Enter y avanza 0,86 m a 0,05 m/s
     python rival/rival_movil.py --modo enter          # solo con Enter
     python rival/rival_movil.py --sin-robot           # prueba de red: espera el aviso sin conectar el robot
     python rival/rival_movil.py --enviar 192.168.1.23 # (en NUESTRO portátil) envía un aviso de prueba
@@ -33,8 +33,8 @@ CONFIG = os.path.join(AQUI, 'config_rival.json')
 
 def argumentos(argv=None):
     p = argparse.ArgumentParser(description='Robot rival en movimiento para la demo del grupo 2')
-    p.add_argument('--distancia', type=float, default=0.75,
-                   help='m que avanza (negativo: hacia atrás). Por defecto 0,75')
+    p.add_argument('--distancia', type=float, default=0.86,
+                   help='m que avanza (negativo: hacia atrás). Por defecto 0,86 (0,75 + 15 %)')
     p.add_argument('--velocidad', type=float, default=0.05,
                    help=f'm/s (como mucho {VELOCIDAD_MAX}). Por defecto 0,05')
     p.add_argument('--retraso', type=float, default=0.0, help='s que espera tras el aviso antes de arrancar')

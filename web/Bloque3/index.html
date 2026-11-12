@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="El detector de robots en el RoboMaster EP: la demo del 12/11/2026 foto a foto, lo que vio el detector en cada imagen y cuánto duró cada fase.">
+  <title>El detector en el robot · PIDS</title>
+  <link rel="stylesheet" href="estilos.css">
+  <script src="datos.js" defer></script>
+  <script src="graficas.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#graficas">Saltar a las figuras</a>
+  <main>
+    <header class="page-header">
+      <p class="project">PIDS <span aria-hidden="true">/</span> Bloque 3</p>
+      <div class="intro-row">
+        <h1>El detector en el robot</h1>
+        <p>El detector final, Faster R-CNN v2, controla un RoboMaster EP en un circuito con cuatro rivales: dos a los que ataca parado y dos a los que ataca sin dejar de moverse. Aquí están las dos pasadas del 12/11/2026 en clase, la demo oficial y un intento sorpresa del profesor con robots tapados y un robot distinto, reconstruidas con las fotos que guardó el robot.</p>
+      </div>
+      <ul class="cifras">
+        <li><b>2 min 18 s</b><span>duración de la demo oficial, de la salida al final del baile</span></li>
+        <li><b>4 de 4</b><span>rivales eliminados, con 20 disparos a cada uno (80 en total)</span></li>
+        <li><b>108 ms</b><span>mediana del tiempo por imagen, con el detector en la GPU del portátil</span></li>
+        <li><b>0,95</b><span>confianza mínima para disparar; 0,7 solo en la zona del robot camuflado</span></li>
+      </ul>
+    </header>
+
+    <div id="graficas">
+      <section class="figure-panel" id="recorrido" aria-labelledby="titulo-recorrido">
+        <div class="section-heading">
+          <h2 id="titulo-recorrido">La demo, foto a foto</h2>
+          <div class="figure-description">
+            <p>Durante todo el recorrido la demo guarda una foto de la cámara cada 0,5 s. A la derecha, el plano medido en el laboratorio con la posición del robot en ese momento.</p>
+            <p class="interaction-hint">Pulsa Reproducir o arrastra la barra. La franja de colores son las fases: pulsa una para saltar a su comienzo. Con el foco en la barra, las flechas avanzan foto a foto.</p>
+          </div>
+        </div>
+        <div class="chart-stage">
+          <div class="chart-controls">
+            <label for="intento-recorrido">Intento</label>
+            <select id="intento-recorrido"></select>
+            <button type="button" class="boton" id="reproducir" aria-pressed="false">Reproducir</button>
+            <label for="velocidad">Velocidad</label>
+            <select id="velocidad"><option value="1">×1 (tiempo real)</option><option value="4" selected>×4</option><option value="8">×8</option></select>
+          </div>
+          <div class="chart-controls">
+            <input type="range" id="barra" min="0" max="0" value="0" aria-label="Foto del recorrido">
+            <span class="reloj" id="reloj" aria-live="off">0:00</span>
+          </div>
+          <div class="visor">
+            <figure class="foto"><img id="foto-recorrido" alt="" width="480" height="270"><figcaption id="fase-recorrido"></figcaption></figure>
+            <div class="mapa">
+              <svg id="mapa" viewBox="0 0 960 470" role="img" aria-label="Plano del circuito con la posición del robot"></svg>
+              <p class="tramo-actual" id="tramo-actual"></p>
+            </div>
+          </div>
+          <div class="franja" id="franja" role="group" aria-label="Fases del recorrido"></div>
+          <div class="leyenda" aria-hidden="true">
+            <span><i style="background:var(--ruta)"></i>se desplaza deprisa</span>
+            <span><i style="background:var(--parada)"></i>parado, busca y dispara</span>
+            <span><i style="background:var(--marcha)"></i>dispara sin parar, a 0,1 m/s</span>
+            <span><i style="background:var(--baile)"></i>baile final</span>
+          </div>
+          <div class="figure-caption">
+            <p class="reading-note">La posición es aproximada: el robot no la registra, así que se reparte cada tramo del plano entre las fotos de su fase. Las fotos están reducidas a 480 píxeles de ancho.</p>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>La demo oficial dura 2 min 18 s. Más de la mitad se va en atacar: unos 35 s parado en P1 y 52 s disparando en marcha durante los dos tramos lentos.</li>
+            <li>En el túnel de sillas el robot va recto a 0,5 m/s: el rumbo se mantiene con la IMU del chasis.</li>
+            <li>En el intento del profesor P1 dura 12 s más. Ninguno de sus robots supera el umbral, así que la torreta recorre los seis ángulos del barrido antes de seguir.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="detector" aria-labelledby="titulo-detector">
+        <div class="section-heading">
+          <h2 id="titulo-detector">Qué vio el detector en cada imagen</h2>
+          <div class="figure-description">
+            <p>Cada punto es una imagen analizada durante un ataque, con todas las detecciones de confianza 0,3 o más. Solo las que pasan el umbral cuentan como rival.</p>
+            <p class="interaction-hint">Elige el intento y la medida. Pasa el cursor por un punto para ver sus datos y púlsalo para ver la imagen con las cajas que dibujó el detector. Los botones de debajo de la imagen recorren las imágenes una a una.</p>
+          </div>
+        </div>
+        <div class="chart-stage">
+          <div class="chart-controls">
+            <label for="intento-detector">Intento</label>
+            <select id="intento-detector"></select>
+            <label for="medida">Medida</label>
+            <select id="medida">
+              <option value="conf">Confianza de cada detección</option>
+              <option value="yaw">Ángulo de la torreta</option>
+              <option value="ms">Tiempo por imagen</option>
+            </select>
+          </div>
+          <div class="detector">
+            <div class="grafica-svg" id="grafica-detector">
+              <svg id="svg-detector" viewBox="0 0 720 420" role="img" aria-label="Detecciones a lo largo del tiempo"></svg>
+              <div class="consejo" id="consejo" hidden></div>
+            </div>
+            <div>
+              <figure class="foto"><img id="foto-detector" alt="" width="480" height="270"><figcaption id="titulo-foto"></figcaption></figure>
+              <p class="ficha" id="ficha"></p>
+              <div class="pasos"><button type="button" class="boton" id="anterior">← Anterior</button><button type="button" class="boton" id="siguiente">Siguiente →</button></div>
+            </div>
+          </div>
+          <div class="leyenda" aria-hidden="true" id="leyenda-detector"></div>
+          <div class="figure-caption">
+            <p class="reading-note">El tiempo cuenta desde la primera foto del intento; el registro guarda la hora al segundo, así que las imágenes de un mismo segundo se reparten en él. El ángulo de la torreta es respecto al chasis: 90° a la derecha, −90° a la izquierda, 180° hacia atrás. Las ráfagas en marcha no se apuntan en el registro; los rivales registraron 20 disparos cada uno.</p>
+            <div class="figure-links"><button type="button" id="exportar-detector">Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%202/WEEK3" target="_blank" rel="noopener">Código de la demo ↗</a></div>
+          </div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>En la demo oficial todas las imágenes de los ataques tienen al rival por encima de 0,97, y en marcha por encima de 0,98. La torreta siguió al rival 2 entre −76° y −106° y al rival 3 entre 180° y 220°.</li>
+            <li>El umbral alto es el que no se dejó engañar en el intento del profesor: el robot tapado con una tela se queda entre 0,85 y 0,91 y la foto entre humo en 0,59, así que en P1 no dispara a nada.</li>
+            <li>El robot distinto, con partes rojas, empieza por debajo del umbral y en unos 3 s sube imagen a imagen hasta 0,96; a partir de ahí lo fija y lo sigue a 0,99. El modelo ha aprendido qué es un robot, no solo los nuestros.</li>
+            <li>Cuando el rival sale de la imagen al final de un tramo, la confianza cae por debajo de 0,95 y deja de seguirlo.</li>
+            <li>Con la GPU cada imagen tarda unos 108 ms (la primera, unos 240 ms al cargar), frente a los 2,2–2,4 s en CPU del primer planteamiento: es lo que permite seguir a un rival en marcha.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="figure-panel" id="duraciones" aria-labelledby="titulo-duraciones">
+        <div class="section-heading">
+          <h2 id="titulo-duraciones">Cuánto duró cada fase</h2>
+          <div class="figure-description">
+            <p>Las dos pasadas, fase a fase, a partir de las fotos del recorrido. Las fases de desplazamiento duran lo mismo en las dos: lo que cambia es lo que tarda en encontrar a quién disparar.</p>
+            <p class="interaction-hint">Pasa el cursor por un tramo para ver su duración exacta.</p>
+          </div>
+        </div>
+        <div class="chart-stage">
+          <div class="duraciones"><svg id="svg-duraciones" viewBox="0 0 960 190" role="img" aria-label="Duración de cada fase en los dos intentos"></svg></div>
+        </div>
+        <div class="figure-conclusions">
+          <h3>Qué concluimos</h3>
+          <ul>
+            <li>Los tramos del plano son repetibles: túnel, idas, retroceso y avance final duran lo mismo en las dos pasadas, con 1 s de diferencia como mucho (la hora de las fotos se guarda al segundo).</li>
+            <li>La diferencia está en P1 (47 s frente a 35 s) y en la espera antes de salir, que no es parte de la demo.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <span>PIDS 2026 · Grupo 2 · Bloque 3</span>
+      <div>
+        <a href="https://github.com/javiersaguar/PIDS-Proyecto2/blob/main/ENTREGA%202/WEEK3/circuito.py" target="_blank" rel="noopener">Plano del circuito ↗</a>
+        <a href="https://github.com/javiersaguar/PIDS-Proyecto2/blob/main/web/Bloque3/preparar_datos.py" target="_blank" rel="noopener">Cómo se generan los datos ↗</a>
+        <a href="https://github.com/javiersaguar/PIDS-Proyecto2" target="_blank" rel="noopener">Repositorio ↗</a>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

@@ -15,7 +15,7 @@ Para reducir la latencia se ha hecho una segunda versión de la demo que analiza
 
 # 14. El circuito
 
-El recorrido se define sobre un plano en metros, con el origen en la salida de nuestro robot. Cada tramo es un desplazamiento del chasis sin girarlo, ya que las ruedas mecanum permiten moverse hacia los lados y hacia atrás. De momento solo se ha medido P1 en el laboratorio. La Figura B3.1 muestra el recorrido y la Tabla B3.1, cada movimiento.
+El recorrido se define sobre un plano en metros, con el origen en la salida de nuestro robot. Cada tramo es un desplazamiento del chasis sin girarlo, ya que las ruedas mecanum permiten moverse hacia los lados y hacia atrás. Todos los tramos se midieron en el laboratorio. La Figura B3.1 muestra el recorrido y la Tabla B3.1, cada movimiento.
 
 ![Figura B3.1. Recorrido de la demo con la longitud y la velocidad de cada tramo. Azul: desplazamientos; naranja: ataques en marcha; granate: rivales y movimiento del rival 2; rojo discontinuo: distancia de tiro.](informes/figuras/circuito_demo.png)
 
@@ -23,18 +23,16 @@ El recorrido se define sobre un plano en metros, con el origen en la salida de n
 |---|---|---|---|---|
 | P1 | 2,85 m adelante | 0,5 m/s | unos 6 s (medido) | Suena un coche de Fórmula 1 ajustado a la recta |
 | P1 | Parada | — | — | Torreta a la derecha (90º): rival 1. Torreta a la izquierda (−90º): robot camuflado |
-| R1 | 1,9 m adelante | 0,4 m/s | unos 5 s | — |
+| R1 | 2,19 m adelante | 0,4 m/s | unos 6 s | — |
 | R1 | 1 m a la izquierda | 0,5 m/s | unos 2,5 s | — |
-| R1 | 1,25 m atrás | 0,1 m/s | unos 12,5 s | Torreta a la izquierda: rival 2, que avanza en paralelo a 0,05 m/s, sin parar |
+| R1 | 1,44 m atrás | 0,1 m/s | unos 14,5 s | Torreta a la izquierda: rival 2, que avanza 0,86 m en paralelo a 0,05 m/s, sin parar |
 | R1 | 1 m a la derecha | 0,5 m/s | unos 2,5 s | — |
-| R2 | 2,5 m adelante | 0,5 m/s | unos 5,5 s | — |
+| R2 | 2,88 m adelante | 0,5 m/s | unos 6 s | — |
 | R2 | 0,7 m a la izquierda | 0,5 m/s | unos 2 s | — |
-| R2 | 2 m adelante | 0,1 m/s | unos 20 s | Torreta hacia atrás (180º) e inclinada: rival 3, en alto, sin parar |
+| R2 | 2,3 m adelante | 0,1 m/s | unos 23 s | Torreta hacia atrás (180º): rival 3, escondido, sin parar |
 | Final | Baile | — | lo que dure la canción | Música, torreta y chasis bailando y LED de colores |
 
-*Tabla B3.1. Movimientos del circuito. Solo P1 está medido en el laboratorio; R1 y R2 son supuestos hasta montar el circuito. Los tiempos incluyen la frenada al final de cada tramo.*
-
-[PENDIENTE: medidas reales de R1 y R2, posiciones de los rivales y foto del circuito montado.]
+*Tabla B3.1. Movimientos del circuito, medidos en el laboratorio. Tras el túnel, los tramos a lo largo son un 15 % más largos que en el primer plano, que dejaba el final justo de espacio. Los tiempos incluyen la frenada al final de cada tramo.*
 
 # 15. Detección, puntería y disparo
 
@@ -48,17 +46,13 @@ En el laboratorio el robot detectaba al rival con confianzas de 0,96 a 1,00, per
 
 Con cada imagen la torreta corrige lo que falta para centrar al rival, hasta cuatro veces, y dispara cuando el error es menor de 3° o del 30 % del ancho de la caja. Los giros grandes se dividen en tramos de 45° como máximo, porque el SDK solo garantiza unos 55° por orden.
 
-[PENDIENTE: comprobar en el laboratorio que dispara con la cámara corregida; número de correcciones y error final medido.]
-
 ## 15.2. Ataque en marcha
 
-En dos tramos el robot dispara sin detenerse. Tres tareas se ejecutan a la vez: el chasis mantiene su velocidad, la torreta busca y sigue al rival, y una tercera lanza el aviso de voz y la ráfaga. Así el chasis no espera a la inferencia: sus órdenes caducan a los 0,5 s y cada imagen tarda unos 2 s. La velocidad del retroceso sale de sumar los tiempos: girar la torreta 90° (3 s), ver al rival (2 a 4 s), el aviso (1,4 s) y la ráfaga (6,2 s). A 0,1 m/s, los 1,25 m duran unos 12,5 s, suficiente para todo ello. Durante la ráfaga, la torreta sigue al rival con su velocidad angular estimada más una corrección limitada al 80 % del error, porque sigue girando mientras se analiza la imagen siguiente.
+En dos tramos el robot dispara sin detenerse. Tres tareas se ejecutan a la vez: el chasis mantiene su velocidad, la torreta busca y sigue al rival, y una tercera lanza el aviso de voz y la ráfaga. Así el chasis no espera a la inferencia: sus órdenes caducan a los 0,5 s y cada imagen tarda unos 2 s. La velocidad del retroceso sale de sumar los tiempos: girar la torreta 90° (3 s), ver al rival (2 a 4 s), el aviso (1,4 s) y la ráfaga (6,2 s). A 0,1 m/s, los 1,44 m duran unos 14,5 s, suficiente para todo ello. Durante la ráfaga, la torreta sigue al rival con su velocidad angular estimada más una corrección limitada al 80 % del error, porque sigue girando mientras se analiza la imagen siguiente.
 
-En R1 el blanco también se mueve: el rival 2, 1,2 m a la izquierda, recorre 0,75 m a 0,05 m/s en el mismo sentido que nuestro robot. Lo mueve un compañero desde otro portátil, y la demo le avisa por la red del laboratorio al empezar el tramo. Para seguirlo se analiza la imagen más nítida de los últimos 0,2 s (varianza del laplaciano), con el ángulo que tenía la torreta al tomarla; se prevé su desplazamiento en la imagen, unos 2,4 °/s, desde la primera detección; y, cuando nuestro robot se para, se descuenta de esa velocidad la parte que venía de nuestro movimiento.
+En R1 el blanco también se mueve: el rival 2, 1,2 m a la izquierda, recorre 0,86 m a 0,05 m/s en el mismo sentido que nuestro robot. Lo mueve un compañero desde otro portátil, y la demo le avisa por la red del laboratorio al empezar el tramo. Para seguirlo se analiza la imagen más nítida de los últimos 0,2 s (varianza del laplaciano), con el ángulo que tenía la torreta al tomarla; se prevé su desplazamiento en la imagen, unos 2,4 °/s, desde la primera detección; y, cuando nuestro robot se para, se descuenta de esa velocidad la parte que venía de nuestro movimiento.
 
-El rival 3 está en una plataforma de 20 a 40 cm. Un robot 30 cm más alto que el cañón queda a unos 17° de inclinación a 1 m y a 9° a 2 m, dentro de los 30° que admite la torreta, así que se busca inclinada 10° y se corrige con la caja detectada.
-
-[PENDIENTE: probar el ataque en marcha en el laboratorio con el rival 2 en movimiento y medir cuántos impactos registra cada rival.]
+El rival 3 está detrás de nuestro robot, escondido. Por si está en alto, se busca con la torreta inclinada 10° y se corrige con la caja detectada: un robot 30 cm más alto que el cañón queda a unos 17° a 1 m y a 9° a 2 m, dentro de los 30° que admite la torreta.
 
 ## 15.3. Disparo, sonido y luces
 
@@ -100,31 +94,41 @@ El robot camuflado se imprimió en papel para colocarlo en P1. Antes de llevarlo
 
 En papel, el detector reconoce al robot cuando ocupa una parte considerable de la imagen, y no dio falsos positivos sobre el fondo, donde la confianza máxima fue de 0,32. Con la pantalla los resultados empeoran mucho: su brillo hace que la cámara reduzca la exposición y oscurezca el resto de la escena, y los reflejos y el marco dificultan ver el contorno del robot. Por eso en la demo se usará impreso en papel mate A3, que evita esos problemas y permite que el robot se vea con tamaño suficiente desde P1.
 
-[PENDIENTE: comprobarlo con la cámara del robot desde P1.]
+Con la cámara del robot desde P1 dio de 0,72 a 0,97, casi siempre por debajo de 0,95, así que hacia ese lado basta un umbral de 0,7 si la caja no ocupa más de media imagen.
 
 # 17. Control manual del robot
 
-Además del circuito, se ha hecho una interfaz web para manejar el robot desde el portátil, con teclado y ratón o con un mando de PS4: sirve para colocarlo, probar la cámara y el detector y hacer una demostración libre (Figura B3.3). Muestra el vídeo con las detecciones y permite mover el chasis y la torreta, disparar y lanzar bailes, con los mismos topes de velocidad que la demo. Si dejan de llegar órdenes durante 0,3 s, el robot se para. El detector va en el mismo proceso aparte con la GPU que la segunda versión de la demo (apartado 13), entre 32 y 94 ms por imagen, lo que permite un disparo automático opcional. Tiene 31 pruebas automáticas y se ha probado con el robot simulado.
+Además del circuito, se ha hecho una interfaz web para manejar el robot desde el portátil, con teclado y ratón o con un mando de PS4: sirve para colocarlo, probar la cámara y el detector y hacer una demostración libre (Figura B3.3). Muestra el vídeo con las detecciones y permite mover el chasis y la torreta, disparar y lanzar bailes, con los mismos topes de velocidad que la demo. Si dejan de llegar órdenes durante 0,3 s, el robot se para. El detector va en el mismo proceso aparte con la GPU que la segunda versión de la demo (apartado 13), entre 32 y 94 ms por imagen, lo que permite un disparo automático opcional. Tiene 42 pruebas automáticas.
 
 ![Figura B3.3. Interfaz del mando con una imagen de nuestra cámara en el laboratorio (robot simulado).](informes/figuras/bloque3/mando.jpg)
 
-[PENDIENTE: probarlo con el robot real, primero sobre una caja y después en el suelo, y medir el retardo del vídeo.]
+El 11/11 se probó con el robot real en el suelo del laboratorio, manejándolo con el mando de PS4 (Figura B3.4). El vídeo llegó a la interfaz a entre 8 y 16 imágenes por segundo y el detector marcó a los robots con confianzas de 0,97 a 1,00, también con varios a la vez y detrás de obstáculos. Los bailes se lanzan desde el mando y se avisan en pantalla.
+
+![Figura B3.4. Interfaz del mando con el robot real en el laboratorio el 11 de noviembre: a) rival lejano bajo una mesa, con el aviso de disparo; b) dos robots detectados a la vez; c) robot detrás de una caja, con el radar indicando hacia dónde mira la torreta; d) baile «Waka waka» lanzado desde el mando, con dos robots a la vista.](informes/figuras/bloque3/interfaz_real.jpg)
+
+[PENDIENTE: medir el retardo del vídeo.]
 
 # 18. Pruebas y estado
 
-Cada ejecución guarda las imágenes analizadas con sus detecciones, los movimientos de la torreta, los tiempos de inferencia, los disparos y un resumen por tramo. En el laboratorio se comprobaron la conexión, la recta de 2,85 m en unos 6 s y la detección del rival de P1, con confianzas de 0,96 a 1,00; el problema de la cámara impidió disparar. Tras corregirlo, la demo completa se ha ejecutado en simulación: ataca a los dos objetivos de P1 con 20 disparos cada uno, sigue a los rivales de R1 y R2 y termina con el baile. Las mejoras para seguir objetivos móviles, evitar ataques repetidos y vigilar el recorrido están probadas en simulación y se activarán una a una en el laboratorio.
+Cada ejecución guarda las imágenes analizadas, con sus detecciones, tiempos y disparos, y una foto de la cámara cada 0,5 s. Las pruebas en el laboratorio del 4 al 11 de noviembre (Anexo G) sirvieron para corregir la cola de vídeo (apartado 15.1), alargar un 15 % los tramos tras el túnel y descartar sillas cercanas y robots del fondo por el alto de la caja y la distancia.
 
-[PENDIENTE: resultados del laboratorio con el circuito montado, con la demo en GPU y, si falla, en CPU (aciertos, falsos positivos, robots no vistos, impactos registrados por cada rival y tiempos), numeración final de tablas y figuras e índice.]
+La demo oficial se hizo en clase el 12/11, con el detector en la GPU (Figura B3.5). El robot cruzó el túnel de sillas, se paró en P1 y disparó 20 veces al rival 1 (confianza 1,00) y otras 20 al robot camuflado (0,99). En R1 disparó otras 20 al rival 2 mientras los dos se movían (1,00) y, en el último tramo, con la torreta girada 180º, 20 más al rival 3, escondido en una caja (1,00). Los rivales registraron los 80 disparos. La detección pequeña de b), a unos 3 m y fuera del circuito, se descarta por la distancia.
+
+![Figura B3.5. Cámara del robot en la demo oficial en clase, el 12 de noviembre: a) túnel de sillas; b) rival 1 a la derecha de P1 (confianza 1,00); c) robot camuflado a la izquierda de P1 (0,99); d) rival 2 en movimiento durante el retroceso de R1 (1,00); e) rival 3 escondido en una caja, detrás de nuestro robot (1,00); f) baile final. Cada rival recibió 20 disparos. En verde, las cajas que superan el umbral.](informes/figuras/bloque3/demo_oficial.jpg)
+
+Después, el profesor preparó un intento sorpresa con imágenes propias, robots tapados y un robot distinto (Figura B3.6). En P1 puso un robot tapado con una tela (0,85 a 0,91) y la foto de un robot entre humo (0,59); la demo no disparó a ninguno, porque quedaron por debajo del umbral. En la recta final colocó un robot con partes rojas, de un modelo que no está en nuestros datos: lo detectó con 0,96 a 0,99 y le disparó, igual que al rival 2 (1,00). El detector generaliza a otros robots, pero un robot tapado o una imagen borrosa no alcanzan el umbral de 0,95, elegido para evitar falsos positivos.
+
+![Figura B3.6. Intento sorpresa del profesor en clase: a) foto de un robot entre humo, sobre una caja (0,59; no dispara); b) robot tapado con una tela (0,85; no dispara); c) rival 2 (1,00); d) robot distinto, con partes rojas, en la recta final (0,99). En naranja, las cajas por debajo del umbral.](informes/figuras/bloque3/intento_profesor.jpg)
+
+[PENDIENTE: numeración final de tablas y figuras e índice.]
 
 # 19. Conclusiones
-
-[PENDIENTE: revisar con los resultados del laboratorio.]
 
 **Datos.** El aumento de datos ha sido la mejora más importante, especialmente para los robots difficult. Su anotación también en validación y test ha permitido identificar los principales fallos del detector.
 
 **Modelo.** La arquitectura tiene más impacto que los ajustes de entrenamiento. Faster R-CNN v2 es el modelo final, con un AP@0,5 de 0,95 en test. Sin embargo, sigue teniendo dificultades con los objetivos más complejos y todos los modelos presentan sobreajuste temprano.
 
-**Robot.** La latencia del detector condiciona el funcionamiento: el robot debe repartir el tiempo entre movimiento, detección y disparo, utilizando imágenes recientes y nítidas. Además, el modelo reconoce qué es un robot, pero no distingue aliados de rivales, por lo que necesita una marca adicional para diferenciarlos.
+**Robot.** La latencia del detector condiciona el funcionamiento: el robot debe repartir el tiempo entre movimiento, detección y disparo, utilizando imágenes recientes y nítidas. Además, el modelo reconoce qué es un robot, pero no distingue aliados de rivales, por lo que necesita una marca adicional para diferenciarlos. En la demo en clase eliminó a los cuatro rivales y detectó un robot distinto a los del entrenamiento, aunque no uno tapado con una tela.
 
 # Anexo F. Robot camuflado y robots aliados
 
@@ -133,3 +137,9 @@ Imágenes del estudio del apartado 16. La Figura F.1 reúne los robots generados
 ![Figura F.1. Robots generados con IA: a) y b) RoboMaster disfrazado de detective, el robot camuflado de la demo; c) a f) robots aliados marcados en verde.](informes/figuras/senuelo/anexo_robots_ia.jpg)
 
 ![Figura F.2. Robot camuflado delante de la webcam del portátil, impreso en papel (a-c) y en la pantalla de una tableta (d-f), con la confianza máxima de cada imagen.](informes/figuras/senuelo/anexo_pruebas_webcam.jpg)
+
+# Anexo G. Desarrollo del circuito
+
+Pruebas del circuito completo en el laboratorio el 11/11, la víspera de la demo en clase. La Figura G.1 muestra la imagen analizada al encontrar cada objetivo, con los rivales de entonces: la foto de la caja de un RoboMaster como rival 1 y el robot camuflado impreso sobre otra caja.
+
+![Figura G.1. Cámara del robot en las pruebas del 11 de noviembre, de dos ejecuciones: a) rival 1, la foto de la caja de un RoboMaster, a la derecha de P1 (confianza 1,00); b) robot camuflado impreso, a la izquierda de P1 (0,97); c) rival 2 en movimiento, durante el retroceso de R1 (1,00); d) rival 3 escondido entre las sillas, con la torreta girada 180º (1,00).](informes/figuras/bloque3/demo_fases.jpg)

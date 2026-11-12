@@ -18,8 +18,13 @@ def disponible():
 
 
 def cerrar(proceso):
+    """Termina el detector y sus hijos: el python.exe del venv es un lanzador con el Python real de hijo."""
     if proceso is not None and proceso.poll() is None:
-        proceso.terminate()
+        if os.name == 'nt':
+            subprocess.run(['taskkill', '/PID', str(proceso.pid), '/T', '/F'],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        else:
+            proceso.terminate()
         try:
             proceso.wait(timeout=5)
         except subprocess.TimeoutExpired:
