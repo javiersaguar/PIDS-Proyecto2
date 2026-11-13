@@ -21,7 +21,7 @@
       </div>
       <ul class="cifras">
         <li><b>2 min 18 s</b><span>duración de la demo oficial, de la salida al final del baile</span></li>
-        <li><b>4 de 4</b><span>rivales eliminados, con 20 disparos a cada uno (80 en total)</span></li>
+        <li><b>4 de 4</b><span>rivales detectados, con confianza de 0,99 a 1,00</span></li>
         <li><b>108 ms</b><span>mediana del tiempo por imagen, con el detector en la GPU del portátil</span></li>
         <li><b>0,95</b><span>confianza mínima para disparar; 0,7 solo en la zona del robot camuflado</span></li>
       </ul>
@@ -108,18 +108,18 @@
           </div>
           <div class="leyenda" aria-hidden="true" id="leyenda-detector"></div>
           <div class="figure-caption">
-            <p class="reading-note">El tiempo cuenta desde la primera foto del intento; el registro guarda la hora al segundo, así que las imágenes de un mismo segundo se reparten en él. El ángulo de la torreta es respecto al chasis: 90° a la derecha, −90° a la izquierda, 180° hacia atrás. Las ráfagas en marcha no se apuntan en el registro; los rivales registraron 20 disparos cada uno.</p>
+            <p class="reading-note">El tiempo cuenta desde la primera foto del intento; el registro guarda la hora al segundo, así que las imágenes de un mismo segundo se reparten en él. El ángulo de la torreta es respecto al chasis: 90° a la derecha, −90° a la izquierda, 180° hacia atrás. Las ráfagas en marcha no se apuntan en el registro.</p>
             <div class="figure-links"><button type="button" id="exportar-detector">Descargar SVG</button><a href="https://github.com/javiersaguar/PIDS-Proyecto2/tree/main/ENTREGA%202/WEEK3" target="_blank" rel="noopener">Código de la demo ↗</a></div>
           </div>
         </div>
         <div class="figure-conclusions">
           <h3>Qué concluimos</h3>
           <ul>
-            <li>En la demo oficial todas las imágenes de los ataques tienen al rival por encima de 0,97, y en marcha por encima de 0,98. La torreta siguió al rival 2 entre −76° y −106° y al rival 3 entre 180° y 220°.</li>
+            <li>En la demo oficial todas las imágenes de los ataques tienen al rival por encima de 0,97, y en marcha por encima de 0,98. La torreta siguió al rival 2 entre −76° y −106°. En R2 fijó primero un robot del fondo, bajo una silla; al rival 3 lo vio a 1,00, pero a más de 25° del robot fijado, así que no lo siguió y la ráfaga le pasó por la izquierda.</li>
             <li>El umbral alto es el que no se dejó engañar en el intento del profesor: el robot tapado con una tela se queda entre 0,85 y 0,91 y la foto entre humo en 0,59, así que en P1 no dispara a nada.</li>
             <li>El robot distinto, con partes rojas, empieza por debajo del umbral y en unos 3 s sube imagen a imagen hasta 0,96; a partir de ahí lo fija y lo sigue a 0,99. El modelo ha aprendido qué es un robot, no solo los nuestros.</li>
             <li>Cuando el rival sale de la imagen al final de un tramo, la confianza cae por debajo de 0,95 y deja de seguirlo.</li>
-            <li>Con la GPU cada imagen tarda unos 108 ms (la primera, unos 240 ms al cargar), frente a los 2,2–2,4 s en CPU del primer planteamiento: es lo que permite seguir a un rival en marcha.</li>
+            <li>Con la GPU cada imagen tarda unos 108 ms (la primera, unos 240 ms al cargar): es lo que permite seguir a un rival en marcha.</li>
           </ul>
         </div>
       </section>

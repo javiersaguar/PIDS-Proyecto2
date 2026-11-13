@@ -1,8 +1,8 @@
 # Estado del proyecto
 
-Última actualización: 04/11/2026, desde la rama `javier-saguar`.
+Última actualización: 13/11/2026, desde la rama `javier-saguar`.
 
-**Fase actual:** Bloque 1 (recolección, anotación, análisis y depuración de datos), de cara a la **primera entrega** de la memoria. **Bloque 1 terminado salvo los acuerdos de grupo (T01, T18)**: 808 imágenes anotadas y revisadas, 796 tras la depuración, con EDA y aumento hechos. Los datos están listos para entrenar en JupyterHub.
+**Fase actual:** entrega 3. Los tres bloques están hechos: la demo oficial en clase fue el 12/11, y la memoria (`docs/entregas/PIDS_grupo2_entrega3.pdf`) y la presentación (`presentacion/`) están listas para entregar.
 
 Las tareas pendientes, por orden de prioridad y con su responsable, están en [`TAREAS.md`](TAREAS.md).
 
@@ -12,7 +12,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 |---|---|---|
 | 1. Datos | 808 imágenes anotadas y revisadas, 796 tras la depuración; falta cerrar T01 en grupo | Dataset de ~800 imágenes anotadas |
 | 2. Entrenamiento | Siete arquitecturas comparadas y test evaluado una vez. Modelo final `faster_rcnn_v2`: AP@0,5 de 0,9523 en test (0,6921 en `difficult`). Falta mejorar los `difficult` | Modelo que detecta RoboMasters |
-| 3. Integración en el robot | Demo programada y probada en simulación; falta medir el circuito y ejecutarla en el laboratorio | *Demo* en circuito |
+| 3. Integración en el robot | Demo oficial en clase el 12/11: detectó a los cuatro rivales y disparó a tres; el rival 3 no, porque la torreta había fijado otro robot del fondo | *Demo* en circuito |
 
 ## Hecho
 
@@ -39,6 +39,8 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 - Bloque 3 (04/11, `alejandro-cuevas`, PR #36): barrido continuo con la torreta girando y memoria de robots atacados en metros sobre el circuito, para no repetir ráfagas contra el mismo robot ni desde otra parada. 48 pruebas en simulación; falta calibrar `ALTURA_ROBOT` en el laboratorio.
 - Bloque 3 (04/11, `alejandro-cuevas`, PR #36): vigilancia durante el recorrido. Avanza por tramos mirando hacia donde va, ataca a los rivales que encuentra y espera si un robot le bloquea el camino. 56 pruebas en simulación; falta probarlo en el laboratorio.
 - Bloque 3 (05/11, `alejandro-cuevas`, PR #36): respuesta a la revisión. Las mejoras vienen desactivadas (la demo por defecto es la de `main`, con la SCAR en cada disparo) y se activan una a una en el laboratorio. El seguimiento adapta la ganancia al tiempo por imagen y completa la ráfaga con CPU (1,1 s por imagen) en simulación. Un robot que no se aparta del camino ya no detiene la demo. 61 pruebas en simulación.
+- Bloque 3 (11–12/11, PR #43): pruebas en el laboratorio, demo oficial en clase e intento sorpresa del profesor, con las imágenes y el registro de cada intento en la memoria, la presentación y GitHub Pages.
+- Entrega 3 (13/11): memoria lista para entregar (46 páginas, 29 de cuerpo), con las correcciones de Alejandro (PRs #44 y #45). Los 94 falsos positivos de test, revisados uno a uno en [`docs/revision_fp_test.csv`](docs/revision_fp_test.csv): 59 son robots sin anotar. Causa del fallo con el rival 3, comprobada en el registro de la demo.
 - T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
 ## Datos de los vídeos

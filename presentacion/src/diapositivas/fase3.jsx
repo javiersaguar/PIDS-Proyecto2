@@ -1,26 +1,37 @@
 import { useEffect, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Cabecera, Contador, CURVA, fmt, Item, Revela } from '../componentes/base.jsx';
-import { BarrasH } from '../componentes/graficas.jsx';
 import { Seccion } from '../componentes/seccion.jsx';
-import { CIRCUITO, PRESUPUESTO } from '../datos/cifras.js';
+import { CIRCUITO } from '../datos/cifras.js';
 import laboratorioJpg from '@repo/docs/informes/figuras/bloque3/laboratorio.jpg';
 import mandoJpg from '@repo/docs/informes/figuras/bloque3/mando.jpg';
 import circuitoPng from '@repo/docs/informes/figuras/circuito_demo.png';
-import tunelJpg from '@repo/docs/informes/figuras/bloque3/demo_clase/1_tunel.jpg';
 import rival1Jpg from '@repo/docs/informes/figuras/bloque3/demo_clase/2_rival1.jpg';
 import camufladoJpg from '@repo/docs/informes/figuras/bloque3/demo_clase/3_camuflado.jpg';
 import rival2Jpg from '@repo/docs/informes/figuras/bloque3/demo_clase/4_rival2_movimiento.jpg';
 import rival3Jpg from '@repo/docs/informes/figuras/bloque3/demo_clase/5_rival3_escondido.jpg';
-import baileJpg from '@repo/docs/informes/figuras/bloque3/demo_clase/6_baile.jpg';
+// Imágenes 058 y 059 del registro de la demo (evidencias/20261112_155726): causa del fallo con el rival 3
+import rival3CausaJpg from '@repo/docs/informes/figuras/bloque3/demo_clase/7_rival3_causa.jpg';
 import humoJpg from '@repo/docs/informes/figuras/bloque3/profesor/1_foto_humo.jpg';
 import tapadoJpg from '@repo/docs/informes/figuras/bloque3/profesor/2_robot_tapado.jpg';
 import profeRival2Jpg from '@repo/docs/informes/figuras/bloque3/profesor/3_rival2.jpg';
 import distintoJpg from '@repo/docs/informes/figuras/bloque3/profesor/4_robot_distinto.jpg';
 import disparoJpg from '@repo/docs/informes/figuras/interfaz/v1_deteccion_lejana_disparo.jpg';
 import dosRobotsJpg from '@repo/docs/informes/figuras/interfaz/v2_dos_robots.jpg';
-import trasCajaJpg from '@repo/docs/informes/figuras/interfaz/v1_deteccion_tras_caja.jpg';
-import wakaJpg from '@repo/docs/informes/figuras/interfaz/v2_emote_waka_dos_robots.jpg';
+import autoSillaJpg from '@repo/docs/informes/figuras/bloque3/mando_auto/1_rival_y_silla.jpg';
+import mandoTapadoJpg from '@repo/docs/informes/figuras/bloque3/mando_auto/2_robot_tapado.jpg';
+import iaDetective from '@repo/docs/informes/figuras/senuelo/detector/detective.jpg';
+import iaS1 from '@repo/docs/informes/figuras/senuelo/detector/aliado_s1.jpg';
+import iaOrugas from '@repo/docs/informes/figuras/senuelo/detector/aliado_orugas.jpg';
+import iaDibujo from '@repo/docs/informes/figuras/senuelo/detector/aliado_dibujo.jpg';
+import iaBlanco from '@repo/docs/informes/figuras/senuelo/detector/aliado_blanco.jpg';
+import webcamCerca from '@repo/docs/informes/figuras/senuelo/detector/webcam_cerca.jpg';
+import webcamLejos from '@repo/docs/informes/figuras/senuelo/detector/webcam_lejos.jpg';
+// Datos y fotos de la demo en clase, los mismos de la página del Bloque 3 (web/Bloque3/preparar_datos.py)
+import '@repo/web/Bloque3/datos.js';
+
+const BLOQUE3 = window.DATOS_BLOQUE3;
+const URLS_RECORRIDO = import.meta.glob('@repo/web/Bloque3/imagenes/oficial/recorrido/*.webp', { eager: true, query: '?url', import: 'default' });
 
 // --- Separador ---------------------------------------------------------------------------------
 export function Seccion3() {
@@ -182,13 +193,13 @@ const ROTULOS = [
   { nombre: [[0, 42, 'middle', 'Rival 3'], [0, 60, 'middle', 'escondido']], datos: [0, -48, 'middle'] },
 ];
 
-function Mapa({ e, t }) {
+function Mapa({ e, t, compacto = false, posRival = rivalEn }) {
   const { puntos, ataques, rivales } = CIRCUITO;
   const d = puntos.map((p, i) => `${i ? 'L' : 'M'}${px(p).join(',')}`).join('');
   const [rx, ry] = px(e.pos);
   const led = colorLed(e, t);
   const modo = MODOS[e.modo];
-  const blanco = e.objetivo != null ? px(rivalEn(e.objetivo, t)) : null;
+  const blanco = e.objetivo != null ? px(posRival(e.objetivo, t)) : null;
   const rad = (e.ang * Math.PI) / 180;
   const boca = [rx + Math.cos(rad) * 24, ry + Math.sin(rad) * 24];
   // Ráfaga: proyectiles en vuelo entre el cañón y el blanco
@@ -232,7 +243,7 @@ function Mapa({ e, t }) {
       <path d={`M${rx},${ry} L${rx + Math.cos(rad - 0.55) * 150},${ry + Math.sin(rad - 0.55) * 150} A150,150 0 0 1 ${rx + Math.cos(rad + 0.55) * 150},${ry + Math.sin(rad + 0.55) * 150} Z`}
         fill="var(--acento)" opacity={e.modo === 'baile' || e.modo === 'fin' ? 0 : e.viendo ? 0.22 : 0.07} />
       {rivales.map((r, k) => {
-        const [cx, cy] = px(rivalEn(k, t));
+        const [cx, cy] = px(posRival(k, t));
         const fuera = e.eliminados.has(k);
         const atacado = e.objetivo === k;
         const rot = ROTULOS[k];
@@ -273,7 +284,7 @@ function Mapa({ e, t }) {
         <text key={j} x={rx - 30 + j * 30} y={ry - 30 - ((t * 60 + j * 20) % 40)} style={{ font: '700 20px var(--mono)', fill: led }}>♪</text>
       ))}
       {/* Estado actual */}
-      <g transform="translate(80,18)">
+      {!compacto && <g transform="translate(80,18)">
         <rect width="380" height="76" rx="6" fill="var(--panel-2)" stroke={modo.color} strokeWidth="1.5" />
         <text x="16" y="30" style={{ font: '700 17px var(--mono)', fill: modo.color }}>{modo.texto}</text>
         <text x="16" y="58" style={{ font: '600 15px var(--mono)', fill: 'var(--suave)' }}>
@@ -281,14 +292,14 @@ function Mapa({ e, t }) {
         </text>
         <rect x="100" y="48" width="260" height="10" rx="5" fill="var(--borde)" />
         <rect x="100" y="48" width={260 * (e.paso.tipo === 'mover' ? e.vel / 0.5 : 0)} height="10" rx="5" fill={modo.color} />
-      </g>
+      </g>}
       {/* Leyenda */}
-      <g style={{ font: '600 15px var(--mono)' }}>
+      {!compacto && <g style={{ font: '600 15px var(--mono)' }}>
         <line x1="620" x2="656" y1="380" y2="380" stroke="var(--azul)" strokeWidth="4" />
         <text x="666" y="385" style={{ fill: 'var(--suave)' }}>avanza deprisa</text>
         <line x1="620" x2="656" y1="408" y2="408" stroke="var(--naranja)" strokeWidth="9" strokeLinecap="round" />
         <text x="666" y="413" style={{ fill: 'var(--suave)' }}>despacio, disparando</text>
-      </g>
+      </g>}
     </svg>
   );
 }
@@ -306,6 +317,152 @@ function etapaActiva(e) {
   return -1;
 }
 
+// --- Foto real al disparar (en la simulación) -------------------------------------------------------
+// Al empezar cada ráfaga aparece unos 2 s la imagen que vio el robot en la demo oficial del 12/11.
+const ATAQUE_REAL = [
+  { foto: rival1Jpg, texto: 'Rival 1 · 1,00' },
+  { foto: camufladoJpg, texto: 'Robot camuflado · 0,99' },
+  { foto: rival2Jpg, texto: 'Rival 2 en movimiento · 1,00' },
+  { foto: rival3Jpg, texto: 'Rival 3 en la caja · 1,00' },
+];
+const FOTO_SEGUNDOS = 2;
+// Esquina del plano donde sale cada foto, para no tapar al rival que se ataca
+const POS_FOTO = [{ right: 18, top: 16 }, { right: 18, top: 16 }, { right: 18, bottom: 18 }, { left: 18, bottom: 18 }];
+function fotoReal(t) {
+  for (const p of GUION.pasos) {
+    let inicio = null;
+    let k = null;
+    if (p.tipo === 'disparar') { inicio = p.desde; k = p.obj; }
+    else if (p.tipo === 'mover' && p.ataque != null) { inicio = p.desde + MARCHA.disparo * p.dur; k = p.ataque; }
+    if (inicio != null && t >= inicio && t < inicio + FOTO_SEGUNDOS) return k;
+  }
+  return null;
+}
+function FotoAtaque({ k }) {
+  return (
+    <AnimatePresence>
+      {k != null && (
+        <motion.div key={k} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
+          transition={{ duration: 0.25, ease: CURVA }}
+          style={{ position: 'absolute', width: '42%', zIndex: 2, borderRadius: 4, overflow: 'hidden', border: '2px solid var(--rojo)',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.6)', ...POS_FOTO[k] }}>
+          <img src={ATAQUE_REAL[k].foto} alt={`Cámara del robot en la demo: ${ATAQUE_REAL[k].texto}`}
+            style={{ width: '100%', display: 'block', aspectRatio: '16 / 9', objectFit: 'cover' }} />
+          <div className="mono" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '18px 12px 7px', fontSize: 15, fontWeight: 600, color: '#fff',
+            background: 'linear-gradient(transparent, rgba(0,0,0,0.88))' }}>CÁMARA REAL · {ATAQUE_REAL[k].texto}</div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// --- Repetición real: las fotos de la demo oficial cada 0,5 s -----------------------------------------------
+// La posición en el plano se reparte entre las fotos de cada fase (el robot no la registra).
+const ORDEN_FASES = ['inicio', 'P1-ruta', 'P1-parada', 'R1-ruta', 'R1-marcha', 'R1-vuelta', 'R2-ruta', 'R2-marcha', 'baile'];
+const FASE_REAL = {
+  'inicio': { nombre: 'Salida', color: 'var(--tenue)', texto: 'Espera en la salida.' },
+  'P1-ruta': { nombre: 'Túnel', color: 'var(--azul)', texto: 'Recta de 2,85 m entre las sillas a 0,5 m/s.' },
+  'P1-parada': { nombre: 'P1 · parado', color: 'var(--rojo)', etapa: 0 },
+  'R1-ruta': { nombre: 'Hacia R1', color: 'var(--azul)', texto: '2,19 m a 0,4 m/s y 1 m a la izquierda.' },
+  'R1-marcha': { nombre: 'R1 · retrocede disparando', color: 'var(--naranja)', etapa: 1 },
+  'R1-vuelta': { nombre: 'Vuelta', color: 'var(--azul)', texto: '1 m a la derecha.' },
+  'R2-ruta': { nombre: 'Hacia R2', color: 'var(--azul)', texto: '2,88 m a 0,5 m/s y 0,7 m a la izquierda.' },
+  'R2-marcha': { nombre: 'R2 · avanza disparando', color: 'var(--naranja)', etapa: 2 },
+  'baile': { nombre: 'Baile', color: 'var(--acento)', etapa: 3 },
+};
+const VEL_FASE = { 'P1-ruta': 0.5, 'R1-ruta': 0.4, 'R1-vuelta': 0.5, 'R2-ruta': 0.5, 'R1-marcha': 0.1, 'R2-marcha': 0.1 };
+const DEMO_REAL = (() => {
+  const urls = {};
+  for (const [ruta, url] of Object.entries(URLS_RECORRIDO)) urls[ruta.split('/').pop()] = url;
+  const fotos = BLOQUE3.intentos[0].recorrido.map((f) => ({ ...f, url: urls[f.img.split('/').pop()] }));
+  // Fracción de cada foto dentro de su fase
+  let i = 0;
+  while (i < fotos.length) {
+    let j = i;
+    while (j + 1 < fotos.length && fotos[j + 1].fase === fotos[i].fase) j += 1;
+    for (let k = i; k <= j; k += 1) fotos[k].f = (k - i + 0.5) / (j - i + 1);
+    i = j + 1;
+  }
+  return fotos;
+})();
+const TRAMOS_REALES = DEMO_REAL.reduce((tr, f, i) => {
+  if (tr.length && tr[tr.length - 1].fase === f.fase) tr[tr.length - 1].n += 1;
+  else tr.push({ fase: f.fase, n: 1, i });
+  return tr;
+}, []);
+const PAUSA_FINAL = 12;     // cuadros quietos al acabar, antes de volver a empezar
+function posRivalReal(c) {
+  const n = ORDEN_FASES.indexOf(c.fase);
+  const avance = n < 4 ? 0 : n === 4 ? c.f : 1;   // el rival 2 avanza durante el retroceso de R1
+  return (k) => {
+    const r = CIRCUITO.rivales[k];
+    return r.hastaX == null ? [r.x, r.y] : [lerp(r.x, r.hastaX, avance), r.y];
+  };
+}
+function estadoReal(k) {
+  const c = DEMO_REAL[k];
+  const n = ORDEN_FASES.indexOf(c.fase);
+  const rival = posRivalReal(c);
+  const eliminados = new Set();
+  if (n > 2 || (n === 2 && c.f >= 0.5)) eliminados.add(0);
+  if (n > 2) eliminados.add(1);
+  if (n > 4) eliminados.add(2);
+  if (n > 7) eliminados.add(3);
+  let objetivo = null;
+  if (c.fase === 'P1-parada') objetivo = c.f < 0.5 ? 0 : 1;
+  if (c.fase === 'R1-marcha') objetivo = 2;
+  if (c.fase === 'R2-marcha') objetivo = 3;
+  const pos = [c.x, c.y];
+  let ang = 0;
+  if (objetivo != null) ang = angA(pos, rival(objetivo));
+  else {
+    const s = DEMO_REAL[k + 1];
+    if (s && (s.x !== c.x || s.y !== c.y)) ang = angA(pos, [s.x, s.y]);
+  }
+  const modo = c.fase === 'P1-parada' ? 'parada' : c.fase.endsWith('marcha') ? 'marcha' : c.fase === 'baile' ? 'baile' : 'avanza';
+  return { pos, ang, modo, vel: VEL_FASE[c.fase] || 0, objetivo, viendo: false, disparo: null, paso: { tipo: 'mover' }, eliminados };
+}
+function useCuadroReal(activo) {
+  const reducido = useReducedMotion();
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (!activo) { setI(0); return undefined; }
+    if (reducido) return undefined;
+    const id = setInterval(() => setI((k) => (k + 1) % (DEMO_REAL.length + PAUSA_FINAL)), 125);   // ×4
+    return () => clearInterval(id);
+  }, [activo, reducido]);
+  return Math.min(i, DEMO_REAL.length - 1);
+}
+const relojMin = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+function RepeticionReal({ k }) {
+  const c = DEMO_REAL[k];
+  const fase = FASE_REAL[c.fase];
+  const total = DEMO_REAL[DEMO_REAL.length - 1].t;
+  useEffect(() => {
+    for (let j = 1; j <= 8; j += 1) if (DEMO_REAL[k + j]) new Image().src = DEMO_REAL[k + j].url;
+  }, [k]);
+  return (
+    <div style={{ display: 'grid', gap: 12 }}>
+      <div style={{ position: 'relative', aspectRatio: '16 / 9', background: '#000', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--borde)' }}>
+        <img src={c.url} alt={`Cámara del robot en la demo oficial: ${fase.nombre}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <div className="mono" style={{ position: 'absolute', left: 0, top: 0, padding: '7px 14px', background: fase.color, color: 'var(--fondo)', fontSize: 18, fontWeight: 700 }}>
+          {fase.nombre.toUpperCase()}
+        </div>
+        <div className="mono" style={{ position: 'absolute', right: 14, top: 10, fontSize: 18, fontWeight: 600, color: '#fff', textShadow: '0 1px 4px #000' }}>
+          {relojMin(c.t)} / {relojMin(total)} · ×4
+        </div>
+      </div>
+      {/* Fases del recorrido, con su duración en fotos */}
+      <div style={{ display: 'flex', height: 10, gap: 2 }}>
+        {TRAMOS_REALES.map((tr) => (
+          <div key={tr.i} style={{ flex: tr.n, background: FASE_REAL[tr.fase].color, opacity: k >= tr.i ? 1 : 0.3, borderRadius: 1 }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Circuito() {
   const t = useReloj(true);
   const e = estado(t);
@@ -314,7 +471,10 @@ export function Circuito() {
     <div className="diapo">
       <Cabecera fase="Fase 03 · Circuito" titulo="Dónde se para, dónde va despacio y a quién dispara" />
       <div className="cuerpo" style={{ gridTemplateColumns: '1.6fr 1fr', alignItems: 'start' }}>
-        <div className="panel" style={{ padding: '14px 18px' }}><Mapa e={e} t={t} /></div>
+        <div className="panel" style={{ padding: '14px 18px', position: 'relative' }}>
+          <Mapa e={e} t={t} />
+          <FotoAtaque k={fotoReal(t)} />
+        </div>
         <Revela style={{ display: 'grid', gap: 12 }} retraso={0.5} paso={0.14}>
           {ETAPAS.map((s, i) => (
             <Item key={s.etiqueta} className="panel" style={{ padding: '16px 20px', transition: 'border-color 0.3s, background 0.3s',
@@ -329,68 +489,131 @@ export function Circuito() {
   );
 }
 
-// --- Ataque en marcha: presupuesto de tiempo --------------------------------------------------------------
-export function Marcha() {
-  const total = PRESUPUESTO.reduce((a, b) => a + b.s, 0);
-  const colores = ['var(--azul)', 'var(--acento)', '#c9a7ff', 'var(--rojo)'];
-  let acumulado = 0;
-  const VEL = 2.2;              // segundos de animación por cada segundo real ÷ VEL
+// --- La demo oficial del 12/11, foto a foto -------------------------------------------------------------
+// Cada fase tiene su explicación; las dos de ataque en marcha, más detallada.
+const EXPLICA_REAL = {
+  'R1-marcha': {
+    titulo: 'Retrocede y dispara a la vez', color: 'var(--naranja)',
+    puntos: [
+      ['Tres tareas a la vez', 'el chasis mantiene 0,1 m/s, la torreta sigue al rival y otra tarea lanza el aviso y la ráfaga.'],
+      ['Imagen nítida', 'de lo que llega en los últimos 0,2 s analiza la imagen menos movida.'],
+      ['Rival en marcha', 'prevé cuánto gira el rival 2 (unos 2,4 °/s) y descuenta lo que viene de nuestro avance.'],
+    ],
+  },
+  'R2-marcha': {
+    titulo: 'Rival 3: fija otro robot y descarta al bueno', color: 'var(--rojo)', foto: rival3CausaJpg,
+    pie: 'a) fija un robot del fondo, bajo una silla (0,99). b) 2 s después, el rival 3 (1,00), a la derecha de la línea de tiro.',
+    puntos: [
+      ['Fija otro robot', 'con la torreta a 180°, el primero que ve es uno del fondo (0,99). El rival 3 aún no está en la imagen.'],
+      ['Descarta al rival 3', 'tras girar 40°, aparece a 1,00, pero de 30° a 36° a la derecha. Más de 25° de salto: lo toma por otro robot.'],
+      ['Dispara sin verlo', 'la ráfaga ya ha empezado y la torreta sigue el giro previsto, unos 5 °/s: los 20 disparos le pasan por la izquierda.'],
+      ['Qué lo habría evitado', 'el filtro de distancia de P1 también en marcha, que descarta los robots del fondo.'],
+    ],
+  },
+};
+export function DemoCircuito() {
+  const k = useCuadroReal(true);
+  const c = DEMO_REAL[k];
+  const e = estadoReal(k);
+  const fase = FASE_REAL[c.fase];
+  const etapa = fase.etapa != null ? ETAPAS[fase.etapa] : null;
+  const explica = EXPLICA_REAL[c.fase];
+  const color = explica ? explica.color : etapa ? MODOS[etapa.modo].color : fase.color;
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 03 · Ataque en marcha" titulo="Disparar sin detener el robot" />
-      <div className="panel" style={{ padding: '26px 30px' }}>
-        {/* El robot recorre el tramo al mismo ritmo que se llena la barra de tiempo */}
-        <div style={{ position: 'relative', height: 78, marginBottom: 10 }}>
-          <div style={{ position: 'absolute', left: 0, right: 0, top: 30, height: 2, background: 'var(--borde)' }} />
-          <motion.div style={{ position: 'absolute', top: 14, width: 44, height: 34, marginLeft: -22, borderRadius: 6, background: 'var(--acento)' }}
-            initial={{ left: '0%' }} animate={{ left: '100%' }} transition={{ delay: 0.8, duration: total / VEL, ease: 'linear' }} />
-          <span className="mono" style={{ position: 'absolute', left: 0, top: 56, fontSize: 14, color: 'var(--tenue)' }}>retroceso de 1,44 m a 0,1 m/s: unos 14,5 s, sin parar el chasis</span>
-          <span className="mono" style={{ position: 'absolute', right: 0, top: 56, fontSize: 14, color: 'var(--tenue)' }}>1,44 m después</span>
+      <Cabecera fase="Fase 03 · Demo en clase" titulo="La demo oficial del 12/11, foto a foto" />
+      <div className="cuerpo" style={{ gridTemplateColumns: '1.12fr 1fr', alignItems: 'start', gap: 28 }}>
+        <div style={{ display: 'grid', gap: 14 }}>
+          <RepeticionReal k={k} />
+          <AnimatePresence>
+            {explica?.foto && (
+              <motion.figure key={c.fase} style={{ margin: 0, display: 'flex', gap: 16, alignItems: 'center' }}
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+                <img src={explica.foto} alt="Imágenes analizadas en R2: el robot del fondo que fija y el rival 3, a la derecha de la línea de tiro"
+                  style={{ width: 500, flex: 'none', borderRadius: 4, border: `1px solid ${color}`, display: 'block' }} />
+                <figcaption className="mono" style={{ fontSize: 14, color: 'var(--suave)' }}>{explica.pie}</figcaption>
+              </motion.figure>
+            )}
+          </AnimatePresence>
         </div>
-        <div style={{ display: 'flex', height: 64, gap: 3 }}>
-          {PRESUPUESTO.map((p, i) => {
-            const inicio = acumulado;
-            acumulado += p.s;
-            return (
-              <div key={p.que} style={{ flex: p.s, position: 'relative', background: 'var(--panel-2)', borderRadius: 2, overflow: 'hidden' }}>
-                <motion.div style={{ position: 'absolute', inset: 0, background: colores[i], transformOrigin: 'left' }}
-                  initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.8 + inicio / VEL, duration: p.s / VEL, ease: 'linear' }} />
-                <span className="mono" style={{ position: 'absolute', left: 12, top: 20, fontSize: 18, fontWeight: 600, color: 'var(--fondo)', mixBlendMode: 'normal' }}>{fmt(p.s, 1)} s</span>
-              </div>
-            );
-          })}
-        </div>
-        <div style={{ display: 'flex', gap: 3, marginTop: 8 }}>
-          {PRESUPUESTO.map((p) => <div key={p.que} style={{ flex: p.s, fontSize: 17, color: 'var(--suave)' }}>{p.que}</div>)}
+        <div style={{ display: 'grid', gap: 14 }}>
+          <AnimatePresence mode="wait">
+            <motion.div key={explica ? c.fase : 'normal'} className="panel" style={{ padding: '18px 22px', borderColor: color }}
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
+              <div className="etiqueta" style={{ color }}>{explica ? explica.titulo : etapa ? etapa.etiqueta : fase.nombre}</div>
+              {explica ? (
+                <div style={{ display: 'grid', gap: explica.puntos.length > 3 ? 8 : 12, marginTop: 10 }}>
+                  {explica.puntos.map(([t, d]) => (
+                    <p key={t} style={{ margin: 0, fontSize: explica.puntos.length > 3 ? 17 : 19, color: 'var(--suave)' }}><b style={{ color: 'var(--texto)' }}>{t}:</b> {d}</p>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ color: 'var(--texto)', marginTop: 8, fontSize: 21 }}>{etapa ? etapa.texto : fase.texto}</p>
+              )}
+            </motion.div>
+          </AnimatePresence>
+          {!explica && (
+            <div className="panel" style={{ padding: '16px 22px' }}>
+              <div className="etiqueta">Lo más difícil, más adelante</div>
+              <p style={{ margin: '8px 0 0', fontSize: 19, color: 'var(--suave)' }}>
+                <b style={{ color: 'var(--naranja)' }}>R1:</b> retroceder y disparar a un rival que también se mueve.
+              </p>
+              <p style={{ margin: '6px 0 0', fontSize: 19, color: 'var(--suave)' }}>
+                <b style={{ color: 'var(--rojo)' }}>R2:</b> el rival 3, escondido detrás, con la torreta girada 180°.
+              </p>
+            </div>
+          )}
+          <div className="panel" style={{ padding: '8px 12px' }}>
+            <div style={{ maxWidth: 640, margin: '0 auto' }}><Mapa e={e} t={k * 0.5} compacto posRival={posRivalReal(c)} /></div>
+          </div>
+          <p className="mono" style={{ margin: 0, fontSize: 14, color: 'var(--tenue)' }}>Fotos de la cámara cada 0,5 s, a ×4. La posición en el plano es aproximada.</p>
         </div>
       </div>
-      <Revela style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18, marginTop: 24 }} retraso={1.4} paso={0.18}>
-        {[
-          ['Imagen nítida', 'Como el robot se mueve, de las últimas imágenes analizamos la menos borrosa.'],
-          ['Seguir al rival', 'La torreta gira a la velocidad prevista del rival y se corrige con cada imagen.'],
-          ['Rival en alto', 'La torreta apunta 10° hacia arriba para encontrarlo.'],
-        ].map(([t, d]) => (
-          <Item key={t} className="panel" style={{ padding: '18px 22px' }}><b style={{ fontSize: 23 }}>{t}</b><p style={{ fontSize: 21, marginTop: 6 }}>{d}</p></Item>
-        ))}
-      </Revela>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.4 }} style={{ margin: '18px 0 0', fontSize: 22 }}>
-        Cada ráfaga son <span className="acento mono">20</span> disparos: el enunciado pide 12 impactos y dejamos 8 de margen por si alguno no se registra.
-      </motion.p>
     </div>
   );
 }
 
-// --- La demo oficial en clase, fase a fase -------------------------------------------------------------------
-// Cámara del robot en la demo en clase del 12/11 (evidencias/20261112_155726). El túnel y el baile salen de las
-// fotos de todo el recorrido (FOTOS_RECORRIDO); el resto, de las imágenes analizadas.
-const FASES_DEMO = [
-  { n: '01', titulo: 'Túnel', texto: 'Recta de 2,85 m entre las sillas a 0,5 m/s', foto: tunelJpg, color: 'var(--azul)' },
-  { n: '02', titulo: 'Rival 1', texto: 'P1, torreta a la derecha · 1,00 · 20 disparos', foto: rival1Jpg, color: 'var(--rojo)' },
-  { n: '03', titulo: 'Señuelo camuflado', texto: 'P1, torreta a la izquierda · 0,99 · 20 disparos', foto: camufladoJpg, color: 'var(--rojo)' },
-  { n: '04', titulo: 'Rival 2 en movimiento', texto: 'R1, los dos en marcha · 1,00 · 20 disparos', foto: rival2Jpg, color: 'var(--naranja)' },
-  { n: '05', titulo: 'Rival 3 escondido', texto: 'R2, torreta girada 180º, en una caja · 1,00 · 20 disparos', foto: rival3Jpg, color: 'var(--naranja)' },
-  { n: '06', titulo: 'Baile final', texto: 'Super Estrella, con la clase mirando', foto: baileJpg, color: 'var(--acento)' },
+// --- Decisiones del circuito ------------------------------------------------------------------------------
+// Valores de ENTREGA 2/WEEK3/circuito.py y pruebas del 11/11 (apartados 15 y 18 de la memoria).
+const DECISIONES = [
+  { t: 'Umbral 0,95', gana: 'el 94,5 % de lo que dispara en test es un robot', cede: 'un robot tapado (0,85–0,91) se queda sin disparos' },
+  { t: 'Umbral 0,7 en una zona', gana: 'elimina al robot camuflado en papel (0,72–0,97)', cede: 'solo hacia su lado en P1 y con caja de menos de media imagen' },
+  { t: 'Margen de puntería', gana: 'dispara con un error de menos de 3° o del 30 % del ancho de la caja', cede: 'hasta 4 correcciones antes de disparar' },
+  { t: 'Ráfaga de 20', gana: '8 disparos de margen sobre los 12 impactos que se piden', cede: '6,2 s por rival' },
+  { t: '0,1 m/s al atacar en marcha', gana: 'tiempo para girar la torreta, fijar al rival, avisar y disparar', cede: '52 de los 138 s de la demo' },
+  { t: 'Imagen reciente', gana: 'un hilo lee siempre el vídeo; en marcha se usa la imagen menos movida', cede: 'en las paradas espera a la torreta quieta para confirmar' },
 ];
+export function Decisiones() {
+  return (
+    <div className="diapo">
+      <Cabecera fase="Fase 03 · Decisiones" titulo="Qué decidimos en el circuito y qué cedimos" />
+      <div style={{ display: 'grid', gap: 18 }}>
+        <motion.div className="panel" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 34, alignItems: 'center', padding: '16px 26px' }}
+          initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6, ease: CURVA }}>
+          <div>
+            <div className="etiqueta" style={{ marginBottom: 4 }}>Ni muy grande ni muy lejos</div>
+            <EscalaAlto />
+          </div>
+          <div style={{ display: 'grid', gap: 10, fontSize: 19 }}>
+            <p style={{ margin: 0 }}><b style={{ color: 'var(--rojo)' }}>Más de media imagen:</b> sería un robot a menos de 0,5 m. Con las sillas azules muy cerca y poca luz salían cajas enormes con 0,95–0,99.</p>
+            <p style={{ margin: 0 }}><b style={{ color: 'var(--naranja)' }}>En P1, a más de 2 m:</b> por el alto de la caja, fuera del circuito. El robot de otro grupo al fondo dio 0,98 a unos 3 m.</p>
+          </div>
+        </motion.div>
+        <Revela style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} retraso={0.8} paso={0.12}>
+          {DECISIONES.map((d) => (
+            <Item key={d.t} className="panel" style={{ padding: '16px 22px' }}>
+              <b style={{ fontSize: 21 }}>{d.t}</b>
+              <p style={{ margin: '8px 0 0', fontSize: 17, color: 'var(--suave)' }}><span className="mono" style={{ color: 'var(--acento)' }}>+ </span>{d.gana}</p>
+              <p style={{ margin: '4px 0 0', fontSize: 17, color: 'var(--suave)' }}><span className="mono" style={{ color: 'var(--naranja)' }}>− </span>{d.cede}</p>
+            </Item>
+          ))}
+        </Revela>
+      </div>
+    </div>
+  );
+}
+
+// --- Mosaico de fotos con rótulo ----------------------------------------------------------------------
 function Mosaico({ fotos, columnas }) {
   return (
     <Revela style={{ display: 'grid', gridTemplateColumns: `repeat(${columnas}, 1fr)`, gap: 18 }} retraso={0.3} paso={0.16}>
@@ -407,36 +630,271 @@ function Mosaico({ fotos, columnas }) {
     </Revela>
   );
 }
-export function DemoReal() {
-  return (
-    <div className="diapo">
-      <Cabecera fase="Fase 03 · Demo en clase" titulo="La demo oficial, fase a fase" />
-      <Mosaico fotos={FASES_DEMO} columnas={3} />
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6 }} style={{ margin: '16px 0 0', fontSize: 19, color: 'var(--tenue)' }}>
-        Cámara del robot el 12/11, con el detector en la GPU. Los cuatro rivales registraron los 80 disparos.
-      </motion.p>
-    </div>
-  );
-}
-
 // --- El intento sorpresa del profesor ----------------------------------------------------------------------
 // evidencias/20261112_160426: imágenes del profesor, robots tapados y un robot distinto en la recta final.
 const SORPRESA = [
-  { n: 'P1', titulo: 'Foto entre humo', texto: '0,59: por debajo del umbral, no dispara', foto: humoJpg, color: 'var(--naranja)' },
-  { n: 'P1', titulo: 'Robot tapado', texto: 'Con una tela: 0,85 a 0,91, no dispara', foto: tapadoJpg, color: 'var(--naranja)' },
+  { n: 'P1', titulo: 'Foto entre humo', texto: '0,59: lo ve, pero no le dispara', foto: humoJpg, color: 'var(--naranja)' },
+  { n: 'P1', titulo: 'Robot tapado', texto: 'Con una tela: 0,85 a 0,91, no le dispara', foto: tapadoJpg, color: 'var(--naranja)' },
   { n: 'R1', titulo: 'Rival 2', texto: '1,00: lo sigue y le dispara', foto: profeRival2Jpg, color: 'var(--acento)' },
-  { n: 'R2', titulo: 'Robot distinto', texto: 'Otro modelo, con partes rojas: 0,99, le dispara', foto: distintoJpg, color: 'var(--acento)' },
+  { n: 'R2', titulo: 'Robot distinto', texto: 'Otro modelo, con partes rojas: 0,99', foto: distintoJpg, color: 'var(--acento)' },
+];
+// Robots generados con IA, con la caja del modelo de la demo (docs/informes/figuras/senuelo/detector/)
+const ROBOTS_IA = [
+  { foto: iaDetective, t: 'Camuflado', c: '0,99' },
+  { foto: iaS1, t: 'Aliado S1', c: '1,00' },
+  { foto: iaOrugas, t: 'Orugas', c: '1,00' },
+  { foto: iaDibujo, t: 'Dibujo', c: '0,98' },
+  { foto: iaBlanco, t: 'Blanco', c: '0,95' },
 ];
 export function Sorpresa() {
   return (
     <div className="diapo">
       <Cabecera fase="Fase 03 · Prueba sorpresa" titulo="El profesor cambió los robots" />
-      <div className="cuerpo" style={{ gridTemplateColumns: '2.3fr 1fr', alignItems: 'start', gap: 28 }}>
-        <Mosaico fotos={SORPRESA} columnas={2} />
-        <Revela as="ul" className="lista" retraso={1.2} paso={0.16} style={{ fontSize: 22 }}>
-          <Item as="li"><span><b>Generaliza:</b> detecta y ataca a un robot que no estaba en nuestros datos</span></Item>
-          <Item as="li"><span><b>No se deja engañar:</b> un robot tapado o una foto borrosa no llegan al umbral de 0,95</span></Item>
-          <Item as="li"><span><b>El precio:</b> esos dos robots se quedan sin disparar; el umbral prioriza no atacar a lo que no es un robot</span></Item>
+      <div className="cuerpo" style={{ gridTemplateColumns: '1.2fr 1fr', alignItems: 'start', gap: 28 }}>
+        <div style={{ display: 'grid', gap: 14 }}>
+          <Mosaico fotos={SORPRESA} columnas={2} />
+          <motion.div className="panel" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 18, alignItems: 'center', padding: 12 }}
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.5 }}>
+            <img src={mandoTapadoJpg} alt="Robot tapado con una tela detectado a 0,97 con la interfaz del mando" style={{ width: '100%', borderRadius: 4, display: 'block' }} />
+            <p style={{ margin: 0, fontSize: 19 }}>
+              <b>Con la interfaz</b>, desde un ángulo mejor, el robot tapado sí llegó a <span className="mono acento">0,97</span> y le disparó.
+            </p>
+          </motion.div>
+        </div>
+        <Revela style={{ display: 'grid', gap: 14 }} retraso={0.8} paso={0.25}>
+          <Item className="panel" style={{ padding: '16px 22px' }}>
+            <div className="etiqueta">Por qué generaliza</div>
+            <p style={{ margin: '6px 0 0', fontSize: 18 }}>
+              Faster R-CNN v2 parte de pesos preentrenados en <b>COCO</b> (118.000 imágenes de 80 tipos de objeto): ya sabe ver formas, ruedas y vehículos. Nuestras 808 imágenes solo le enseñan qué es un robot.
+            </p>
+          </Item>
+          <Item className="panel" style={{ padding: '16px 22px' }}>
+            <div className="etiqueta">Ya lo habíamos visto antes de la demo</div>
+            <p style={{ margin: '6px 0 10px', fontSize: 17, color: 'var(--suave)' }}>Robots camuflados y aliados hechos con IA: los reconoce a todos.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+              {ROBOTS_IA.map((r) => (
+                <div key={r.t} style={{ textAlign: 'center' }}>
+                  <img src={r.foto} alt={`${r.t}: robot ${r.c}`} style={{ width: '100%', borderRadius: 4, display: 'block' }} />
+                  <div className="mono" style={{ fontSize: 13, color: 'var(--suave)', marginTop: 4 }}>{r.t}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 10 }}>
+              {[[webcamCerca, 'Papel cerca: 0,99, dispararía'], [webcamLejos, 'Papel lejos: 0,53, no']].map(([f, t]) => (
+                <div key={t}>
+                  <img src={f} alt={`Robot camuflado delante de la webcam. ${t}`} style={{ width: '100%', height: 125, objectFit: 'cover', borderRadius: 4, display: 'block' }} />
+                  <div className="mono" style={{ fontSize: 13, color: 'var(--suave)', marginTop: 4 }}>{t}</div>
+                </div>
+              ))}
+            </div>
+          </Item>
+          <Item className="panel" style={{ padding: '16px 22px', borderColor: 'var(--naranja)' }}>
+            <div className="etiqueta" style={{ color: 'var(--naranja)' }}>Umbral 0,95</div>
+            <p style={{ margin: '6px 0 0', fontSize: 18 }}>
+              Detectó el robot tapado y la foto entre humo, pero no les disparó: preferimos no atacar a un posible falso positivo.
+            </p>
+          </Item>
+        </Revela>
+      </div>
+    </div>
+  );
+}
+
+// --- Por qué 0,95 ------------------------------------------------------------------------------------------
+// Confianza de cada detección en el intento del profesor (evidencias/20261112_160426, vía web/Bloque3/datos.js).
+const PROFESOR = BLOQUE3.intentos[1].detecciones;
+const GRUPOS_UMBRAL = [
+  { parada: 'P1', titulo: 'P1 · parado', ancho: 210, color: 'var(--rojo)' },
+  { parada: 'R1-marcha', titulo: 'R1 · rival 2', ancho: 250, color: 'var(--naranja)' },
+  { parada: 'R2-marcha', titulo: 'R2 · robot distinto', ancho: 330, color: 'var(--naranja)' },
+];
+function GraficaUmbral() {
+  const W = 900;
+  const H = 470;
+  const m = { l: 70, r: 20, t: 46, b: 40 };
+  const sy = (v) => m.t + ((1 - v) / (1 - 0.3)) * (H - m.t - m.b);
+  const huecos = 24;
+  let x0 = m.l;
+  const grupos = GRUPOS_UMBRAL.map((g) => {
+    const det = PROFESOR.filter((d) => d.parada === g.parada);
+    const r = { ...g, det, x0 };
+    x0 += g.ancho + huecos;
+    return r;
+  });
+  const sx = (g, i) => g.x0 + 10 + (i / Math.max(1, g.det.length - 1)) * (g.ancho - 20);
+  const yu = sy(0.95);
+  let orden = 0;
+  // Dónde cruza el umbral el robot distinto: primera imagen de R2 que pasa 0,95
+  const r2 = grupos[2];
+  const cruce = r2.det.findIndex((d) => d.aceptadas > 0);
+  const primera = r2.det.findIndex((d) => d.conf.length);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', display: 'block' }} role="img"
+      aria-label="Confianza de cada detección en el intento del profesor frente al umbral 0,95">
+      {[0.3, 0.5, 0.7, 0.9, 1].map((v) => (
+        <g key={v}>
+          <line x1={m.l} x2={W - m.r} y1={sy(v)} y2={sy(v)} stroke="var(--borde)" strokeDasharray="2 6" />
+          <text x={m.l - 12} y={sy(v) + 5} textAnchor="end" style={{ font: '14px var(--mono)', fill: 'var(--tenue)' }}>{fmt(v, 2)}</text>
+        </g>
+      ))}
+      <text x={18} y={(m.t + H - m.b) / 2} textAnchor="middle" transform={`rotate(-90 18 ${(m.t + H - m.b) / 2})`}
+        style={{ font: '14px var(--mono)', fill: 'var(--tenue)' }}>confianza</text>
+      {grupos.map((g) => (
+        <g key={g.parada}>
+          <rect x={g.x0} y={m.t - 8} width={g.ancho} height={H - m.t - m.b + 8} fill={g.color} opacity="0.06" />
+          <text x={g.x0 + g.ancho / 2} y={m.t - 18} textAnchor="middle" style={{ font: '600 15px var(--mono)', fill: g.color }}>{g.titulo}</text>
+          <text x={g.x0 + g.ancho / 2} y={H - 14} textAnchor="middle" style={{ font: '13px var(--mono)', fill: 'var(--tenue)' }}>
+            {g.det.length} imágenes{g.parada === 'P1' ? ', una por ángulo' : ''}
+          </text>
+        </g>
+      ))}
+      <motion.line x1={m.l} x2={W - m.r} y1={yu} y2={yu} stroke="var(--rojo)" strokeWidth="2.5" strokeDasharray="8 6"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.3, duration: 0.8 }} />
+      <text x={m.l + 8} y={yu - 10} style={{ font: '700 16px var(--mono)', fill: 'var(--rojo)' }}>umbral 0,95</text>
+      {/* Un punto por imagen: su detección más segura */}
+      {grupos.map((g) => g.det.map((d, i) => d.conf.slice(0, 1).map((c, j) => {
+        orden += 1;
+        const ok = d.aceptadas > 0;
+        return (
+          <motion.circle key={`${g.parada}-${i}-${j}`} cx={sx(g, i)} cy={sy(c)} r={g.parada === 'P1' ? 8 : 5}
+            fill={ok ? 'var(--acento)' : 'var(--fondo)'} stroke={ok ? 'none' : 'var(--naranja)'} strokeWidth="2.5"
+            initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.8 + orden * 0.012, duration: 0.25 }}
+            style={{ transformBox: 'fill-box', transformOrigin: 'center' }} />
+        );
+      })))}
+      {/* Anotaciones */}
+      <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.6 }} style={{ font: '600 15px var(--mono)' }}>
+        <text x={grupos[0].x0 + grupos[0].ancho / 2} y={sy(0.79)} textAnchor="middle" style={{ fill: 'var(--texto)' }}>robot tapado</text>
+        <text x={grupos[0].x0 + grupos[0].ancho / 2} y={sy(0.79) + 18} textAnchor="middle" style={{ fill: 'var(--suave)', fontWeight: 400 }}>0,85–0,91</text>
+        <text x={grupos[0].x0 + grupos[0].ancho / 2} y={sy(0.62) - 14} textAnchor="middle" style={{ fill: 'var(--texto)' }}>foto entre humo · 0,59</text>
+        <text x={grupos[1].x0 + grupos[1].ancho / 2} y={sy(0.5)} textAnchor="middle" style={{ fill: 'var(--texto)' }}>lo sigue a 0,99</text>
+        <text x={grupos[1].x0 + grupos[1].ancho / 2} y={sy(0.5) + 18} textAnchor="middle" style={{ fill: 'var(--suave)', fontWeight: 400 }}>hasta que sale de la imagen</text>
+        {cruce > 0 && (
+          <g>
+            <line x1={sx(r2, primera)} x2={sx(r2, cruce)} y1={sy(0.36)} y2={sy(0.36)} stroke="var(--texto)" strokeWidth="1.5" />
+            <text x={(sx(r2, primera) + sx(r2, cruce)) / 2} y={sy(0.36) + 22} textAnchor="middle" style={{ fill: 'var(--texto)' }}>sube en 3 s</text>
+            <circle cx={sx(r2, cruce)} cy={sy(PROFESOR.filter((d) => d.parada === 'R2-marcha')[cruce].conf[0])} r="13" fill="none" stroke="var(--acento)" strokeWidth="2.5" />
+            <line x1={sx(r2, cruce)} x2={sx(r2, cruce + 12)} y1={sy(0.93)} y2={sy(0.7)} stroke="var(--acento)" strokeWidth="1.5" />
+            <text x={sx(r2, cruce + 12)} y={sy(0.7) + 20} textAnchor="middle" style={{ fill: 'var(--acento)' }}>0,96: lo fija</text>
+            <text x={sx(r2, cruce + 12)} y={sy(0.7) + 38} textAnchor="middle" style={{ fill: 'var(--acento)' }}>y le dispara</text>
+          </g>
+        )}
+      </motion.g>
+    </svg>
+  );
+}
+
+// Alto de la caja en la imagen (720 px): robot del fondo 61 px, rivales 100-232 px, sillas cercanas 650-720 px.
+const ALTOS = [
+  { desde: 0, hasta: 12, color: 'var(--naranja)', texto: 'más de 2 m' },
+  { desde: 12, hasta: 50, color: 'var(--acento)', texto: 'rival' },
+  { desde: 50, hasta: 100, color: 'var(--rojo)', texto: 'a menos de 0,5 m' },
+];
+const MARCAS_ALTO = [
+  { v: 8.5, texto: 'robot del fondo · 0,98', abajo: false },
+  { v: 23, texto: 'rivales del circuito', abajo: true, rango: [14, 32] },
+  { v: 95, texto: 'sillas cercanas · 0,95–0,99', abajo: false, rango: [90, 100] },
+];
+function EscalaAlto() {
+  const W = 560;
+  const sx = (v) => 10 + (v / 100) * (W - 20);
+  return (
+    <svg viewBox={`0 0 ${W} 120`} style={{ width: '100%', display: 'block' }} aria-label="Alto de la caja en porcentaje de la imagen">
+      {ALTOS.map((z) => (
+        <g key={z.texto}>
+          <rect x={sx(z.desde)} y={44} width={sx(z.hasta) - sx(z.desde) - 2} height={20} fill={z.color} opacity="0.85" />
+          <text x={(sx(z.desde) + sx(z.hasta)) / 2} y={84} textAnchor="middle" style={{ font: '600 13px var(--mono)', fill: z.color }}>{z.texto}</text>
+        </g>
+      ))}
+      {MARCAS_ALTO.map((mk) => (
+        <g key={mk.texto}>
+          {mk.rango
+            ? <rect x={sx(mk.rango[0])} y={38} width={sx(mk.rango[1]) - sx(mk.rango[0])} height={32} fill="none" stroke="var(--texto)" strokeWidth="2" />
+            : <line x1={sx(mk.v)} x2={sx(mk.v)} y1={36} y2={72} stroke="var(--texto)" strokeWidth="2.5" />}
+          <text x={sx(mk.v)} y={mk.abajo ? 106 : 26} textAnchor={mk.v > 80 ? 'end' : mk.v < 10 ? 'start' : 'middle'}
+            style={{ font: '13px var(--mono)', fill: 'var(--texto)' }}>{mk.texto}</text>
+        </g>
+      ))}
+      <text x={sx(100)} y={118} textAnchor="end" style={{ font: '12px var(--mono)', fill: 'var(--tenue)' }}>alto de la caja, % de la imagen</text>
+    </svg>
+  );
+}
+
+const RAZONES_UMBRAL = [
+  { t: 'Elegido en validación', d: 'En test, el 94,5 % de lo que detecta por encima de 0,95 es un robot.', color: 'var(--acento)' },
+  { t: 'Lo que deja pasar', d: 'Robot tapado (0,85–0,91) y foto entre humo (0,59).', color: 'var(--naranja)' },
+  { t: 'Lo que sí ataca', d: 'El robot distinto sube a 0,96 en unos 3 s y le dispara.', color: 'var(--acento)' },
+];
+export function Umbral() {
+  return (
+    <div className="diapo">
+      <Cabecera fase="Fase 03 · Cuándo disparar" titulo="Por qué 0,95" />
+      <div className="cuerpo" style={{ gridTemplateColumns: '1.75fr 1fr', alignItems: 'start', gap: 28 }}>
+        <div className="panel" style={{ padding: '14px 18px' }}>
+          <div className="etiqueta" style={{ marginBottom: 4 }}>Intento del profesor: cada punto es una imagen</div>
+          <GraficaUmbral />
+          <div className="mono" style={{ display: 'flex', gap: 24, fontSize: 15, color: 'var(--suave)', marginTop: 4 }}>
+            <span><span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: 'var(--acento)', marginRight: 8 }} />pasa el umbral: le dispara</span>
+            <span><span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: 6, border: '2.5px solid var(--naranja)', marginRight: 8 }} />no llega: no le dispara</span>
+          </div>
+        </div>
+        <Revela style={{ display: 'grid', gap: 18 }} retraso={0.6} paso={0.3}>
+          {RAZONES_UMBRAL.map((r) => (
+            <Item key={r.t} className="panel" style={{ padding: '22px 26px', borderLeft: `4px solid ${r.color}` }}>
+              <div className="etiqueta" style={{ color: r.color }}>{r.t}</div>
+              <p style={{ color: 'var(--texto)', margin: '8px 0 0', fontSize: 22 }}>{r.d}</p>
+            </Item>
+          ))}
+        </Revela>
+      </div>
+    </div>
+  );
+}
+
+// --- Mando ------------------------------------------------------------------------------------------
+// Controles de ENTREGA 2/WEEK3/mando/README.md
+const CONTROLES = [
+  { que: 'Chasis', tecla: 'WASD · joystick izq.', d: 'Ruedas mecanum: se mueve hacia cualquier lado sin girar, hasta 0,5 m/s. Z/X o L1/R1 lo giran a 30 °/s.' },
+  { que: 'Torreta', tecla: 'Flechas · joystick der.', d: 'Gira a 30 °/s. W avanza hacia donde mira la cámara.' },
+  { que: 'Disparo', tecla: 'Clic · R2', d: 'Infrarrojos mientras se mantiene pulsado.' },
+  { que: 'Radar', tecla: 'en pantalla', d: 'Hacia dónde mira la torreta respecto al chasis.' },
+  { que: 'Bailes', tecla: 'Q E F C · □ △ ○ ✕', d: 'Moonwalk, Waka Waka, Super Estrella y Risa, con música en el robot.' },
+  { que: 'Parada', tecla: 'Esc · SHARE', d: 'Y se para solo si no recibe órdenes en 0,3 s.' },
+];
+const AJUSTES = ['Disparo automático', 'Asistente de puntería (aimbot)', 'Umbral de detección', 'Moverse hacia la cámara', 'Reasignar controles'];
+export function Mando() {
+  return (
+    <div className="diapo">
+      <Cabecera fase="Fase 03 · Control manual" titulo="La interfaz que hicimos para manejar el robot" />
+      <div className="cuerpo" style={{ gridTemplateColumns: '1fr 1fr', alignItems: 'start', gap: 28 }}>
+        <div style={{ display: 'grid', gap: 16 }}>
+          <div style={{ position: 'relative', borderRadius: 6, overflow: 'hidden', border: '1px solid var(--borde)' }}>
+            <motion.img src={mandoJpg} alt="Interfaz del mando con un robot detectado al 99,9 %" style={{ width: '100%', display: 'block' }}
+              initial={{ scale: 1.25, x: '6%', y: '4%', filter: 'blur(6px)' }} animate={{ scale: 1, x: '0%', y: '0%', filter: 'blur(0px)' }}
+              transition={{ delay: 0.2, duration: 1.6, ease: CURVA }} />
+            <motion.div style={{ position: 'absolute', left: '44.5%', top: '42%', width: '15%', height: '22%', border: '2px solid var(--acento)', boxShadow: '0 0 0 9999px rgba(0,0,0,0.35)' }}
+              initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }} transition={{ delay: 1.9, duration: 2.4, times: [0, 0.15, 0.8, 1] }} />
+          </div>
+          <motion.div className="panel" style={{ padding: '16px 22px' }} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.6 }}>
+            <div className="etiqueta" style={{ marginBottom: 10 }}>Se puede cambiar desde Ajustes</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {AJUSTES.map((a) => <span key={a} className="chip">{a}</span>)}
+            </div>
+            <p style={{ margin: '10px 0 0', fontSize: 17, color: 'var(--suave)' }}>
+              El asistente centra la torreta en el rival y, con el disparo automático, dispara al tenerlo centrado.
+            </p>
+          </motion.div>
+        </div>
+        <Revela className="panel" retraso={0.5} paso={0.12} style={{ padding: '14px 24px' }}>
+          {CONTROLES.map((c) => (
+            <Item key={c.que} style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 16, padding: '12px 0', borderTop: '1px solid var(--borde)' }}>
+              <div>
+                <b style={{ fontSize: 20 }}>{c.que}</b>
+                <div className="mono" style={{ fontSize: 13, color: 'var(--tenue)', marginTop: 4 }}>{c.tecla}</div>
+              </div>
+              <p style={{ margin: 0, fontSize: 18, color: 'var(--suave)' }}>{c.d}</p>
+            </Item>
+          ))}
         </Revela>
       </div>
     </div>
@@ -445,69 +903,39 @@ export function Sorpresa() {
 
 // --- El mando con el robot real ---------------------------------------------------------------------------
 const CAPTURAS_MANDO = [
-  { foto: disparoJpg, texto: 'Rival lejano bajo una mesa, con el aviso de disparo' },
-  { foto: dosRobotsJpg, texto: 'Dos robots detectados a la vez' },
-  { foto: trasCajaJpg, texto: 'Robot detrás de una caja; el radar marca hacia dónde mira la torreta' },
-  { foto: wakaJpg, texto: 'Baile «Waka waka» lanzado desde el mando' },
+  { foto: disparoJpg, texto: '11/11 · rival lejano bajo una mesa, con el aviso de disparo' },
+  { foto: dosRobotsJpg, texto: '11/11 · dos robots detectados a la vez' },
+  { foto: autoSillaJpg, texto: '12/11 · disparo automático: rival a 1,00 (y una silla a 0,79, con umbral 0,5)' },
+  { foto: mandoTapadoJpg, texto: '12/11 · disparo automático al robot tapado: 0,97' },
+];
+const HARDWARE = [
+  { que: 'Ordenador', ahora: 'RTX 5070 de portátil: 108 ms por imagen en la demo, pero 130–570 ms con la interfaz y el vídeo a la vez.', falta: 'Una GPU de sobremesa, o un modelo más ligero como MobileNet (unos 32 ms).' },
+  { que: 'RoboMaster', ahora: 'Solo envía el vídeo por wifi, a 8–16 imágenes por segundo, y recibe órdenes: no puede ejecutar el detector.', falta: 'Un ordenador a bordo con GPU (tipo Jetson) para no depender de la wifi, y un router propio.' },
 ];
 export function MandoReal() {
   return (
     <div className="diapo">
       <Cabecera fase="Fase 03 · Control manual" titulo="La interfaz con el robot real" />
-      <div className="cuerpo" style={{ gridTemplateColumns: '2.5fr 0.9fr', alignItems: 'start', gap: 28 }}>
-        <Revela style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }} retraso={0.3} paso={0.16}>
+      <div className="cuerpo" style={{ gridTemplateColumns: '1.35fr 1fr', alignItems: 'start', gap: 28 }}>
+        <Revela style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }} retraso={0.3} paso={0.16}>
           {CAPTURAS_MANDO.map((c) => (
             <Item key={c.texto} style={{ position: 'relative', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--borde)', aspectRatio: '16 / 9' }}>
               <img src={c.foto} alt={c.texto} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-              <div style={{ position: 'absolute', left: 0, right: 0, top: 0, padding: '8px 12px 20px', fontSize: 16,
-                background: 'linear-gradient(rgba(0,0,0,0.85), transparent)', color: '#fff' }}>{c.texto}</div>
+              <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '20px 12px 8px', fontSize: 15,
+                background: 'linear-gradient(transparent, rgba(0,0,0,0.88))', color: '#fff' }}>{c.texto}</div>
             </Item>
           ))}
         </Revela>
-        <Revela as="ul" className="lista" retraso={1.2} paso={0.14} style={{ fontSize: 21 }}>
-          <Item as="li"><span><b>11/11</b>, en el suelo del laboratorio con el mando de PS4</span></Item>
-          <Item as="li"><span><b>Vídeo</b> a 8–16 imágenes por segundo</span></Item>
-          <Item as="li"><span><b>Confianza</b> de 0,97 a 1,00, también con varios robots y detrás de obstáculos</span></Item>
-          <Item as="li"><span><b>Radar</b> con la orientación de la torreta y el chasis</span></Item>
-          <Item as="li"><span><b>Bailes</b> desde los botones, con aviso en pantalla</span></Item>
+        <Revela style={{ display: 'grid', gap: 14 }} retraso={1} paso={0.25}>
+          <Item className="etiqueta">El límite es el hardware</Item>
+          {HARDWARE.map((h) => (
+            <Item key={h.que} className="panel" style={{ padding: '16px 22px' }}>
+              <b style={{ fontSize: 21 }}>{h.que}</b>
+              <p style={{ margin: '6px 0 0', fontSize: 17, color: 'var(--suave)' }}>{h.ahora}</p>
+              <p style={{ margin: '8px 0 0', fontSize: 17 }}><span className="mono acento">Haría falta: </span>{h.falta}</p>
+            </Item>
+          ))}
         </Revela>
-      </div>
-    </div>
-  );
-}
-
-// --- Mando ------------------------------------------------------------------------------------------
-export function Mando() {
-  return (
-    <div className="diapo">
-      <Cabecera fase="Fase 03 · Control manual" titulo="La interfaz que hicimos para manejar el robot" />
-      <div className="cuerpo dos-asim" style={{ alignItems: 'start' }}>
-        <div style={{ position: 'relative', borderRadius: 6, overflow: 'hidden', border: '1px solid var(--borde)' }}>
-          <motion.img src={mandoJpg} alt="Interfaz del mando con un robot detectado al 99,9 %" style={{ width: '100%', display: 'block' }}
-            initial={{ scale: 1.25, x: '6%', y: '4%', filter: 'blur(6px)' }} animate={{ scale: 1, x: '0%', y: '0%', filter: 'blur(0px)' }}
-            transition={{ delay: 0.2, duration: 1.6, ease: CURVA }} />
-          <motion.div style={{ position: 'absolute', left: '44.5%', top: '42%', width: '15%', height: '22%', border: '2px solid var(--acento)', boxShadow: '0 0 0 9999px rgba(0,0,0,0.35)' }}
-            initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }} transition={{ delay: 1.9, duration: 2.4, times: [0, 0.15, 0.8, 1] }} />
-        </div>
-        <div style={{ display: 'grid', gap: 18 }}>
-          <div className="panel" style={{ padding: '20px 24px' }}>
-            <div className="etiqueta" style={{ marginBottom: 12 }}>Imágenes por segundo: aquí el detector sí usa la GPU</div>
-            <BarrasH anchoEtiqueta={190} max={32} dec={1} retraso={0.8} paso={0.18} alto={30}
-              datos={[
-                { etiqueta: 'CPU del laboratorio', valor: 1 / 2.3, texto: '0,4' },
-                { etiqueta: 'CPU de 32 hilos', valor: 1 / 1.1, texto: '0,9' },
-                { etiqueta: 'GPU · FRCNN v2', valor: 1 / 0.094, texto: '10,6 · 94 ms', destacado: true },
-                { etiqueta: 'GPU · MobileNet', valor: 1 / 0.032, texto: '≈ 31 · 32 ms', destacado: true, color: 'var(--azul)' },
-              ]} />
-          </div>
-          <Revela as="ul" className="lista" retraso={1.8} paso={0.14} style={{ fontSize: 22 }}>
-            <Item as="li"><span><b>Uso:</b> colocar el robot, probar el detector y hacer una demo libre</span></Item>
-            <Item as="li"><span><b>Teclado, ratón o mando de PS4</b></span></Item>
-            <Item as="li"><span><b>Seguro:</b> si deja de recibir órdenes, se para solo</span></Item>
-            <Item as="li"><span><b>Disparo automático</b> al ver un rival (opcional)</span></Item>
-            <Item as="li"><span><b><Contador valor={42} retraso={2.4} /> pruebas automáticas</b> del código</span></Item>
-          </Revela>
-        </div>
       </div>
     </div>
   );

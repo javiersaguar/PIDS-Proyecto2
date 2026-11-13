@@ -5,7 +5,7 @@ import { Caja, Fotograma } from '../componentes/fotograma.jsx';
 import { BarrasH } from '../componentes/graficas.jsx';
 import { Seccion } from '../componentes/seccion.jsx';
 import { FOTOGRAMAS } from '../datos/fotogramas.js';
-import { ANOTACION, AUMENTO, CRITERIOS, DATASET, INTERVALOS, RECOGIDA } from '../datos/cifras.js';
+import { ANOTACION, CRITERIOS, DATASET, INTERVALOS, RECOGIDA } from '../datos/cifras.js';
 import generados from '../datos/generados.json';
 
 const F = FOTOGRAMAS;
@@ -66,6 +66,12 @@ export function Recogida() {
 }
 
 // --- Anotación ----------------------------------------------------------------------------------
+// Uso del campo difficult: train.ipynb lo lee pero entrena con todos; test.ipynb mide aparte (como PASCAL VOC).
+const DIFFICULT_USO = [
+  ['Entrenan igual', 'Ni los quitamos ni les bajamos el peso: si no, la red aprendería que esos robots son fondo.'],
+  ['Métricas aparte', 'AP de todos, solo normales y solo difficult. Modelo final: 0,966 frente a 0,692.'],
+  ['Guían las decisiones', 'El aumento sube su AP de 0,55 a 0,63, y a igual AP elegimos el mejor en difficult.'],
+];
 export function Anotacion() {
   return (
     <div className="diapo">
@@ -79,6 +85,17 @@ export function Anotacion() {
             <span><span style={{ display: 'inline-block', width: 26, height: 0, borderTop: '3px dashed var(--naranja)', verticalAlign: 'middle', marginRight: 8 }} />difficult: cortado por el borde</span>
             <span style={{ marginLeft: 'auto' }}>V04 · exterior · fotograma 1416</span>
           </motion.div>
+          <Revela className="panel" retraso={2.1} paso={0.18} style={{ marginTop: 18, padding: '16px 22px' }}>
+            <Item className="etiqueta" style={{ marginBottom: 10, color: 'var(--naranja)' }}>Para qué marcamos los difficult</Item>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 22 }}>
+              {DIFFICULT_USO.map(([t, d]) => (
+                <Item key={t}>
+                  <b style={{ fontSize: 18 }}>{t}</b>
+                  <p style={{ margin: '4px 0 0', fontSize: 16, lineHeight: 1.35, color: 'var(--suave)' }}>{d}</p>
+                </Item>
+              ))}
+            </div>
+          </Revela>
         </div>
         <div style={{ display: 'grid', gap: 20, alignContent: 'start' }}>
           <Revela className="panel" retraso={0.5} paso={0.1} style={{ padding: '22px 26px' }}>
@@ -135,12 +152,12 @@ const DOMINIO = [
   ['Robots por imagen', '1,76', '2,32', '2,40'],
   ['Robots difficult', '26,4 %', '16,3 %', '15,7 %'],
   ['Robots de menos de 50 px', '3,9 %', '11,3 %', '9,1 %'],
-  ['Imágenes azuladas', '26,4 %', '19,9 %', '1,1 %'],
+  ['Imágenes exteriores', '26,4 %', '19,9 %', '1,1 %'],
 ];
 export function Eda() {
   return (
     <div className="diapo">
-      <Cabecera fase="Fase 01 · Análisis exploratorio" titulo="Nuestros vídeos y los de la asignatura no se parecen" />
+      <Cabecera fase="Fase 01 · Análisis exploratorio" titulo="Nuestros vídeos vs. los de la asignatura" />
       <div className="cuerpo dos" style={{ alignItems: 'start' }}>
         <div className="panel">
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -227,6 +244,21 @@ function AumentoEnVivo() {
     </div>
   );
 }
+// Transformaciones del aumentador (ENTREGA 1/WEEK1/data_aug.ipynb) y extras del perfil robusto_v1
+// (herramientas/aumento_robusto.py), con lo que intenta imitar cada una.
+const LISTA_AUMENTO = [
+  { g: 'Geometría', t: 'Volteo horizontal', p: '50 %', d: 'el rival puede estar a cualquier lado' },
+  { g: 'Geometría', t: 'Escala ×0,6 a ×1,25', p: '70 %', d: 'robots lejanos, como en validación y test' },
+  { g: 'Geometría', t: 'Desplazamiento y giro ±6°', p: '70 %', d: 'cámara inclinada; el robot no se deforma' },
+  { g: 'Color', t: 'Brillo, contraste o gamma', p: '50 %', d: 'otras luces y otras horas' },
+  { g: 'Color', t: 'Tono, saturación o canales', p: '30 %', d: 'balance de blancos de otras cámaras' },
+  { g: 'Calidad', t: 'Desenfoque de movimiento', p: '15 %', d: 'robot o cámara en marcha' },
+  { g: 'Calidad', t: 'JPEG, ruido o menos resolución', p: '30 %', d: 'vídeo comprimido de otros grupos' },
+  { g: 'Extra', t: 'Sombras y lluvia en exteriores', p: '25 · 15 %', d: 'V04 y V09, grabados al aire libre' },
+  { g: 'Extra', t: 'Tapar hasta un 25 % del robot', p: '15 %', d: 'robots detrás de obstáculos' },
+  { g: 'Extra', t: 'Oscurecer o mover los difficult', p: '50 %', d: 'más ejemplos de los que más falla' },
+];
+const COLOR_GRUPO = { Geometría: 'var(--azul)', Color: 'var(--naranja)', Calidad: '#c9a7ff', Extra: 'var(--acento)' };
 export function Aumento() {
   const flujo = [
     { v: DATASET.originales, t: 'originales' },
@@ -236,18 +268,10 @@ export function Aumento() {
   return (
     <div className="diapo">
       <Cabecera fase="Fase 01 · Aumento y depuración" titulo="Más imágenes sin grabar escenas nuevas" />
-      <div className="cuerpo dos">
-        <AumentoEnVivo />
-        <div style={{ display: 'grid', gap: 16, alignContent: 'start' }}>
-          {AUMENTO.map((g, i) => (
-            <motion.div key={g.grupo} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 + i * 0.2, duration: 0.6, ease: CURVA }}>
-              <div className="etiqueta" style={{ marginBottom: 8 }}>{g.grupo} · {g.porque}</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {g.items.map((it) => <span key={it} className="chip">{it}</span>)}
-              </div>
-            </motion.div>
-          ))}
-          <div className="panel" style={{ marginTop: 4, display: 'grid', gridTemplateColumns: '0.8fr auto 1fr auto 1.2fr', alignItems: 'start', gap: 12, padding: '20px 22px' }}>
+      <div className="cuerpo" style={{ gridTemplateColumns: '0.95fr 1.05fr', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gap: 16 }}>
+          <AumentoEnVivo />
+          <div className="panel" style={{ display: 'grid', gridTemplateColumns: '0.8fr auto 1fr auto 1.2fr', alignItems: 'start', gap: 12, padding: '18px 22px' }}>
             {flujo.map((f, i) => [
               <motion.div key={f.t} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2 + i * 0.45 }}>
                 <div className={`cifra peque${f.acento ? ' acento' : ''}`}><Contador valor={f.v} retraso={1.2 + i * 0.45} duracion={1} /></div>
@@ -260,7 +284,26 @@ export function Aumento() {
               ),
             ])}
           </div>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.6 }} style={{ margin: 0, fontSize: 19, color: 'var(--suave)' }}>
+        </div>
+        <div className="panel" style={{ padding: '16px 24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 82px 1fr', gap: 16, paddingBottom: 6 }}>
+            {['Transformación', 'Prob.', 'Para qué'].map((c) => <span key={c} className="etiqueta">{c}</span>)}
+          </div>
+          <Revela retraso={0.4} paso={0.09}>
+            {LISTA_AUMENTO.map((x) => (
+              <Item key={x.t} style={{ display: 'grid', gridTemplateColumns: '1fr 82px 1fr', gap: 16, alignItems: 'baseline', padding: '8px 0', borderTop: '1px solid var(--borde)' }}>
+                <span style={{ fontSize: 18, color: 'var(--texto)' }}>
+                  <i style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 5, background: COLOR_GRUPO[x.g], marginRight: 10, verticalAlign: 'middle' }} />{x.t}
+                </span>
+                <span className="mono" style={{ fontSize: 15, color: 'var(--suave)' }}>{x.p}</span>
+                <span style={{ fontSize: 17, color: 'var(--suave)' }}>{x.d}</span>
+              </Item>
+            ))}
+          </Revela>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6 }} style={{ margin: '10px 0 0', fontSize: 16, color: 'var(--tenue)' }}>
+            Descartadas: volteo vertical, giros de 90° y perspectiva, porque el robot nunca aparece así.
+          </motion.p>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.4 }} style={{ margin: '8px 0 0', fontSize: 18, color: 'var(--texto)' }}>
             Con aumento, Faster R-CNN v1 pasa de <span className="mono">0,923</span> a <span className="mono acento">0,942</span> de AP@0,5 en validación.
           </motion.p>
         </div>

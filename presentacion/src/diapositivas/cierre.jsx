@@ -4,6 +4,14 @@ import { Fotograma } from '../componentes/fotograma.jsx';
 import { Letras } from '../componentes/seccion.jsx';
 import { FOTOGRAMAS } from '../datos/fotogramas.js';
 import { Reticula } from './inicio.jsx';
+import qrPages from '../datos/qr_pages.svg';
+import qrRepo from '../datos/qr_repo.svg';
+
+// Enlaces: la web con las figuras interactivas (GitHub Pages) y el repositorio del grupo
+const ENLACES = [
+  { qr: qrPages, titulo: 'Figuras interactivas', texto: 'Los datos, el modelo y la demo foto a foto', url: 'javiersaguar.github.io/PIDS-Proyecto2' },
+  { qr: qrRepo, titulo: 'Repositorio del grupo', texto: 'El código, los notebooks y la memoria', url: 'github.com/javiersaguar/PIDS-Proyecto2' },
+];
 
 export function Gracias() {
   const f = FOTOGRAMAS.objetivo;
@@ -36,6 +44,19 @@ export function Gracias() {
         <div className="marco-caja" />
         <i className="esq a" /><i className="esq b" /><i className="esq c" /><i className="esq d" />
         <div className="rotulo"><span>OBJETIVO FIJADO</span></div>
+      </motion.div>
+      <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 3.8, duration: 0.6, ease: CURVA }}
+        style={{ position: 'absolute', right: 88, top: 80, width: 520, zIndex: 5, display: 'grid', gap: 14 }}>
+        {ENLACES.map((e) => (
+          <div key={e.titulo} className="panel" style={{ display: 'flex', gap: 18, alignItems: 'center', padding: 14, background: 'rgba(12,13,11,0.85)' }}>
+            <img src={e.qr} alt={`Código QR: ${e.titulo}`} width="150" height="150" style={{ display: 'block', borderRadius: 3 }} />
+            <div>
+              <div className="etiqueta">{e.titulo}</div>
+              <div style={{ fontSize: 20, marginTop: 6, lineHeight: 1.3 }}>{e.texto}</div>
+              <div className="mono" style={{ fontSize: 14, color: 'var(--suave)', marginTop: 8 }}>{e.url}</div>
+            </div>
+          </div>
+        ))}
       </motion.div>
       <div style={{ position: 'absolute', left: 88, bottom: 84, right: 88, zIndex: 5 }}>
         <h2 style={{ margin: 0, fontSize: 150, lineHeight: 0.9, fontWeight: 700, letterSpacing: '-0.05em' }}>

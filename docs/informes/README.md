@@ -41,6 +41,20 @@ cambios del borrador se pasan a mano. Después de generarlo, actualizar el índi
 
 ## Historial
 
+**13/11/2026** — versión para entregar:
+- Se incorporan las correcciones de Alejandro (PR #44): pies de tabla y figura más cortos y la
+  redacción de varios párrafos del Bloque 3. Se arreglan al integrarlas un pie cortado, una frase rota y una coma entre
+  oraciones, y se mantiene la referencia a la Figura B3.5.
+- El 12 da el recuento exacto de los 94 falsos positivos de test, revisados uno a uno
+  (`docs/revision_fp_test.csv`): 59 son robots sin anotar, 31 cajas mal ajustadas o repetidas sobre un robot
+  anotado y 4 no son robots. Con esos robots anotados, la precisión pasaría de 0,945 a 0,979.
+- El 18 explica la causa del fallo con el rival 3, comprobada en el registro: la torreta fijó antes un robot del
+  fondo, y el rival 3 apareció a más de 25° de él, así que se tomó por otro robot. Figura G.2 nueva con las dos
+  imágenes (`figuras/bloque3/demo_clase/7_rival3_causa.jpg`).
+- Se rellenan los pendientes que quedaban (retardo del vídeo en el 17 y numeración) y se quitan los 80 disparos.
+- PDF para entregar en `docs/entregas/PIDS_grupo2_entrega3.pdf`: 46 páginas; el cuerpo va de la 4 a la 32
+  (29 páginas). Índice actualizado en Word.
+
 **12/11/2026 (tarde)** — demo oficial en clase y prueba sorpresa del profesor:
 - La Figura B3.5 pasa a ser la demo oficial en clase, en seis fases: túnel, rival 1, robot camuflado, rival 2, rival 3
   y baile (`figuras/bloque3/demo_oficial.jpg`, imágenes sueltas en `figuras/bloque3/demo_clase/`).
@@ -49,7 +63,7 @@ cambios del borrador se pasan a mano. Después de generarlo, actualizar el índi
 - Las pruebas del 11/11 pasan al Anexo G (Figura G.1). Se resuelven los pendientes del 15.1, 15.2, 16.1, 18 y 19
   con estos resultados.
 - Tabla B3.1, apartados 14 y 15.2 y Figura B3.1 con las distancias medidas en el laboratorio (2,19 m, 1,44 m,
-  2,88 m y 2,3 m tras el túnel). Los cuatro rivales recibieron 20 disparos cada uno: 80 en total.
+  2,88 m y 2,3 m tras el túnel).
 - 46 páginas; el cuerpo acaba en la 32. Índice actualizado en Word.
 
 **12/11/2026** — imágenes reales del laboratorio en el Bloque 3:
