@@ -92,7 +92,7 @@ mientras se hace T13: `train.ipynb` y `test.ipynb` están adaptados a nuestros d
 | T20 | P3 | Evaluación con `test.ipynb` (mAP y resultados cualitativos) | T19 | Alejandro Cuevas | Hecha: validación y test (una vez por modelo, 24/10) |
 | T21 | P3 | Programar la demo del Bloque 3 (`ENTREGA 2/WEEK3/`) | T20 | Javier Saguar | Hecha: probada en simulación (04/11) |
 | T22 | P3 | Medir el circuito, calibrar las paradas y ejecutar la demo en el laboratorio | T21 | — | Hecha: laboratorio el 11/11 y demo oficial en clase el 12/11 (PR #43) |
-| T23 | P3 | Memoria de la entrega 3: Bloque 3, Bloques 1 y 2 corregidos, conclusiones y respuesta a la revisión | T22 | Javier Saguar | Hecha: `docs/entregas/PIDS_grupo2_entrega3.pdf`, 29 páginas de cuerpo, con las correcciones de Alejandro (PRs #38, #43 y #44) |
+| T23 | P3 | Memoria de la entrega 3: Bloque 3, Bloques 1 y 2 corregidos, conclusiones y respuesta a la revisión | T22 | Javier Saguar | Hecha: `docs/entregas/PIDS_grupo2_entrega3.pdf`, 29 páginas de cuerpo, con las correcciones de Alejandro (PRs #38, #43, #44 y #45) |
 
 ## Detalle
 

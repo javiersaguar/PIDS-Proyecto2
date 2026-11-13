@@ -40,7 +40,7 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 - Bloque 3 (04/11, `alejandro-cuevas`, PR #36): vigilancia durante el recorrido. Avanza por tramos mirando hacia donde va, ataca a los rivales que encuentra y espera si un robot le bloquea el camino. 56 pruebas en simulación; falta probarlo en el laboratorio.
 - Bloque 3 (05/11, `alejandro-cuevas`, PR #36): respuesta a la revisión. Las mejoras vienen desactivadas (la demo por defecto es la de `main`, con la SCAR en cada disparo) y se activan una a una en el laboratorio. El seguimiento adapta la ganancia al tiempo por imagen y completa la ráfaga con CPU (1,1 s por imagen) en simulación. Un robot que no se aparta del camino ya no detiene la demo. 61 pruebas en simulación.
 - Bloque 3 (11–12/11, PR #43): pruebas en el laboratorio, demo oficial en clase e intento sorpresa del profesor, con las imágenes y el registro de cada intento en la memoria, la presentación y GitHub Pages.
-- Entrega 3 (13/11): memoria lista para entregar (46 páginas, 29 de cuerpo), con las correcciones de Alejandro (PR #44). Los 94 falsos positivos de test, revisados uno a uno en [`docs/revision_fp_test.csv`](docs/revision_fp_test.csv): 59 son robots sin anotar. Causa del fallo con el rival 3, comprobada en el registro de la demo.
+- Entrega 3 (13/11): memoria lista para entregar (46 páginas, 29 de cuerpo), con las correcciones de Alejandro (PRs #44 y #45). Los 94 falsos positivos de test, revisados uno a uno en [`docs/revision_fp_test.csv`](docs/revision_fp_test.csv): 59 son robots sin anotar. Causa del fallo con el rival 3, comprobada en el registro de la demo.
 - T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
 ## Datos de los vídeos
