@@ -54,6 +54,10 @@ cambios del borrador se pasan a mano. Después de generarlo, actualizar el índi
 - Se rellenan los pendientes que quedaban (retardo del vídeo en el 17 y numeración) y se quitan los 80 disparos.
 - PDF para entregar en `docs/entregas/PIDS_grupo2_entrega3.pdf`: 46 páginas; el cuerpo va de la 4 a la 32
   (29 páginas). Índice actualizado en Word.
+- Perfil de aumento: los 13 modelos de la cadena, incluido el final, se entrenaron con `robusto_v1`
+  (`herramientas/cadena_entrenamientos.py`), pero el 11.4 decía «se mantiene el base» y el 12.1 «con el aumento
+  base fijado». Se corrigen el 5.4, el 6.1 (ahora «Ampliaciones del aumento»), el 11.4, el 12.1, la Tabla 11, la
+  fila de datos de entrenamiento y la Tabla 20, sin cambiar la paginación.
 
 **12/11/2026 (tarde)** — demo oficial en clase y prueba sorpresa del profesor:
 - La Figura B3.5 pasa a ser la demo oficial en clase, en seis fases: túnel, rival 1, robot camuflado, rival 2, rival 3

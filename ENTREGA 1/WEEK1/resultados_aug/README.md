@@ -21,6 +21,12 @@ Los perfiles nuevos generan en `datasets_experimentos/<perfil>/` y guardan sus
 resultados en `resultados_aug/<perfil>/`; no reemplazan los datos ni las figuras
 del aumento base.
 
+**Actualización (24/10):** la cadena de entrenamientos (`herramientas/cadena_entrenamientos.py`) usó el
+perfil `robusto_v1` en sus 13 modelos, incluido el final (`faster_rcnn_v2_aug_robusto_v1_lr001`). Con
+Faster R-CNN v1, el único entrenado con los dos perfiles, da el mismo AP@0,5 en validación que `base`
+(0,9426 frente a 0,9433). Las cifras de esta página siguen siendo las del aumento base; las imágenes de cada
+transformación del perfil final están en `docs/informes/figuras/aumento/` (`herramientas/figuras_aumento.py`).
+
 ## Figuras
 
 | Figura | Qué muestra | Pie de figura propuesto |
