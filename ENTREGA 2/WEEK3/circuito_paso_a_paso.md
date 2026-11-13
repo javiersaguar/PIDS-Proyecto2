@@ -3,6 +3,12 @@
 Qué hace el robot en cada momento de la demo: movimientos, tiempos, torreta, disparos,
 audios y luces. Estado del 08/11/2026.
 
+> **Actualización (13/11):** todos los tramos se midieron en el laboratorio el 11/11 y la demo
+> oficial fue el 12/11. Los tramos y tiempos definitivos, los resultados y la causa del fallo con
+> el rival 3 están en la memoria de la entrega 3 (apartados 14 a 18) y en la
+> [guía de estudio](../../docs/guia_presentacion/guia_proyecto.pdf). Este documento conserva la
+> planificación previa.
+
 - **P1** está medido en el laboratorio.
 - **R1 y R2** son supuestos hasta montar el circuito.
 - **El rival 2 se mueve** en paralelo a nuestro robot durante la rotonda. Lo maneja Alejandro

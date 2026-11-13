@@ -87,12 +87,13 @@ mientras se hace T13: `train.ipynb` y `test.ipynb` están adaptados a nuestros d
 | T15 | P2 | Memoria: portada, introducción, recolección y anotación | T01, T02 | — | Pendiente |
 | T16 | P2 | Memoria: EDA, depuración y aumento de datos | T12, T13, T14 | — | Pendiente |
 | T17 | P2 | Memoria: reparto del trabajo, revisión final y PDF | T15, T16 | — | Pendiente |
-| T18 | P3 | Separar los datos en entrenamiento, validación y test | T14 | — | Pendiente |
+| T18 | P3 | Separar los datos en entrenamiento, validación y test | T14 | — | Hecha: entrenamiento con nuestros 796 originales y sus copias; validación y test, los conjuntos de la asignatura (`ENTREGA 1/WEEK2/DATOS_ASIGNATURA/`) |
 | T19 | P3 | Primer entrenamiento con `train.ipynb` | T18 | Alejandro Cuevas | Hecha: con y sin aumento (15/10) |
 | T20 | P3 | Evaluación con `test.ipynb` (mAP y resultados cualitativos) | T19 | Alejandro Cuevas | Hecha: validación y test (una vez por modelo, 24/10) |
 | T21 | P3 | Programar la demo del Bloque 3 (`ENTREGA 2/WEEK3/`) | T20 | Javier Saguar | Hecha: probada en simulación (04/11) |
 | T22 | P3 | Medir el circuito, calibrar las paradas y ejecutar la demo en el laboratorio | T21 | — | Hecha: laboratorio el 11/11 y demo oficial en clase el 12/11 (PR #43) |
-| T23 | P3 | Memoria de la entrega 3: Bloque 3, Bloques 1 y 2 corregidos, conclusiones y respuesta a la revisión | T22 | Javier Saguar | Hecha: `docs/entregas/PIDS_grupo2_entrega3.pdf`, 29 páginas de cuerpo, con las correcciones de Alejandro (PRs #38, #43, #44 y #45) |
+| T23 | P3 | Memoria de la entrega 3: Bloque 3, Bloques 1 y 2 corregidos, conclusiones y respuesta a la revisión | T22 | Javier Saguar | Hecha: `docs/entregas/PIDS_grupo2_entrega3.pdf`, 29 páginas de cuerpo, con las correcciones de Alejandro (PRs #38, #43, #44 y #45) y el perfil de aumento corregido (PR #47) |
+| T24 | P3 | Presentación final, zip para Moodle y guía de estudio | T23 | Javier Saguar; guía: Alejandro Cuevas | En curso: 26 diapositivas en `presentacion/` y guía en `docs/guia_presentacion/` (PRs #45, #46 y #47); falta subir el zip a Moodle y presentar el 16/11 |
 
 ## Detalle
 

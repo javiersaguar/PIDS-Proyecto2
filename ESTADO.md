@@ -32,8 +32,10 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 - T14 (15/10): perfiles optativos de sombras locales y llovizna en V04/V09,
   oclusiones texturadas con área limitada y refuerzo de copias con `difficult`.
   Código y ejemplos en la sección 9 de `data_aug.ipynb`; el perfil `base` conserva
-  los datos actuales y los nuevos escriben en destinos separados. Pendiente medir
-  su efecto en validación; no se ha lanzado otro entrenamiento. PR #17.
+  los datos actuales y los nuevos escriben en destinos separados. PR #17.
+  Medido el 24/10: la cadena de 13 entrenamientos usó el perfil `robusto_v1`,
+  incluido el modelo final, y con Faster R-CNN v1 da el mismo AP@0,5 en validación
+  que `base` (0,9426 frente a 0,9433). Corregido en la memoria en la PR #47.
 - Bloque 3 (04/11): demo completa en `ENTREGA 2/WEEK3/` (`demo.py`, `circuito.py`). Recorre las paradas, barre con el gimbal, confirma la puntería, dispara 12 veces por robot, guarda cada imagen analizada con sus cajas y usa los seis módulos. Probada con un robot simulado y 15 pruebas. Pasos del laboratorio en su `README.md`.
 - Bloque 3 (04/11, `alejandro-cuevas`): seguimiento de rivales en movimiento. La torreta sigue al robot fijado fotograma a fotograma y solo dispara cuando está centrado, compensando el retardo del vídeo; ángulo real del gimbal con `sub_angle` y ráfaga sin esperas de audio. 37 pruebas en simulación; falta ajustarlo en el laboratorio.
 - Bloque 3 (04/11, `alejandro-cuevas`, PR #36): barrido continuo con la torreta girando y memoria de robots atacados en metros sobre el circuito, para no repetir ráfagas contra el mismo robot ni desde otra parada. 48 pruebas en simulación; falta calibrar `ALTURA_ROBOT` en el laboratorio.
@@ -41,6 +43,8 @@ Las tareas pendientes, por orden de prioridad y con su responsable, están en [`
 - Bloque 3 (05/11, `alejandro-cuevas`, PR #36): respuesta a la revisión. Las mejoras vienen desactivadas (la demo por defecto es la de `main`, con la SCAR en cada disparo) y se activan una a una en el laboratorio. El seguimiento adapta la ganancia al tiempo por imagen y completa la ráfaga con CPU (1,1 s por imagen) en simulación. Un robot que no se aparta del camino ya no detiene la demo. 61 pruebas en simulación.
 - Bloque 3 (11–12/11, PR #43): pruebas en el laboratorio, demo oficial en clase e intento sorpresa del profesor, con las imágenes y el registro de cada intento en la memoria, la presentación y GitHub Pages.
 - Entrega 3 (13/11): memoria lista para entregar (46 páginas, 29 de cuerpo), con las correcciones de Alejandro (PRs #44 y #45). Los 94 falsos positivos de test, revisados uno a uno en [`docs/revision_fp_test.csv`](docs/revision_fp_test.csv): 59 son robots sin anotar. Causa del fallo con el rival 3, comprobada en el registro de la demo.
+- Presentación (13/11, PRs #45 y #47): 26 diapositivas en `presentacion/`, con dos nuevas del EDA y las imágenes reales de cada transformación del aumento, usadas y descartadas. Zip para Moodle con la presentación en un solo HTML y un PDF de respaldo.
+- Guía de estudio (13/11, PR #46 de Alejandro, ampliada en la PR #47): [`docs/guia_presentacion/guia_proyecto.pdf`](docs/guia_presentacion/guia_proyecto.pdf), 35 páginas, con el guion de las 26 diapositivas, el fallo con el rival 3, los 94 falsos positivos, las decisiones y las preguntas probables.
 - T09: los originales y sus etiquetas están versionados en `main`, que es la copia de seguridad.
 
 ## Datos de los vídeos
@@ -109,15 +113,9 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 ## Pendiente
 
 - **T01:** cerrar los criterios en grupo. El borde superior del robot (gimbal y antenas) es donde más discrepamos.
-- **Bloque 2:** una mejora dirigida a los `difficult` (0,57–0,69 en test), repetir con varias semillas (más épocas no ayudan: comprobado con SSD300 a 40 épocas, el único caso dudoso) y decidir con la latencia medida en el robot entre el modelo final (96 ms por imagen) y el rápido `faster_rcnn_v3` (16 ms, 0,9240 en test). El test ya se ha usado una vez por modelo; no debe volver a usarse para elegir.
-- **Memoria (T15–T17):** versiones Word/PDF sobre la plantilla oficial en
-  `docs/informes/`: completa, fase 1 y fase 2. Falta revisión del grupo y confirmar
-  fecha de entrega y número administrativo del grupo.
-
-## Por confirmar
-
-- Número de grupo (usuario `pidsX` de JupyterHub y nombre del PDF `PIDS_grupoX_entrega1.pdf`).
-- Fecha de la primera entrega.
+- **Entrega 3:** subir a Moodle la memoria (`docs/entregas/PIDS_grupo2_entrega3.pdf`, antes del 15/11) y el zip de la presentación, y presentar el lunes 16/11 (guía en `docs/guia_presentacion/`).
+- **Trabajo futuro (memoria, apartado 19):** una mejora dirigida a los `difficult` (0,57–0,69 en test) y repetir con varias semillas (más épocas no ayudan: comprobado con SSD300 a 40 épocas). En el robot se usa el modelo final en la GPU del portátil (unos 108 ms por imagen); `faster_rcnn_v3` (16 ms, 0,9240 en test) queda como alternativa. El test ya se ha usado una vez por modelo; no debe volver a usarse para elegir.
+- **Demo:** aplicar también en los ataques en marcha el filtro de distancia de P1, que habría evitado fijar el robot del fondo en lugar del rival 3.
 
 ## Riesgos
 
@@ -129,4 +127,4 @@ Las fichas por vídeo (escenario, interior/exterior, iluminación, oclusiones, n
 - **Que el JupyterHub no esté disponible.** El servicio está deshabilitado por las mañanas en horas de docencia.
 - **No llegar al hito del Bloque 1.** Si no lo conseguimos, los profesores nos dan el dataset, pero con penalización en la nota.
 
-Resultados res1024 e informes actualizados en [PR #18](https://github.com/javiersaguar/PIDS-Proyecto2/pull/18), pendiente de revisión y sin fusionar.
+Resultados res1024 e informes actualizados en [PR #18](https://github.com/javiersaguar/PIDS-Proyecto2/pull/18), ya fusionada.
