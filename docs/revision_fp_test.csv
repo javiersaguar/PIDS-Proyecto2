@@ -1,0 +1,95 @@
+id,secuencia,imagen,confianza,caja_x0_y0_x1_y1,iou_max_xml,categoria,detalle
+0,PIDS2023_GR01_0008,frame_0030.jpg,0.9971,986 249 1097 336,0.0,robot sin anotar,
+1,PIDS2023_GR01_0008,frame_0045.jpg,0.9981,987 243 1098 335,0.0,robot sin anotar,
+2,PIDS2023_GR01_0008,frame_0360.jpg,0.9876,2 271 81 464,0.0,robot sin anotar,
+3,PIDS2023_GR01_0008,frame_0675.jpg,0.996,61 218 424 537,0.0,robot sin anotar,
+4,PIDS2023_GR01_0008,frame_0675.jpg,0.9897,646 200 722 281,0.0,robot sin anotar,
+5,PIDS2024_GR02_0000,frame_0012.jpg,0.9784,0 158 132 386,0.0,robot sin anotar,
+6,PIDS2024_GR02_0000,frame_0048.jpg,0.9946,8 89 207 309,0.158,robot sin anotar,
+7,PIDS2024_GR02_0000,frame_0108.jpg,0.9859,4 124 178 426,0.0,robot sin anotar,
+8,PIDS2024_GR02_0000,frame_0444.jpg,0.9854,566 534 749 712,0.34,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+9,PIDS2024_GR02_0000,frame_0780.jpg,0.9852,939 98 1093 245,0.195,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+10,PIDS2024_GR02_0000,frame_0840.jpg,0.9777,1 272 90 464,0.0,robot sin anotar,
+11,PIDS2024_GR02_0000,frame_0912.jpg,0.9846,566 20 1280 720,0.0,robot sin anotar,
+12,PIDS2024_GR02_0000,frame_1440.jpg,0.9686,700 165 768 242,0.154,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+13,PIDS2024_GR02_0000,frame_1452.jpg,0.9756,710 157 794 248,0.172,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+14,PIDS2024_GR02_0000,frame_1488.jpg,0.9942,607 162 685 251,0.198,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+15,PIDS2024_GR02_0000,frame_1500.jpg,0.977,387 91 475 203,0.228,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+16,PIDS2024_GR02_0000,frame_1500.jpg,0.9524,576 101 637 171,0.131,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+17,PIDS2024_GR02_0000,frame_1620.jpg,0.9765,2 174 89 312,0.139,robot sin anotar,
+18,PIDS2024_GR02_0003,frame_0072.jpg,0.9716,278 71 1209 720,0.359,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+19,PIDS2024_GR02_0003,frame_0084.jpg,0.9893,36 130 908 720,0.432,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+20,PIDS2024_GR02_0003,frame_0120.jpg,0.9677,1220 328 1280 530,0.0,robot sin anotar,
+21,PIDS2024_GR02_0003,frame_0156.jpg,0.989,230 201 264 237,0.0,robot sin anotar,
+22,PIDS2024_GR02_0003,frame_0168.jpg,0.9859,236 203 267 238,0.0,robot sin anotar,
+23,PIDS2024_GR02_0003,frame_0192.jpg,0.9884,1131 371 1280 648,0.0,robot sin anotar,
+24,PIDS2024_GR02_0003,frame_0228.jpg,0.9946,422 198 476 259,0.072,robot sin anotar,
+25,PIDS2024_GR02_0003,frame_0384.jpg,0.9556,892 437 921 470,0.008,robot sin anotar,
+26,PIDS2024_GR02_0003,frame_0420.jpg,0.9557,382 398 410 435,0.0,robot sin anotar,
+27,PIDS2024_GR02_0003,frame_0528.jpg,0.9944,496 367 546 414,0.0,robot sin anotar,
+28,PIDS2024_GR02_0003,frame_0552.jpg,0.9956,659 345 704 394,0.0,robot sin anotar,
+29,PIDS2024_GR02_0003,frame_0552.jpg,0.9932,620 346 660 395,0.0,robot sin anotar,
+30,PIDS2024_GR02_0003,frame_0660.jpg,0.9972,680 347 741 403,0.0,robot sin anotar,
+31,PIDS2024_GR02_0003,frame_0840.jpg,0.9963,12 253 575 720,0.0,robot sin anotar,
+32,PIDS2024_GR02_0003,frame_1020.jpg,0.9685,1 369 82 547,0.0,robot sin anotar,
+33,PIDS2024_GR02_0003,frame_1116.jpg,0.9981,394 310 455 364,0.025,robot sin anotar,
+34,PIDS2024_GR02_0003,frame_1140.jpg,0.9958,1051 264 1280 662,0.0,robot sin anotar,
+35,PIDS2024_GR02_0003,frame_1152.jpg,0.9931,1124 301 1280 594,0.0,robot sin anotar,
+36,PIDS2024_GR02_0003,frame_1236.jpg,0.9881,806 243 1262 707,0.484,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+37,PIDS2024_GR02_0003,frame_1476.jpg,0.9934,449 249 506 292,0.015,robot sin anotar,
+38,PIDS2024_GR02_0003,frame_1572.jpg,0.9862,601 227 644 264,0.027,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+39,PIDS2024_GR02_0003,frame_1584.jpg,0.9956,558 243 598 284,0.016,robot sin anotar,
+40,PIDS2024_GR02_0003,frame_1608.jpg,0.9746,630 344 671 392,0.022,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+41,PIDS2024_GR04_0001,frame_0011.jpg,0.9699,0 187 45 269,0.0,robot sin anotar,
+42,PIDS2025_GR01_0005,frame_0054.jpg,0.9976,914 290 979 344,0.0,robot sin anotar,
+43,PIDS2025_GR01_0005,frame_0936.jpg,0.9964,822 341 867 380,0.446,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+44,PIDS2025_GR01_0005,frame_1152.jpg,0.9677,672 340 713 383,0.674,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+45,PIDS2025_GR01_0005,frame_1206.jpg,0.9928,555 337 602 376,0.462,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+46,PIDS2025_GR01_0005,frame_1224.jpg,0.9512,546 297 642 356,0.504,caja mal ajustada a un robot anotado,une dos robots en una caja
+47,PIDS2025_GR01_0005,frame_1782.jpg,0.9512,914 170 1029 265,0.0,no es un robot,coche aparcado
+48,PIDS2025_GR01_0009,frame_0198.jpg,0.9905,161 254 227 362,0.0,robot sin anotar,
+49,PIDS2025_GR01_0009,frame_0270.jpg,0.9991,6 184 432 691,0.0,robot sin anotar,
+50,PIDS2025_GR01_0009,frame_0414.jpg,0.9979,351 251 618 482,0.126,robot sin anotar,
+51,PIDS2025_GR01_0009,frame_0432.jpg,0.9977,607 270 756 404,0.055,robot sin anotar,
+52,PIDS2025_GR01_0009,frame_0432.jpg,0.9888,1 276 48 359,0.0,robot sin anotar,
+53,PIDS2025_GR01_0009,frame_0450.jpg,0.9947,41 259 151 368,0.0,robot sin anotar,
+54,PIDS2025_GR01_0009,frame_0468.jpg,0.997,13 180 754 720,0.038,robot sin anotar,
+55,PIDS2025_GR01_0009,frame_0504.jpg,0.9974,1018 288 1280 715,0.0,robot sin anotar,
+56,PIDS2025_GR01_0009,frame_0576.jpg,0.9953,714 139 1280 719,0.0,robot sin anotar,
+57,PIDS2025_GR01_0009,frame_0594.jpg,0.9874,1135 274 1279 602,0.0,robot sin anotar,
+58,PIDS2025_GR01_0009,frame_0720.jpg,0.998,1046 281 1168 376,0.0,robot sin anotar,
+59,PIDS2025_GR01_0009,frame_0900.jpg,0.9669,702 288 745 340,0.123,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+60,PIDS2025_GR01_0009,frame_0918.jpg,0.9977,936 271 1045 360,0.0,robot sin anotar,
+61,PIDS2025_GR01_0009,frame_0918.jpg,0.9965,652 272 763 370,0.0,robot sin anotar,
+62,PIDS2025_GR01_0009,frame_0954.jpg,0.9988,10 47 420 720,0.0,robot sin anotar,
+63,PIDS2025_GR01_0009,frame_0972.jpg,0.9984,4 267 269 720,0.0,robot sin anotar,
+64,PIDS2025_GR01_0009,frame_0990.jpg,0.9989,5 203 333 720,0.0,robot sin anotar,
+65,PIDS2025_GR01_0009,frame_1008.jpg,0.974,468 240 581 355,0.069,robot sin anotar,
+66,PIDS2025_GR01_0009,frame_1134.jpg,0.9842,20 322 229 504,0.316,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+67,PIDS2025_GR01_0009,frame_1242.jpg,0.9862,9 165 336 720,0.0,robot sin anotar,
+68,PIDS2025_GR01_0009,frame_1440.jpg,0.9684,25 24 597 720,0.014,robot sin anotar,
+69,PIDS2025_GR01_0009,frame_1458.jpg,0.998,4 249 492 718,0.046,robot sin anotar,
+70,PIDS2025_GR01_0009,frame_1476.jpg,0.9972,2 239 296 717,0.025,robot sin anotar,
+71,PIDS2025_GR01_0009,frame_1494.jpg,0.987,4 297 193 709,0.097,robot sin anotar,
+72,PIDS2025_GR01_0009,frame_1512.jpg,0.9971,0 269 170 574,0.0,robot sin anotar,
+73,PIDS2025_GR02_0001,frame_0040.jpg,0.9795,733 315 795 356,0.341,caja mal ajustada a un robot anotado,une dos robots en una caja
+74,PIDS2025_GR02_0001,frame_1520.jpg,0.9972,584 278 650 327,0.457,caja mal ajustada a un robot anotado,une dos robots en una caja
+75,PIDS2025_GR02_0001,frame_1860.jpg,0.9777,1221 311 1280 374,0.0,robot sin anotar,
+76,PIDS2025_GR02_0001,frame_2400.jpg,0.9943,3 288 80 356,0.004,robot sin anotar,
+77,PIDS2025_GR02_0002,frame_0240.jpg,0.9958,580 244 623 288,0.0,robot sin anotar,
+78,PIDS2025_GR02_0002,frame_0920.jpg,0.9986,530 265 580 309,0.001,robot sin anotar,
+79,PIDS2025_GR02_0009,frame_0380.jpg,0.9852,284 374 363 457,0.108,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+80,PIDS2025_GR02_0009,frame_0400.jpg,0.9693,463 375 524 472,0.443,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+81,PIDS2025_GR02_0009,frame_0500.jpg,0.9772,114 349 285 509,0.124,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+82,PIDS2025_GR02_0009,frame_0500.jpg,0.9761,496 375 568 425,0.023,caja mal ajustada a un robot anotado,"segunda caja, parcial, sobre un robot ya detectado"
+83,PIDS2025_GR02_0009,frame_1060.jpg,0.9702,292 591 510 720,0.497,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+84,PIDS2025_GR02_0009,frame_1320.jpg,0.9519,819 1 1280 663,0.0,no es un robot,sillas en penumbra
+85,PIDS2025_GR02_0009,frame_1500.jpg,0.9692,15 16 632 714,0.152,no es un robot,sillas en penumbra
+86,PIDS2025_GR02_0009,frame_1540.jpg,0.9809,778 0 1280 711,0.0,no es un robot,sillas en penumbra
+87,PIDS2025_GR02_0010,frame_0080.jpg,0.9973,3 437 104 690,0.0,robot sin anotar,
+88,PIDS2025_GR04_0000,frame_0030.jpg,0.9894,661 356 722 408,0.451,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+89,PIDS2025_GR04_0000,frame_0030.jpg,0.9735,549 390 592 421,0.357,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+90,PIDS2025_GR04_0000,frame_0045.jpg,0.998,862 318 938 377,0.414,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+91,PIDS2025_GR04_0000,frame_0060.jpg,0.9739,750 316 826 373,0.402,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+92,PIDS2025_GR04_0000,frame_0120.jpg,0.9883,646 335 710 404,0.485,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"
+93,PIDS2025_GR04_0000,frame_0195.jpg,0.963,816 361 876 420,0.358,caja mal ajustada a un robot anotado,"única caja del robot, con IoU < 0,5"

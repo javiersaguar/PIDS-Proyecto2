@@ -105,8 +105,8 @@ const FASES_RETO = [
     que: 'La asignatura dio validación y test. El entrenamiento lo grabamos nosotros: diez vídeos, 808 imágenes y 1420 robots anotados.' },
   { n: '02', nombre: 'Modelo', cifra: 0.952, dec: 3,
     que: 'Entrenamos un detector y lo comparamos con otras seis arquitecturas con las mismas reglas. Faster R-CNN v2 llega a 0,952 de AP@0,5 en test.' },
-  { n: '03', nombre: 'Robot', cifra: 2.3, dec: 1, sufijo: ' s',
-    que: 'Ese detector va en el portátil conectado al RoboMaster. Cada imagen tarda unos 2,3 s, así que el robot se para a mirar antes de disparar.' },
+  { n: '03', nombre: 'Robot', cifra: 108, sufijo: ' ms',
+    que: 'Ese detector va en la GPU del portátil conectado al RoboMaster: unos 108 ms por imagen, que bastan para disparar sin parar el robot.' },
 ];
 export function Reto() {
   return (

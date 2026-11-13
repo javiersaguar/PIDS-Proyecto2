@@ -1,6 +1,6 @@
 # Presentación del proyecto
 
-Borrador de la presentación final de PIDS (Grupo 2): las tres fases del proyecto (datos, modelo y robot) en 23 diapositivas animadas, hechas con React, Vite y Framer Motion.
+Borrador de la presentación final de PIDS (Grupo 2): las tres fases del proyecto (datos, modelo y robot) en 24 diapositivas animadas, hechas con React, Vite y Framer Motion.
 
 ## Cómo se usa
 
