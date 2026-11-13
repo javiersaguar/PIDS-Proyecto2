@@ -1,6 +1,6 @@
 # Presentación del proyecto
 
-Borrador de la presentación final de PIDS (Grupo 2): las tres fases del proyecto (datos, modelo y robot) en 24 diapositivas animadas, hechas con React, Vite y Framer Motion.
+Borrador de la presentación final de PIDS (Grupo 2): las tres fases del proyecto (datos, modelo y robot) en 26 diapositivas animadas, hechas con React, Vite y Framer Motion.
 
 ## Cómo se usa
 
@@ -42,7 +42,9 @@ No hay copias de imágenes ni cifras inventadas: todo se lee del repositorio.
 - **`scripts/preparar_datos.mjs`** lee:
   - los XML de `ENTREGA 1/WEEK1/ANOTACION/`, con los recuentos por vídeo y las cajas de los fotogramas que se muestran. Comprueba que el total sigue siendo 808 imágenes, 1420 robots y 375 difficult;
   - las curvas precisión-exhaustividad de `ENTREGA 1/WEEK2/resultados_test/`;
-  - las pérdidas por época y el AP de las siete arquitecturas de la web del Bloque 2.
+  - las pérdidas por época y el AP de las siete arquitecturas de la web del Bloque 2;
+  - el EDA de las cajas (posición, tamaño, forma, solapamiento y nitidez relativa de `ENTREGA 1/WEEK1/resultados_eda/metricas_imagenes.csv`). Comprueba que salen las cifras de los apartados 4.2 a 4.4 de la memoria.
+- **`herramientas/figuras_aumento.py`** (con el entorno `.venv-aug`, albumentations 1.4.18) aplica cada transformación del aumento por separado, también las que no se usaron, y escribe las imágenes en `docs/informes/figuras/aumento/` y sus cajas en `src/datos/aumento.js`.
 - **`src/datos/cifras.js`** recoge las tablas de la memoria: recogida, dataset, aumento, tasas, test, latencias, circuito, presupuesto de tiempo y robot camuflado. Si cambia una cifra en la memoria, se cambia aquí.
 
 ## Estructura
