@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>Comparar · boceto y animaciones</title>
+    <style>
+      /* Página de trabajo: el boceto congelado (npm run boceto, puerto 5192) junto a la versión actual (npm run dev). */
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body { background: #050605; color: #eceee6; font: 15px/1.4 ui-monospace, 'JetBrains Mono', Consolas, monospace; display: flex; flex-direction: column; }
+      header { display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-bottom: 1px solid #2c2e29; flex-wrap: wrap; }
+      header b { color: #5ce483; letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; }
+      button { font: inherit; color: #eceee6; background: #131512; border: 1px solid #2c2e29; border-radius: 3px; padding: 6px 12px; cursor: pointer; }
+      button:hover { background: #191c18; border-color: #5ce483; }
+      #n { min-width: 62px; text-align: center; color: #a2a79b; font-variant-numeric: tabular-nums; }
+      label { display: flex; align-items: center; gap: 6px; color: #a2a79b; cursor: pointer; }
+      .aviso { margin-left: auto; color: #6d7268; font-size: 13px; }
+      main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; align-content: center; }
+      figure { margin: 0; display: grid; gap: 6px; min-width: 0; }
+      figcaption { font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #a2a79b; }
+      figcaption span { color: #6d7268; text-transform: none; letter-spacing: 0; }
+      .marco { position: relative; aspect-ratio: 16 / 9; background: #0c0d0b; border: 1px solid #2c2e29; }
+      iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+      /* Capa que recoge los clics para que las dos avancen a la vez */
+      .capa { position: absolute; inset: 0; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <b>Comparar</b>
+      <button id="ant" type="button">← Anterior</button>
+      <span id="n"></span>
+      <button id="sig" type="button">Siguiente →</button>
+      <button id="rep" type="button">↻ Repetir la entrada (R)</button>
+      <label><input id="fx" type="checkbox" /> Plan B: sin las rompedoras (?fx=0)</label>
+      <span class="aviso">Flechas o clic para pasar las dos a la vez · si la izquierda sale vacía: npm run boceto</span>
+    </header>
+    <main>
+      <figure>
+        <figcaption>Boceto <span>· versión anterior (etiqueta presentacion-boceto-v1)</span></figcaption>
+        <div class="marco"><iframe id="izq" title="Boceto"></iframe><div class="capa"></div></div>
+      </figure>
+      <figure>
+        <figcaption>Con animaciones <span>· versión actual</span></figcaption>
+        <div class="marco"><iframe id="der" title="Con animaciones"></iframe><div class="capa"></div></div>
+      </figure>
+    </main>
+    <script>
+      const TOTAL = 26;
+      const BOCETO = `http://${location.hostname}:5192/`;
+      const izq = document.getElementById('izq');
+      const der = document.getElementById('der');
+      const fx = document.getElementById('fx');
+      let n = Math.min(Math.max(parseInt(location.hash.slice(1), 10) || 1, 1), TOTAL);
+
+      const actual = () => `./${fx.checked ? '?fx=0' : ''}`;
+      function pintar() {
+        document.getElementById('n').textContent = `${String(n).padStart(2, '0')} / ${TOTAL}`;
+        history.replaceState(null, '', `#${n}`);
+      }
+      // Cambiar solo el «#n» no recarga la página: cada presentación recibe el cambio y hace su transición
+      function ir(k) {
+        n = Math.min(Math.max(k, 1), TOTAL);
+        izq.src = `${BOCETO}#${n}`;
+        der.src = `${actual()}#${n}`;
+        pintar();
+      }
+      // El boceto no sabe repetir una entrada, así que se recarga; cuando está listo, la actual repite la suya
+      function repetir() {
+        izq.addEventListener('load', () => der.contentWindow.postMessage('pids:repetir', '*'), { once: true });
+        izq.src = `${BOCETO}?r=${Date.now()}#${n}`;
+      }
+
+      document.getElementById('ant').onclick = () => ir(n - 1);
+      document.getElementById('sig').onclick = () => ir(n + 1);
+      document.getElementById('rep').onclick = repetir;
+      fx.onchange = () => { der.src = `${actual()}#${n}`; repetir(); };
+      document.querySelectorAll('.capa').forEach((c) => c.addEventListener('click', (e) => {
+        const caja = c.getBoundingClientRect();
+        ir(n + (e.clientX - caja.left > caja.width * 0.3 ? 1 : -1));
+      }));
+      window.addEventListener('keydown', (e) => {
+        if (e.altKey || e.ctrlKey || e.metaKey) return;
+        if (['ArrowRight', 'PageDown', ' ', 'Enter', 'ArrowDown'].includes(e.key)) { e.preventDefault(); ir(n + 1); }
+        else if (['ArrowLeft', 'PageUp', 'Backspace', 'ArrowUp'].includes(e.key)) { e.preventDefault(); ir(n - 1); }
+        else if (e.key === 'Home') ir(1);
+        else if (e.key === 'End') ir(TOTAL);
+        else if (e.key === 'r' || e.key === 'R') repetir();
+      });
+      ir(n);
+    </script>
+  </body>
+</html>

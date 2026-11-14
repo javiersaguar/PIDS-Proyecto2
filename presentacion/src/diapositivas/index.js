@@ -1,5 +1,6 @@
 // Orden de la presentación. Cada diapositiva: fase (índice de FASES), título para el índice,
 // componente, pasos (fragmentos que se descubren con →) y notas para quien presenta (tecla N).
+// tipo: 'portada' o 'seccion' hacen su propia entrada; color es el de la cortina de una portada de fase.
 import { Portada, Reto } from './inicio.jsx';
 import { Anotacion, Aumento, Eda, EdaCajas, EdaPosicion, Recogida, Seccion1 } from './fase1.jsx';
 import { Ajuste, Arquitecturas, Cualitativo, Etapas, Hiperparametros, Seccion2, Sistema, Test } from './fase2.jsx';
@@ -51,7 +52,7 @@ export const DIAPOSITIVAS = [
   { id: 'cualitativo', fase: 2, titulo: 'Dónde acierta el detector y dónde se equivoca', Componente: Cualitativo,
     notas: 'Imágenes de test con el modelo final y el umbral 0,95. Arriba, tres imágenes en las que encuentra todos los robots; en test acierta todo en 546 de 718. Abajo, la discrepancia de criterios: nosotros anotamos cualquier robot del que se vea al menos un 30 %, aunque esté cortado por el borde, movido o lejos (como difficult); en los XML de validación y test muchos no están, así que detectarlos cuenta como falso positivo. Revisamos uno a uno los 94 falsos positivos de test (docs/revision_fp_test.csv): 59 son robots sin anotar, cortados por el borde, movidos, lejanos o tapados por otro robot; con ellos anotados, la precisión pasaría de 0,945 a 0,979. De los 35 restantes, 31 son cajas mal ajustadas o repetidas sobre un robot que sí está anotado (14 de ellas, la única caja de ese robot, con IoU menor de 0,5; 3 juntan dos robots en una caja) y solo 4 no son robots: tres sillas en penumbra y un coche. Lo que de verdad falla son los difficult: 74 de los 115 robots que no encuentra.' },
 
-  { id: 'seccion-3', fase: 3, tipo: 'seccion', titulo: 'Fase 3 · Robot', Componente: Seccion3,
+  { id: 'seccion-3', fase: 3, tipo: 'seccion', color: 'var(--rojo)', titulo: 'Fase 3 · Robot', Componente: Seccion3,
     notas: 'Fase 3: el detector en el RoboMaster EP.' },
   { id: 'circuito', fase: 3, titulo: 'Dónde se para, dónde va despacio y a quién dispara', Componente: Circuito,
     notas: 'Cómo pensamos el circuito. La animación recorre la demo con el tiempo comprimido (la real dura 2 min 18 s); al empezar cada ráfaga aparece 2 s la imagen real de ese rival. Azul: tramos rápidos, a 0,4–0,5 m/s. P1: se para, gira la torreta a la derecha (rival 1) y a la izquierda (robot camuflado); en cada uno, detección y ráfaga de 20 disparos. Naranja: los dos ataques sin parar a 0,1 m/s, al rival 2, que se mueve, durante el retroceso de R1, y al rival 3, escondido detrás, en los 2,3 m finales de R2. Los LED van como en el robot: ámbar buscando, rojo al disparar. Todos los tramos están medidos en el laboratorio.' },

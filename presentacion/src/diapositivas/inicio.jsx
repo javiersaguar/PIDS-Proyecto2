@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Cabecera, Contador, CURVA } from '../componentes/base.jsx';
-import { Fotograma } from '../componentes/fotograma.jsx';
+import { Barrido, Fotograma } from '../componentes/fotograma.jsx';
 import { Letras, Tipeo } from '../componentes/seccion.jsx';
 import { FOTOGRAMAS } from '../datos/fotogramas.js';
 import robotPartes from '@repo/docs/informes/figuras/robot_partes.png';
@@ -34,6 +34,8 @@ function Reloj() {
 }
 
 // --- 1. Portada --------------------------------------------------------------------------------
+// Acercamiento muy lento del fondo: lo comparten el fotograma y la retícula para que no se separen
+const ZOOM = { animate: { scale: [1, 1.045] }, transition: { delay: 1, duration: 45, ease: 'linear' } };
 export function Portada() {
   const f = FOTOGRAMAS.portada;
   const centros = f.cajas.map((c) => [(c.x + c.w / 2) * 100, (c.y + c.h / 2) * 100]);
@@ -45,20 +47,32 @@ export function Portada() {
         initial={{ scaleY: 0.003, scaleX: 0.6, filter: 'brightness(4) saturate(0)' }}
         animate={{ scaleY: [0.003, 0.003, 1], scaleX: [0.6, 1, 1], filter: ['brightness(4) saturate(0)', 'brightness(4) saturate(0)', 'brightness(1) saturate(1)'] }}
         transition={{ duration: 0.9, times: [0, 0.35, 1], ease: [0.7, 0, 0.2, 1] }}>
-        <Fotograma foto={f} modo="deteccion" escaneo retraso={1.2} confianzas={[0.99, 0.98, 0.97]}
-          style={{ position: 'absolute', inset: 0, aspectRatio: 'auto', border: 0, borderRadius: 0 }} />
+        <motion.div style={{ position: 'absolute', inset: 0 }} {...ZOOM}>
+          <Fotograma foto={f} modo="deteccion" escaneo retraso={1.2} confianzas={[0.99, 0.98, 0.97]}
+            style={{ position: 'absolute', inset: 0, aspectRatio: 'auto', border: 0, borderRadius: 0 }}>
+            {/* Cada vez que la retícula llega a un robot (cada 3 s), su caja da un destello */}
+            {f.cajas.map((c, k) => (
+              <motion.div key={k} aria-hidden style={{ position: 'absolute', left: `${c.x * 100}%`, top: `${c.y * 100}%`, width: `${c.w * 100}%`,
+                height: `${c.h * 100}%`, background: 'var(--acento)', pointerEvents: 'none' }}
+                initial={{ opacity: 0 }} animate={{ opacity: [0, 0.42, 0] }}
+                transition={{ delay: 2.6 + (k || f.cajas.length) * 3, duration: 0.5, repeat: Infinity, repeatDelay: 8.5 }} />
+            ))}
+          </Fotograma>
+        </motion.div>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(12,13,11,0.55) 0%, rgba(12,13,11,0) 22%, rgba(12,13,11,0.25) 48%, rgba(12,13,11,0.92) 76%, #0c0d0b 100%)' }} />
         <div className="lineas-crt" />
       </motion.div>
 
       {/* Retícula que salta de un robot a otro */}
-      <motion.div style={{ position: 'absolute', marginLeft: -60, marginTop: -60, zIndex: 3 }}
+      <motion.div style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none' }} {...ZOOM}>
+      <motion.div style={{ position: 'absolute', marginLeft: -60, marginTop: -60 }}
         initial={{ left: `${ruta[0][0]}%`, top: `${ruta[0][1]}%`, opacity: 0, scale: 2 }}
         animate={{ left: ruta.map((c) => `${c[0]}%`), top: ruta.map((c) => `${c[1]}%`), opacity: 1, scale: 1 }}
         transition={{ left: { delay: 2.6, duration: 9, repeat: Infinity, ease: 'easeInOut' },
           top: { delay: 2.6, duration: 9, repeat: Infinity, ease: 'easeInOut' },
           opacity: { delay: 2.4, duration: 0.3 }, scale: { delay: 2.4, duration: 0.5, ease: CURVA } }}>
         <Reticula />
+      </motion.div>
       </motion.div>
 
       {/* Indicadores de la cámara */}
@@ -98,6 +112,7 @@ export function Portada() {
     </div>
   );
 }
+Portada.imagenes = [FOTOGRAMAS.portada.src];
 
 // --- 2. El caso y cómo lo resolvimos ----------------------------------------------------------------
 const FASES_RETO = [
@@ -113,9 +128,12 @@ export function Reto() {
     <div className="diapo">
       <Cabecera fase="El caso" titulo="El caso: recorrer un circuito, ver a los rivales y dispararles" />
       <div className="cuerpo dos-asim-inv" style={{ alignItems: 'center' }}>
-        <motion.figure initial={{ opacity: 0, scale: 0.96, filter: 'blur(8px)' }} animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+        <motion.figure initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4, duration: 0.9, ease: CURVA }} style={{ margin: 0 }}>
-          <img src={robotPartes} alt="Partes de un RoboMaster EP" style={{ width: '100%', borderRadius: 4, border: '1px solid var(--borde)', display: 'block' }} />
+          <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 4, border: '1px solid var(--borde)' }}>
+            <img src={robotPartes} alt="Partes de un RoboMaster EP" style={{ width: '100%', display: 'block' }} />
+            <Barrido retraso={1.1} duracion={1.1} alto={90} />
+          </div>
           <figcaption className="etiqueta" style={{ marginTop: 12 }}>RoboMaster EP en uno de nuestros vídeos (V03)</figcaption>
         </motion.figure>
         <div style={{ position: 'relative', paddingLeft: 44 }}>
@@ -123,6 +141,13 @@ export function Reto() {
             <motion.line x1="2" x2="2" y1="0" y2="100%" stroke="var(--acento)" strokeWidth="2"
               initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.5, duration: 1.6, ease: 'easeInOut' }} />
           </svg>
+          {/* Un punto baja con la línea de la fase 01 a la 03: cada fase alimenta a la siguiente */}
+          <div aria-hidden style={{ position: 'absolute', left: 7, top: 18, bottom: 18, width: 10, pointerEvents: 'none' }}>
+            <motion.div style={{ height: '100%' }} initial={{ y: '0%', opacity: 0 }} animate={{ y: '100%', opacity: [0, 1, 1, 0] }}
+              transition={{ delay: 0.5, duration: 1.6, ease: 'easeInOut', opacity: { delay: 0.5, duration: 1.8, times: [0, 0.05, 0.88, 1] } }}>
+              <span style={{ display: 'block', width: 10, height: 10, marginTop: -5, borderRadius: '50%', background: 'var(--acento)', boxShadow: '0 0 12px var(--acento)' }} />
+            </motion.div>
+          </div>
           <div style={{ display: 'grid', gap: 26 }}>
             {FASES_RETO.map((f, i) => (
               <motion.div key={f.n} className="panel" style={{ position: 'relative' }}
@@ -143,3 +168,4 @@ export function Reto() {
     </div>
   );
 }
+Reto.imagenes = [robotPartes];
