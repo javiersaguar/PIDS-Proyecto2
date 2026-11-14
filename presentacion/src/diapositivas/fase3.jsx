@@ -642,7 +642,7 @@ const SORPRESA = [
 const ROBOTS_IA = [
   { foto: iaDetective, t: 'Camuflado', c: '0,99' },
   { foto: iaS1, t: 'Aliado S1', c: '1,00' },
-  { foto: iaOrugas, t: 'Orugas', c: '1,00' },
+  { foto: iaOrugas, t: 'Cabeza redonda', c: '1,00' },
   { foto: iaDibujo, t: 'Dibujo', c: '0,98' },
   { foto: iaBlanco, t: 'Blanco', c: '0,95' },
 ];
