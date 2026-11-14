@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { CURVA } from '../componentes/base.jsx';
-import { Fotograma } from '../componentes/fotograma.jsx';
+import { Barrido, Fotograma } from '../componentes/fotograma.jsx';
 import { Letras } from '../componentes/seccion.jsx';
 import { FOTOGRAMAS } from '../datos/fotogramas.js';
 import { Reticula } from './inicio.jsx';
@@ -34,7 +34,10 @@ export function Gracias() {
         animate={{ left: ['20%', '70%', `${cx - 6}%`, `${cx}%`], top: ['70%', '30%', `${cy + 4}%`, `${cy}%`], opacity: 1 }}
         transition={{ duration: 2.2, times: [0, 0.4, 0.8, 1], ease: 'easeInOut', opacity: { duration: 0.3 } }}>
         <motion.div initial={{ scale: 1.3 }} animate={{ scale: [1.3, 1.3, 0.85] }} transition={{ duration: 2.6, times: [0, 0.85, 1] }}>
-          <Reticula tam={160} color="var(--rojo)" fijada />
+          {/* Durante las preguntas, la retícula «respira» muy despacio */}
+          <motion.div animate={{ scale: [1, 1.07, 1] }} transition={{ delay: 3.2, duration: 5, ease: 'easeInOut', repeat: Infinity }}>
+            <Reticula tam={160} color="var(--rojo)" fijada />
+          </motion.div>
         </motion.div>
       </motion.div>
       <motion.div style={{ position: 'absolute', inset: 0, background: 'var(--rojo)', mixBlendMode: 'screen', zIndex: 4, pointerEvents: 'none' }}
@@ -47,9 +50,12 @@ export function Gracias() {
       </motion.div>
       <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 3.8, duration: 0.6, ease: CURVA }}
         style={{ position: 'absolute', right: 88, top: 80, width: 520, zIndex: 5, display: 'grid', gap: 14 }}>
-        {ENLACES.map((e) => (
+        {ENLACES.map((e, i) => (
           <div key={e.titulo} className="panel" style={{ display: 'flex', gap: 18, alignItems: 'center', padding: 14, background: 'rgba(12,13,11,0.85)' }}>
-            <img src={e.qr} alt={`Código QR: ${e.titulo}`} width="150" height="150" style={{ display: 'block', borderRadius: 3 }} />
+            <div style={{ position: 'relative', overflow: 'hidden', flex: 'none', borderRadius: 3 }}>
+              <img src={e.qr} alt={`Código QR: ${e.titulo}`} width="150" height="150" style={{ display: 'block' }} />
+              <Barrido retraso={4.3 + i * 0.25} duracion={0.7} alto={44} />
+            </div>
             <div>
               <div className="etiqueta">{e.titulo}</div>
               <div style={{ fontSize: 20, marginTop: 6, lineHeight: 1.3 }}>{e.texto}</div>
@@ -71,3 +77,4 @@ export function Gracias() {
     </div>
   );
 }
+Gracias.imagenes = [FOTOGRAMAS.objetivo.src, qrPages, qrRepo];

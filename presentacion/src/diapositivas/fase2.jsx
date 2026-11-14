@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { Cabecera, Contador, CURVA, fmt, Item, Revela } from '../componentes/base.jsx';
-import { Caja, Fotograma } from '../componentes/fotograma.jsx';
+import { Cabecera, Contador, CURVA, fmt, Item, Revela, useFx } from '../componentes/base.jsx';
+import { Barrido, Caja, Esquinas, Fotograma } from '../componentes/fotograma.jsx';
 import { BarrasH, Ejes, escala, Lineas } from '../componentes/graficas.jsx';
 import { Seccion } from '../componentes/seccion.jsx';
 import { FOTOGRAMAS } from '../datos/fotogramas.js';
@@ -69,7 +69,11 @@ export function Sistema() {
         {[['lote', 'Cada lote: entrenamiento'], ['epoca', 'Cada época: validación'], ['una', 'Una vez: test']].map(([g, t], i) => (
           <motion.span key={g} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 + i * 0.1 }}
             style={{ fontSize: 16, color: 'var(--suave)', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <i style={{ width: 14, height: 14, border: `2px solid ${COLOR[g]}`, display: 'inline-block' }} />{t}
+            <i style={{ position: 'relative', width: 14, height: 14, border: `2px solid ${COLOR[g]}`, display: 'inline-block' }}>
+              {/* La leyenda se enciende por turnos */}
+              <motion.b style={{ position: 'absolute', inset: 0, background: COLOR[g] }} initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }}
+                transition={{ delay: 1.3 + i * 0.55, duration: 0.55, times: [0, 0.2, 0.7, 1] }} />
+            </i>{t}
           </motion.span>
         ))}
       </div>
@@ -89,7 +93,9 @@ export function Sistema() {
               transition={{ delay: 1.6 + i * 0.12 }} style={{ font: 'italic 15px var(--mono)', fill: 'var(--suave)' }}>{f.t}</motion.text>
             {!reducido && (
               <circle r="5" fill={COLOR[f.g]} opacity="0.95" style={{ filter: `drop-shadow(0 0 6px ${COLOR[f.g]})` }}>
-                <animateMotion dur={`${DUR[f.g]}s`} repeatCount="indefinite" path={f.d} begin={`${2.8 + (i % 4) * 0.25}s`} />
+                {/* El test se hace una sola vez: su punto recorre la flecha una vez y se queda en el destino */}
+                <animateMotion dur={`${DUR[f.g] / (f.g === 'una' ? 2 : 1)}s`} repeatCount={f.g === 'una' ? 1 : 'indefinite'}
+                  fill={f.g === 'una' ? 'freeze' : 'remove'} path={f.d} begin={`${2.8 + (i % 4) * 0.25}s`} />
                 <animate attributeName="opacity" values="0;0.95" dur="0.01s" begin={`${2.8 + (i % 4) * 0.25}s`} fill="freeze" />
               </circle>
             )}
@@ -120,7 +126,9 @@ function aleatorio(semilla) {
   let s = semilla;
   return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
 }
-function Propuestas({ cajas }) {
+// «Las propuestas colapsan» (con fx): a los 2,5 s las propuestas que rodean a un robot se contraen sobre su caja
+// y las sueltas se apagan; de las anclas solo quedan encendidas las que caen dentro de un robot.
+function Propuestas({ cajas, fx }) {
   const r = aleatorio(7);
   const props = Array.from({ length: 28 }, (_, i) => {
     const base = cajas[i % cajas.length];
@@ -129,8 +137,23 @@ function Propuestas({ cajas }) {
     const h = cerca ? base.h * (0.7 + r() * 0.7) : 0.08 + r() * 0.2;
     const x = cerca ? base.x + base.w / 2 - w / 2 + (r() - 0.5) * base.w * 0.6 : r() * (1 - w);
     const y = cerca ? base.y + base.h / 2 - h / 2 + (r() - 0.5) * base.h * 0.6 : 0.15 + r() * (0.7 - h);
-    return { x, y, w, h };
+    return { x, y, w, h, base, cerca };
   });
+  if (fx) {
+    return props.map((p, i) => (
+      <motion.div key={i} style={{ position: 'absolute', left: `${p.x * 100}%`, top: `${p.y * 100}%`, width: `${p.w * 100}%`, height: `${p.h * 100}%`,
+        transformOrigin: '0 0' }}
+        animate={p.cerca
+          ? { x: `${((p.base.x - p.x) / p.w) * 100}%`, y: `${((p.base.y - p.y) / p.h) * 100}%`, scaleX: p.base.w / p.w, scaleY: p.base.h / p.h, opacity: [1, 1, 0] }
+          : { opacity: 0 }}
+        transition={p.cerca
+          ? { delay: 2.5, duration: 0.5, ease: [0.6, 0, 0.3, 1], opacity: { delay: 2.5, duration: 0.56, times: [0, 0.7, 1] } }
+          : { delay: 2.5, duration: 0.35 }}>
+        <motion.div style={{ position: 'absolute', inset: 0, border: '1.5px dashed rgba(236,238,230,0.75)' }}
+          initial={{ opacity: 0 }} animate={{ opacity: 0.9 }} transition={{ delay: 0.8 + i * 0.035, duration: 0.24 }} />
+      </motion.div>
+    ));
+  }
   return props.map((p, i) => (
     <motion.div key={i} style={{ position: 'absolute', left: `${p.x * 100}%`, top: `${p.y * 100}%`, width: `${p.w * 100}%`, height: `${p.h * 100}%`,
       border: '1.5px dashed rgba(236,238,230,0.75)' }}
@@ -138,22 +161,27 @@ function Propuestas({ cajas }) {
       transition={{ delay: 0.8 + i * 0.035, duration: 2.4, times: [0, 0.1, 0.7, 1] }} />
   ));
 }
-function Anclas() {
+function Anclas({ cajas, fx }) {
   const cols = 24;
   const filas = 13;
   return Array.from({ length: cols * filas }, (_, k) => {
     const c = k % cols;
     const f = Math.floor(k / cols);
+    const x = (c + 0.5) / cols;
+    const y = (f + 0.5) / filas;
+    const dentro = cajas.some((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+    const fin = fx ? (dentro ? [1, 1.5] : [0, 1]) : [0.45, 1];
     return (
       <motion.span key={k} style={{ position: 'absolute', left: `${((c + 0.5) / cols) * 100}%`, top: `${((f + 0.5) / filas) * 100}%`,
         width: 4, height: 4, marginLeft: -2, marginTop: -2, borderRadius: '50%', background: 'var(--azul)' }}
-        initial={{ opacity: 0, scale: 0 }} animate={{ opacity: [0, 1, 1, 0.45], scale: [0, 1.4, 1, 1] }}
+        initial={{ opacity: 0, scale: 0 }} animate={{ opacity: [0, 1, 1, fin[0]], scale: [0, 1.4, 1, fin[1]] }}
         transition={{ delay: 0.8 + (c + f) * 0.025, duration: 1.6, times: [0, 0.2, 0.5, 1] }} />
     );
   });
 }
 export function Etapas() {
   const f = FOTOGRAMAS.objetivo;
+  const fx = useFx();
   const pasos = [
     ['Dos etapas', 'Faster R-CNN', 'Primero una red (RPN) propone unas mil zonas donde puede haber un robot; después revisa cada zona, decide si es un robot y ajusta su caja.'],
     ['Una etapa', 'RetinaNet · SSD', 'Reparte por toda la imagen cajas de referencia (anclas) de varios tamaños y decide de una sola pasada cuáles tienen un robot y cómo ajustarlas.'],
@@ -165,7 +193,7 @@ export function Etapas() {
         {pasos.map(([t, m, d], i) => (
           <div key={t} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <Fotograma foto={f} modo="nada">
-              {i === 0 ? <Propuestas cajas={f.cajas} /> : <Anclas />}
+              {i === 0 ? <Propuestas cajas={f.cajas} fx={fx} /> : <Anclas cajas={f.cajas} fx={fx} />}
               {f.cajas.map((c, k) => <Caja key={k} caja={c} retraso={i === 0 ? 3.0 + k * 0.15 : 2.4} rotulo="ROBOT" confianza={0.99 - k * 0.03} />)}
               <motion.div className="mono" style={{ position: 'absolute', right: 12, bottom: 10, fontSize: 14, background: 'rgba(12,13,11,0.75)', padding: '4px 8px' }}
                 initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }} transition={{ delay: 0.8, duration: 2.2, times: [0, 0.1, 0.8, 1] }}>
@@ -196,14 +224,14 @@ export function Hiperparametros() {
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6, ease: CURVA }}>
           <div className="etiqueta">Lote · AP@0,5 tras 3 épocas de prueba</div>
           <h3 style={{ marginTop: 10 }}>8 imágenes</h3>
-          <BarrasH anchoEtiqueta={44} retraso={0.7} paso={0.12} alto={34} textoNulo="no cabe en la GPU"
+          <BarrasH anchoEtiqueta={44} retraso={0.7} paso={0.12} alto={34} textoNulo="no cabe en la GPU" fijar={1.9}
             datos={LOTES.map((l) => ({ etiqueta: l.lote, valor: l.ap, destacado: l.lote === '8' }))} />
           <p style={{ marginTop: 16, fontSize: 21 }}>Con 1, 2 u 8 el resultado es casi el mismo: elegimos 8, el mayor que cabe en la memoria de la GPU.</p>
         </motion.div>
         <motion.div className="panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.6, ease: CURVA }}>
           <div className="etiqueta">Tasa · AP@0,5 tras 3 épocas de prueba</div>
           <h3 style={{ marginTop: 10 }}>10<sup>−3</sup></h3>
-          <BarrasH anchoEtiqueta={44} retraso={1.0} paso={0.14} alto={34} textoNulo="no converge"
+          <BarrasH anchoEtiqueta={44} retraso={1.0} paso={0.14} alto={34} textoNulo="no converge" fijar={2.1} nuloTiembla
             datos={TASAS.map((t) => ({ etiqueta: t.tasa, valor: t.ap, destacado: t.tasa === '10⁻³' }))} />
           <p style={{ marginTop: 16, fontSize: 21 }}>Con 10⁻⁵ casi no aprende y con 10⁻¹ el entrenamiento se rompe. Elegimos 10⁻³: aprende bien y rápido.</p>
         </motion.div>
@@ -236,8 +264,9 @@ function PuntosAjuste() {
           const elegido = i === 2;
           const color = elegido ? 'var(--acento)' : 'var(--texto)';
           return (
-            <div key={e.nombre} style={{ display: 'grid', gridTemplateColumns: COLUMNAS, alignItems: 'center', columnGap: 28,
+            <div key={e.nombre} style={{ position: 'relative', display: 'grid', gridTemplateColumns: COLUMNAS, alignItems: 'center', columnGap: 28,
               borderTop: i ? '1px solid var(--borde)' : 'none' }}>
+              {elegido && <Esquinas retraso={2.3} style={{ inset: '6px -14px' }} />}
               <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 + i * 0.22, duration: 0.5, ease: CURVA }}
                 style={{ textAlign: 'right', fontSize: 26, fontWeight: 600, lineHeight: 1.15, color }}>
                 {e.nombre}
@@ -295,8 +324,8 @@ export function Ajuste() {
             <Lineas ancho={680} alto={360} dominioX={[1, 30]} dominioY={[0.05, 0.26]} ticksX={[1, 5, 10, 15, 20, 25, 30]}
               ticksY={[0.05, 0.1, 0.15, 0.2, 0.25]} fy={(v) => coma(v)} tituloX="época" m={{ l: 64, r: 120, t: 24, b: 56 }}
               series={[
-                { nombre: 'validación', x: s.epoca, y: s.perdidaValidacion, color: 'var(--naranja)', retraso: 0.6, duracion: 2.2 },
-                { nombre: 'entrenamiento', x: s.epoca, y: s.perdidaEntrenamiento, color: 'var(--azul)', retraso: 0.6, duracion: 2.2, discontinua: true },
+                { nombre: 'validación', x: s.epoca, y: s.perdidaValidacion, color: 'var(--naranja)', retraso: 0.6, duracion: 2.2, punta: true },
+                { nombre: 'entrenamiento', x: s.epoca, y: s.perdidaEntrenamiento, color: 'var(--azul)', retraso: 0.6, duracion: 2.2, discontinua: true, punta: true },
               ]}
               extra={({ sx, sy, m, alto }) => (
                 <g>
@@ -331,6 +360,11 @@ export function Arquitecturas() {
   const frontera = ['SSD300 VGG16', 'Faster R-CNN MobileNet', 'RetinaNet v2', 'Faster R-CNN v2']
     .map((n) => ARQUITECTURAS.find((a) => a.modelo === n));
   const orden = [...ARQUITECTURAS].sort((a, b) => a.ms - b.ms);
+  const reducido = useReducedMotion();
+  const final = ARQUITECTURAS.find((a) => a.modelo === 'Faster R-CNN v2');
+  // Modelos que otro supera a la vez en precisión y en tiempo
+  const superado = (a) => ARQUITECTURAS.some((b) => b.ap > a.ap && b.ms < a.ms);
+  const caida = alto - m.b - 4 - m.t;
   const pos = { 'Faster R-CNN v2': [0, -22, 'middle'], 'RetinaNet v2': [-10, -12, 'end'], 'Faster R-CNN v1': [16, 6],
     'RetinaNet v1': [14, 24], 'Faster R-CNN MobileNet': [16, -10], 'SSD300 VGG16': [16, 6], SSDlite320: [16, -14] };
   return (
@@ -348,11 +382,20 @@ export function Arquitecturas() {
             const color = elegido ? 'var(--acento)' : rapido ? 'var(--azul)' : '#8a9084';
             const [dx, dy, ancla] = pos[a.modelo];
             return (
-              <g key={a.modelo}>
+              // Mientras se dibuja la frontera, los modelos superados se atenúan un momento
+              <motion.g key={a.modelo} animate={{ opacity: superado(a) ? [1, 0.3, 0.3, 1] : 1 }} transition={{ delay: 2.4, duration: 2.2, times: [0, 0.15, 0.8, 1] }}>
+                {a.ap < minY ? (
+                  // SSDlite320 queda fuera de la escala: cae desde arriba hasta el borde inferior
+                  <motion.circle cx={sx(a.ms)} cy={sy(a.ap)} r="8" fill={color} stroke="var(--fondo)" strokeWidth="2"
+                    initial={{ y: -caida, opacity: 0 }} animate={{ y: [-caida, 0, -16, 0], opacity: 1 }}
+                    transition={{ delay: 0.5 + i * 0.22, duration: 0.85, times: [0, 0.62, 0.82, 1], ease: ['easeIn', 'easeOut', 'easeIn'],
+                      opacity: { delay: 0.5 + i * 0.22, duration: 0.15 } }} />
+                ) : (
                 <motion.circle cx={sx(a.ms)} cy={sy(a.ap)} r={elegido || rapido ? 11 : 8} fill={color} stroke="var(--fondo)" strokeWidth="2"
                   initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.5 + i * 0.22, type: 'spring', stiffness: 380, damping: 16 }} style={{ transformBox: 'fill-box', transformOrigin: 'center' }} />
-                {elegido && (
+                )}
+                {elegido && !reducido && (
                   // Pulso con SMIL: anima el radio sin transformaciones, así no se desplaza
                   <circle cx={sx(a.ms)} cy={sy(a.ap)} r="11" fill="none" stroke="var(--acento)" strokeWidth="2" opacity="0">
                     <animate attributeName="r" values="11;30;30" keyTimes="0;0.7;1" dur="2s" begin="2.2s" repeatCount="indefinite" />
@@ -364,9 +407,21 @@ export function Arquitecturas() {
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 + i * 0.22 }}>
                   {a.corto} · {coma(a.ap, 3)}{a.ap < minY ? ' ↓ fuera de escala' : ''}
                 </motion.text>
-              </g>
+              </motion.g>
             );
           })}
+          {/* La retícula de la portada se cierra sobre el modelo final y se retira */}
+          {!reducido && (
+            <g transform={`translate(${sx(final.ms)},${sy(final.ap)})`} style={{ pointerEvents: 'none' }}>
+              <motion.g initial={{ scale: 3.2, opacity: 0, rotate: -50 }} animate={{ scale: [3.2, 0.8, 0.8], opacity: [0, 1, 1, 0], rotate: 0 }}
+                transition={{ delay: 1.9, duration: 1.1, times: [0, 0.6, 1], ease: CURVA, opacity: { delay: 1.9, duration: 1.25, times: [0, 0.15, 0.8, 1] } }}>
+                <circle r="24" fill="none" stroke="var(--acento)" strokeWidth="2" />
+                {[0, 90, 180, 270].map((g) => (
+                  <line key={g} x1="0" y1="-50" x2="0" y2="-30" stroke="var(--acento)" strokeWidth="2.5" transform={`rotate(${g})`} />
+                ))}
+              </motion.g>
+            </g>
+          )}
         </svg>
         <Revela style={{ display: 'grid', gap: 18 }} retraso={2.4} paso={0.2}>
           <Item className="panel" style={{ borderColor: 'var(--acento-oscuro)' }}>
@@ -394,6 +449,9 @@ export function Test() {
   const v2 = generados.curvaPr.faster_rcnn_v2;
   const v3 = generados.curvaPr.faster_rcnn_v3;
   const elegido = (c, u) => c.find((p) => Math.abs(p.umbral - u) < 1e-6);
+  // «El umbral se clava en 0,95» (con fx): un escaneo descubre las métricas, las esquinas se enganchan al AP y el
+  // círculo recorre la curva con el trazo, umbral a umbral, hasta clavarse en el 0,95 (el último punto de la curva).
+  const fx = useFx();
   return (
     <div className="diapo">
       <Cabecera fase="Fase 02 · Evaluación final" titulo="El resultado en imágenes que el modelo no había visto" />
@@ -402,12 +460,18 @@ export function Test() {
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} style={{ margin: 0, fontSize: 19, color: 'var(--suave)' }}>
             Faster R-CNN v2, una sola vez, sobre {fmt(t.imagenes)} imágenes de otros grupos ({fmt(t.robots)} robots) y con el umbral 0,95 fijado en validación.
           </motion.p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            {fx && (
+              <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+                <Barrido retraso={0.2} duracion={0.75} alto={70} />
+              </div>
+            )}
             {[['AP@0,5', t.ap50, true], ['F1', t.f1], ['Precisión', t.precision], ['Exhaustividad', t.exhaustividad]].map(([n, v, a], i) => (
               <motion.div key={n} className="panel" style={{ padding: '14px 20px' }} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + i * 0.12 }}>
                 <div className="etiqueta">{n}</div>
                 <div className={`cifra peque${a ? ' acento' : ''}`} style={{ marginTop: 6 }}><Contador valor={v} dec={3} retraso={0.4 + i * 0.12} /></div>
+                {fx && a && <Esquinas retraso={2.05} />}
               </motion.div>
             ))}
           </div>
@@ -434,7 +498,8 @@ export function Test() {
             m={{ l: 70, r: 30, t: 44, b: 64 }}
             series={[
               { nombre: 'Faster R-CNN v2', x: v2.map((p) => p.recall), y: v2.map((p) => p.precision), color: 'var(--acento)', ancho: 3,
-                retraso: 0.8, duracion: 2, etiqueta: { texto: 'Faster R-CNN v2', dx: -14, dy: 5, ancla: 'end', en: 'inicio' } },
+                retraso: 0.8, duracion: 2, etiqueta: { texto: 'Faster R-CNN v2', dx: -14, dy: 5, ancla: 'end', en: 'inicio' },
+                punta: fx ? { r: 9, hueca: true, fija: true } : undefined },
               { nombre: 'MobileNet', x: v3.map((p) => p.recall), y: v3.map((p) => p.precision), color: 'var(--azul)', discontinua: true,
                 retraso: 1.2, duracion: 2, etiqueta: { texto: 'MobileNet', dx: -14, dy: 5, ancla: 'end', en: 'inicio' } },
             ]}
@@ -445,11 +510,19 @@ export function Test() {
                 <g>
                   {[[a, 'var(--acento)', 'umbral 0,95'], [b, 'var(--azul)', 'umbral 0,55']].map(([p, c, txt], i) => (
                     <g key={txt}>
+                      {fx && i === 0 ? (
+                        // El círculo ya ha llegado con el trazo (2,8 s): al clavarse suelta un anillo
+                        <motion.circle cx={sx(p.recall)} cy={sy(p.precision)} fill="none" stroke={c} strokeWidth="2.5"
+                          initial={{ r: 9, opacity: 0 }} animate={{ r: [9, 11, 34], opacity: [0, 0.95, 0] }}
+                          transition={{ delay: 2.8, duration: 0.75, times: [0, 0.08, 1], ease: 'easeOut' }} />
+                      ) : (
                       <motion.circle cx={sx(p.recall)} cy={sy(p.precision)} r="9" fill="var(--fondo)" stroke={c} strokeWidth="3"
                         initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 3.2 + i * 0.2, type: 'spring' }}
                         style={{ transformBox: 'fill-box', transformOrigin: 'center' }} />
+                      )}
                       <motion.text x={sx(p.recall) + (i ? -14 : 14)} y={sy(p.precision) + (i ? 28 : -14)} textAnchor={i ? 'end' : 'start'}
-                        style={{ fill: c, fontSize: 15 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.4 + i * 0.2 }}>{txt}</motion.text>
+                        style={{ fill: c, fontSize: 15 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        transition={{ delay: fx && i === 0 ? 3 : 3.4 + i * 0.2 }}>{txt}</motion.text>
                     </g>
                   ))}
                 </g>
@@ -486,7 +559,10 @@ export function Cualitativo() {
                   return (
                     <motion.figure key={pie} style={{ margin: 0 }} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 + n * 0.15, duration: 0.5, ease: CURVA }}>
-                      <img src={foto} alt={`${f.titulo}: ${pie}`} style={{ width: '100%', display: 'block', borderRadius: 4, border: '1px solid var(--borde)' }} />
+                      <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 4, border: '1px solid var(--borde)' }}>
+                        <img src={foto} alt={`${f.titulo}: ${pie}`} style={{ width: '100%', display: 'block' }} />
+                        <Barrido retraso={0.55 + n * 0.15} duracion={0.6} alto={50} />
+                      </div>
                       <figcaption className="mono" style={{ fontSize: 14, color: 'var(--suave)', marginTop: 5 }}>{pie}</figcaption>
                     </motion.figure>
                   );
@@ -499,9 +575,9 @@ export function Cualitativo() {
           </motion.p>
         </div>
         <Revela as="ul" className="lista" retraso={1.2} paso={0.22} style={{ fontSize: 19 }}>
-          <Item as="li"><span><b>Acierta todo</b> en <span className="mono acento">546</span> de las 718 imágenes de test, también con varios robots difíciles.</span></Item>
+          <Item as="li"><span><b>Acierta todo</b> en <Contador className="mono acento" valor={546} duracion={1} retraso={1.4} /> de las 718 imágenes de test, también con varios robots difíciles.</span></Item>
           <Item as="li"><span><b>Criterios distintos:</b> nosotros anotamos cualquier robot del que se vea un 30 %, aunque esté cortado, movido o lejos. En los XML de validación y test muchos de esos no están.</span></Item>
-          <Item as="li"><span><b>Errores que no lo son:</b> revisados uno a uno, <span className="mono acento">59</span> de los 94 falsos positivos de test son robots sin anotar. Anotados, la precisión pasaría de 0,945 a 0,979.</span></Item>
+          <Item as="li"><span><b>Errores que no lo son:</b> revisados uno a uno, <Contador className="mono acento" valor={59} duracion={1} retraso={1.85} /> de los 94 falsos positivos de test son robots sin anotar. Anotados, la precisión pasaría de 0,945 a 0,979.</span></Item>
           <Item as="li"><span><b>Errores de verdad:</b> 31 cajas mal ajustadas o repetidas sobre un robot anotado y solo 4 que no son robots: tres sillas en penumbra y un coche.</span></Item>
           <Item as="li"><span><b>Lo que más falla:</b> los difficult, 74 de los 115 robots que no encuentra.</span></Item>
         </Revela>
@@ -509,3 +585,8 @@ export function Cualitativo() {
     </div>
   );
 }
+
+// Imágenes que se precargan mientras se muestra la diapositiva anterior
+Seccion2.imagenes = [curvaPrPng, precisionLatenciaPng, tasaPng, erroresPng, casosPng];
+Etapas.imagenes = [FOTOGRAMAS.objetivo.src];
+Cualitativo.imagenes = [acierto1, acierto2, acierto3, sinAnotar1, sinAnotar2, sinAnotar3];

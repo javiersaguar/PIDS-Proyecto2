@@ -8,7 +8,9 @@
     "datos": "node scripts/preparar_datos.mjs",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "boceto": "vite preview --outDir boceto --port 5192 --strictPort",
+    "html": "node scripts/html_unico.mjs"
   },
   "dependencies": {
     "framer-motion": "11.18.2",

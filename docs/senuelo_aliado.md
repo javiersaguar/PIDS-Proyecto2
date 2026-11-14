@@ -37,7 +37,7 @@ Confianza máxima del detector. Por encima de 0,95 (95 %), la demo dispara.
 | Detective con bigote | 99,5 % | 99,7 % | 99,8 % | 99,9 % | 99,6 % | 0,0 % | 5 de 5 |
 | Detective | 98,8 % | 99,8 % | 99,8 % | 99,9 % | 99,7 % | 0,0 % | 5 de 5 |
 | Aliado S1 | 99,8 % | 99,9 % | 99,9 % | 99,9 % | 99,9 % | 5,7 % | 5 de 5 |
-| Aliado con orugas | 99,8 % | 99,9 % | 99,9 % | 99,9 % | 99,9 % | 11,0 % | 5 de 5 |
+| Aliado cabeza redonda | 99,8 % | 99,9 % | 99,9 % | 99,9 % | 99,9 % | 11,0 % | 5 de 5 |
 | Aliado en dibujo | 97,8 % | 97,9 % | 96,5 % | 93,7 % | 92,7 % | 7,6 % | 3 de 5 |
 | Aliado blanco | 95,4 % | 95,7 % | 97,1 % | 98,9 % | 98,5 % | 12,5 % | 5 de 5 |
 
@@ -65,7 +65,7 @@ cualquier objeto destacado.
   derecha, el robot gira la torreta a la izquierda y elimina al **robot camuflado**
   (`detective.jpg`). Mensaje: aunque se disfrace, lo reconoce.
 - **El modelo ha aprendido el concepto de robot, no solo el RoboMaster.** Cinco robots
-  distintos, también con orugas, cabeza redonda o en dibujo, dan positivo. Solo el dibujo
+  distintos, también con cabeza redonda o en dibujo, dan positivo. Solo el dibujo
   baja del umbral, y solo a distancia y por poco. Con un robot "con forma de robot" no se
   puede garantizar que el detector no lo vea. En la demo real bastaría un reflejo o un cambio
   de luz para que pase del umbral.

@@ -142,6 +142,17 @@ body {
 .lineas-crt { position: absolute; inset: 0; pointer-events: none; opacity: 0.18; mix-blend-mode: overlay;
   background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0 1px, transparent 1px 3px); }
 
+/* «Fijar»: esquinas de la caja de detección alrededor de un elemento */
+.fijar { position: absolute; pointer-events: none; z-index: 2; }
+.fijar i { position: absolute; width: var(--t, 14px); height: var(--t, 14px); border: 0 solid currentColor; }
+.fijar i.a { left: 0; top: 0; border-left-width: var(--g, 2.5px); border-top-width: var(--g, 2.5px); }
+.fijar i.b { right: 0; top: 0; border-right-width: var(--g, 2.5px); border-top-width: var(--g, 2.5px); }
+.fijar i.c { right: 0; bottom: 0; border-right-width: var(--g, 2.5px); border-bottom-width: var(--g, 2.5px); }
+.fijar i.d { left: 0; bottom: 0; border-left-width: var(--g, 2.5px); border-bottom-width: var(--g, 2.5px); }
+/* Interferencia de la prueba sorpresa */
+.interferencia { position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(236, 238, 230, 0.16) 0 2px, transparent 2px 7px); }
+
 /* --- gráficas -------------------------------------------------------------------------------- */
 .grafica { width: 100%; height: 100%; overflow: visible; }
 .grafica text { font-family: var(--mono); fill: var(--suave); font-size: 15px; }
@@ -152,9 +163,20 @@ body {
 /* --- barra inferior, índice y notas ------------------------------------------------------- */
 .barra { position: absolute; left: 0; right: 0; bottom: 0; height: 52px; display: flex; align-items: center; gap: 24px; padding: 0 28px; z-index: 20; font: 500 14px/1 var(--mono); color: var(--tenue); letter-spacing: 0.08em; text-transform: uppercase; }
 .barra .progreso { flex: 1; display: flex; gap: 6px; }
-.barra .tramo { flex: var(--n); height: 3px; background: var(--borde); position: relative; overflow: hidden; }
-.barra .tramo i { position: absolute; inset: 0; background: var(--acento); transform-origin: left; }
+.barra .tramo { flex: var(--n); height: 3px; position: relative; }
+.barra .pista { position: absolute; inset: 0; background: var(--borde); overflow: hidden; }
+.barra .pista i { position: absolute; inset: 0; background: var(--acento); transform-origin: left; }
+/* Punto luminoso en la diapositiva actual */
+.barra .punto { position: absolute; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: var(--acento); box-shadow: 0 0 10px var(--acento); }
+.barra .punto::after { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 1px solid var(--acento); animation: latido 2.6s ease-out infinite; }
+@keyframes latido { 0% { transform: scale(0.5); opacity: 0.8; } 70%, 100% { transform: scale(1.5); opacity: 0; } }
+.barra .nombre-fase, .barra .contador { display: inline-flex; overflow: hidden; height: 18px; align-items: center; white-space: pre; }
+.barra .nombre-fase span, .barra .contador span { display: inline-block; }
 .barra .contador { color: var(--suave); font-variant-numeric: tabular-nums; }
+
+/* Corte entre diapositivas: una línea verde barre la pantalla de arriba abajo */
+.corte { position: absolute; left: 0; right: 0; top: 0; height: 2px; z-index: 15; pointer-events: none; background: var(--acento); box-shadow: 0 0 18px var(--acento); }
+.corte::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: 110px; background: linear-gradient(180deg, transparent, rgba(92, 228, 131, 0.1)); }
 
 .indice { position: absolute; inset: 0; z-index: 40; background: rgba(8, 9, 8, 0.94); padding: 60px 80px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-content: start; overflow: auto; }
 .indice h2 { grid-column: 1 / -1; margin: 0 0 10px; font-size: 36px; }
@@ -169,5 +191,6 @@ body {
 .ayuda { position: absolute; right: 28px; top: 22px; z-index: 25; font: 500 13px/1 var(--mono); color: var(--tenue); letter-spacing: 0.08em; }
 
 @media (prefers-reduced-motion: reduce) {
-  .escaneo, .lineas-crt { display: none; }
+  .escaneo, .lineas-crt, .interferencia { display: none; }
+  .barra .punto::after { animation: none; opacity: 0; }
 }

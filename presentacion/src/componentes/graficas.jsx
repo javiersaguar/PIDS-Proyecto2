@@ -1,10 +1,12 @@
-import { motion } from 'framer-motion';
+import { easeInOut, motion, useReducedMotion } from 'framer-motion';
 import { CURVA, fmt } from './base.jsx';
+import { Esquinas } from './fotograma.jsx';
 
 // --- barras horizontales (HTML) -----------------------------------------------------------------
-// datos: [{ etiqueta, valor, texto?, destacado?, nulo? }]; min/max fijan la escala del eje
+// datos: [{ etiqueta, valor, texto?, destacado?, nulo? }]; min/max fijan la escala del eje.
+// fijar: segundo en el que las esquinas se enganchan a la barra destacada. nuloTiembla: la etiqueta sin valor tiembla.
 export function BarrasH({ datos, min = 0, max = 1, dec = 3, retraso = 0.3, paso = 0.12, alto = 46, anchoEtiqueta = 300,
-  colorDestacado = 'var(--acento)', textoNulo = 'sin memoria' }) {
+  colorDestacado = 'var(--acento)', textoNulo = 'sin memoria', fijar, nuloTiembla = false }) {
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       {datos.map((d, i) => {
@@ -17,8 +19,9 @@ export function BarrasH({ datos, min = 0, max = 1, dec = 3, retraso = 0.3, paso 
             </motion.div>
             <div style={{ position: 'relative', height: alto, display: 'flex', alignItems: 'center' }}>
               {d.valor == null ? (
-                <motion.span className="mono" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: retraso + i * paso + 0.3 }}
-                  style={{ color: 'var(--rojo)', fontSize: 18, border: '1px dashed var(--rojo)', padding: '6px 10px', borderRadius: 2 }}>
+                <motion.span className="mono" initial={{ opacity: 0 }} animate={{ opacity: 1, x: nuloTiembla ? [0, -5, 5, -4, 3, -1, 0] : 0 }}
+                  transition={{ delay: retraso + i * paso + 0.3, x: { delay: retraso + i * paso + 0.9, duration: 0.45 } }}
+                  style={{ display: 'inline-block', color: 'var(--rojo)', fontSize: 18, border: '1px dashed var(--rojo)', padding: '6px 10px', borderRadius: 2 }}>
                   {d.texto || textoNulo}
                 </motion.span>
               ) : (
@@ -32,6 +35,10 @@ export function BarrasH({ datos, min = 0, max = 1, dec = 3, retraso = 0.3, paso 
                     style={{ marginLeft: 14, fontSize: 21, fontWeight: 600, color: d.destacado ? 'var(--texto)' : 'var(--suave)', whiteSpace: 'nowrap' }}>
                     {d.texto || fmt(d.valor, dec)}
                   </motion.span>
+                  {fijar != null && d.destacado && (
+                    <Esquinas retraso={fijar} color={d.color || colorDestacado} tam={11} grosor={2}
+                      style={{ left: -6, top: -5, bottom: -5, right: 'auto', width: `calc(${Math.max(frac * 100, 0.6)}% + 12px)` }} />
+                  )}
                 </>
               )}
             </div>
@@ -65,12 +72,49 @@ export function Ejes({ ancho, alto, m, sx, sy, ticksX, ticksY, fx = (v) => v, fy
   );
 }
 
+// Puntos por los que pasa la punta de una línea mientras se dibuja (misma curva de tiempo que el trazo)
+function recorrido(xs, ys, sx, sy, n = 44) {
+  const p = xs.map((x, i) => [sx(x), sy(ys[i])]);
+  const acum = [0];
+  for (let i = 1; i < p.length; i += 1) acum.push(acum[i - 1] + Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]));
+  const cx = [];
+  const cy = [];
+  for (let k = 0; k <= n; k += 1) {
+    const d = easeInOut(k / n) * acum[acum.length - 1];
+    let j = 1;
+    while (j < p.length - 1 && acum[j] < d) j += 1;
+    const f = (d - acum[j - 1]) / (acum[j] - acum[j - 1] || 1);
+    cx.push(p[j - 1][0] + (p[j][0] - p[j - 1][0]) * f);
+    cy.push(p[j - 1][1] + (p[j][1] - p[j - 1][1]) * f);
+  }
+  return { cx, cy };
+}
+// Punto luminoso en la punta de la línea, como en un osciloscopio. punta: true | { r, hueca, fija }
+function Punta({ s, sx, sy, retraso, duracion }) {
+  const { cx, cy } = recorrido(s.x, s.y, sx, sy);
+  const o = s.punta === true ? {} : s.punta;
+  const transicion = { delay: retraso, duration: duracion, ease: 'linear' };
+  const opacidad = (v) => ({ opacity: o.fija ? [0, v, v, v] : [0, v, v, 0] });
+  const tiempos = { ...transicion, times: [0, 0.04, 0.94, 1] };
+  return (
+    <g>
+      {!o.hueca && (
+        <motion.circle r={(o.r || 4) * 2.4} fill={s.color} initial={{ cx: cx[0], cy: cy[0], opacity: 0 }}
+          animate={{ cx, cy, ...opacidad(0.28) }} transition={{ ...transicion, opacity: tiempos }} />
+      )}
+      <motion.circle r={o.r || 4} fill={o.hueca ? 'var(--fondo)' : s.color} stroke={o.hueca ? s.color : 'none'} strokeWidth={o.hueca ? 3 : 0}
+        initial={{ cx: cx[0], cy: cy[0], opacity: 0 }} animate={{ cx, cy, ...opacidad(1) }} transition={{ ...transicion, opacity: tiempos }} />
+    </g>
+  );
+}
+
 // --- líneas que se dibujan --------------------------------------------------------------------
-// series: [{ nombre, x, y, color, ancho?, discontinua?, retraso?, etiqueta? ({dx,dy,texto}) }]
+// series: [{ nombre, x, y, color, ancho?, discontinua?, retraso?, etiqueta? ({dx,dy,texto}), punta? }]
 export function Lineas({ series, dominioX, dominioY, ticksX, ticksY, fx, fy, tituloX, tituloY, ancho = 760, alto = 440,
   m = { l: 70, r: 30, t: 40, b: 64 }, duracion = 1.8, extra, logX = false }) {
   const sx = escala(dominioX, [m.l, ancho - m.r], logX);
   const sy = escala(dominioY, [alto - m.b, m.t]);
+  const reducido = useReducedMotion();
   return (
     <svg className="grafica" viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label={series.map((s) => s.nombre).join(', ')}>
       <Ejes {...{ ancho, alto, m, sx, sy, ticksX, ticksY, fx, fy, tituloX, tituloY }} />
@@ -90,6 +134,7 @@ export function Lineas({ series, dominioX, dominioY, ticksX, ticksY, fx, fy, tit
                 {s.etiqueta?.texto || s.nombre}
               </motion.text>
             )}
+            {s.punta && !reducido && <Punta s={s} sx={sx} sy={sy} retraso={s.retraso || 0.3} duracion={s.duracion || duracion} />}
           </g>
         );
       })}

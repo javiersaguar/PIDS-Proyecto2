@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Cabecera, Contador, CURVA, fmt, Item, Revela } from '../componentes/base.jsx';
+import { Cabecera, CURVA, fmt, Item, Revela, useFila, useFx } from '../componentes/base.jsx';
+import { Barrido, Esquinas } from '../componentes/fotograma.jsx';
 import { Seccion } from '../componentes/seccion.jsx';
 import { CIRCUITO } from '../datos/cifras.js';
 import laboratorioJpg from '@repo/docs/informes/figuras/bloque3/laboratorio.jpg';
@@ -108,6 +109,7 @@ function estado(t) {
   let pos = puntos[0];
   let ang = 0;
   const eliminados = new Set();
+  const camino = [puntos[0]];   // vértices del recorrido ya hechos
   for (const p of GUION.pasos) {
     const f = Math.min(1, Math.max(0, (t - p.desde) / p.dur));
     const actual = t < p.desde + p.dur;
@@ -148,9 +150,11 @@ function estado(t) {
       e.modo = 'fin';
     }
     e.ang = ang;
+    e.camino = p.tipo === 'mover' ? [...camino, pos] : camino;
     if (actual) return e;
+    if (p.tipo === 'mover') camino.push(puntos[p.i + 1]);
   }
-  return { pos, ang, modo: 'fin', vel: 0, objetivo: null, eliminados, paso: GUION.pasos[GUION.pasos.length - 1] };
+  return { pos, ang, modo: 'fin', vel: 0, objetivo: null, eliminados, camino, paso: GUION.pasos[GUION.pasos.length - 1] };
 }
 
 function useReloj(activo) {
@@ -226,6 +230,11 @@ function Mapa({ e, t, compacto = false, posRival = rivalEn }) {
       {ataques.map((k) => (
         <path key={k} d={`M${px(puntos[k]).join(',')}L${px(puntos[k + 1]).join(',')}`} stroke="var(--naranja)" strokeWidth="9" strokeLinecap="round" opacity="0.9" />
       ))}
+      {/* El trozo de recorrido ya hecho queda más brillante */}
+      {e.camino && e.camino.length > 1 && (
+        <path d={e.camino.map((p, i) => `${i ? 'L' : 'M'}${px(p).join(',')}`).join('')} fill="none" stroke="var(--texto)" strokeWidth="1.6"
+          strokeLinejoin="round" strokeLinecap="round" opacity="0.7" />
+      )}
       {/* Parada en P1 */}
       <g transform={`translate(${px([2.85, 0]).join(',')})`}>
         <polygon points="-9,-22 9,-22 22,-9 22,9 9,22 -9,22 -22,9 -22,-9" fill="none" stroke="var(--rojo)" strokeWidth="2.5" opacity="0.8" />
@@ -439,6 +448,8 @@ function RepeticionReal({ k }) {
   const c = DEMO_REAL[k];
   const fase = FASE_REAL[c.fase];
   const total = DEMO_REAL[DEMO_REAL.length - 1].t;
+  // En R2 fija el objetivo equivocado: el visor da un parpadeo rojo y su borde pasa a rojo
+  const fallo = c.fase === 'R2-marcha';
   useEffect(() => {
     for (let j = 1; j <= 8; j += 1) if (DEMO_REAL[k + j]) new Image().src = DEMO_REAL[k + j].url;
   }, [k]);
@@ -446,6 +457,13 @@ function RepeticionReal({ k }) {
     <div style={{ display: 'grid', gap: 12 }}>
       <div style={{ position: 'relative', aspectRatio: '16 / 9', background: '#000', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--borde)' }}>
         <img src={c.url} alt={`Cámara del robot en la demo oficial: ${fase.nombre}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        {fallo && (
+          <>
+            <motion.div aria-hidden style={{ position: 'absolute', inset: 0, background: 'var(--rojo)', mixBlendMode: 'screen', pointerEvents: 'none' }}
+              initial={{ opacity: 0.6 }} animate={{ opacity: [0.6, 0, 0.35, 0] }} transition={{ duration: 0.6 }} />
+            <div aria-hidden style={{ position: 'absolute', inset: 0, border: '3px solid var(--rojo)', pointerEvents: 'none' }} />
+          </>
+        )}
         <div className="mono" style={{ position: 'absolute', left: 0, top: 0, padding: '7px 14px', background: fase.color, color: 'var(--fondo)', fontSize: 18, fontWeight: 700 }}>
           {fase.nombre.toUpperCase()}
         </div>
@@ -467,6 +485,9 @@ export function Circuito() {
   const t = useReloj(true);
   const e = estado(t);
   const activa = etapaActiva(e);
+  // Un resalte del color del tramo se desliza de una tarjeta a otra
+  const tarjetas = useRef(null);
+  const marca = useFila(tarjetas, activa);
   return (
     <div className="diapo">
       <Cabecera fase="Fase 03 · Circuito" titulo="Dónde se para, dónde va despacio y a quién dispara" />
@@ -475,15 +496,23 @@ export function Circuito() {
           <Mapa e={e} t={t} />
           <FotoAtaque k={fotoReal(t)} />
         </div>
+        <div ref={tarjetas} style={{ position: 'relative' }}>
+        {marca && (
+          <motion.div aria-hidden style={{ position: 'absolute', left: -11, top: 0, width: 4, borderRadius: 2,
+            background: activa >= 0 ? MODOS[ETAPAS[activa].modo].color : 'var(--borde)' }}
+            initial={false} animate={{ y: marca.y, height: marca.h, opacity: activa >= 0 ? 1 : 0 }}
+            transition={{ duration: 0.45, ease: CURVA, opacity: { duration: 0.25 } }} />
+        )}
         <Revela style={{ display: 'grid', gap: 12 }} retraso={0.5} paso={0.14}>
           {ETAPAS.map((s, i) => (
-            <Item key={s.etiqueta} className="panel" style={{ padding: '16px 20px', transition: 'border-color 0.3s, background 0.3s',
+            <Item key={s.etiqueta} data-fila={i} className="panel" style={{ padding: '16px 20px', transition: 'border-color 0.3s, background 0.3s',
               borderColor: i === activa ? MODOS[s.modo].color : undefined, background: i === activa ? 'var(--panel-2)' : undefined }}>
               <div className="etiqueta" style={{ color: i === activa ? MODOS[s.modo].color : undefined }}>{s.etiqueta}</div>
               <p style={{ color: 'var(--texto)', marginTop: 6, fontSize: 20 }}>{s.texto}</p>
             </Item>
           ))}
         </Revela>
+        </div>
       </div>
     </div>
   );
@@ -583,6 +612,8 @@ const DECISIONES = [
   { t: '0,1 m/s al atacar en marcha', gana: 'tiempo para girar la torreta, fijar al rival, avisar y disparar', cede: '52 de los 138 s de la demo' },
   { t: 'Imagen reciente', gana: 'un hilo lee siempre el vídeo; en marcha se usa la imagen menos movida', cede: 'en las paradas espera a la torreta quieta para confirmar' },
 ];
+// Hijo de un <Item>: aparece un momento después que su tarjeta
+const DESPUES = { oculto: { opacity: 0, x: -8 }, visible: { opacity: 1, x: 0, transition: { delay: 0.42, duration: 0.4, ease: CURVA } } };
 export function Decisiones() {
   return (
     <div className="diapo">
@@ -604,7 +635,8 @@ export function Decisiones() {
             <Item key={d.t} className="panel" style={{ padding: '16px 22px' }}>
               <b style={{ fontSize: 21 }}>{d.t}</b>
               <p style={{ margin: '8px 0 0', fontSize: 17, color: 'var(--suave)' }}><span className="mono" style={{ color: 'var(--acento)' }}>+ </span>{d.gana}</p>
-              <p style={{ margin: '4px 0 0', fontSize: 17, color: 'var(--suave)' }}><span className="mono" style={{ color: 'var(--naranja)' }}>− </span>{d.cede}</p>
+              {/* Lo que se cede entra justo después de lo que se gana */}
+              <motion.p variants={DESPUES} style={{ margin: '4px 0 0', fontSize: 17, color: 'var(--suave)' }}><span className="mono" style={{ color: 'var(--naranja)' }}>− </span>{d.cede}</motion.p>
             </Item>
           ))}
         </Revela>
@@ -630,29 +662,71 @@ function Mosaico({ fotos, columnas }) {
     </Revela>
   );
 }
+// «Señal alterada» (con fx): el mosaico sufre medio segundo de interferencia, con franjas y desfase rojo y cian,
+// y después cada foto recibe su veredicto: marco naranja si no dispara, destello rojo si dispara.
+const ALTERA = { delay: 0.95, duration: 0.5 };
+const DESFASES = [['#ff2a2a', [0, -14, 8, -6, 0]], ['#22e0ff', [0, 12, -7, 5, 0]]];
+function MosaicoAlterado({ fotos, columnas }) {
+  const capa = { position: 'absolute', inset: 0, pointerEvents: 'none' };
+  const imagen = { width: '100%', height: '100%', objectFit: 'cover', display: 'block' };
+  return (
+    <Revela style={{ display: 'grid', gridTemplateColumns: `repeat(${columnas}, 1fr)`, gap: 18 }} retraso={0.3} paso={0.16}>
+      {fotos.map((f, k) => {
+        const veredicto = 1.6 + k * 0.22;
+        return (
+          <Item key={f.titulo} style={{ position: 'relative', aspectRatio: '16 / 9', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--borde)' }}>
+            <motion.img src={f.foto} alt={`${f.titulo}: ${f.texto}`} style={imagen}
+              animate={{ x: [0, -12, 9, -5, 0], scale: [1, 1.04, 1.04, 1.04, 1] }} transition={ALTERA} />
+            {/* Cada capa es la foto en un solo color (multiplicar), sumada a la original (trama) y desplazada */}
+            {DESFASES.map(([color, xs]) => (
+              <motion.div key={color} aria-hidden style={{ ...capa, background: color, mixBlendMode: 'screen' }}
+                initial={{ opacity: 0 }} animate={{ opacity: [0, 0.85, 0.2, 0.7, 0], x: xs }} transition={ALTERA}>
+                <img src={f.foto} alt="" style={{ ...imagen, mixBlendMode: 'multiply' }} />
+              </motion.div>
+            ))}
+            <motion.div aria-hidden className="interferencia" initial={{ opacity: 0 }} animate={{ opacity: [0, 0.9, 0.3, 0.8, 0], y: [0, 6, -4, 3, 0] }} transition={ALTERA} />
+            <div className="mono" style={{ position: 'absolute', left: 0, top: 0, padding: '6px 12px', background: f.color, color: 'var(--fondo)', fontSize: 16, fontWeight: 700 }}>
+              {f.n} · {f.titulo.toUpperCase()}
+            </div>
+            <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '22px 14px 9px', fontSize: 17,
+              background: 'linear-gradient(transparent, rgba(0,0,0,0.85))', color: '#fff' }}>{f.texto}</div>
+            {f.dispara ? (
+              <motion.div aria-hidden style={{ ...capa, background: 'var(--rojo)', mixBlendMode: 'screen' }}
+                initial={{ opacity: 0 }} animate={{ opacity: [0, 0.6, 0, 0.35, 0] }} transition={{ delay: veredicto, duration: 0.55 }} />
+            ) : (
+              <motion.div aria-hidden style={{ ...capa, border: '4px solid var(--naranja)' }}
+                initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }} transition={{ delay: veredicto, duration: 1.3, times: [0, 0.12, 0.75, 1] }} />
+            )}
+          </Item>
+        );
+      })}
+    </Revela>
+  );
+}
 // --- El intento sorpresa del profesor ----------------------------------------------------------------------
 // evidencias/20261112_160426: imágenes del profesor, robots tapados y un robot distinto en la recta final.
 const SORPRESA = [
   { n: 'P1', titulo: 'Foto entre humo', texto: '0,59: lo ve, pero no le dispara', foto: humoJpg, color: 'var(--naranja)' },
   { n: 'P1', titulo: 'Robot tapado', texto: 'Con una tela: 0,85 a 0,91, no le dispara', foto: tapadoJpg, color: 'var(--naranja)' },
-  { n: 'R1', titulo: 'Rival 2', texto: '1,00: lo sigue y le dispara', foto: profeRival2Jpg, color: 'var(--acento)' },
-  { n: 'R2', titulo: 'Robot distinto', texto: 'Otro modelo, con partes rojas: 0,99', foto: distintoJpg, color: 'var(--acento)' },
+  { n: 'R1', titulo: 'Rival 2', texto: '1,00: lo sigue y le dispara', foto: profeRival2Jpg, color: 'var(--acento)', dispara: true },
+  { n: 'R2', titulo: 'Robot distinto', texto: 'Otro modelo, con partes rojas: 0,99', foto: distintoJpg, color: 'var(--acento)', dispara: true },
 ];
 // Robots generados con IA, con la caja del modelo de la demo (docs/informes/figuras/senuelo/detector/)
 const ROBOTS_IA = [
   { foto: iaDetective, t: 'Camuflado', c: '0,99' },
   { foto: iaS1, t: 'Aliado S1', c: '1,00' },
-  { foto: iaOrugas, t: 'Orugas', c: '1,00' },
+  { foto: iaOrugas, t: 'Cabeza redonda', c: '1,00' },
   { foto: iaDibujo, t: 'Dibujo', c: '0,98' },
   { foto: iaBlanco, t: 'Blanco', c: '0,95' },
 ];
 export function Sorpresa() {
+  const fx = useFx();
   return (
     <div className="diapo">
       <Cabecera fase="Fase 03 · Prueba sorpresa" titulo="El profesor cambió los robots" />
       <div className="cuerpo" style={{ gridTemplateColumns: '1.2fr 1fr', alignItems: 'start', gap: 28 }}>
         <div style={{ display: 'grid', gap: 14 }}>
-          <Mosaico fotos={SORPRESA} columnas={2} />
+          {fx ? <MosaicoAlterado fotos={SORPRESA} columnas={2} /> : <Mosaico fotos={SORPRESA} columnas={2} />}
           <motion.div className="panel" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 18, alignItems: 'center', padding: 12 }}
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.5 }}>
             <img src={mandoTapadoJpg} alt="Robot tapado con una tela detectado a 0,97 con la interfaz del mando" style={{ width: '100%', borderRadius: 4, display: 'block' }} />
@@ -708,7 +782,10 @@ const GRUPOS_UMBRAL = [
   { parada: 'R1-marcha', titulo: 'R1 · rival 2', ancho: 250, color: 'var(--naranja)' },
   { parada: 'R2-marcha', titulo: 'R2 · robot distinto', ancho: 330, color: 'var(--naranja)' },
 ];
-function GraficaUmbral() {
+// «La barrera del umbral» (con fx): la línea de 0,95 se dibuja como un láser y los puntos suben desde abajo.
+// Los de P1 se quedan por debajo; los que la cruzan se encienden en verde, y cuando la cruza el primer punto
+// del robot distinto la línea parpadea, sale un anillo y aparece «0,96: lo fija y le dispara».
+function GraficaUmbral({ fx }) {
   const W = 900;
   const H = 470;
   const m = { l: 70, r: 20, t: 46, b: 40 };
@@ -728,6 +805,11 @@ function GraficaUmbral() {
   const r2 = grupos[2];
   const cruce = r2.det.findIndex((d) => d.aceptadas > 0);
   const primera = r2.det.findIndex((d) => d.conf.length);
+  const conPunto = (lista) => lista.filter((d) => d.conf.length).length;
+  const retrasoPunto = (n) => 0.8 + n * 0.012;
+  // Momento en que el primer punto aceptado de R2 cruza la línea (unos 2,1 s)
+  const tCruce = retrasoPunto(conPunto(grupos[0].det) + conPunto(grupos[1].det) + conPunto(r2.det.slice(0, cruce + 1))) + 0.2;
+  const yCruce = cruce > 0 ? sy(r2.det[cruce].conf[0]) : 0;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', display: 'block' }} role="img"
       aria-label="Confianza de cada detección en el intento del profesor frente al umbral 0,95">
@@ -748,13 +830,35 @@ function GraficaUmbral() {
           </text>
         </g>
       ))}
-      <motion.line x1={m.l} x2={W - m.r} y1={yu} y2={yu} stroke="var(--rojo)" strokeWidth="2.5" strokeDasharray="8 6"
-        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.3, duration: 0.8 }} />
-      <text x={m.l + 8} y={yu - 10} style={{ font: '700 16px var(--mono)', fill: 'var(--rojo)' }}>umbral 0,95</text>
+      <motion.g animate={fx && cruce > 0 ? { opacity: [1, 0.15, 1, 0.35, 1] } : undefined} transition={{ delay: tCruce, duration: 0.45 }}>
+        {fx && (
+          <motion.line x1={m.l} x2={W - m.r} y1={yu} y2={yu} stroke="var(--rojo)" strokeWidth="9" strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0.5 }} animate={{ pathLength: 1, opacity: [0.5, 0.5, 0] }}
+            transition={{ delay: 0.3, duration: 0.8, opacity: { delay: 0.3, duration: 1.5, times: [0, 0.55, 1] } }} />
+        )}
+        <motion.line x1={m.l} x2={W - m.r} y1={yu} y2={yu} stroke="var(--rojo)" strokeWidth="2.5" strokeDasharray="8 6"
+          initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.3, duration: 0.8 }} />
+        <text x={m.l + 8} y={yu - 10} style={{ font: '700 16px var(--mono)', fill: 'var(--rojo)' }}>umbral 0,95</text>
+      </motion.g>
       {/* Un punto por imagen: su detección más segura */}
       {grupos.map((g) => g.det.map((d, i) => d.conf.slice(0, 1).map((c, j) => {
         orden += 1;
         const ok = d.aceptadas > 0;
+        if (fx) {
+          const t = retrasoPunto(orden);
+          const radio = g.parada === 'P1' ? 8 : 5;
+          return (
+            <motion.g key={`${g.parada}-${i}-${j}`} initial={{ y: sy(0.3) - sy(c) + 14, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: t, duration: 0.5, ease: CURVA, opacity: { delay: t, duration: 0.12 } }}>
+              <motion.circle cx={sx(g, i)} cy={sy(c)} r={radio} fill="var(--fondo)" stroke="var(--naranja)" strokeWidth="2.5"
+                animate={{ opacity: ok ? 0 : 1 }} transition={{ delay: t + 0.2, duration: 0.12 }} />
+              {ok && (
+                <motion.circle cx={sx(g, i)} cy={sy(c)} r={radio} fill="var(--acento)" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  transition={{ delay: t + 0.2, duration: 0.12 }} />
+              )}
+            </motion.g>
+          );
+        }
         return (
           <motion.circle key={`${g.parada}-${i}-${j}`} cx={sx(g, i)} cy={sy(c)} r={g.parada === 'P1' ? 8 : 5}
             fill={ok ? 'var(--acento)' : 'var(--fondo)'} stroke={ok ? 'none' : 'var(--naranja)'} strokeWidth="2.5"
@@ -773,13 +877,25 @@ function GraficaUmbral() {
           <g>
             <line x1={sx(r2, primera)} x2={sx(r2, cruce)} y1={sy(0.36)} y2={sy(0.36)} stroke="var(--texto)" strokeWidth="1.5" />
             <text x={(sx(r2, primera) + sx(r2, cruce)) / 2} y={sy(0.36) + 22} textAnchor="middle" style={{ fill: 'var(--texto)' }}>sube en 3 s</text>
-            <circle cx={sx(r2, cruce)} cy={sy(PROFESOR.filter((d) => d.parada === 'R2-marcha')[cruce].conf[0])} r="13" fill="none" stroke="var(--acento)" strokeWidth="2.5" />
-            <line x1={sx(r2, cruce)} x2={sx(r2, cruce + 12)} y1={sy(0.93)} y2={sy(0.7)} stroke="var(--acento)" strokeWidth="1.5" />
-            <text x={sx(r2, cruce + 12)} y={sy(0.7) + 20} textAnchor="middle" style={{ fill: 'var(--acento)' }}>0,96: lo fija</text>
-            <text x={sx(r2, cruce + 12)} y={sy(0.7) + 38} textAnchor="middle" style={{ fill: 'var(--acento)' }}>y le dispara</text>
           </g>
         )}
       </motion.g>
+      {/* El cruce: con fx aparece en cuanto el punto pasa la línea; sin fx, con el resto de anotaciones */}
+      {cruce > 0 && (
+        <g style={{ font: '600 15px var(--mono)' }}>
+          {fx && (
+            <motion.circle cx={sx(r2, cruce)} cy={yCruce} fill="none" stroke="var(--acento)" strokeWidth="2.5"
+              initial={{ r: 13, opacity: 0 }} animate={{ r: [13, 16, 48], opacity: [0, 0.95, 0] }}
+              transition={{ delay: tCruce, duration: 0.8, times: [0, 0.08, 1], ease: 'easeOut' }} />
+          )}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: fx ? tCruce + 0.1 : 2.6 }}>
+            <circle cx={sx(r2, cruce)} cy={yCruce} r="13" fill="none" stroke="var(--acento)" strokeWidth="2.5" />
+            <line x1={sx(r2, cruce)} x2={sx(r2, cruce + 12)} y1={sy(0.93)} y2={sy(0.7)} stroke="var(--acento)" strokeWidth="1.5" />
+            <text x={sx(r2, cruce + 12)} y={sy(0.7) + 20} textAnchor="middle" style={{ fill: 'var(--acento)' }}>0,96: lo fija</text>
+            <text x={sx(r2, cruce + 12)} y={sy(0.7) + 38} textAnchor="middle" style={{ fill: 'var(--acento)' }}>y le dispara</text>
+          </motion.g>
+        </g>
+      )}
     </svg>
   );
 }
@@ -800,20 +916,26 @@ function EscalaAlto() {
   const sx = (v) => 10 + (v / 100) * (W - 20);
   return (
     <svg viewBox={`0 0 ${W} 120`} style={{ width: '100%', display: 'block' }} aria-label="Alto de la caja en porcentaje de la imagen">
-      {ALTOS.map((z) => (
+      {/* Las tres zonas crecen una tras otra y después se enganchan las marcas */}
+      {ALTOS.map((z, i) => (
         <g key={z.texto}>
-          <rect x={sx(z.desde)} y={44} width={sx(z.hasta) - sx(z.desde) - 2} height={20} fill={z.color} opacity="0.85" />
-          <text x={(sx(z.desde) + sx(z.hasta)) / 2} y={84} textAnchor="middle" style={{ font: '600 13px var(--mono)', fill: z.color }}>{z.texto}</text>
+          <motion.rect x={sx(z.desde)} y={44} width={sx(z.hasta) - sx(z.desde) - 2} height={20} fill={z.color} opacity="0.85"
+            initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.6 + i * 0.25, duration: 0.45, ease: CURVA }}
+            style={{ transformBox: 'fill-box', transformOrigin: 'left center' }} />
+          <motion.text x={(sx(z.desde) + sx(z.hasta)) / 2} y={84} textAnchor="middle" style={{ font: '600 13px var(--mono)', fill: z.color }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.85 + i * 0.25 }}>{z.texto}</motion.text>
         </g>
       ))}
-      {MARCAS_ALTO.map((mk) => (
-        <g key={mk.texto}>
+      {MARCAS_ALTO.map((mk, i) => (
+        <motion.g key={mk.texto} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.45 + i * 0.12 }}>
           {mk.rango
-            ? <rect x={sx(mk.rango[0])} y={38} width={sx(mk.rango[1]) - sx(mk.rango[0])} height={32} fill="none" stroke="var(--texto)" strokeWidth="2" />
+            ? <motion.rect x={sx(mk.rango[0])} y={38} width={sx(mk.rango[1]) - sx(mk.rango[0])} height={32} fill="none" stroke="var(--texto)" strokeWidth="2"
+              initial={{ scale: 1.45 }} animate={{ scale: 1 }} transition={{ delay: 1.45 + i * 0.12, duration: 0.45, ease: CURVA }}
+              style={{ transformBox: 'fill-box', transformOrigin: 'center' }} />
             : <line x1={sx(mk.v)} x2={sx(mk.v)} y1={36} y2={72} stroke="var(--texto)" strokeWidth="2.5" />}
           <text x={sx(mk.v)} y={mk.abajo ? 106 : 26} textAnchor={mk.v > 80 ? 'end' : mk.v < 10 ? 'start' : 'middle'}
             style={{ font: '13px var(--mono)', fill: 'var(--texto)' }}>{mk.texto}</text>
-        </g>
+        </motion.g>
       ))}
       <text x={sx(100)} y={118} textAnchor="end" style={{ font: '12px var(--mono)', fill: 'var(--tenue)' }}>alto de la caja, % de la imagen</text>
     </svg>
@@ -826,13 +948,14 @@ const RAZONES_UMBRAL = [
   { t: 'Lo que sí ataca', d: 'El robot distinto sube a 0,96 en unos 3 s y le dispara.', color: 'var(--acento)' },
 ];
 export function Umbral() {
+  const fx = useFx();
   return (
     <div className="diapo">
       <Cabecera fase="Fase 03 · Cuándo disparar" titulo="Por qué 0,95" />
       <div className="cuerpo" style={{ gridTemplateColumns: '1.75fr 1fr', alignItems: 'start', gap: 28 }}>
         <div className="panel" style={{ padding: '14px 18px' }}>
           <div className="etiqueta" style={{ marginBottom: 4 }}>Intento del profesor: cada punto es una imagen</div>
-          <GraficaUmbral />
+          <GraficaUmbral fx={fx} />
           <div className="mono" style={{ display: 'flex', gap: 24, fontSize: 15, color: 'var(--suave)', marginTop: 4 }}>
             <span><span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: 'var(--acento)', marginRight: 8 }} />pasa el umbral: le dispara</span>
             <span><span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: 6, border: '2.5px solid var(--naranja)', marginRight: 8 }} />no llega: no le dispara</span>
@@ -870,15 +993,21 @@ export function Mando() {
         <div style={{ display: 'grid', gap: 16 }}>
           <div style={{ position: 'relative', borderRadius: 6, overflow: 'hidden', border: '1px solid var(--borde)' }}>
             <motion.img src={mandoJpg} alt="Interfaz del mando con un robot detectado al 99,9 %" style={{ width: '100%', display: 'block' }}
-              initial={{ scale: 1.25, x: '6%', y: '4%', filter: 'blur(6px)' }} animate={{ scale: 1, x: '0%', y: '0%', filter: 'blur(0px)' }}
+              initial={{ scale: 1.25, x: '6%', y: '4%' }} animate={{ scale: 1, x: '0%', y: '0%' }}
               transition={{ delay: 0.2, duration: 1.6, ease: CURVA }} />
             <motion.div style={{ position: 'absolute', left: '44.5%', top: '42%', width: '15%', height: '22%', border: '2px solid var(--acento)', boxShadow: '0 0 0 9999px rgba(0,0,0,0.35)' }}
-              initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }} transition={{ delay: 1.9, duration: 2.4, times: [0, 0.15, 0.8, 1] }} />
+              initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }} transition={{ delay: 1.9, duration: 2.4, times: [0, 0.15, 0.8, 1] }}>
+              {/* El recuadro de la detección se engancha con las esquinas */}
+              <Esquinas retraso={1.9} tam={12} desde={1.5} style={{ inset: -6 }} />
+            </motion.div>
           </div>
           <motion.div className="panel" style={{ padding: '16px 22px' }} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.6 }}>
             <div className="etiqueta" style={{ marginBottom: 10 }}>Se puede cambiar desde Ajustes</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {AJUSTES.map((a) => <span key={a} className="chip">{a}</span>)}
+              {AJUSTES.map((a, k) => (
+                <motion.span key={a} className="chip" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.75 + k * 0.08, duration: 0.35, ease: CURVA }}>{a}</motion.span>
+              ))}
             </div>
             <p style={{ margin: '10px 0 0', fontSize: 17, color: 'var(--suave)' }}>
               El asistente centra la torreta en el rival y, con el disparo automático, dispara al tenerlo centrado.
@@ -918,9 +1047,10 @@ export function MandoReal() {
       <Cabecera fase="Fase 03 · Control manual" titulo="La interfaz con el robot real" />
       <div className="cuerpo" style={{ gridTemplateColumns: '1.35fr 1fr', alignItems: 'start', gap: 28 }}>
         <Revela style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }} retraso={0.3} paso={0.16}>
-          {CAPTURAS_MANDO.map((c) => (
+          {CAPTURAS_MANDO.map((c, k) => (
             <Item key={c.texto} style={{ position: 'relative', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--borde)', aspectRatio: '16 / 9' }}>
               <img src={c.foto} alt={c.texto} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              <Barrido retraso={0.7 + k * 0.16} duracion={0.6} alto={56} />
               <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '20px 12px 8px', fontSize: 15,
                 background: 'linear-gradient(transparent, rgba(0,0,0,0.88))', color: '#fff' }}>{c.texto}</div>
             </Item>
@@ -932,7 +1062,8 @@ export function MandoReal() {
             <Item key={h.que} className="panel" style={{ padding: '16px 22px' }}>
               <b style={{ fontSize: 21 }}>{h.que}</b>
               <p style={{ margin: '6px 0 0', fontSize: 17, color: 'var(--suave)' }}>{h.ahora}</p>
-              <p style={{ margin: '8px 0 0', fontSize: 17 }}><span className="mono acento">Haría falta: </span>{h.falta}</p>
+              {/* La solución entra un momento después que el problema */}
+              <motion.p variants={DESPUES} style={{ margin: '8px 0 0', fontSize: 17 }}><span className="mono acento">Haría falta: </span>{h.falta}</motion.p>
             </Item>
           ))}
         </Revela>
@@ -940,3 +1071,11 @@ export function MandoReal() {
     </div>
   );
 }
+
+// Imágenes que se precargan mientras se muestra la diapositiva anterior
+Seccion3.imagenes = [laboratorioJpg, mandoJpg, circuitoPng];
+Circuito.imagenes = ATAQUE_REAL.map((a) => a.foto);
+DemoCircuito.imagenes = [...DEMO_REAL.slice(0, 12).map((f) => f.url), rival3CausaJpg];
+Sorpresa.imagenes = [...SORPRESA.map((f) => f.foto), mandoTapadoJpg, ...ROBOTS_IA.map((r) => r.foto), webcamCerca, webcamLejos];
+Mando.imagenes = [mandoJpg];
+MandoReal.imagenes = CAPTURAS_MANDO.map((c) => c.foto);
