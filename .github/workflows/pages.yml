@@ -1,4 +1,4 @@
-# Publica las SPAs de los bloques 1 y 2, con un selector común.
+# Publica las SPAs de los bloques 1, 2 y 3, con un selector común.
 # La empaqueta herramientas/construir_spa.py. No publica el dataset.
 name: Figuras interactivas
 
@@ -10,6 +10,7 @@ on:
       - 'herramientas/tests/test_construir_spa.py'
       - 'ENTREGA 1/WEEK1/resultados_eda/**'
       - 'web/Bloque2/**'
+      - 'web/Bloque3/**'
       - 'web/navegacion_bloques.css'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
@@ -34,6 +35,7 @@ jobs:
             herramientas/tests/test_construir_spa.py
             ENTREGA 1/WEEK1/resultados_eda
             web/Bloque2
+            web/Bloque3
             web/navegacion_bloques.css
           sparse-checkout-cone-mode: false
 

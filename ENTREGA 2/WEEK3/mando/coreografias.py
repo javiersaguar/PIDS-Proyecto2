@@ -20,6 +20,7 @@ CATALOGO = {
 }
 BLANCO = (255, 255, 255)
 COLORES = [(255, 255, 255), (255, 40, 150), (255, 220, 0), (30, 100, 255)]
+ROJO, AMARILLO = (255, 0, 0), (255, 200, 0)   # bandera de España en el Waka Waka
 FIESTA = [(255, 0, 0), (255, 128, 0), (255, 255, 0), (0, 255, 0),
           (0, 255, 255), (0, 0, 255), (255, 0, 255)]
 
@@ -59,15 +60,17 @@ def _moonwalk(t, salida):
 def _waka(t, salida):
     periodo = 2 * 60 / 127
     contoneo = 9 * periodo
+    # Bandera de España: la torreta y el chasis alternan rojo y amarillo en cada tiempo
+    par = int(t * 127 / 60) % 2 == 0
+    salida['color'] = ROJO if par else AMARILLO
+    salida['color_chasis'] = AMARILLO if par else ROJO
     if t < contoneo:
         fase = (t % periodo) / periodo
         salida['vy'] = .2 * math.sin(2 * math.pi * fase)
         salida['yaw'] = -4 * math.sin(2 * math.pi * fase)
         salida['pitch'] = 8 * _triangulo(fase)
-        salida['color'] = [(0, 180, 70), (255, 220, 0), (255, 0, 0), (0, 80, 255)][int(t * 127 / 60) % 4]
     elif t >= CATALOGO['waka']['duracion'] - 3:
         salida['z'] = 30 if t < CATALOGO['waka']['duracion'] - 1.5 else -30
-        salida['color'] = (255, 220, 0)
 
 
 def _superestrella(t, salida):
@@ -109,7 +112,10 @@ BAILES = {'moonwalk': _moonwalk, 'waka': _waka,
 
 
 def muestra(nombre, tiempo):
-    """Consigna instantánea. Fuera del baile devuelve reposo con LED apagados."""
+    """Consigna instantánea. Fuera del baile devuelve reposo con LED apagados.
+
+    `color` es el de todos los LED; si el baile da también `color_chasis`, `color` es solo
+    el de la torreta."""
     duracion = CATALOGO[nombre]['duracion']
     if not math.isfinite(tiempo):
         raise ValueError('El tiempo del baile debe ser finito')

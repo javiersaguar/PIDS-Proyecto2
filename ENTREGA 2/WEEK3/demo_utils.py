@@ -5,6 +5,7 @@ import os
 import pickle
 import queue
 import random
+import re
 import socket
 import threading
 import time
@@ -509,11 +510,61 @@ class Camara:
         valor, t, frame = max(((nitidez(f), t, f) for t, f in candidatos), key=lambda e: e[0])
         return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), t, valor
 
+    def ultimo(self):
+        """(fotograma BGR, instante de llegada) del último recibido, sin esperar. (None, 0) si aún no hay."""
+        with self._cond:
+            return self._ultimo, self._t_ultimo
+
     def cerrar(self):
         self._activa = False
         if self._en_hilo:
             self._hilo.join(timeout=2)
         self.ep_camera.stop_video_stream()
+
+
+class Fotografo:
+    """Guarda una foto de la cámara cada `intervalo` s durante toda la demo, en <evidencias>/recorrido/.
+
+    La demo solo guarda las imágenes que analiza, así que la recta del túnel o el baile
+    no quedaban registrados. Este hilo copia a disco el último fotograma que ya tiene la
+    Camara, sin analizarlo ni esperar a ninguno nuevo: no frena la demo. El nombre lleva el
+    orden, la fase que diga `fase()` (P1-ruta, R1-marcha, baile...) y la hora.
+    """
+
+    def __init__(self, camara, carpeta, intervalo=0.5, fase=lambda: '', calidad=85):
+        self.camara, self.intervalo, self.fase, self.calidad = camara, intervalo, fase, calidad
+        self.carpeta = os.path.join(carpeta, 'recorrido')
+        os.makedirs(self.carpeta, exist_ok=True)
+        self.n, self._t_guardado = 0, None
+        self._parar = threading.Event()
+        self._hilo = threading.Thread(target=self._bucle, daemon=True)
+        self._hilo.start()
+
+    def foto(self):
+        """Guarda el último fotograma si es nuevo; devuelve la ruta o None."""
+        frame, t = self.camara.ultimo()
+        if frame is None or t == self._t_guardado:
+            return None
+        self._t_guardado = t
+        self.n += 1
+        fase = re.sub(r'[^\w-]+', '_', str(self.fase() or 'demo'))
+        ruta = os.path.join(self.carpeta, f'{self.n:04d}_{fase}_{time.strftime("%H-%M-%S")}.jpg')
+        try:
+            cv2.imwrite(ruta, frame, [cv2.IMWRITE_JPEG_QUALITY, self.calidad])
+        except Exception as e:   # una foto perdida no detiene la demo
+            print(f'[aviso] no se pudo guardar {ruta}: {e!r}')
+            return None
+        return ruta
+
+    def _bucle(self):
+        while not self._parar.wait(self.intervalo):
+            self.foto()
+
+    def cerrar(self):
+        self._parar.set()
+        self._hilo.join(timeout=2)
+        self.foto()   # la última, con la demo ya parada
+        return self.n
 
 
 def nitidez(image):
@@ -760,6 +811,153 @@ class Odometria:
             self.activa = False
 
 
+# --- Rumbo del chasis -------------------------------------------------------------------
+# En el laboratorio (11/11) los robots se iban hacia un lado en las rectas aunque la
+# odometría de las ruedas marcaba y = 0: el chasis gira un poco y las ruedas no lo notan.
+# Las rectas mantienen el rumbo con la IMU (chassis.sub_attitude), que no depende de las ruedas.
+# El sentido de la corrección no se supone: antes de la primera recta el chasis gira un
+# momento (unos 6º) y se mide hacia dónde cambia el yaw de la IMU; luego vuelve a su rumbo.
+GANANCIA_RUMBO = 1.5     # º/s de giro por grado de desvío
+GIRO_RUMBO_MAX = 15      # º/s como mucho al corregir el rumbo
+TOLERANCIA_RUMBO = 1.5   # grados: antes de cada avance se endereza si se ha desviado más
+DESVIO_MAXIMO = 15       # grados: si se pasa, algo va mal y se deja de corregir (no empuja más)
+GIRO_PRUEBA = 20         # º/s del giro de prueba
+TIEMPO_PRUEBA = 0.3      # s del giro de prueba
+# Con el robot parado la IMU deriva: en los ~60 s de la parada P1 marcó 8º sin que el chasis
+# se girase (11/11) y la recta siguiente "corregía" un giro que no existía. Lo que cambie el
+# yaw con el robot parado más de PAUSA_DERIVA s se toma como deriva de la IMU, no como giro.
+PAUSA_DERIVA = 3.0
+# activo: corregir o no (CORREGIR_RUMBO en circuito.py). signo: None hasta el giro de prueba;
+# después +1 o -1 (z = signo * GANANCIA * desvío) o 0 si la IMU no responde.
+RUMBO = dict(activo=True, referencia=None, signo=None, desvio=None, maximo=0.0, yaw_fin=None, t_fin=None)
+
+
+def reiniciar_rumbo():
+    """Olvida la referencia: la siguiente recta toma como recto el rumbo que tenga el robot."""
+    RUMBO.update(referencia=None, desvio=None, yaw_fin=None, t_fin=None)
+
+
+class Actitud:
+    """Yaw del chasis según la IMU (chassis.sub_attitude). Si el SDK no lo da, `activa` es False."""
+
+    def __init__(self, chassis, freq=20):
+        self.chassis, self.ultima, self.lecturas = chassis, None, 0
+        try:
+            self.activa = chassis.sub_attitude(freq=freq, callback=self._leer) is not False
+        except Exception as e:
+            if not RUMBO.get('avisado'):
+                print(f'[aviso] sin IMU del chasis, las rectas no corrigen el rumbo: {e!r}')
+                RUMBO['avisado'] = True
+            self.activa = False
+
+    def _leer(self, info):
+        self.ultima = float(info[0])
+        self.lecturas += 1
+
+    def esperar(self, maximo=1.0, dormir=time.sleep, reloj=time.monotonic):
+        """Espera a la segunda lectura: la primera puede ser un valor antiguo del SDK."""
+        fin = reloj() + maximo
+        while self.activa and self.lecturas < 2 and reloj() < fin:
+            dormir(0.05)
+        return self.ultima
+
+    def cerrar(self):
+        if self.activa:
+            try:
+                self.chassis.unsub_attitude()
+            except Exception:
+                pass
+            self.activa = False
+
+
+def diferencia_angulo(a, b):
+    return (a - b + 180) % 360 - 180
+
+
+def medir_signo_rumbo(ep_robot, actitud, dormir=time.sleep):
+    """Giro de prueba: z = +GIRO_PRUEBA un momento y mira cómo cambia el yaw de la IMU.
+
+    Si con z > 0 el yaw sube, para bajar un desvío positivo hace falta z < 0: signo -1.
+    """
+    antes = actitud.ultima
+    ep_robot.chassis.drive_speed(x=0, y=0, z=GIRO_PRUEBA, timeout=0.5)
+    dormir(TIEMPO_PRUEBA)
+    ep_robot.chassis.drive_speed(x=0, y=0, z=0)
+    dormir(0.4)
+    cambio = diferencia_angulo(actitud.ultima, antes)
+    if abs(cambio) < 1.0:
+        RUMBO['signo'] = 0
+        print(f'[aviso] la IMU no ha notado el giro de prueba ({cambio:+.1f} grados): '
+              'las rectas no corrigen el rumbo')
+    else:
+        RUMBO['signo'] = -1 if cambio > 0 else 1
+        print(f'    IMU: con z>0 el yaw cambia {cambio:+.1f} grados; corrección de rumbo con signo {RUMBO["signo"]:+d}')
+
+
+class CorrectorRumbo:
+    """Giro (º/s, z de drive_speed) que devuelve el chasis a RUMBO['referencia']."""
+
+    def __init__(self, actitud):
+        self.actitud = actitud
+
+    def usable(self):
+        return bool(RUMBO['activo'] and RUMBO['signo'] and self.actitud.ultima is not None
+                    and RUMBO['referencia'] is not None)
+
+    def desvio(self):
+        """Grados que el chasis se ha girado respecto a la referencia (con el signo de la IMU), o None."""
+        if self.actitud.ultima is None or RUMBO['referencia'] is None:
+            return None
+        return diferencia_angulo(self.actitud.ultima, RUMBO['referencia'])
+
+    def giro(self, minimo=0.0):
+        d = self.desvio()
+        if d is None:
+            return 0.0
+        RUMBO['desvio'] = d
+        RUMBO['maximo'] = max(RUMBO['maximo'], abs(d))
+        if not self.usable():
+            return 0.0
+        if abs(d) > DESVIO_MAXIMO:
+            # Con el sentido medido no debería pasar: mejor no empujar más
+            RUMBO['activo'] = False
+            print(f'[aviso] rumbo desviado {d:+.1f} grados: se deja de corregir el rumbo en esta demo')
+            return 0.0
+        z = RUMBO['signo'] * GANANCIA_RUMBO * d
+        if minimo and z:
+            z = max(minimo, abs(z)) * (1 if z > 0 else -1)
+        return limitar(z, GIRO_RUMBO_MAX)
+
+
+def texto_rumbo():
+    """'  rumbo +0.4 grados (máx. 1.2)' al acabar la última recta, o '' si no hay IMU."""
+    d = RUMBO['desvio']
+    texto = '' if d is None else f'  rumbo {d:+.1f} grados (máx. {RUMBO["maximo"]:.1f})'
+    RUMBO['maximo'] = 0.0
+    return texto
+
+
+def enderezar(ep_robot, corrector, dormir=time.sleep, reloj=time.monotonic, maximo=4.0):
+    """Gira el chasis parado hasta volver al rumbo de referencia (si se ha desviado más de TOLERANCIA_RUMBO)."""
+    if corrector is None:
+        return
+    d = corrector.desvio()
+    if not corrector.usable() or d is None or abs(d) <= TOLERANCIA_RUMBO or abs(d) > DESVIO_MAXIMO:
+        return
+    print(f'    rumbo desviado {d:+.1f} grados: se endereza antes de avanzar')
+    fin = reloj() + maximo
+    try:
+        while reloj() < fin:
+            d = corrector.desvio()
+            if d is None or abs(d) <= TOLERANCIA_RUMBO / 2 or not corrector.usable():
+                break
+            ep_robot.chassis.drive_speed(x=0, y=0, z=corrector.giro(minimo=5), timeout=0.5)
+            dormir(0.05)
+    finally:
+        ep_robot.chassis.drive_speed(x=0, y=0, z=0)
+        dormir(0.2)
+
+
 def avanzar(ep_robot, x, y, velocidad, que='chasis', dormir=time.sleep, reloj=time.monotonic):
     """Avanza (x, y) metros sin girar con drive_speed, a `velocidad` m/s reales, midiendo con la odometría.
 
@@ -767,12 +965,38 @@ def avanzar(ep_robot, x, y, velocidad, que='chasis', dormir=time.sleep, reloj=ti
     la velocidad a m/s reales (en el laboratorio, 0,5 dio unos 0,06 m/s). drive_speed sí
     va en m/s. Se frena en los últimos centímetros y se para a 1 cm del destino. drive_speed lleva
     un tiempo máximo de 0,5 s: si el programa deja de mandar órdenes, el robot se para solo.
+    Mantiene el rumbo con la IMU (ver RUMBO).
 
     :return: (x, y) recorridos según la odometría, o None si no hay odometría (entonces
              no se mueve y hay que usar chassis.move).
     """
     distancia = (x * x + y * y) ** 0.5
     velocidad = limitar(velocidad, VEL_XY_MAX)
+    actitud = Actitud(ep_robot.chassis) if RUMBO['activo'] else None
+    corrector = None
+    try:
+        if actitud and actitud.esperar(dormir=dormir, reloj=reloj) is not None:
+            corrector = CorrectorRumbo(actitud)
+            if RUMBO['referencia'] is None:
+                RUMBO['referencia'] = actitud.ultima
+            elif RUMBO['yaw_fin'] is not None and reloj() - RUMBO['t_fin'] >= PAUSA_DERIVA:
+                deriva = diferencia_angulo(actitud.ultima, RUMBO['yaw_fin'])
+                RUMBO['referencia'] = (RUMBO['referencia'] + deriva + 180) % 360 - 180
+                if abs(deriva) >= 1:
+                    print(f'    IMU: {deriva:+.1f} grados de deriva con el robot parado '
+                          f'({reloj() - RUMBO["t_fin"]:.0f} s); no se corrige')
+            if RUMBO['signo'] is None:
+                medir_signo_rumbo(ep_robot, actitud, dormir)
+        return _avanzar(ep_robot, x, y, distancia, velocidad, corrector, que, dormir, reloj)
+    finally:
+        if actitud:
+            if actitud.ultima is not None:
+                RUMBO['yaw_fin'], RUMBO['t_fin'] = actitud.ultima, reloj()
+            actitud.cerrar()
+
+
+def _avanzar(ep_robot, x, y, distancia, velocidad, corrector, que, dormir, reloj):
+    enderezar(ep_robot, corrector, dormir, reloj)
     odometria = Odometria(ep_robot.chassis)
     if odometria.esperar(dormir=dormir, reloj=reloj) is None:
         odometria.cerrar()
@@ -798,7 +1022,8 @@ def avanzar(ep_robot, x, y, velocidad, que='chasis', dormir=time.sleep, reloj=ti
             norma = (vx * vx + vy * vy) ** 0.5
             if norma > VEL_XY_MAX:                         # nunca más de la velocidad máxima
                 vx, vy = vx * VEL_XY_MAX / norma, vy * VEL_XY_MAX / norma
-            ep_robot.chassis.drive_speed(x=vx, y=vy, z=0, timeout=0.5)
+            # y mantiene el rumbo con la IMU (z = 0 si no hay IMU)
+            ep_robot.chassis.drive_speed(x=vx, y=vy, z=corrector.giro() if corrector else 0, timeout=0.5)
             dormir(0.05)
     finally:
         try:
@@ -829,6 +1054,8 @@ def mover_chasis(ep_robot, x, y, z, v_xy, v_z, que='chasis', durante=None, odome
     tiempo = (x * x + y * y) ** 0.5 / 0.06 + abs(z) / v_z if (x or y) else abs(z) / v_z
     ejecutar_accion(ep_robot, lambda: ep_robot.chassis.move(x=x, y=y, z=z, xy_speed=v_xy, z_speed=v_z),
                     timeout=2 * tiempo + 5, que=que, durante=durante)
+    if z:
+        reiniciar_rumbo()   # tras un giro buscado, el rumbo nuevo es el recto
     return None
 
 

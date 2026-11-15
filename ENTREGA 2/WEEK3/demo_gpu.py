@@ -63,6 +63,43 @@ def opciones_propias(argv):
     return propias, resto
 
 
+def cerrar_arbol(proceso):
+    """Termina un proceso y sus hijos.
+
+    En Windows, .venv-gpu/Scripts/python.exe es un lanzador que arranca el Python real como
+    proceso hijo: terminar solo el lanzador dejaba el detector vivo ocupando el puerto.
+    """
+    if proceso is None or proceso.poll() is not None:
+        return
+    if os.name == 'nt':
+        subprocess.run(['taskkill', '/PID', str(proceso.pid), '/T', '/F'],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    else:
+        proceso.terminate()
+    try:
+        proceso.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        proceso.kill()
+
+
+def info_detector(puerto):
+    """Lo que dice de sí mismo el detector que escucha en `puerto` (/info), o None."""
+    try:
+        with urllib.request.urlopen(f'http://127.0.0.1:{puerto}/info', timeout=2) as r:
+            return json.load(r)
+    except Exception:  # noqa: BLE001: otro programa, o un detector antiguo sin /info
+        return None
+
+
+def mismo_modelo(info, arquitectura, ruta):
+    """True si el detector abierto carga el mismo checkpoint y la misma arquitectura."""
+    if not info or info.get('arquitectura') != arquitectura:
+        return False
+    def normal(r):
+        return os.path.normcase(os.path.abspath(os.path.join(AQUI, r)))
+    return normal(info.get('modelo', '')) == normal(ruta)
+
+
 def escuchando(puerto):
     try:
         with socket.create_connection(('127.0.0.1', puerto), timeout=0.2):
@@ -85,7 +122,18 @@ class DetectorGPU:
         elif not os.path.isfile(PYTHON_GPU):
             self.motivo = f'no existe {PYTHON_GPU} (ver mando/README.md)'
         elif escuchando(puerto):
-            self.motivo = f'el puerto {puerto} ya está ocupado; cierra ese proceso o usa --puerto-gpu'
+            # Un detector de una demo anterior que se quedó abierto: si es el mismo modelo, se usa
+            info = info_detector(puerto)
+            if mismo_modelo(info, arquitectura, ruta):
+                self.listo = True
+                self.nombre = info.get('gpu') or ''
+                print(f'Detector GPU ya abierto en el puerto {puerto} (proceso {info.get("pid")}): se reutiliza',
+                      flush=True)
+            elif info:
+                self.motivo = (f'el puerto {puerto} lo usa un detector con otro modelo '
+                               f'({info.get("arquitectura")}, {info.get("modelo")}); usa --puerto-gpu')
+            else:
+                self.motivo = f'el puerto {puerto} ya está ocupado; cierra ese proceso o usa --puerto-gpu'
         else:
             self._arrancar(arquitectura, ruta)
         self.arrancada = self.listo
@@ -147,12 +195,7 @@ class DetectorGPU:
         return prediction, (time.perf_counter() - inicio) * 1000
 
     def cerrar(self):
-        if self.proceso is not None and self.proceso.poll() is None:
-            self.proceso.terminate()
-            try:
-                self.proceso.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                self.proceso.kill()
+        cerrar_arbol(self.proceso)
         self.listo = False
 
 

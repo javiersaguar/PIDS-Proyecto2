@@ -66,19 +66,19 @@ export const TEST_MODELOS = [
 export const LATENCIA = { cpuLab: [2.2, 2.4], cpu32: 1.1, gpuV2: 0.094, gpuMobile: 0.032 };
 // Recorrido en metros: origen en la salida, x hacia delante, y hacia la izquierda negativa (como la Figura B3.1)
 export const CIRCUITO = {
-  puntos: [[0, 0], [2.85, 0], [4.75, 0], [4.75, -1], [3.5, -1], [3.5, 0], [6, 0], [6, -0.7], [8, -0.7]],
+  puntos: [[0, 0], [2.85, 0], [5.04, 0], [5.04, -1], [3.6, -1], [3.6, 0], [6.48, 0], [6.48, -0.7], [8.78, -0.7]],
   ataques: [3, 7],               // índice del tramo (desde el punto i al i+1) en el que se ataca en marcha
   tramos: [
-    { tramo: 'P1', texto: '2,85 m · 0,5 m/s' }, { tramo: 'R1', texto: '1,9 m · 0,4 m/s' },
-    { tramo: 'R1', texto: '1 m · 0,5 m/s' }, { tramo: 'R1', texto: '1,25 m · 0,1 m/s' },
-    { tramo: 'R1', texto: '1 m · 0,5 m/s' }, { tramo: 'R2', texto: '2,5 m · 0,5 m/s' },
-    { tramo: 'R2', texto: '0,7 m · 0,5 m/s' }, { tramo: 'R2', texto: '2 m · 0,1 m/s' },
+    { tramo: 'P1', texto: '2,85 m · 0,5 m/s' }, { tramo: 'R1', texto: '2,19 m · 0,4 m/s' },
+    { tramo: 'R1', texto: '1 m · 0,5 m/s' }, { tramo: 'R1', texto: '1,44 m · 0,1 m/s' },
+    { tramo: 'R1', texto: '1 m · 0,5 m/s' }, { tramo: 'R2', texto: '2,88 m · 0,5 m/s' },
+    { tramo: 'R2', texto: '0,7 m · 0,5 m/s' }, { tramo: 'R2', texto: '2,3 m · 0,1 m/s' },
   ],
   rivales: [
     { nombre: 'Rival 1', x: 2.85, y: 1.2 },
     { nombre: 'Camuflado', x: 2.85, y: -1.2, camuflado: true },
-    { nombre: 'Rival 2', x: 4.6, y: -2.2, hastaX: 3.85 },
-    { nombre: 'Rival 3 · en alto', x: 5.35, y: -0.7 },
+    { nombre: 'Rival 2', x: 4.86, y: -2.2, hastaX: 4.0 },
+    { nombre: 'Rival 3 · escondido', x: 5.73, y: -0.7 },
   ],
 };
 export const PRESUPUESTO = [

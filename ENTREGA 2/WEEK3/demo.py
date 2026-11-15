@@ -31,6 +31,7 @@ def argumentos(argv=None):
     p = argparse.ArgumentParser(description='Demo del Bloque 3 (grupo 2)')
     p.add_argument('--sin-disparar', action='store_true', help='no usar el blaster')
     p.add_argument('--sin-mover', action='store_true', help='no mover el chasis')
+    p.add_argument('--sin-rumbo', action='store_true', help='no corregir el rumbo de las rectas con la IMU')
     p.add_argument('--paradas', default='', help='paradas donde detectar, separadas por comas (por defecto, todas)')
     p.add_argument('--simulacion', nargs='?', const=os.path.join(AQUI, '..', '..', 'ENTREGA 1', 'WEEK2', 'DATOS_ASIGNATURA', 'data_test'), default=None,
                    metavar='CARPETA', help='usar un robot simulado que ve las imágenes de CARPETA')
@@ -55,6 +56,12 @@ from demo_utils import *  # noqa: E402,F401,F403
 import circuito as C      # noqa: E402
 from recorrido import aplicar, movimiento, rival_relativo  # noqa: E402
 from rival import aviso as aviso_rival  # noqa: E402
+
+
+def robots(image, prediction, umbral):
+    """Como seleccionar(), sin las cajas más altas que ALTO_MAX_ROBOT de la imagen (sillas, mesas cercanas)."""
+    alto_max = getattr(C, 'ALTO_MAX_ROBOT', 1.0) * image.shape[0]
+    return [(caja, score) for caja, score in seleccionar(prediction, umbral) if caja[3] - caja[1] <= alto_max]
 
 
 def detect_and_shoot(ep_robot, model, score_threshold=0.5, resize_shape=None):
@@ -250,8 +257,12 @@ class Demo:
         self.senales = Senales(ep_robot, C.SONIDOS)
         self.registro = Registro(args.evidencias, umbral=C.UMBRAL, mostrar=getattr(args, 'ver', False))
         self.camara = None
+        self.fotografo = None
+        self.fase = 'inicio'   # nombre de las fotos del recorrido (FOTOS_RECORRIDO)
         self.ataques = []
         self.paradas_hechas = []
+        self.zona = None   # umbral reducido de la parada en curso (umbral_zona en circuito.py)
+        self.distancia_max = None   # metros: más lejos no cuenta como robot en esta parada
         self.pose = (0.0, 0.0, 0.0)   # posición del chasis en el circuito (X, Y en m; rumbo en grados)
         self.eventos_ruta = []        # ataques y esperas durante el recorrido
         self._aviso_ruta = False      # algo visto con el chasis en marcha que hay que revisar parado
@@ -275,7 +286,7 @@ class Demo:
         medido = mover_chasis(self.ep_robot, x, y, z, v_xy, C.VELOCIDAD_Z, que='chasis', durante=durante,
                               odometria=getattr(C, 'AVANCE_CON_ODOMETRIA', True))
         if medido is not None:
-            print(f'    odometría: x={medido[0]:+.2f} m  y={medido[1]:+.2f} m')
+            print(f'    odometría: x={medido[0]:+.2f} m  y={medido[1]:+.2f} m' + texto_rumbo())
         self.pose = mover_pose(self.pose, x, y, z)
 
     # --- vigilancia durante el recorrido -------------------------------------------------
@@ -294,7 +305,7 @@ class Demo:
         ahora = self.reloj()
         bloqueo, nuevos = None, []
         # Para el camino basta UMBRAL_SEGUIMIENTO: ante la duda, se espera
-        for caja, score in seleccionar(prediction, min(C.UMBRAL, C.UMBRAL_SEGUIMIENTO)):
+        for caja, score in robots(image, prediction, min(C.UMBRAL, C.UMBRAL_SEGUIMIENTO)):
             angulo = yaw_c + C.SIGNO_YAW * auto_aim(image, caja)
             distancia = distancia_estimada(image, caja, C.ALTURA_ROBOT)
             if distancia is not None:
@@ -519,7 +530,7 @@ class Demo:
                 imagenes += 1
                 prevision = objetivo + (velocidad * (t_captura - t_objetivo) if t_objetivo is not None else 0.0)
                 candidatos = []
-                for caja, score in seleccionar(prediction, C.UMBRAL_SEGUIMIENTO if fijado else C.UMBRAL):
+                for caja, score in robots(image, prediction, C.UMBRAL_SEGUIMIENTO if fijado else C.UMBRAL):
                     a = yaw_c + C.SIGNO_YAW * auto_aim(image, caja)
                     if abs(a - prevision) > C.SALTO_MAX:
                         continue
@@ -616,7 +627,7 @@ class Demo:
             for intento in range(C.CORRECCIONES_PUNTERIA + 1):
                 image, prediction, ms = self.mirar()
                 yaw_captura = self.torreta.yaw
-                objetivos = seleccionar(prediction, C.UMBRAL)
+                objetivos = self.seleccionar_parada(image, prediction, yaw_captura)
                 if not objetivos:
                     residuo = None
                     break
@@ -710,9 +721,39 @@ class Demo:
                 self.mover(x, y, 0, velocidad=velocidad)
             else:
                 medido = resultado['medido']
-                print(f'    odometría: x={medido[0]:+.2f} m  y={medido[1]:+.2f} m')
+                print(f'    odometría: x={medido[0]:+.2f} m  y={medido[1]:+.2f} m' + texto_rumbo())
                 self.pose = mover_pose(self.pose, x, y, 0)
         self.torreta.centrar()
+
+    def preparar_torreta(self, movimientos):
+        """Empieza a girar la torreta hacia el primer ataque en marcha de la parada mientras el chasis
+        hace los movimientos anteriores (GIRAR_TORRETA_ANTES).
+
+        La torreta no puede pasar de 30 º/s (el enunciado prohíbe subir la velocidad): girar 180º
+        lleva 6 s. Si se gira durante los tramos anteriores, al empezar el ataque ya mira al rival.
+        :return: el hilo que gira la torreta, o None.
+        """
+        if not getattr(C, 'GIRAR_TORRETA_ANTES', False) or C.VIGILANCIA:
+            return None
+        for i, m in enumerate(movimientos):
+            x, y, z, opciones = movimiento(m)
+            if z:
+                return None              # con un giro del chasis por medio, no
+            if opciones.get('atacar') is not None:
+                if i == 0:
+                    return None          # el ataque es el primer movimiento: no hay tiempo antes
+                yaw, pitch = opciones['atacar'], opciones.get('pitch')
+                print(f'  la torreta gira ya hacia {yaw:+.0f} grados para el ataque en marcha')
+
+                def girar():
+                    try:
+                        self.torreta.ir(yaw, pitch)
+                    except Exception as e:   # el ataque vuelve a girarla: un fallo aquí no para la demo
+                        print(f'[aviso] giro previo de la torreta: {e}')
+                hilo = threading.Thread(target=girar, daemon=True)
+                hilo.start()
+                return hilo
+        return None
 
     def avisar_rival(self, nombre):
         """Avisa al portátil que mueve al rival (rival/rival_movil.py) de que arranque ya."""
@@ -797,13 +838,13 @@ class Demo:
             t_anterior = ahora
             elegido = None
             if objetivo is None:
-                candidatos = seleccionar(prediction, C.UMBRAL)
+                candidatos = robots(image, prediction, C.UMBRAL)
                 if candidatos:
                     elegido = mas_centrada(image, candidatos)
             else:
                 prevision = objetivo[1] + velocidad * (t_cap - objetivo[0])
                 cerca = [(abs(yaw_c + C.SIGNO_YAW * auto_aim(image, c) - prevision), c, sc)
-                         for c, sc in seleccionar(prediction, min(C.UMBRAL, C.UMBRAL_SEGUIMIENTO))]
+                         for c, sc in robots(image, prediction, min(C.UMBRAL, C.UMBRAL_SEGUIMIENTO))]
                 if cerca:
                     error, caja, score = min(cerca, key=lambda e: e[0])
                     if error <= C.SALTO_MAX:
@@ -881,6 +922,39 @@ class Demo:
         self.torreta.ir(self.torreta.yaw, pitch + 10)
         self.torreta.ir(self.torreta.yaw, pitch)
 
+    def seleccionar_parada(self, image, prediction, yaw_c):
+        """Detecciones que cuentan como robot en la parada en curso, de mayor a menor confianza.
+
+        Siempre las que superan UMBRAL. Si la parada tiene `umbral_zona`, también las que
+        superan su umbral, siempre que estén dentro de su rango de yaw (respecto al chasis) y
+        que su caja no ocupe más de ALTO_MAX_ZONA del alto de la imagen: las cajas grandes
+        con poca confianza suelen ser sillas o mesas muy cercanas.
+        Si la parada tiene `distancia_max`, no cuentan los robots más lejanos (los del fondo).
+        """
+        zona = self.zona
+        lejos = self.distancia_max
+        if lejos:
+            def cerca(caja):
+                d = distancia_estimada(image, caja, C.ALTURA_ROBOT)
+                return d is None or d <= lejos
+        else:
+            def cerca(caja):
+                return True
+        if not zona:
+            return [(c, s) for c, s in robots(image, prediction, C.UMBRAL) if cerca(c)]
+        desde, hasta = sorted(zona['yaw'])
+        alto_max = C.ALTO_MAX_ZONA * image.shape[0]
+        salida = []
+        for caja, score in robots(image, prediction, min(C.UMBRAL, zona['umbral'])):
+            if not cerca(caja):
+                continue
+            if score < C.UMBRAL:
+                angulo = yaw_c + C.SIGNO_YAW * auto_aim(image, caja)
+                if not (desde <= angulo <= hasta and caja[3] - caja[1] <= alto_max):
+                    continue
+            salida.append((caja, score))
+        return salida
+
     def analizar_barrido(self, nombre, image, prediction, ms, yaw_c, pitch_c, revisados, atacados):
         """Busca robots nuevos en una imagen del barrido, la guarda y ataca a cada uno.
 
@@ -891,7 +965,7 @@ class Demo:
         """
         ahora = self.reloj()
         nuevos = []
-        for caja, score in seleccionar(prediction, C.UMBRAL):
+        for caja, score in self.seleccionar_parada(image, prediction, yaw_c):
             angulo = yaw_c + C.SIGNO_YAW * auto_aim(image, caja)
             distancia = distancia_estimada(image, caja, C.ALTURA_ROBOT)
             if (es_nuevo(angulo, revisados + [a for _, _, a, _ in nuevos], C.TOLERANCIA_YAW)
@@ -987,6 +1061,12 @@ class Demo:
         self.torreta.centrar()
         revisados, atacados = [], []
         inicio = self.reloj()
+        self.zona = p.get('umbral_zona')
+        if self.zona:
+            print(f"  umbral {self.zona['umbral']} entre {min(self.zona['yaw']):+.0f} y {max(self.zona['yaw']):+.0f} grados")
+        self.distancia_max = p.get('distancia_max')
+        if self.distancia_max:
+            print(f'  solo robots a menos de {self.distancia_max} m')
 
         def completa():
             return esperados is not None and len(atacados) >= esperados and not C.BARRIDO_COMPLETO
@@ -995,6 +1075,7 @@ class Demo:
             self.barrer_continuo(p, revisados, atacados, completa)
         else:
             self.barrer_por_pasos(p, revisados, atacados, completa)
+        self.zona = self.distancia_max = None
         if not atacados:
             self.senales.estado('nada')
         self.torreta.centrar()
@@ -1076,6 +1157,7 @@ class Demo:
     def baile(self):
         """Baile final con la canción de AUDIO_FINAL y los LED cambiando de color muy rápido."""
         print('Baile final')
+        self.fase = 'baile'
         self.senales.esperar_sonido(5)
         cancion = self.ruta_audio(C.AUDIO_FINAL)
         if cancion is None or not self.senales.audio(cancion):
@@ -1124,6 +1206,10 @@ class Demo:
             if bateria is not None and bateria < C.BATERIA_MINIMA:
                 print(f'[aviso] batería por debajo del {C.BATERIA_MINIMA}%: cárguela antes de la demo')
             self.camara = Camara(self.ep_robot, espera=C.ESPERA_CAMARA)
+            if getattr(C, 'FOTOS_RECORRIDO', None):
+                self.fotografo = Fotografo(self.camara, self.registro.carpeta, C.FOTOS_RECORRIDO,
+                                           fase=lambda: self.fase)
+                print(f'Fotos del recorrido cada {C.FOTOS_RECORRIDO} s en {self.fotografo.carpeta}')
             if C.LEER_ANGULO_GIMBAL:
                 print(f'Torreta: {self.torreta.comprobar_lectura()}')
             self.torreta.centrar()
@@ -1139,9 +1225,15 @@ class Demo:
             for p in C.PARADAS[:ultima + 1]:
                 print(f'[{p["nombre"]}] desplazamiento')
                 self.senales.estado('moviendo')
+                previa = self.preparar_torreta(p['movimientos'])
                 for m in p['movimientos']:
                     x, y, z, opciones = movimiento(m)
-                    if opciones.get('atacar') is not None and not z:
+                    marcha = opciones.get('atacar') is not None and not z
+                    self.fase = p['nombre'] + ('-marcha' if marcha else '-ruta')
+                    if marcha:
+                        if previa is not None:
+                            previa.join(timeout=20)   # la torreta ya debería estar girada
+                            previa = None
                         rival = None
                         if opciones.get('rival') in getattr(C, 'RIVALES', {}):
                             datos = C.RIVALES[opciones['rival']]
@@ -1159,9 +1251,11 @@ class Demo:
                 elif C.ROBOTS_TOTALES is not None and len(self.memoria.atacados()) >= C.ROBOTS_TOTALES:
                     print(f'[{p["nombre"]}] ya se han atacado los {C.ROBOTS_TOTALES} robots: no se barre')
                 elif not elegidas or p['nombre'] in elegidas:
+                    self.fase = p['nombre'] + '-parada'
                     self.atacar_parada(p)
 
             if C.VOLVER_AL_INICIO:
+                self.fase = 'vuelta'
                 print('Vuelta al inicio')
                 self.senales.estado('moviendo')
                 for x, y, z in reversed(recorrido):
@@ -1177,6 +1271,7 @@ class Demo:
             ('chasis', lambda: self.ep_robot.chassis.drive_speed(x=0, y=0, z=0)),
             ('gimbal', self.torreta.centrar),
             ('lectura del gimbal', self.torreta.cancelar_lectura),
+            ('fotos del recorrido', lambda: self.fotografo and self.fotografo.cerrar()),
             ('camara', lambda: self.camara and self.camara.cerrar()),
             ('led', lambda: self.senales.estado('apagado')),
         ]
@@ -1213,6 +1308,7 @@ class Demo:
             paradas=self.paradas_hechas, ataques=self.ataques, circuito=C.PARADAS,
             memoria=self.memoria.entradas, pose_final=[round(v, 2) for v in self.pose],
             eventos_ruta=self.eventos_ruta,
+            fotos_recorrido=self.fotografo.n if self.fotografo else 0,
         )
         self.registro.cerrar(resumen)
         print(f'Evidencias en {self.registro.carpeta}: {len(filas)} imágenes, {resumen["disparos"]} disparos')
@@ -1225,6 +1321,7 @@ def main(argv=None):
     C.RUTA_MODELO = args.modelo or C.RUTA_MODELO
     if args.umbral is not None:
         C.UMBRAL = args.umbral
+    RUMBO['activo'] = getattr(C, 'CORREGIR_RUMBO', True) and not args.sin_rumbo
     if not args.simulacion:
         # El decodificador de vídeo del SDK necesita CPU libre mientras se analiza una imagen
         torch.set_num_threads(max(1, min(torch.get_num_threads(), (os.cpu_count() or 4) - 2)))

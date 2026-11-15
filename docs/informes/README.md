@@ -41,6 +41,42 @@ cambios del borrador se pasan a mano. Después de generarlo, actualizar el índi
 
 ## Historial
 
+**13/11/2026** — versión para entregar:
+- Se incorporan las correcciones de Alejandro (PR #44): pies de tabla y figura más cortos y la
+  redacción de varios párrafos del Bloque 3. Se arreglan al integrarlas un pie cortado, una frase rota y una coma entre
+  oraciones, y se mantiene la referencia a la Figura B3.5.
+- El 12 da el recuento exacto de los 94 falsos positivos de test, revisados uno a uno
+  (`docs/revision_fp_test.csv`): 59 son robots sin anotar, 31 cajas mal ajustadas o repetidas sobre un robot
+  anotado y 4 no son robots. Con esos robots anotados, la precisión pasaría de 0,945 a 0,979.
+- El 18 explica la causa del fallo con el rival 3, comprobada en el registro: la torreta fijó antes un robot del
+  fondo, y el rival 3 apareció a más de 25° de él, así que se tomó por otro robot. Figura G.2 nueva con las dos
+  imágenes (`figuras/bloque3/demo_clase/7_rival3_causa.jpg`).
+- Se rellenan los pendientes que quedaban (retardo del vídeo en el 17 y numeración) y se quitan los 80 disparos.
+- PDF para entregar en `docs/entregas/PIDS_grupo2_entrega3.pdf`: 46 páginas; el cuerpo va de la 4 a la 32
+  (29 páginas). Índice actualizado en Word.
+- Perfil de aumento: los 13 modelos de la cadena, incluido el final, se entrenaron con `robusto_v1`
+  (`herramientas/cadena_entrenamientos.py`), pero el 11.4 decía «se mantiene el base» y el 12.1 «con el aumento
+  base fijado». Se corrigen el 5.4, el 6.1 (ahora «Ampliaciones del aumento»), el 11.4, el 12.1, la Tabla 11, la
+  fila de datos de entrenamiento y la Tabla 20, sin cambiar la paginación.
+
+**12/11/2026 (tarde)** — demo oficial en clase y prueba sorpresa del profesor:
+- La Figura B3.5 pasa a ser la demo oficial en clase, en seis fases: túnel, rival 1, robot camuflado, rival 2, rival 3
+  y baile (`figuras/bloque3/demo_oficial.jpg`, imágenes sueltas en `figuras/bloque3/demo_clase/`).
+- Figura B3.6 nueva con el intento sorpresa del profesor: robot tapado con una tela y foto de un robot entre humo,
+  sin disparar, y un robot distinto en la recta final, detectado y atacado (`figuras/bloque3/intento_profesor.jpg`).
+- Las pruebas del 11/11 pasan al Anexo G (Figura G.1). Se resuelven los pendientes del 15.1, 15.2, 16.1, 18 y 19
+  con estos resultados.
+- Tabla B3.1, apartados 14 y 15.2 y Figura B3.1 con las distancias medidas en el laboratorio (2,19 m, 1,44 m,
+  2,88 m y 2,3 m tras el túnel).
+- 46 páginas; el cuerpo acaba en la 32. Índice actualizado en Word.
+
+**12/11/2026** — imágenes reales del laboratorio en el Bloque 3:
+- Figura B3.4 en el 17: la interfaz del mando con el robot real (`figuras/bloque3/interfaz_real.jpg`), con capturas de
+  las grabaciones de pantalla del 11/11 (las ocho están en `figuras/interfaz/`).
+- Figura B3.5 en el 18: la cámara del robot en cada objetivo de la demo del 11/11 (`figuras/bloque3/demo_fases.jpg`,
+  con las imágenes sueltas en `figuras/bloque3/demo/`). El túnel y el baile no tienen foto: la demo solo guarda lo que analiza.
+- 45 páginas; el cuerpo acaba en la 32. Hay que volver a actualizar el índice (F9).
+
 **09/11/2026 (quinta tanda)** — robot camuflado completo y demo en GPU:
 - Pasan al borrador los cambios a mano de Javier en Word: fuera el 13.1 y el párrafo de la primera prueba de la recta.
 - El 16 vuelve entero, con el 16.1 de la prueba impresa, y empieza explicando la idea inicial (un señuelo al que

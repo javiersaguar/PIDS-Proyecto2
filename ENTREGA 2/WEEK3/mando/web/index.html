@@ -3,74 +3,91 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0c0d0b">
+<meta name="theme-color" content="#050605">
 <title>RoboMaster · Mando del grupo 2</title>
 <link rel="stylesheet" href="/web/estilo.css">
+<link rel="stylesheet" href="/web/hud.css">
 <script defer src="/web/mando.js"></script>
 <script defer src="/web/audio.js"></script>
 <script defer src="/web/app.js"></script>
+<script type="module" src="/web/escena3d.js"></script>
 </head>
-<body>
+<body class="hud">
 <main id="cabina">
-  <div class="video-contenedor" id="pantalla">
-    <header class="cabecera">
-      <div class="identidad"><span class="marca">RM</span><div><strong>CONTROL ROOM<span class="terminal-cursor" aria-hidden="true">_</span></strong><small>PIDS / GRUPO 02</small></div></div>
-      <div class="estado-conexion"><span id="conexion-luz" class="luz"></span><span id="conexion">Conectando con el robot…</span></div>
-      <div class="acciones"><button id="pantalla-completa" class="icono" title="Pantalla completa" aria-label="Pantalla completa">⛶</button><button id="ajustes" class="icono" title="Ajustes · Tab" aria-label="Abrir ajustes">⚙</button></div>
-    </header>
-    <section class="telemetria" aria-label="Estado del robot">
-      <div><small>BATERÍA</small><strong id="bateria">—</strong></div>
-      <div><small>VÍDEO</small><strong id="fps">— fps</strong></div>
-      <div><small>DETECTOR</small><strong id="detector">Esperando</strong></div>
-      <div><small>INFERENCIA</small><strong id="inferencia">— ms</strong></div>
-      <div><small>EDAD DETECCIÓN</small><strong id="retraso">— ms</strong></div>
-      <div><small>MODO</small><strong id="modo">LIBRE</strong></div>
-      <span id="auto" hidden>AUTO</span>
-    </section>
-    <section class="visor" aria-label="Vista de cámara">
-      <div class="etiqueta-video"><span class="pixel">01 / CAMARA</span><span>960 × 540</span></div>
+  <section class="visor" id="pantalla" aria-label="Vista de cámara">
     <img id="video" src="/video" alt="Vídeo en directo de la cámara del RoboMaster">
     <canvas id="cajas" aria-label="Cajas de detección"></canvas>
     <div class="reticula" id="reticula" aria-hidden="true"><i></i><b></b></div>
-    <div class="sombra-arriba"></div><div class="sombra-abajo"></div>
+    <div id="rafaga" class="rafaga" hidden><kbd id="rafaga-control">R2</kbd><span>DISPARO</span><strong id="rafaga-cuenta">×1</strong></div>
+
+    <header class="tira">
+      <span class="marca">RM</span>
+      <span class="dato"><span id="conexion-luz" class="luz"></span><span id="conexion">Conectando con el robot…</span></span>
+      <span class="dato" id="dato-bateria" title="Batería del robot"><small>BAT</small><strong id="bateria">—</strong></span>
+      <span class="dato" id="dato-fps" title="Imágenes por segundo del vídeo"><small>VÍDEO</small><strong id="fps">— fps</strong></span>
+      <span class="dato" id="dato-retraso" title="Antigüedad de la última detección" hidden><small>DETECCIÓN</small><strong id="retraso-tira">—</strong></span>
+      <span id="auto" hidden>AUTO</span>
+      <span class="acciones">
+        <button id="pantalla-completa" class="icono" title="Pantalla completa" aria-label="Pantalla completa">⛶</button>
+        <button id="ajustes" class="icono" title="Ajustes" aria-label="Abrir ajustes">⚙</button>
+      </span>
+    </header>
+
     <div id="aviso" role="status" aria-live="polite"></div>
-    <div class="coordenadas"><span id="angulos">YAW — · PITCH —</span><span id="velocidad">0,00 m/s</span></div>
-    </section>
-    <section class="inferior" aria-label="Controles y emotes">
-      <div class="control-linea"><span class="titulo-seccion">02 / EMOTES</span><span id="mando-estado">Pulsa un botón del mando</span><span><kbd>W A S D</kbd> mover · <kbd>Z X</kbd> / <kbd>L1 R1</kbd> girar · <kbd>↑ ↓ ← →</kbd> mirar · clic / <kbd>R2</kbd> disparar</span></div>
-      <div class="emotes">
-        <button class="emote" data-emote="moonwalk"><span class="ps cuadrado">□</span><span><strong>Moonwalk</strong><small>Billie Jean</small></span><kbd data-tecla="moonwalk">Q</kbd></button>
-        <button class="emote" data-emote="waka"><span class="ps triangulo">△</span><span><strong>Waka Waka</strong><small>Shakira</small></span><kbd data-tecla="waka">E</kbd></button>
-        <button class="emote" data-emote="superestrella"><span class="ps circulo">○</span><span><strong>Super Estrella</strong><small>Aitana</small></span><kbd data-tecla="superestrella">F</kbd></button>
-        <button class="emote" data-emote="risa"><span class="ps equis">✕</span><span><strong>Risa</strong><small>Gato</small></span><kbd data-tecla="risa">C</kbd></button>
+
+    <div id="cartel" class="cartel" role="status" aria-live="polite" hidden>
+      <span id="cartel-simbolo" class="cartel-simbolo"></span>
+      <span class="cartel-texto"><strong id="cartel-titulo"></strong><small id="cartel-sub"></small></span>
+      <progress id="progreso" max="1" value="0" aria-label="Progreso del emote"></progress>
+    </div>
+
+    <div class="hud-inferior">
+      <div class="panel-hud" id="panel-entrada">
+        <canvas id="lienzo-controles" aria-label="Mando o teclado en 3D, con lo que se está pulsando"></canvas>
+        <small id="mando-estado">Pulsa un botón del mando</small>
       </div>
-      <div class="progreso-linea"><span id="baile-nombre">Listo para conectar</span><progress id="progreso" max="1" value="0" aria-label="Progreso del emote"></progress></div>
-      <div class="barra-final"><button id="activar">Activar controles</button><span id="control-estado">Controles en pausa</span><button id="parar" class="peligro">■ PARAR <kbd>Esc</kbd> <kbd>Espacio</kbd> / SHARE</button></div>
-    </section>
-  </div>
+      <div class="centro">
+        <button id="activar">Activar controles</button>
+        <span id="control-estado">Controles en pausa</span>
+        <button id="parar" class="peligro">■ PARAR</button>
+      </div>
+      <div class="panel-hud" id="panel-robot">
+        <canvas id="lienzo-robot" aria-label="Robot en 3D con la orientación de la torreta"></canvas>
+        <small><span id="angulos">YAW — · PITCH —</span><span id="velocidad">0,00 m/s</span></small>
+      </div>
+    </div>
+  </section>
 </main>
 
 <dialog id="dialogo" aria-labelledby="titulo-ajustes">
-  <div class="dialogo-cabecera"><div><small>ROBOMASTER · GRUPO 02</small><h1 id="titulo-ajustes">Ajustes del mando</h1></div><button id="cerrar-ajustes" class="icono" aria-label="Cerrar ajustes">✕</button></div>
+  <div class="dialogo-cabecera"><div><small>ROBOMASTER · GRUPO 02</small><h1 id="titulo-ajustes">Ajustes del mando <kbd id="origen-ajustes" hidden></kbd></h1></div><button id="cerrar-ajustes" class="icono" aria-label="Cerrar ajustes">✕</button></div>
   <p class="nota-pausa">Los controles se pausan al abrir ajustes. Pulsa «Activar controles» al volver.</p>
   <nav class="pestanas" aria-label="Secciones de ajustes">
-    <button class="seleccionada" data-panel="controles">Controles</button><button data-panel="disparo">Disparo</button><button data-panel="movimiento">Movimiento</button><button data-panel="audio">Audio</button><button data-panel="detector">Detector</button>
+    <button class="seleccionada" data-panel="controles">Controles</button><button data-panel="disparo">Disparo</button><button data-panel="movimiento">Movimiento</button><button data-panel="audio">Audio</button><button data-panel="detector">Detector</button><button data-panel="telemetria">Telemetría</button>
   </nav>
   <div class="panel-ajustes" id="panel-controles">
+    <div class="fila">Mostrar en pantalla
+      <span class="selector" role="group" aria-label="Qué controles se dibujan en pantalla">
+        <button type="button" data-vista="teclado">Teclado</button><button type="button" data-vista="mando">Mando</button>
+      </span>
+    </div>
+    <p class="ayuda">Solo cambia lo que se dibuja: el teclado y el mando funcionan siempre los dos. También cambia solo al usar uno u otro.</p>
+    <label class="fila">Vibración del mando al disparar<input data-interfaz="vibracion" type="checkbox"></label>
+    <label class="fila">Atenuar los controles en pantalla cuando no se usan<input data-interfaz="atenuar" type="checkbox"></label>
     <p>Haz clic en una tecla o botón y pulsa su sustituto. Los joysticks conservan sus ejes estándar.</p>
     <div class="tabla-scroll"><table><thead><tr><th>Acción</th><th>Teclado</th><th>PlayStation</th></tr></thead><tbody id="asignaciones"></tbody></table></div>
     <p id="captura" role="status"></p>
     <button id="restablecer">Restablecer controles</button>
     <a href="/prueba_mando.html" target="_blank" rel="noopener">Abrir prueba del DualShock 4 ↗</a>
-    <p class="ayuda">USB o Bluetooth, Steam cerrado y un botón pulsado con la página abierta. La página de prueba registra los botones y ejes observados. El botón PS puede estar reservado al sistema.</p>
+    <p class="ayuda">USB o Bluetooth, Steam cerrado y un botón pulsado con la página abierta. La página de prueba registra los botones y ejes observados. El botón PS puede estar reservado al sistema. Parada: Esc, Espacio o SHARE. La versión anterior de esta página sigue en <a href="/clasico">/clasico</a>.</p>
   </div>
   <div class="panel-ajustes" id="panel-disparo" hidden>
     <label class="fila">Disparo automático<input data-config="automatico" type="checkbox"></label>
-    <label class="fila">Asistente de puntería · pendiente de calibración<input data-config="asistente" type="checkbox" disabled></label>
+    <label class="fila">Asistente de puntería · la torreta sigue al robot detectado<input data-config="asistente" type="checkbox"></label>
     <label class="fila">Confianza mínima<input data-config="umbral" type="number" min="0.95" max="1" step="0.01"></label>
     <label class="fila">Intervalo entre disparos (s)<input data-config="intervalo" type="number" min="0.3" max="5" step="0.1"></label>
     <p class="advertencia">El detector reconoce también imágenes de robots, como el señuelo del proyecto. Supervisa siempre el modo automático. La parada lo desactiva.</p>
-    <p class="ayuda">La marca del punto de mira indica una orden de disparo confirmada. Los impactos en el rival requieren su propia comprobación.</p>
+    <p class="ayuda">Con el asistente, la torreta gira sola hacia el robot detectado más centrado mientras no muevas el joystick derecho ni las flechas. Con el asistente y el disparo automático, le dispara cuando queda centrado. La marca del punto de mira indica una orden de disparo confirmada. Los impactos en el rival requieren su propia comprobación.</p>
   </div>
   <div class="panel-ajustes" id="panel-movimiento" hidden>
     <label class="fila">Modo<select data-config="modo"><option value="free">Libre · torreta independiente</option><option value="fps" id="opcion-fps" disabled>FPS · pendiente de laboratorio</option></select></label>
@@ -95,9 +112,19 @@
     <label class="fila">Mostrar cajas<input data-config="cajas" type="checkbox"></label>
     <p id="detector-ayuda" class="ayuda">La GPU se ejecuta en un proceso Python 3.11 independiente. Si falta, el servidor intenta el modelo CPU.</p>
   </div>
+  <div class="panel-ajustes" id="panel-telemetria" hidden>
+    <div class="fila">Batería<strong id="tele-bateria">—</strong></div>
+    <div class="fila">Vídeo<strong id="tele-fps">— fps</strong></div>
+    <div class="fila">Detector<strong id="detector">Esperando</strong></div>
+    <div class="fila">Inferencia<strong id="inferencia">— ms</strong></div>
+    <div class="fila">Edad de la detección<strong id="retraso">— ms</strong></div>
+    <div class="fila">Modo<strong id="modo">LIBRE</strong></div>
+    <div class="fila">Torreta<strong id="tele-angulos">—</strong></div>
+    <div class="fila">Disparos de la sesión<strong id="tele-disparos">0</strong></div>
+    <div class="fila">Mando<strong id="tele-mando">Sin mando</strong></div>
+    <p class="ayuda">En pantalla solo quedan la conexión, la batería y el vídeo. La batería se pone en ámbar por debajo del 20 % y en rojo por debajo del 10 %; el vídeo, por debajo de 10 y de 4 imágenes por segundo. La edad de la detección aparece arriba si pasa de 1 s.</p>
+  </div>
   <footer class="ajustes-pie"><span id="guardado" role="status">Los cambios se aplican al momento.</span><button id="hecho">Hecho</button></footer>
 </dialog>
 </body>
 </html>
-
-

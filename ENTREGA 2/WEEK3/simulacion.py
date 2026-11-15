@@ -212,7 +212,7 @@ class Led:
         self.r = r
 
     def set_led(self, comp='all', r=0, g=0, b=0, effect='on', freq=1):
-        return Accion(self.r, 'led', rgb=(r, g, b), effect=effect)
+        return Accion(self.r, 'led', rgb=(r, g, b), effect=effect, comp=comp)
 
 
 class Bateria:
@@ -297,6 +297,7 @@ def instalar(carpeta_imagenes, retardo=0.0):
     m_camera.STREAM_360P, m_camera.STREAM_540P, m_camera.STREAM_720P = '360p', '540p', '720p'
     m_led = types.ModuleType('robomaster.led')
     m_led.COMP_ALL, m_led.EFFECT_ON, m_led.EFFECT_OFF = 'all', 'on', 'off'
+    m_led.COMP_TOP_ALL, m_led.COMP_BOTTOM_ALL = 'top_all', 'bottom_all'
     m_led.EFFECT_FLASH, m_led.EFFECT_BREATH, m_led.EFFECT_SCROLLING = 'flash', 'breath', 'scrolling'
     for nombre, modulo in [('robot', m_robot), ('blaster', m_blaster), ('camera', m_camera), ('led', m_led)]:
         setattr(paquete, nombre, modulo)

@@ -6,6 +6,15 @@ import time
 import urllib.request
 from pathlib import Path
 
+# Como ALTO_MAX_ROBOT en circuito.py: una caja más alta que media imagen no es un robot
+# (las sillas cercanas dan 0,95-0,99 con cajas de casi todo el alto).
+ALTO_MAX_ROBOT = 0.5
+
+
+def es_robot(box, height):
+    """False si la caja es demasiado alta para ser un robot del circuito."""
+    return box[3] - box[1] <= ALTO_MAX_ROBOT * height
+
 
 def regla_auto(boxes, scores, width, height, umbral=0.95):
     """Índice de la caja válida que contiene la mira, tras reducirla un 20 %."""
@@ -18,7 +27,7 @@ def regla_auto(boxes, scores, width, height, umbral=0.95):
             if len(box) != 4 or not all(math.isfinite(float(v)) for v in (*box, score)):
                 continue
             x1, y1, x2, y2 = box
-            if score < umbral or score > 1 or x2 <= x1 or y2 <= y1:
+            if score < umbral or score > 1 or x2 <= x1 or y2 <= y1 or not es_robot(box, height):
                 continue
             dx, dy = (x2 - x1) * .1, (y2 - y1) * .1
             if x1 + dx <= width / 2 <= x2 - dx and y1 + dy <= height / 2 <= y2 - dy:

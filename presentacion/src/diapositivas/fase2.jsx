@@ -11,7 +11,13 @@ import precisionLatenciaPng from '@repo/docs/informes/figuras/precision_latencia
 import tasaPng from '@repo/docs/informes/figuras/tasa_aprendizaje.png';
 import erroresPng from '@repo/docs/informes/figuras/errores_test.png';
 import casosPng from '@repo/docs/informes/figuras/casos_validacion.png';
-import incompletaPng from '@repo/docs/informes/figuras/etiqueta_incompleta.png';
+// Modelo final a 0,95 en test (generadas con el modelo de la demo): aciertos completos y robots sin anotar
+import acierto1 from '@repo/docs/informes/figuras/cualitativo/acierto_1.jpg';
+import acierto2 from '@repo/docs/informes/figuras/cualitativo/acierto_2.jpg';
+import acierto3 from '@repo/docs/informes/figuras/cualitativo/acierto_3.jpg';
+import sinAnotar1 from '@repo/docs/informes/figuras/cualitativo/sin_anotar_1.jpg';
+import sinAnotar2 from '@repo/docs/informes/figuras/cualitativo/sin_anotar_2.jpg';
+import sinAnotar3 from '@repo/docs/informes/figuras/cualitativo/sin_anotar_3.jpg';
 
 const coma = (v, d = 2) => fmt(v, d);
 
@@ -458,23 +464,46 @@ export function Test() {
 }
 
 // --- Análisis cualitativo ----------------------------------------------------------------------------------
+const FILAS_CUALITATIVO = [
+  { titulo: 'Acierta todos los robots', color: 'var(--acento)', fotos: [
+    [acierto1, '5 robots, 4 de ellos difficult'], [acierto2, '4 robots a distintas distancias'], [acierto3, '5 robots, uno movido']] },
+  { titulo: 'Robots que el XML no anota', color: 'var(--naranja)', fotos: [
+    [sinAnotar1, 'cortado por el borde'], [sinAnotar2, 'movido, muy cerca'], [sinAnotar3, 'lejos, al fondo']] },
+];
 export function Cualitativo() {
+  let n = 0;
   return (
     <div className="diapo">
       <Cabecera fase="Fase 02 · Análisis cualitativo" titulo="Dónde acierta el detector y dónde se equivoca" />
-      <div className="cuerpo" style={{ gridTemplateColumns: '1.35fr 1fr', alignItems: 'start' }}>
+      <div className="cuerpo" style={{ gridTemplateColumns: '2.15fr 1fr', alignItems: 'start', gap: 30 }}>
         <div style={{ display: 'grid', gap: 18 }}>
-          <motion.img src={casosPng} alt="Acierto completo y caso con más errores en validación" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.8, ease: CURVA }} style={{ width: '100%', borderRadius: 4, border: '1px solid var(--borde)', background: '#fff' }} />
-          <motion.img src={incompletaPng} alt="Anotación incompleta y falsos positivos a 1024 píxeles" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.7, duration: 0.8, ease: CURVA }} style={{ width: '56%', borderRadius: 4, border: '1px solid var(--borde)', background: '#fff' }} />
+          {FILAS_CUALITATIVO.map((f) => (
+            <div key={f.titulo}>
+              <div className="etiqueta" style={{ color: f.color, marginBottom: 8 }}>{f.titulo}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                {f.fotos.map(([foto, pie]) => {
+                  n += 1;
+                  return (
+                    <motion.figure key={pie} style={{ margin: 0 }} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + n * 0.15, duration: 0.5, ease: CURVA }}>
+                      <img src={foto} alt={`${f.titulo}: ${pie}`} style={{ width: '100%', display: 'block', borderRadius: 4, border: '1px solid var(--borde)' }} />
+                      <figcaption className="mono" style={{ fontSize: 14, color: 'var(--suave)', marginTop: 5 }}>{pie}</figcaption>
+                    </motion.figure>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+          <motion.p className="mono" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }} style={{ margin: 0, fontSize: 14, color: 'var(--tenue)' }}>
+            Test, umbral 0,95. Verde: coincide con el XML · naranja: detección sin caja en el XML · azul: caja del XML.
+          </motion.p>
         </div>
-        <Revela as="ul" className="lista" retraso={1.2} paso={0.25} style={{ fontSize: 21 }}>
-          <Item as="li"><span><b>Acierto completo:</b> encuentra los tres robots, incluso uno difícil, aunque con poca seguridad (0,51).</span></Item>
-          <Item as="li"><span><b>Etiquetas incompletas:</b> hay cuatro robots y solo uno estaba anotado, así que detectar los otros tres cuenta como error sin serlo.</span></Item>
-          <Item as="li"><span><b>Robots difíciles:</b> son 65 de los 83 que Faster R-CNN v1 no encuentra en validación.</span></Item>
-          <Item as="li"><span><b>Robots lejanos:</b> los detecta mal (AP de 0,12 a 0,19) porque en nuestros vídeos no había ninguno tan pequeño.</span></Item>
-          <Item as="li"><span><b>Errores de verdad:</b> confunde una pierna con un robot y a veces pone dos cajas al mismo robot.</span></Item>
+        <Revela as="ul" className="lista" retraso={1.2} paso={0.22} style={{ fontSize: 19 }}>
+          <Item as="li"><span><b>Acierta todo</b> en <span className="mono acento">546</span> de las 718 imágenes de test, también con varios robots difíciles.</span></Item>
+          <Item as="li"><span><b>Criterios distintos:</b> nosotros anotamos cualquier robot del que se vea un 30 %, aunque esté cortado, movido o lejos. En los XML de validación y test muchos de esos no están.</span></Item>
+          <Item as="li"><span><b>Errores que no lo son:</b> revisados uno a uno, <span className="mono acento">59</span> de los 94 falsos positivos de test son robots sin anotar. Anotados, la precisión pasaría de 0,945 a 0,979.</span></Item>
+          <Item as="li"><span><b>Errores de verdad:</b> 31 cajas mal ajustadas o repetidas sobre un robot anotado y solo 4 que no son robots: tres sillas en penumbra y un coche.</span></Item>
+          <Item as="li"><span><b>Lo que más falla:</b> los difficult, 74 de los 115 robots que no encuentra.</span></Item>
         </Revela>
       </div>
     </div>

@@ -31,6 +31,22 @@ SIGNO_YAW = 1            # poner -1 si en la prueba el gimbal gira hacia el lado
 ESPERA_CAMARA = 1.0      # s de espera tras mover el gimbal antes de capturar (el vídeo llega con retraso por wifi)
 CORRECCIONES_PUNTERIA = 4  # giros de corrección como mucho hasta centrar el robot antes de disparar
 TOLERANCIA_PUNTERIA = 3  # grados: centrado si el error es menor (o menor que el 30 % del ancho del robot)
+# Umbral reducido por zona (umbral_zona en una parada del PLANO): hacia ese lado de la parada
+# también cuentan las detecciones con confianza >= su umbral, si su caja no pasa de este
+# alto de la imagen. Las cajas grandes con poca confianza son sillas o mesas cercanas (0,67-0,72
+# en las pruebas del 11/11); el robot camuflado a 1,2 m ocupa un 25 % del alto.
+ALTO_MAX_ZONA = 0.5
+# El robot camuflado impreso en A3 dio 0,72-0,97 en el laboratorio el 11/11 (casi siempre
+# por debajo de UMBRAL) y una caja de RoboMaster al otro lado, 0,84: por eso se baja solo hacia la izquierda.
+UMBRAL_CAMUFLADO = 0.7
+# Ninguna detección cuenta como robot si su caja pasa de este alto de la imagen, aunque tenga
+# mucha confianza: el robot estaría a menos de 0,5 m. En la recta final del 11/11 las sillas
+# azules cercanas dieron 0,95-0,99 con cajas de 650-720 px de alto; los robots, 100-200 px.
+ALTO_MAX_ROBOT = 0.5
+# Fotos de la cámara durante toda la demo (túnel, paradas, ataques y baile), en
+# evidencias/<ejecución>/recorrido/, aparte de las imágenes analizadas. Segundos entre fotos;
+# None o 0 para no sacarlas. A 0,5 s, una demo de 3 min son unas 360 fotos (unos 50 MB).
+FOTOS_RECORRIDO = 0.5
 
 # --- Mejoras de la PR 36: todas desactivadas por defecto ------------------------------
 # Con SEGUIMIENTO, BARRIDO_CONTINUO, MEMORIA, VIGILANCIA y LEER_ANGULO_GIMBAL a False la demo
@@ -122,8 +138,12 @@ BARRIDO_FRONTAL = [0, -45, 45]
 RUMBO_INICIAL = 0        # hacia dónde mira nuestro robot en la salida (0 = derecha del boceto)
 # Ataque en marcha (movimientos con atacar=yaw): la torreta busca al rival mientras el
 # chasis avanza, lo sigue y dispara la ráfaga sin parar. Con CPU cada imagen tarda ~2 s y
-# la ráfaga 6 s: a 0,1 m/s, 1,25 m dan unos 12 s, lo justo para girar, verlo y disparar.
+# la ráfaga 6 s: a 0,1 m/s, 1,44 m dan unos 14 s, lo justo para girar, verlo y disparar.
 VELOCIDAD_ATAQUE_EN_MARCHA = 0.1  # m/s del chasis mientras ataca
+# La torreta empieza a girar hacia el ataque en marcha desde el primer movimiento de la parada,
+# mientras el chasis avanza: en R2, los 180º (6 s a 30 º/s, que no se puede subir) se hacen
+# durante la recta de 2,88 m y el lateral de 0,7 m, y el ataque empieza ya mirando atrás.
+GIRAR_TORRETA_ANTES = True
 IMAGENES_TRAS_PARAR = 3           # si al acabar el avance aún no lo ha visto, imágenes que sigue buscando parado
 TIEMPO_MAX_ATAQUE_EN_MARCHA = 40  # s como mucho buscando y disparando en un mismo avance
 # En marcha algunos fotogramas salen movidos: de los llegados en los últimos VENTANA_NITIDEZ s
@@ -144,9 +164,10 @@ VELOCIDAD_RIVAL_MOVIL = 0.05   # m/s del rival 2 (rival_movil.py --velocidad); c
 RIVALES = {
     'rival 1': dict(punto=(2.85, 1.2)),                     # a la derecha de P1, a 1,2 m
     'robot camuflado': dict(punto=(2.85, -1.2)),            # a la izquierda de P1, a 1,2 m (impreso en A3)
-    'rival 2': dict(punto=(4.6, -2.2), hasta=(3.85, -2.2),  # 1,2 m a la izquierda del retroceso de R1,
-                    velocidad=VELOCIDAD_RIVAL_MOVIL),       # avanza 0,75 m en el mismo sentido (15 s)
-    'rival 3': dict(punto=(5.35, -0.7), alto=0.3),          # detrás del último tramo, en una plataforma
+    # Desde la rotonda las x se alargaron un 15 % el 11/11 (x = 2,85 + 1,15 * (x_antes - 2,85))
+    'rival 2': dict(punto=(4.86, -2.2), hasta=(4.0, -2.2),  # 1,2 m a la izquierda del retroceso de R1,
+                    velocidad=VELOCIDAD_RIVAL_MOVIL),       # avanza 0,86 m en el mismo sentido (17 s)
+    'rival 3': dict(punto=(5.73, -0.7), alto=0.3),          # detrás del último tramo, en una plataforma
 }
 GIRAR_EN_RUTA = True     # True: gira hacia cada punto y avanza; False: va en diagonal sin girar (mecanum)
 PLANO = [
@@ -156,26 +177,32 @@ PLANO = [
     # unos 90º, detecta al rival y le dispara; después gira a la izquierda (-90º) y elimina
     # al robot camuflado (docs/senuelo_aliado.md). Si no ve a alguno, prueba a ±60º y ±120º.
     # Con objetivos=2, deja de barrer en cuanto ha atacado a los dos.
-    dict(nombre='P1', punto=(2.85, 0.0), barrido=[90, -90, 60, -60, 120, -120], pitch=0, objetivos=2),
+    # Hacia la izquierda (yaw -150 a -30) basta UMBRAL_CAMUFLADO para el robot camuflado.
+    # distancia_max: los dos robots de P1 están a 1,0 y 1,3 m; el del fondo, que se ve a la
+    # izquierda a unos 2,6 m (le disparó el 11/11), se deja para más adelante.
+    dict(nombre='P1', punto=(2.85, 0.0), barrido=[90, -90, 60, -60, 120, -120], pitch=0, objetivos=2,
+         umbral_zona=dict(yaw=(-150, -30), umbral=UMBRAL_CAMUFLADO), distancia_max=2.0),
+    # Desde aquí (después del túnel) las medidas a lo largo (x) son un 15 % más largas que
+    # las medidas el 05/11, porque el final quedaba muy justo de espacio. Las de lo ancho (y), igual.
     # paso 3: la rotonda, con movimientos relativos del chasis sin girarlo (x adelante,
     # y derecha). Al retroceder, la torreta mira 90º a la izquierda y dispara al rival
     # que vea, sin parar. Al acabar no se barre (barrido=[]).
     dict(nombre='R1', movimientos=[
-        dict(x=1.9, velocidad=0.4),                                       # adelante 1,9 m a 0,4 m/s
+        dict(x=2.19, velocidad=0.4),                                      # adelante 2,19 m a 0,4 m/s (antes 1,9)
         dict(y=-1.0),                                                     # izquierda 1 m
-        dict(x=-1.25, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=-90,   # atrás 1,25 m atacando a la izquierda
+        dict(x=-1.44, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=-90,   # atrás 1,44 m atacando a la izquierda (antes 1,25)
              rival='rival 2'),                                            # al rival 2, que se mueve en paralelo
         dict(y=1.0),                                                      # derecha 1 m
     ], barrido=[]),
     # paso 4 (supuesto, sin probar): la torreta ya vuelve al centro al acabar el ataque.
-    # Recta de 2,5 m, 0,7 m a la izquierda y 2 m hacia delante despacio con la torreta
+    # Recta de 2,88 m, 0,7 m a la izquierda y 2,3 m hacia delante despacio con la torreta
     # girada 180º, disparando al rival que queda detrás. Después, el baile con Super Estrella.
     # Ese rival está en alto (una plataforma de 20-40 cm): la torreta lo busca inclinada
     # PITCH_RIVAL_ALTO grados y, al verlo, corrige el pitch con la caja (CORREGIR_PITCH).
     dict(nombre='R2', movimientos=[
-        dict(x=2.5),                                                      # adelante 2,5 m y se para
+        dict(x=2.88),                                                     # adelante 2,88 m y se para (antes 2,5)
         dict(y=-0.7),                                                     # izquierda 0,7 m
-        dict(x=2.0, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=180,     # adelante 2 m atacando hacia atrás,
+        dict(x=2.3, velocidad=VELOCIDAD_ATAQUE_EN_MARCHA, atacar=180,     # adelante 2,3 m atacando hacia atrás (antes 2),
              pitch=PITCH_RIVAL_ALTO, rival='rival 3'),                    # con la torreta inclinada hacia arriba
     ], barrido=[]),
 ]
@@ -190,6 +217,10 @@ VOLVER_AL_INICIO = False # deshacer el recorrido al terminar (en orden inverso)
 # el robot iba a unos 0,06 m/s: el SDK no convierte xy_speed a m/s reales.
 VELOCIDAD_XY = 0.5       # m/s reales en los avances (máximo 0,5): 2,85 m en unos 6 s
 AVANCE_CON_ODOMETRIA = True  # False: avances con chassis.move (mucho más lentos)
+# Mantener el rumbo de las rectas con la IMU (demo_utils.RUMBO). Antes de la primera recta el
+# chasis hace un giro de prueba de unos 6º para medir el sentido de la corrección.
+# False (o --sin-rumbo) para ir como antes del 11/11.
+CORREGIR_RUMBO = True
 VELOCIDAD_Z = 30         # º/s
 
 # --- Extras -------------------------------------------------------------------------

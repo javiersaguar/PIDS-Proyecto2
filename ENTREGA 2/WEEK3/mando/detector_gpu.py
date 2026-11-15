@@ -5,6 +5,7 @@ Funciona con la RTX 5070 del portátil y con la RTX 3060 de los ordenadores del 
 import argparse
 import asyncio
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -61,8 +62,14 @@ def main():
         return web.json_response(dict(boxes=pred['boxes'].tolist(), scores=pred['scores'].tolist(),
                                       ms=ms, width=image.shape[1], height=image.shape[0]))
 
+    async def info(request):
+        # Para que demo_gpu.py reconozca un detector ya abierto y lo reutilice si es el mismo modelo
+        return web.json_response(dict(arquitectura=args.arquitectura, modelo=str(args.modelo),
+                                      gpu=gpu, dispositivo=str(device), pid=os.getpid()))
+
     app = web.Application(client_max_size=4*1024*1024)
     app.router.add_post('/detectar', inferir)
+    app.router.add_get('/info', info)
     web.run_app(app, host='127.0.0.1', port=args.puerto)
 
 

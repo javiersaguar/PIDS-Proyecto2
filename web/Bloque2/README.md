@@ -14,10 +14,10 @@ python web/Bloque2/preparar_figuras.py
 
 El script reutiliza las funciones de `herramientas/construir_web.py`, guarda los datos en `datos.js` y copia la biblioteca local de Plotly. Las figuras de la cadena las genera `herramientas/construir_web_cadena.py` (solo biblioteca estándar) a partir de `ENTREGA 1/WEEK2/cadena/` y `resultados_train/`, y las guarda en `datos_cadena.js`; también se pueden regenerar solas con `python herramientas/construir_web_cadena.py`. Las conclusiones son texto revisado, no se generan automáticamente: hay que comprobarlas si cambian los resultados.
 
-Para construir GitHub Pages con ambos bloques y el selector común:
+Para construir GitHub Pages con los tres bloques y el selector común:
 
 ```sh
 python herramientas/construir_spa.py /tmp/pids-pages
 ```
 
-La portada muestra el Bloque 1; `bloque2/index.html` muestra el Bloque 2. El selector se añade a las copias publicadas. Las páginas originales conservan su diseño independiente. El flujo de `.github/workflows/pages.yml` publica esta construcción cuando se integran los cambios en `main`.
+La portada muestra el Bloque 1; `bloque2/index.html` y `bloque3/index.html` muestran los bloques 2 y 3 (el 3 está en `web/Bloque3/`). El selector se añade a las copias publicadas. Las páginas originales conservan su diseño independiente. El flujo de `.github/workflows/pages.yml` publica esta construcción cuando se integran los cambios en `main`.

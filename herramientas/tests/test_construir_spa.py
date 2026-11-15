@@ -1,4 +1,4 @@
-"""Comprueba ambos bloques de Pages, su navegación y la reconstrucción del destino."""
+"""Comprueba los tres bloques de Pages, su navegación y la reconstrucción del destino."""
 
 from html.parser import HTMLParser
 from pathlib import Path
@@ -71,9 +71,21 @@ class ConstruirSpaTests(unittest.TestCase):
         (self.bloque2 / 'index.html').write_text(self.indice_bloque2, encoding='utf-8')
         for nombre in ('estilos.css', 'graficas.js', 'datos.js', 'plotly.min.js'):
             (self.bloque2 / nombre).write_text(f'Recurso {nombre}', encoding='utf-8')
+        self.bloque3 = base / 'bloque3'
+        (self.bloque3 / 'imagenes').mkdir(parents=True)
+        self.indice_bloque3 = '''<!doctype html><html lang="es"><head>
+<link rel="stylesheet" href="estilos.css"><script src="datos.js" defer></script>
+<script src="graficas.js" defer></script></head><body>
+<header class="page-header"><h1>El detector en el robot</h1></header>
+<img src="imagenes/foto.webp" alt="">
+<p>Qué concluimos: el umbral alto evita disparar a robots tapados.</p></body></html>'''
+        (self.bloque3 / 'index.html').write_text(self.indice_bloque3, encoding='utf-8')
+        for nombre in ('estilos.css', 'graficas.js', 'datos.js', 'imagenes/foto.webp'):
+            (self.bloque3 / nombre).write_text(f'Recurso {nombre}', encoding='utf-8')
         self.estilos_navegacion = base / 'navegacion_bloques.css'
         self.estilos_navegacion.write_text('nav { display: flex; }', encoding='utf-8')
-        for nombre, valor in (('BLOQUE2', self.bloque2), ('ESTILOS_NAVEGACION', self.estilos_navegacion)):
+        for nombre, valor in (('BLOQUE2', self.bloque2), ('BLOQUE3', self.bloque3),
+                              ('ESTILOS_NAVEGACION', self.estilos_navegacion)):
             cambio = patch.object(construir_spa, nombre, valor)
             cambio.start()
             self.addCleanup(cambio.stop)
@@ -114,21 +126,31 @@ class ConstruirSpaTests(unittest.TestCase):
                              (self.destino / 'bloque2' / nombre).read_bytes())
         self.assertEqual((self.bloque2 / 'index.html').read_text(encoding='utf-8'), self.indice_bloque2)
 
+    def test_incluye_bloque3_con_sus_imagenes_y_sin_modificar_la_fuente(self):
+        construir_spa.construir(self.destino)
+        pagina = (self.destino / 'bloque3' / 'index.html').read_text(encoding='utf-8')
+        self.assertIn('Qué concluimos: el umbral alto evita disparar a robots tapados.', pagina)
+        for nombre in ('estilos.css', 'graficas.js', 'datos.js', 'imagenes/foto.webp'):
+            self.assertEqual((self.bloque3 / nombre).read_bytes(),
+                             (self.destino / 'bloque3' / nombre).read_bytes())
+        self.assertEqual((self.bloque3 / 'index.html').read_text(encoding='utf-8'), self.indice_bloque3)
+
     def test_selector_marca_el_bloque_activo_y_funciona_bajo_un_subdirectorio(self):
         construir_spa.construir(self.destino)
         base = 'https://equipo.github.io/PIDS-Proyecto2/'
-        for ruta, activo, prefijo in (('index.html', 1, ''), ('bloque2/index.html', 2, '../')):
+        for ruta, activo, prefijo in (('index.html', 1, ''), ('bloque2/index.html', 2, '../'),
+                                      ('bloque3/index.html', 3, '../')):
             texto = (self.destino / ruta).read_text(encoding='utf-8')
             self.assertEqual(texto.count('aria-current="page"'), 1)
             self.assertIn(f'aria-current="page">Bloque {activo}</a>', texto)
             self.assertIn(f'href="{prefijo}navegacion_bloques.css"', texto)
-            for objetivo in ('index.html', 'bloque2/index.html'):
+            for objetivo in ('index.html', 'bloque2/index.html', 'bloque3/index.html'):
                 url = prefijo + objetivo
                 self.assertIn(f'href="{url}"', texto)
                 self.assertEqual(urljoin(base + ruta, url), base + objetivo)
 
     def test_no_publica_documentacion_interna_ni_caches(self):
-        for fuente in (self.interactivos, self.bloque2):
+        for fuente in (self.interactivos, self.bloque2, self.bloque3):
             for nombre in ('PRODUCT.md', 'DESIGN.md', 'notas.py', '.env'):
                 (fuente / nombre).write_text('interno', encoding='utf-8')
             for nombre in ('.impeccable', '__pycache__'):
@@ -136,7 +158,8 @@ class ConstruirSpaTests(unittest.TestCase):
                 carpeta.mkdir()
                 (carpeta / 'interno.js').write_text('interno', encoding='utf-8')
         construir_spa.construir(self.destino)
-        for publico in (self.destino / 'eda' / 'interactivos', self.destino / 'bloque2'):
+        for publico in (self.destino / 'eda' / 'interactivos', self.destino / 'bloque2',
+                        self.destino / 'bloque3'):
             for nombre in ('PRODUCT.md', 'DESIGN.md', 'notas.py', '.env', '.impeccable', '__pycache__'):
                 self.assertFalse((publico / nombre).exists())
 
@@ -181,7 +204,8 @@ class ConstruirSpaTests(unittest.TestCase):
 
     def test_no_sustituye_el_repositorio_ni_las_fuentes(self):
         for destino in (construir_spa.RAIZ, construir_spa.RAIZ.parent,
-                        self.eda, self.interactivos, self.bloque2, self.bloque2 / 'salida'):
+                        self.eda, self.interactivos, self.bloque2, self.bloque2 / 'salida',
+                        self.bloque3):
             with self.subTest(destino=destino), self.assertRaises(ValueError):
                 construir_spa.construir(destino)
 
