@@ -21,6 +21,7 @@ import disparoJpg from '@repo/docs/informes/figuras/interfaz/v1_deteccion_lejana
 import dosRobotsJpg from '@repo/docs/informes/figuras/interfaz/v2_dos_robots.jpg';
 import autoSillaJpg from '@repo/docs/informes/figuras/bloque3/mando_auto/1_rival_y_silla.jpg';
 import mandoTapadoJpg from '@repo/docs/informes/figuras/bloque3/mando_auto/2_robot_tapado.jpg';
+import robotFondoWebp from '@repo/docs/informes/figuras/bloque3/demo_clase/0_p1_robot_fondo.webp';
 import iaDetective from '@repo/docs/informes/figuras/senuelo/detector/detective.jpg';
 import iaS1 from '@repo/docs/informes/figuras/senuelo/detector/aliado_s1.jpg';
 import iaOrugas from '@repo/docs/informes/figuras/senuelo/detector/aliado_orugas.jpg';
@@ -604,13 +605,11 @@ export function DemoCircuito() {
 
 // --- Decisiones del circuito ------------------------------------------------------------------------------
 // Valores de ENTREGA 2/WEEK3/circuito.py y pruebas del 11/11 (apartados 15 y 18 de la memoria).
+// El umbral 0,95 tiene su propia diapositiva («Por qué 0,95»).
 const DECISIONES = [
-  { t: 'Umbral 0,95', gana: 'el 94,5 % de lo que dispara en test es un robot', cede: 'un robot tapado (0,85–0,91) se queda sin disparos' },
   { t: 'Umbral 0,7 en una zona', gana: 'elimina al robot camuflado en papel (0,72–0,97)', cede: 'solo hacia su lado en P1 y con caja de menos de media imagen' },
-  { t: 'Margen de puntería', gana: 'dispara con un error de menos de 3° o del 30 % del ancho de la caja', cede: 'hasta 4 correcciones antes de disparar' },
   { t: 'Ráfaga de 20', gana: '8 disparos de margen sobre los 12 impactos que se piden', cede: '6,2 s por rival' },
   { t: '0,1 m/s al atacar en marcha', gana: 'tiempo para girar la torreta, fijar al rival, avisar y disparar', cede: '52 de los 138 s de la demo' },
-  { t: 'Imagen reciente', gana: 'un hilo lee siempre el vídeo; en marcha se usa la imagen menos movida', cede: 'en las paradas espera a la torreta quieta para confirmar' },
 ];
 // Hijo de un <Item>: aparece un momento después que su tarjeta
 const DESPUES = { oculto: { opacity: 0, x: -8 }, visible: { opacity: 1, x: 0, transition: { delay: 0.42, duration: 0.4, ease: CURVA } } };
@@ -619,13 +618,28 @@ export function Decisiones() {
     <div className="diapo">
       <Cabecera fase="Fase 03 · Decisiones" titulo="Qué decidimos en el circuito y qué cedimos" />
       <div style={{ display: 'grid', gap: 18 }}>
-        <motion.div className="panel" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 34, alignItems: 'center', padding: '16px 26px' }}
+        <motion.div className="panel" style={{ display: 'grid', gridTemplateColumns: '640px 1fr', gap: 32, alignItems: 'center', padding: '18px 26px' }}
           initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6, ease: CURVA }}>
-          <div>
-            <div className="etiqueta" style={{ marginBottom: 4 }}>Ni muy grande ni muy lejos</div>
-            <EscalaAlto />
-          </div>
-          <div style={{ display: 'grid', gap: 10, fontSize: 19 }}>
+          {/* Imagen real de P1: el robot del fondo da 0,98, pero su caja es tan baja que está a más de 2 m y no cuenta */}
+          <figure style={{ margin: 0 }}>
+            <div style={{ position: 'relative', borderRadius: 4, border: '1px solid var(--borde)' }}>
+              <img src={robotFondoWebp} alt="P1: un robot del fondo detectado a 0,98 con una caja pequeña y el rival 1, cerca, detectado a 1,00"
+                style={{ width: '100%', display: 'block', borderRadius: 4 }} />
+              <Esquinas retraso={1.7} color="var(--naranja)" tam={12} style={{ inset: 'auto', left: '7.6%', top: '7.8%', width: '8.4%', height: '11.6%' }} />
+              <motion.span className="mono" initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.95, duration: 0.35 }}
+                style={{ position: 'absolute', left: '17.5%', top: '10.5%', padding: '3px 9px', background: 'var(--naranja)', color: 'var(--fondo)', fontSize: 15, fontWeight: 700 }}>
+                9 % del alto · no cuenta
+              </motion.span>
+            </div>
+            <figcaption className="mono" style={{ marginTop: 8, fontSize: 14, color: 'var(--suave)' }}>
+              En P1, el robot del fondo da 0,98, pero su caja es baja: está a más de 2 m. El rival, con el 31 %, sí cuenta.
+            </figcaption>
+          </figure>
+          <div style={{ display: 'grid', gap: 14, fontSize: 19 }}>
+            <div>
+              <div className="etiqueta" style={{ marginBottom: 4 }}>Ni muy grande ni muy lejos</div>
+              <EscalaAlto />
+            </div>
             <p style={{ margin: 0 }}><b style={{ color: 'var(--rojo)' }}>Más de media imagen:</b> sería un robot a menos de 0,5 m. Con las sillas azules muy cerca y poca luz salían cajas enormes con 0,95–0,99.</p>
             <p style={{ margin: 0 }}><b style={{ color: 'var(--naranja)' }}>En P1, a más de 2 m:</b> por el alto de la caja, fuera del circuito. El robot de otro grupo al fondo dio 0,98 a unos 3 m.</p>
           </div>
