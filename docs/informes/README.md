@@ -1,10 +1,10 @@
 # Informes sobre la plantilla oficial
 
-Contenido actualizado el **09/11/2026**.
+Contenido actualizado el **14/11/2026**.
 
 | Documento | Contenido |
 |---|---|
-| [`informe_entrega3.docx`](informe_entrega3.docx) | **Borrador de la memoria de la entrega 3**: la de la entrega 2 más el Bloque 3 (apartados 13 a 19), creada con `herramientas/generar_entrega3.py` a partir de [`../informe_bloque3_borrador.md`](../informe_bloque3_borrador.md). Incluye las correcciones de la revisión de la entrega 2 (`herramientas/correcciones_entrega2.py`). Lo marcado en amarillo como [PENDIENTE] falta por medir o decidir. Ahora tiene 42 páginas, 28 de cuerpo (de la 4 a la 31, esta solo hasta un cuarto): quedan casi 3 páginas para los resultados del laboratorio. El límite de la entrega 3 es 30 (Bloques 1 a 3, sin portada, índice, respuesta a la revisión, reparto, referencias ni anexos). Se entrega como `PIDS_grupo2_entrega3.pdf`. |
+| [`informe_entrega3.docx`](informe_entrega3.docx) | **Memoria de la entrega 3**, editada a mano en Word y ordenada como la plantilla: respuesta a la revisión, reparto e índice delante; Bloque 3 en los apartados 13 (módulos del robot) a 18 (limitaciones y trabajo futuro); la interfaz del mando en el Anexo H. Tiene 48 páginas, 30 de cuerpo (de la 5 a la 34; el límite es 30). Se entrega como `docs/entregas/PIDS_grupo2_entrega3.pdf`. |
 | [`informe_entrega2.docx`](informe_entrega2.docx) | **Memoria de la entrega 2**: Bloque 1 corregido según la revisión de la entrega 1, con la tabla de respuesta a la revisión, y Bloque 2 completo con anexos. El PDF para subir es `docs/entregas/PIDS_grupo2_entrega2.pdf` (34 páginas, 20 de cuerpo, de la 4 a la 23; el límite es 20). |
 | [`informe_fase1.docx`](informe_fase1.docx) | Fuente de la memoria de la entrega 1 (Bloque 1), base de `generar_entrega2.py`. El PDF entregado está en `docs/entregas/PIDS_grupo2_entrega1.pdf` y difiere en algo de redacción. |
 | `docs/entregas/` | PDF entregados (`PIDS_grupo2_entrega1.pdf`, `PIDS_grupo2_entrega2.pdf`), la entrega 2 con los comentarios del profesor (`PIDS_grupo2_entrega2_revisada.pdf`, 34 páginas, 14 con anotaciones) y los enunciados de los Bloques 2 y 3 (`PIDS2026-2_enunciado_bloque2.pdf`, `PIDS2026-3_enunciado_bloque3.pdf`). |

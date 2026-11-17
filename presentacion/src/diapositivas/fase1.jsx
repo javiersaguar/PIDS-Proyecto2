@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Cabecera, Contador, CURVA, fmt, Item, Revela } from '../componentes/base.jsx';
+import { Cabecera, Contador, CURVA, fmt, Item, Revela, useFila, useFx } from '../componentes/base.jsx';
 import { Caja, Fotograma } from '../componentes/fotograma.jsx';
 import { BarrasH, Ejes, escala } from '../componentes/graficas.jsx';
 import { Seccion } from '../componentes/seccion.jsx';
@@ -36,7 +36,9 @@ export function Recogida() {
         <div style={{ display: 'grid', gap: 10 }}>
           {EMBUDO.map((e, i) => (
             <motion.div key={e.t} initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.35 + i * 0.4, duration: 0.6, ease: CURVA }}
+              // La fila de las 808 imágenes entra con un pequeño rebote
+              transition={e.acento ? { delay: 0.35 + i * 0.4, type: 'spring', stiffness: 230, damping: 13 }
+                : { delay: 0.35 + i * 0.4, duration: 0.6, ease: CURVA }}
               style={{ display: 'grid', gridTemplateColumns: '250px 1fr', alignItems: 'center', gap: 22, padding: '14px 0',
                 borderBottom: i < EMBUDO.length - 1 ? '1px dashed var(--borde)' : 'none',
                 marginLeft: i * 26 }}>
@@ -53,7 +55,7 @@ export function Recogida() {
         <div className="panel">
           <div className="etiqueta" style={{ marginBottom: 6 }}>¿Cada cuántos fotogramas guardamos una imagen?</div>
           <p style={{ fontSize: 18, marginBottom: 22 }}>Porcentaje de imágenes casi iguales a la anterior según el intervalo elegido.</p>
-          <BarrasH anchoEtiqueta={210} max={12} dec={1} retraso={0.9} paso={0.14} alto={44}
+          <BarrasH anchoEtiqueta={210} max={12} dec={1} retraso={0.9} paso={0.14} alto={44} fijar={2.1}
             datos={INTERVALOS.map((d) => ({ etiqueta: `cada ${d.intervalo} · ${fmt(d.imagenes)} img`, valor: d.duplicadas,
               texto: `${fmt(d.duplicadas, 1)} %`, destacado: d.intervalo === 24 }))} />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }}
@@ -73,13 +75,45 @@ const DIFFICULT_USO = [
   ['Métricas aparte', 'AP de todos, solo normales y solo difficult. Modelo final: 0,966 frente a 0,692.'],
   ['Guían las decisiones', 'El aumento sube su AP de 0,55 a 0,63, y a igual AP elegimos el mejor en difficult.'],
 ];
+// «Anotar en vivo»: dos guías recorren el fotograma como el cursor de la herramienta de anotación y cada caja
+// se dibuja de una esquina a la opuesta. Acaba como <Fotograma modo="anotacion">, al mismo ritmo.
+function AnotarEnVivo({ foto, inicio = 0.5, mover = 0.2, trazo = 0.28, pausa = 0.06 }) {
+  const paso = mover + trazo + pausa;
+  const total = foto.cajas.length * paso;
+  const xs = [0.5];
+  const ys = [0.12];
+  const tiempos = [0];
+  foto.cajas.forEach((c, k) => {
+    xs.push(c.x, c.x + c.w, c.x + c.w);
+    ys.push(c.y, c.y + c.h, c.y + c.h);
+    tiempos.push((k * paso + mover) / total, (k * paso + mover + trazo) / total, ((k + 1) * paso) / total);
+  });
+  const pct = (v) => `${(v * 100).toFixed(2)}%`;
+  const mueve = { delay: inicio, duration: total, times: tiempos, ease: 'easeInOut' };
+  const aparece = { delay: inicio - 0.15, duration: total + 0.4, times: [0, 0.06, 0.92, 1] };
+  const guia = { position: 'absolute', background: 'rgba(236, 238, 230, 0.75)', pointerEvents: 'none' };
+  return (
+    <div className="fotograma">
+      <img src={foto.src} alt={`Fotograma ${foto.frame} de ${foto.video}`} />
+      {foto.cajas.map((c, k) => (
+        <Caja key={k} caja={c} trazo duracionTrazo={trazo} retraso={inicio + k * paso + mover}
+          tipo={c.difficult ? 'difficult' : 'robot'} rotulo={c.difficult ? 'difficult' : 'robot'} />
+      ))}
+      <motion.div aria-hidden style={{ ...guia, left: 0, right: 0, height: 1 }} initial={{ top: pct(ys[0]), opacity: 0 }}
+        animate={{ top: ys.map(pct), opacity: [0, 1, 1, 0] }} transition={{ top: mueve, opacity: aparece }} />
+      <motion.div aria-hidden style={{ ...guia, top: 0, bottom: 0, width: 1 }} initial={{ left: pct(xs[0]), opacity: 0 }}
+        animate={{ left: xs.map(pct), opacity: [0, 1, 1, 0] }} transition={{ left: mueve, opacity: aparece }} />
+    </div>
+  );
+}
 export function Anotacion() {
+  const fx = useFx();
   return (
     <div className="diapo">
       <Cabecera fase="Fase 01 · Anotación" titulo="Qué consideramos un robot" />
       <div className="cuerpo dos-asim">
         <div>
-          <Fotograma foto={F.anotacion} modo="anotacion" retraso={0.6} paso={0.35} />
+          {fx ? <AnotarEnVivo foto={F.anotacion} /> : <Fotograma foto={F.anotacion} modo="anotacion" retraso={0.6} paso={0.35} />}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
             className="mono" style={{ display: 'flex', gap: 28, marginTop: 14, fontSize: 16, color: 'var(--suave)' }}>
             <span><span style={{ display: 'inline-block', width: 26, height: 0, borderTop: '3px solid var(--acento)', verticalAlign: 'middle', marginRight: 8 }} />robot</span>
@@ -125,6 +159,7 @@ export function Anotacion() {
 }
 
 // --- EDA ------------------------------------------------------------------------------------------
+const CITADOS = ['V04', 'V08'];
 function BarrasVideos() {
   const datos = generados.videos;
   const max = 200;
@@ -134,7 +169,9 @@ function BarrasVideos() {
       {datos.map((v, i) => {
         const normales = v.robots - v.difficult;
         return (
-          <div key={v.video} style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', height: '100%', justifyContent: 'flex-end' }}>
+          // Cuando entra el párrafo, las demás barras se atenúan un momento: quedan V04 y V08, las que cita
+          <motion.div key={v.video} style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', height: '100%', justifyContent: 'flex-end' }}
+            animate={{ opacity: CITADOS.includes(v.video) ? 1 : [1, 0.28, 0.28, 1] }} transition={{ delay: 1.8, duration: 1.9, times: [0, 0.12, 0.8, 1] }}>
             <motion.div className="mono" style={{ textAlign: 'center', fontSize: 16, fontWeight: 600, marginBottom: 6 }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 + i * 0.07 }}>{v.robots}</motion.div>
             <motion.div style={{ display: 'flex', flexDirection: 'column', gap: 2, transformOrigin: 'bottom' }}
@@ -143,7 +180,7 @@ function BarrasVideos() {
               <div style={{ height: (normales / max) * alto, background: '#4f5a49' }} />
             </motion.div>
             <div className="mono" style={{ textAlign: 'center', fontSize: 15, color: 'var(--suave)', marginTop: 8 }}>{v.video}</div>
-          </div>
+          </motion.div>
         );
       })}
     </div>
@@ -175,7 +212,13 @@ export function Eda() {
         </div>
         <div className="panel">
           <div className="etiqueta" style={{ marginBottom: 18 }}>Nuestros vídeos frente a los de la asignatura</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.5fr repeat(3, 1fr)', rowGap: 4, fontSize: 19 }}>
+          <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1.5fr repeat(3, 1fr)', rowGap: 4, fontSize: 19 }}>
+            {/* Barrido suave sobre la columna «Nuestros vídeos» (la segunda: del 33,3 % al 55,6 % del ancho) */}
+            <div aria-hidden style={{ position: 'absolute', left: '33.33%', width: '22.22%', top: 0, bottom: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+              <motion.div style={{ position: 'absolute', inset: 0,
+                background: 'linear-gradient(180deg, transparent, rgba(92, 228, 131, 0.12) 70%, rgba(92, 228, 131, 0.3) 98%, transparent)' }}
+                initial={{ y: '-100%' }} animate={{ y: '100%' }} transition={{ delay: 1.5, duration: 1.1, ease: 'easeInOut' }} />
+            </div>
             {['', 'Nuestros vídeos', 'Validación', 'Test'].map((c) => <div key={c} className="mono" style={{ fontSize: 14, color: 'var(--tenue)', paddingBottom: 10, textAlign: c ? 'right' : 'left' }}>{c}</div>)}
             {DOMINIO.map((fila, i) => fila.map((c, j) => (
               <motion.div key={`${i}-${j}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 + i * 0.25 + j * 0.06 }}
@@ -210,20 +253,35 @@ function Leyenda({ items }) {
 }
 const difficultEncima = (filas) => [...filas].sort((a, b) => a[2] - b[2]);
 
-function MapaCentros() {
+// «Barrido de radar»: una línea verde cruza la gráfica y descubre los puntos a su paso. El SVG no se
+// vuelve a pintar: lo que se mueve es una tapa del color del fondo, solo con una transformación.
+function Radar({ zona, retraso, duracion = 1.1, fondo }) {
+  return (
+    <div aria-hidden style={{ position: 'absolute', overflow: 'hidden', pointerEvents: 'none', ...zona }}>
+      <motion.div style={{ position: 'absolute', inset: 0, background: fondo, borderLeft: '2px solid var(--acento)', boxShadow: '-14px 0 26px rgba(92, 228, 131, 0.35)' }}
+        initial={{ x: '0%', opacity: 1 }} animate={{ x: '101%', opacity: [1, 1, 0] }}
+        transition={{ delay: retraso, duration: duracion, ease: 'linear', opacity: { delay: retraso, duration: duracion + 0.15, times: [0, 0.88, 1] } }} />
+    </div>
+  );
+}
+
+function MapaCentros({ fx }) {
   const W = 640, H = 360;
   const [f0, f1] = EDA.franja;
   return (
+    <div style={{ position: 'relative' }}>
     <svg className="grafica" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Centro de las 1420 cajas sobre una imagen de 16:9">
       <rect x="0.5" y="0.5" width={W - 1} height={H - 1} fill="#0f110e" stroke="var(--borde)" />
       <motion.rect x="1" width={W - 2} y={f0 * H} height={(f1 - f0) * H} fill="var(--acento)"
         initial={{ opacity: 0 }} animate={{ opacity: 0.09 }} transition={{ delay: 1.5, duration: 0.6 }} />
       {[f0, f1].map((v) => (
-        <motion.line key={v} x1="1" x2={W - 1} y1={v * H} y2={v * H} stroke="var(--acento)" strokeWidth="1.5" strokeDasharray="6 6"
-          initial={{ opacity: 0 }} animate={{ opacity: 0.85 }} transition={{ delay: 1.5, duration: 0.6 }} />
+        // Con el barrido, las líneas del 80 % se abren desde el centro
+        <motion.line key={v} y1={v * H} y2={v * H} stroke="var(--acento)" strokeWidth="1.5" strokeDasharray="6 6"
+          initial={fx ? { x1: W / 2, x2: W / 2, opacity: 0.85 } : { x1: 1, x2: W - 1, opacity: 0 }} animate={{ x1: 1, x2: W - 1, opacity: 0.85 }}
+          transition={{ delay: 1.5, duration: 0.6, ease: CURVA }} />
       ))}
       <line x1={EDA.centroXMedio * W} x2={EDA.centroXMedio * W} y1="1" y2={H - 1} stroke="var(--tenue)" strokeDasharray="3 6" />
-      <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 1 }}>
+      <motion.g initial={{ opacity: fx ? 1 : 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 1 }}>
         {difficultEncima(EDA.centros).map(([x, y, d], i) => (
           <circle key={i} cx={x * W} cy={y * H} r={d ? 3.2 : 2.6} fill={d ? 'var(--naranja)' : PUNTO} fillOpacity={d ? 0.85 : 0.4} />
         ))}
@@ -233,12 +291,14 @@ function MapaCentros() {
         <text x={EDA.centroXMedio * W + 8} y={H - 12} style={{ fill: 'var(--suave)', paintOrder: 'stroke', stroke: '#0f110e', strokeWidth: 6, strokeLinejoin: 'round' }}>centro medio · {fmt(EDA.centroXMedio, 2)}</text>
       </motion.g>
     </svg>
+    {fx && <Radar zona={{ inset: 1 }} retraso={0.4} fondo="#0f110e" />}
+    </div>
   );
 }
 
 // Medianas por franja, de la memoria (4.4): base por encima de 360, entre 360 y 480 y por debajo de 480
 const FRANJAS_TAMANO = [[255, 'lejos', '79 × 71'], [420, 'media', '121 × 107'], [600, 'cerca', '283 × 252']];
-function Perspectiva() {
+function Perspectiva({ fx }) {
   const ancho = 640, alto = 410, m = { l: 58, r: 18, t: 72, b: 56 };
   const sx = escala([150, 720], [m.l, ancho - m.r]);
   const sy = escala([15, 800], [alto - m.b, m.t], true);
@@ -248,12 +308,14 @@ function Perspectiva() {
   const mx = xs.reduce((s, v) => s + v, 0) / xs.length, my = ys.reduce((s, v) => s + v, 0) / ys.length;
   const a = xs.reduce((s, v, i) => s + (v - mx) * (ys[i] - my), 0) / xs.reduce((s, v) => s + (v - mx) ** 2, 0);
   const recta = (x) => 10 ** (my + a * (x - mx));
+  const pct = (v, total) => `${(v / total) * 100}%`;
   return (
+    <div style={{ position: 'relative' }}>
     <svg className="grafica" viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label="Alto de cada caja frente a la posición de su base">
       <Ejes ancho={ancho} alto={alto} m={m} sx={sx} sy={sy} ticksX={[200, 300, 400, 500, 600, 700]} ticksY={[25, 50, 100, 200, 400]}
         tituloX="base de la caja (px desde arriba) → más cerca" tituloY="alto (px)" />
       {[360, 480].map((v) => <line key={v} x1={sx(v)} x2={sx(v)} y1={32} y2={alto - m.b} stroke="var(--tenue)" strokeDasharray="3 6" />)}
-      <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 1 }}>
+      <motion.g initial={{ opacity: fx ? 1 : 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 1 }}>
         {difficultEncima(EDA.perspectiva).map(([b, h, d], i) => (
           <circle key={i} cx={sx(b)} cy={sy(h)} r={d ? 3 : 2.5} fill={d ? 'var(--naranja)' : PUNTO} fillOpacity={d ? 0.8 : 0.4} />
         ))}
@@ -268,10 +330,15 @@ function Perspectiva() {
         <text x={sx(712)} y={sy(28)} textAnchor="end" style={{ fill: 'var(--acento)', fontWeight: 600 }}>correlación {fmt(EDA.rPerspectiva, 2)}</text>
       </motion.g>
     </svg>
+    {/* La tapa cubre solo la zona de los puntos, no los ejes ni los rótulos */}
+    {fx && <Radar retraso={0.45} duracion={1} fondo="var(--panel)"
+      zona={{ left: pct(m.l + 1, ancho), right: pct(m.r - 6, ancho), top: pct(30, alto), bottom: pct(m.b + 1, alto) }} />}
+    </div>
   );
 }
 
 export function EdaPosicion() {
+  const fx = useFx();
   return (
     <div className="diapo">
       <Cabecera fase="Fase 01 · Análisis exploratorio" titulo="Dónde aparecen los robots y de qué tamaño" />
@@ -281,7 +348,7 @@ export function EdaPosicion() {
             <span className="etiqueta">Centro de las 1420 cajas</span>
             <Leyenda items={[['normal', PUNTO], ['difficult', 'var(--naranja)']]} />
           </div>
-          <MapaCentros />
+          <MapaCentros fx={fx} />
           <Revela as="ul" className="lista" retraso={2.2} paso={0.3} style={{ fontSize: 18, gap: 10 }}>
             <Item as="li"><span><b>A media altura y por igual a los dos lados:</b> volteo horizontal sí; desplazamiento vertical, solo ±5 %.</span></Item>
             <Item as="li"><span><b>Los difficult, hacia los bordes:</b> son el <span className="mono acento">{EDA.borde.pctDifficult} %</span> de las
@@ -293,7 +360,7 @@ export function EdaPosicion() {
             <span className="etiqueta">Tamaño según la posición</span>
             <span className="mono" style={{ fontSize: 14, color: 'var(--tenue)' }}>{fmt(EDA.perspectiva.length)} cajas sin cortar</span>
           </div>
-          <Perspectiva />
+          <Perspectiva fx={fx} />
           <Revela as="ul" className="lista" retraso={2.6} paso={0.3} style={{ fontSize: 18, gap: 10 }}>
             <Item as="li"><span><b>Cuanto más cerca, más abajo y más grande:</b> la cámara va a ras de suelo. Por eso la escala del aumento
               no deforma el robot ni lo saca de su franja.</span></Item>
@@ -323,8 +390,11 @@ function Forma() {
         const x0 = Math.max(20, 20 / k), x1 = Math.min(1000, 1000 / k);
         return (
           <motion.g key={t} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 + i * 0.2 }}>
-            <line x1={sx(x0)} x2={sx(x1)} y1={sy(x0 * k)} y2={sy(x1 * k)} stroke={k === 1 ? 'var(--acento)' : 'var(--tenue)'}
-              strokeWidth={k === 1 ? 2 : 1.5} strokeDasharray={k === 1 ? undefined : '5 5'} />
+            {/* La diagonal 1:1 se dibuja; las otras dos solo aparecen */}
+            <motion.line x1={sx(x0)} x2={sx(x1)} y1={sy(x0 * k)} y2={sy(x1 * k)} stroke={k === 1 ? 'var(--acento)' : 'var(--tenue)'}
+              strokeWidth={k === 1 ? 2 : 1.5} strokeDasharray={k === 1 ? undefined : '5 5'}
+              initial={k === 1 ? { pathLength: 0 } : false} animate={k === 1 ? { pathLength: 1 } : undefined}
+              transition={{ delay: 1.4, duration: 0.7, ease: 'easeInOut' }} />
             <text x={sx(x1) + (k === 2 ? -6 : 6)} y={sy(x1 * k) + 5} textAnchor={k === 2 ? 'end' : 'start'}
               style={{ fill: k === 1 ? 'var(--acento)' : 'var(--suave)' }}>{t}</text>
           </motion.g>
@@ -355,8 +425,11 @@ function Solape() {
         <motion.circle key={i} cx={p.x} cy={p.y} r="3.6" fill="var(--azul)" initial={{ opacity: 0, cy: p.y - 20 }} animate={{ opacity: 0.9, cy: p.y }}
           transition={{ delay: 0.5 + i * 0.012, duration: 0.4 }} />
       ))}
+      {/* La línea de la NMS sube desde el eje como una barrera que ningún punto alcanza */}
+      <motion.line x1={sx(0.5)} x2={sx(0.5)} y2={alto - m.b} stroke="var(--rojo)" strokeWidth="2" strokeDasharray="6 5"
+        initial={{ y1: alto - m.b, opacity: 0 }} animate={{ y1: m.t + 18, opacity: 1 }}
+        transition={{ delay: 1.3, duration: 0.55, ease: CURVA, opacity: { delay: 1.3, duration: 0.1 } }} />
       <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6 }}>
-        <line x1={sx(0.5)} x2={sx(0.5)} y1={m.t + 18} y2={alto - m.b} stroke="var(--rojo)" strokeWidth="2" strokeDasharray="6 5" />
         <text x={sx(0.5) + 8} y={m.t + 32} style={{ fill: 'var(--rojo)' }}>la NMS borra</text>
         <text x={sx(0.5) + 8} y={m.t + 50} style={{ fill: 'var(--rojo)' }}>a partir de 0,5</text>
         <text x={sx(EDA.solape.max)} y={m.t + 92} textAnchor="middle" style={{ fill: 'var(--azul)' }}>máx. {fmt(EDA.solape.max, 2)}</text>
@@ -380,9 +453,11 @@ function Nitidez() {
         const x = m.l + i * paso + paso * 0.2, w = paso * 0.6;
         return (
           <g key={i}>
-            <motion.rect x={x} width={w} rx="4" fill="var(--naranja)" fillOpacity={i === 0 ? 1 : 0.55}
-              initial={{ y: sy(0), height: 0 }} animate={{ y: sy(q.pctDifficult), height: sy(0) - sy(q.pctDifficult) }}
-              transition={{ delay: 0.5 + i * 0.15, duration: 0.8, ease: CURVA }} />
+            {/* La barra del 55 % da un pulso al terminar de crecer */}
+            <motion.rect x={x} width={w} rx="4" fill="var(--naranja)"
+              initial={{ y: sy(0), height: 0, fillOpacity: i === 0 ? 1 : 0.55 }}
+              animate={{ y: sy(q.pctDifficult), height: sy(0) - sy(q.pctDifficult), fillOpacity: i === 0 ? [1, 0.45, 1] : 0.55 }}
+              transition={{ delay: 0.5 + i * 0.15, duration: 0.8, ease: CURVA, fillOpacity: { delay: 1.4, duration: 0.5 } }} />
             <motion.text x={x + w / 2} y={sy(q.pctDifficult) - 10} textAnchor="middle" className="valor" style={{ fontSize: 18 }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 + i * 0.15 }}>{Math.round(q.pctDifficult)} %</motion.text>
             <text x={x + w / 2} y={alto - m.b + 24} textAnchor="middle">{`${i + 1}.º`}</text>
@@ -396,11 +471,11 @@ function Nitidez() {
 }
 
 const PANELES_CAJAS = [
-  { t: 'Forma', cifra: fmt(EDA.aspectoMediano, 2), pie: 'ancho / alto mediano', Grafica: Forma, leyenda: true,
+  { t: 'Forma', cifra: <Contador valor={EDA.aspectoMediano} dec={2} duracion={1.1} retraso={0.3} />, pie: 'ancho / alto mediano', Grafica: Forma, leyenda: true,
     texto: <>Casi cuadradas a cualquier tamaño y entre 1:2 y 2:1, como las anclas del detector: el <span className="mono acento">99,6 %</span> encaja con IoU ≥ 0,5. Dejamos las anclas por defecto.</> },
-  { t: 'Robots juntos', cifra: fmt(EDA.solape.max, 2), pie: 'IoU máximo entre dos robots', Grafica: Solape,
+  { t: 'Robots juntos', cifra: <Contador valor={EDA.solape.max} dec={2} duracion={1.1} retraso={0.5} />, pie: 'IoU máximo entre dos robots', Grafica: Solape,
     texto: <>De {EDA.solape.parejas} parejas de robots en la misma imagen, ninguna se solapa más de {fmt(EDA.solape.max, 2)}: la NMS a 0,5 no borra un robot que esté junto a otro.</> },
-  { t: 'Nitidez', cifra: `${Math.round(EDA.nitidez[0].pctDifficult)} %`, pie: 'difficult en las imágenes menos nítidas', Grafica: Nitidez,
+  { t: 'Nitidez', cifra: <Contador valor={Math.round(EDA.nitidez[0].pctDifficult)} sufijo=" %" duracion={1.1} retraso={0.7} />, pie: 'difficult en las imágenes menos nítidas', Grafica: Nitidez,
     texto: <>Dentro de cada vídeo, cuanto más movida la imagen, más difficult: son robots movidos. Por eso el aumento añade desenfoque de movimiento.</> },
 ];
 export function EdaCajas() {
@@ -471,8 +546,14 @@ function AumentoEnVivo({ i }) {
       </div>
       <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
         {AUMENTO_IMAGENES.map((x, k) => (
-          <div key={x.clave} style={{ flex: 1, height: 4, marginLeft: k === primeraNoUsada ? 10 : 0, transition: 'background .3s',
-            background: k === i ? (x.usada === false ? 'var(--rojo)' : 'var(--acento)') : (x.usada === false ? '#4a2c2c' : 'var(--borde)') }} />
+          // El tramo activo se rellena mientras dura su imagen
+          <div key={x.clave} style={{ position: 'relative', overflow: 'hidden', flex: 1, height: 4, marginLeft: k === primeraNoUsada ? 10 : 0,
+            background: x.usada === false ? '#4a2c2c' : 'var(--borde)' }}>
+            {k === i && (
+              <motion.div style={{ position: 'absolute', inset: 0, transformOrigin: 'left', background: x.usada === false ? 'var(--rojo)' : 'var(--acento)' }}
+                initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 1.6, ease: 'linear' }} />
+            )}
+          </div>
         ))}
       </div>
       <p style={{ margin: '10px 0 0', minHeight: 50, fontSize: 18, lineHeight: 1.4, color: 'var(--suave)' }}>
@@ -493,6 +574,10 @@ export function Aumento() {
     return () => clearInterval(id);
   }, [reducido]);
   const actual = AUMENTO_IMAGENES[i];
+  // El marcador verde se desliza de una fila a otra de la tabla
+  const tabla = useRef(null);
+  const filaActiva = actual.usada === true ? actual.fila : -1;
+  const marca = useFila(tabla, filaActiva);
   const flujo = [
     { v: DATASET.originales, t: 'originales' },
     { v: DATASET.depuradas, t: 'tras depurar', d: 'quitamos 11 casi repetidas y 1 mal anotada' },
@@ -512,8 +597,11 @@ export function Aumento() {
                 {f.d && <div style={{ fontSize: 15, color: 'var(--suave)', lineHeight: 1.3 }}>{f.d}</div>}
               </motion.div>,
               k < flujo.length - 1 && (
-                <motion.span key={`f${k}`} className="mono acento" style={{ fontSize: 26, paddingTop: 4 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                  transition={{ delay: 1.4 + k * 0.45 }}>{k === 1 ? '×4' : '→'}</motion.span>
+                <motion.span key={`f${k}`} className="mono acento" style={{ fontSize: 26, paddingTop: 4 }}
+                  initial={{ opacity: 0, scale: k === 1 ? 2.2 : 1 }} animate={{ opacity: 1, scale: 1 }}
+                  transition={k === 1 ? { delay: 1.4 + k * 0.45, type: 'spring', stiffness: 420, damping: 15 } : { delay: 1.4 + k * 0.45 }}>
+                  {k === 1 ? '×4' : '→'}
+                </motion.span>
               ),
             ])}
           </div>
@@ -522,13 +610,17 @@ export function Aumento() {
           <div style={{ display: 'grid', gridTemplateColumns: '1.08fr 92px 1fr', gap: 14, paddingBottom: 6 }}>
             {['Se usaron', 'Prob.', 'Para qué'].map((c) => <span key={c} className="etiqueta">{c}</span>)}
           </div>
+          <div ref={tabla} style={{ position: 'relative' }}>
+          {marca && (
+            <motion.div aria-hidden style={{ position: 'absolute', left: -8, right: -8, top: 0, background: 'var(--panel-2)', boxShadow: 'inset 3px 0 0 var(--acento)' }}
+              initial={false} animate={{ y: marca.y, height: marca.h, opacity: filaActiva >= 0 ? 1 : 0 }}
+              transition={{ duration: 0.4, ease: CURVA, opacity: { duration: 0.25 } }} />
+          )}
           <Revela retraso={0.4} paso={0.08}>
             {LISTA_AUMENTO.map((x, k) => {
-              const activa = actual.usada === true && actual.fila === k;
               return (
-                <Item key={x.t} style={{ display: 'grid', gridTemplateColumns: '1.08fr 92px 1fr', gap: 14, alignItems: 'baseline', padding: '7px 8px',
-                  margin: '0 -8px', borderTop: '1px solid var(--borde)', transition: 'background .3s, box-shadow .3s',
-                  background: activa ? 'var(--panel-2)' : 'transparent', boxShadow: activa ? 'inset 3px 0 0 var(--acento)' : 'none' }}>
+                <Item key={x.t} data-fila={k} style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1.08fr 92px 1fr', gap: 14, alignItems: 'baseline',
+                  padding: '7px 8px', margin: '0 -8px', borderTop: '1px solid var(--borde)' }}>
                   <span style={{ fontSize: 17, color: 'var(--texto)' }}>
                     <i style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 5, background: COLOR_GRUPO[x.g], marginRight: 10, verticalAlign: 'middle' }} />{x.t}
                   </span>
@@ -538,6 +630,7 @@ export function Aumento() {
               );
             })}
           </Revela>
+          </div>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
             style={{ borderTop: '1px solid var(--borde)', paddingTop: 10 }}>
             <div className="etiqueta">No se usaron</div>
@@ -561,3 +654,8 @@ export function Aumento() {
     </div>
   );
 }
+
+// Imágenes que se precargan mientras se muestra la diapositiva anterior
+Seccion1.imagenes = VIDEOS.map((v) => v.src);
+Anotacion.imagenes = [F.anotacion.src];
+Aumento.imagenes = AUMENTO_IMAGENES.map((x) => x.src);

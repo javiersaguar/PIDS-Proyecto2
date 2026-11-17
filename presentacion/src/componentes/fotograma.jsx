@@ -3,10 +3,62 @@ import { Contador, CURVA } from './base.jsx';
 
 const COLORES = { robot: 'var(--acento)', difficult: 'var(--naranja)', rival: 'var(--rojo)' };
 
-// Caja de detección con esquinas: se «engancha» al robot (escala desde 1,35) y después aparece su rótulo
-export function Caja({ caja, retraso = 0, tipo = 'robot', rotulo, confianza, mostrarRotulo = true }) {
+// «Fijar»: las cuatro esquinas de la caja de detección se enganchan alrededor de lo importante.
+// <Esquinas> se coloca dentro de un elemento con position: relative; <Fijar> envuelve a su contenido.
+export function Esquinas({ retraso = 0, color = 'var(--acento)', tam = 14, grosor = 2.5, desde = 1.25, style }) {
+  return (
+    <motion.div aria-hidden className="fijar" style={{ inset: -6, color, '--t': `${tam}px`, '--g': `${grosor}px`, ...style }}
+      initial={{ opacity: 0, scale: desde }} animate={{ opacity: [0, 1, 0.5, 1], scale: 1 }}
+      transition={{ delay: retraso, duration: 0.45, ease: CURVA, opacity: { delay: retraso, duration: 0.4, times: [0, 0.4, 0.6, 1] } }}>
+      <i className="a" /><i className="b" /><i className="c" /><i className="d" />
+    </motion.div>
+  );
+}
+export function Fijar({ children, retraso, color, margen = 6, className, style }) {
+  return (
+    <div className={className} style={{ position: 'relative', ...style }}>
+      {children}
+      <Esquinas retraso={retraso} color={color} style={{ inset: -margen }} />
+    </div>
+  );
+}
+
+// Línea de escaneo que pasa una vez sobre una foto (el contenedor necesita position: relative y overflow: hidden)
+export function Barrido({ retraso = 0.4, duracion = 0.8, alto = 64 }) {
+  return (
+    <motion.div aria-hidden className="escaneo" style={{ height: alto }} initial={{ top: '-45%' }} animate={{ top: '115%' }}
+      transition={{ delay: retraso, duration: duracion, ease: 'linear' }} />
+  );
+}
+
+// Caja de detección con esquinas: se «engancha» al robot (escala desde 1,35) y después aparece su rótulo.
+// Con «trazo», se dibuja de una esquina a la opuesta, como en la herramienta de anotación, y se engancha al soltarla.
+export function Caja({ caja, retraso = 0, tipo = 'robot', rotulo, confianza, mostrarRotulo = true, trazo = false, duracionTrazo = 0.26 }) {
   const color = COLORES[tipo] || tipo;
   const discontinua = tipo === 'difficult';
+  if (trazo) {
+    const fin = retraso + duracionTrazo;
+    return (
+      <div className={`caja${discontinua ? ' discontinua' : ''}`}
+        style={{ left: `${caja.x * 100}%`, top: `${caja.y * 100}%`, width: `${caja.w * 100}%`, height: `${caja.h * 100}%`, color, '--c': color }}>
+        <motion.div style={{ position: 'absolute', inset: 0 }} initial={{ clipPath: 'inset(0% 100% 100% 0%)' }} animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
+          transition={{ delay: retraso, duration: duracionTrazo, ease: 'easeInOut' }}>
+          <motion.div className="relleno" initial={{ opacity: 0.3 }} animate={{ opacity: 0.08 }} transition={{ delay: fin, duration: 0.5 }} />
+          <div className="marco-caja" />
+        </motion.div>
+        <motion.div style={{ position: 'absolute', inset: 0 }} initial={{ opacity: 0, scale: 1.22 }} animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: fin, duration: 0.24, ease: CURVA }}>
+          <i className="esq a" /><i className="esq b" /><i className="esq c" /><i className="esq d" />
+        </motion.div>
+        {mostrarRotulo && rotulo && (
+          <motion.div className={`rotulo${caja.x + caja.w > 0.85 ? ' derecha' : ''}`} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: fin + 0.1, duration: 0.3 }}>
+            <span>{rotulo}</span>
+          </motion.div>
+        )}
+      </div>
+    );
+  }
   return (
     <motion.div
       className={`caja${discontinua ? ' discontinua' : ''}`}

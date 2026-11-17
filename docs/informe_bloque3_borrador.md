@@ -64,7 +64,7 @@ La primera idea era un señuelo: algo con aspecto de robot al que nuestro RoboMa
 |---|---|---|---|
 | RoboMaster disfrazado de detective | 98,8 a 99,9 % | 5 | 0,0 % |
 | Aliado: RoboMaster S1 con bandera verde | 99,8 a 99,9 % | 5 | 5,7 % |
-| Aliado: robot con orugas y cabeza redonda | 99,8 a 99,9 % | 5 | 11,0 % |
+| Aliado: robot cabeza redonda | 99,8 a 99,9 % | 5 | 11,0 % |
 | Aliado: robot en dibujo | 92,7 a 97,9 % | 3 | 7,6 % |
 | Aliado: robot blanco | 95,4 a 98,9 % | 5 | 12,5 % |
 
