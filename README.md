@@ -8,7 +8,7 @@ We built the whole chain ourselves: the dataset, the object detector and the rob
 
 <sub>Frames from the live demo on 12/11/2026, as seen by the robot's camera: tunnel, sweep at the first stop, a camouflaged robot printed on a box, a moving rival tracked while driving, the rival under the chairs, and the final dance.</sub>
 
-**[Interactive results →](https://javiersaguar.github.io/PIDS-Proyecto2/)** · **[Full report (PDF, Spanish)](docs/entregas/PIDS_grupo2_entrega3.pdf)** · **[Demo code](ENTREGA%202/WEEK3/)**
+**[Interactive results →](https://javiersaguar.github.io/RoboMaster-LockOn/)** · **[Full report (PDF, Spanish)](docs/entregas/PIDS_grupo2_entrega3.pdf)** · **[Demo code](ENTREGA%202/WEEK3/)**
 
 ## Highlights
 
